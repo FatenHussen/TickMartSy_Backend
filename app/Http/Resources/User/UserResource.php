@@ -20,7 +20,7 @@ class UserResource extends JsonResource
                 'name' => $this->name,
                 $this->phone ? 'phone' : 'email' => $this->phone ?? $this->email,
             ],
-            // 'token' => $this->createToken('AUTH')->plainTextToken,
+            'token' => $this->createToken('AUTH')->plainTextToken,
         ];
     }
 }

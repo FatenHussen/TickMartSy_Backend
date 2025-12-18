@@ -111,10 +111,8 @@ class UserService extends BaseService
                 $isProd ? 'None' : 'Lax'      // ✅ None بالإنتاج، Lax باللوكال
             );
         }
-        return [
-            new UserResource($user),
-            'token' => $token,
-        ];
+        return
+            new UserResource($user);
     }
 
     public function send_otp($data, $id)
