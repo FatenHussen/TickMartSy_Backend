@@ -1,15 +1,12 @@
 <?php
 return [
-    'paths' => ['api/*', 'sanctum/csrf-cookie', 'login', 'logout', 'me'],
+    'paths' => ['api/*', 'login', 'logout', 'me'],
+
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
         'http://localhost:5173',
-        // ضيف دومين الإنتاج كمان
-        // 'https://your-frontend.com',
     ],
-
-    'allowed_origins_patterns' => [],
 
     'allowed_headers' => ['*'],
 
@@ -18,4 +15,5 @@ return [
     'max_age' => 0,
 
     'supports_credentials' => true,
+
 ];
