@@ -76,28 +76,7 @@ class UserService extends BaseService
             throw new VerificationException();
         }
 
-        // return new UserResource($user);
         $token = $user->createToken('AUTH')->plainTextToken;
-
-        // if ($this->isWebClient()) {
-        //     Log::info('ffsdef');
-        //     dd(response()->headers->all());
-        //     return response()
-        //         ->json([
-        //             'user' => new UserResource($user),
-        //         ])
-        //         ->cookie(
-        //         'AUTH',
-        //             $token,
-        //             120,    
-        //             '/',
-        //             null,
-        //             true,   // Secure
-        //             true,   // HttpOnly
-        //             false,
-        //             'lax'   // SameSite
-        //         );
-        // }
         if ($this->isWebClient()) {
             $response = response()->json([
                 'user' => new UserResource($user),
@@ -107,10 +86,10 @@ class UserService extends BaseService
                 120,
                 '/',
                 null,
-                true,   // Secure
-                true,   // HttpOnly
+                false,   // ❌ Secure
+                true,    // HttpOnly
                 false,
-                'lax'   // SameSite
+                'none'    // SameSite
             );
 
             // dd($response->headers->all()); // الآن صحيح
