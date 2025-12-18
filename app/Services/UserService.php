@@ -104,7 +104,7 @@ class UserService extends BaseService
                 $token,
                 60 * 24 * 7,                 // 7 days
                 '/',
-                $isProd ? 'tikmool.octopus-software.online' : null,  // ✅ لا تحط دومين باللوكال
+                $isProd ? '.octopus-software.online' : null,  // ✅ لا تحط دومين باللوكال
                 $isProd,                      // ✅ secure فقط بالإنتاج (https)
                 true,                         // HttpOnly
                 false,
