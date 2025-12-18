@@ -24,6 +24,10 @@ class UserService extends BaseService
     {
         $this->model = $model;
     }
+    private function isWebClient(): bool
+    {
+        return request()->header('X-CLIENT') === 'web';
+    }
     public function register($data)
     {
         if (!empty($data['phone'])) {
@@ -72,7 +76,31 @@ class UserService extends BaseService
             throw new VerificationException();
         }
 
-        return new UserResource($user);
+        // return new UserResource($user);
+        $token = $user->createToken('AUTH')->plainTextToken;
+
+        if ($this->isWebClient()) {
+            return response()
+                ->json([
+                    'user' => new UserResource($user),
+                ])
+                ->cookie(
+                    'auth_token',
+                    $token,
+                    120,    
+                    '/',
+                    null,
+                    true,   // Secure
+                    true,   // HttpOnly
+                    false,
+                    'lax'   // SameSite
+                );
+        }
+
+        return response()->json([
+            'user'  => new UserResource($user),
+            'token' => $token,
+        ]);
     }
 
     public function send_otp($data, $id)
@@ -128,7 +156,30 @@ class UserService extends BaseService
             $user->update(['phone_verified_at' => now()]);
             $verification->update(['verified_at' => now()]);
 
-            return new UserResource($user);
+            $token = $user->createToken('AUTH')->plainTextToken;
+
+            if ($this->isWebClient()) {
+                return response()
+                    ->json([
+                        'user' => new UserResource($user),
+                    ])
+                    ->cookie(
+                        'auth_token',
+                        $token,
+                        120,
+                        '/',
+                        null,
+                        true,
+                        true,
+                        false,
+                        'lax'
+                    );
+            }
+
+            return response()->json([
+                'user'  => new UserResource($user),
+                'token' => $token,
+            ]);
         } elseif (!empty($request['email'])) {
             $user = User::where('email', $request['email'])->first();
 
@@ -146,7 +197,30 @@ class UserService extends BaseService
             $user->update(['email_verified_at' => now()]);
             $verification->update(['verified_at' => now()]);
 
-            return new UserResource($user);
+            $token = $user->createToken('AUTH')->plainTextToken;
+
+            if ($this->isWebClient()) {
+                return response()
+                    ->json([
+                        'user' => new UserResource($user),
+                    ])
+                    ->cookie(
+                        'auth_token',
+                        $token,
+                        120,
+                        '/',
+                        null,
+                        true,
+                        true,
+                        false,
+                        'lax'
+                    );
+            }
+
+            return response()->json([
+                'user'  => new UserResource($user),
+                'token' => $token,
+            ]);
         }
     }
 
@@ -213,17 +287,47 @@ class UserService extends BaseService
 
         $user->update(['password' => Hash::make($newPassword)]);
         auth()->user()?->tokens()->delete();
+       
+        $token = $user->createToken('AUTH')->plainTextToken;
 
-        return new UserResource($user);
+        if ($this->isWebClient()) {
+            return response()
+                ->json([
+                    'user' => new UserResource($user),
+                ])
+                ->cookie(
+                    'auth_token',
+                    $token,
+                    120,
+                    '/',
+                    null,
+                    true,
+                    true,
+                    false,
+                    'lax'
+                );
+        }
+
+        return response()->json([
+            'user'  => new UserResource($user),
+            'token' => $token,
+        ]);
     }
 
     public static function logout($request)
-    {  
-        auth()->user()->currentAccessToken()->delete();
+    {
+        auth()->user()?->currentAccessToken()?->delete();
+
+        if ($request->header('X-CLIENT') === 'web') {
+            return response()
+                ->json(['success' => true])
+                ->withoutCookie('auth_token');
+        }
+
         return true;
     }
 
-      
+
     public function update_password($id, $request)
     {
         $user = User::findOrFail($id);

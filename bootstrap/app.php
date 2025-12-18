@@ -18,7 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'abilities' => \Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
             'ability' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
             'check.blocked' => \App\Http\Middleware\CheckIfBlocked::class,
-
+            'api' => \App\Http\Middleware\AttachTokenFromCookie::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
