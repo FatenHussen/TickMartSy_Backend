@@ -77,36 +77,40 @@ class UserService extends BaseService
         }
 
         $token = $user->createToken('AUTH')->plainTextToken;
-        if ($this->isWebClient()) {
-            // $response = response()->json([
-            //     'user' => new UserResource($user),
-            // ])->cookie(
-            //     'AUTH',
-            //     $token,
-            //     120,
-            //     '/',
-            //     null,
-            //     false,   // ❌ Secure
-            //     true,    // HttpOnly
-            //     false,
-            //     'none'    // SameSite
-            // );
-            return response()->json(['ok' => true])
-                ->cookie(
-                    'auth_token',
-                    $token,
-                    60 * 24 * 7,
-                    '/',
-                    'tikmool.octopus-software.online', // أو api.example.com حسب وضعك (مهم يكون دومين السيرفر)
-                    true,           // Secure (لأن السيرفر https)
-                    true,           // HttpOnly
-                    false,
-                    'None'          // SameSite=None
-                );
-            // dd($response->headers->all()); // الآن صحيح
-            return $response;
-        }
+        // if ($this->isWebClient()) {
 
+        //     return response()->json(['ok' => true])
+        //         ->cookie(
+        //             'auth_token',
+        //             $token,
+        //             60 * 24 * 7,
+        //             '/',
+        //             'tikmool.octopus-software.online', // أو api.example.com حسب وضعك (مهم يكون دومين السيرفر)
+        //             true,           // Secure (لأن السيرفر https)
+        //             true,           // HttpOnly
+        //             false,
+        //             'None'          // SameSite=None
+        //         );
+        //     // dd($response->headers->all()); // الآن صحيح
+        //     return $response;
+        // }
+        if ($this->isWebClient()) {
+            $isProd = app()->environment('production');
+
+            return response()->json([
+                'user' => new UserResource($user),
+            ])->cookie(
+                'auth_token',
+                $token,
+                60 * 24 * 7,                 // 7 days
+                '/',
+                $isProd ? 'tikmool.octopus-software.online' : null,  // ✅ لا تحط دومين باللوكال
+                $isProd,                      // ✅ secure فقط بالإنتاج (https)
+                true,                         // HttpOnly
+                false,
+                $isProd ? 'None' : 'Lax'      // ✅ None بالإنتاج، Lax باللوكال
+            );
+        }
         return response()->json([
             'user'  => new UserResource($user),
             'token' => $token,
