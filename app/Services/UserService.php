@@ -188,10 +188,7 @@ class UserService extends BaseService
                     );
             }
 
-            return response()->json([
-                'user'  => new UserResource($user),
-                'token' => $token,
-            ]);
+            return new UserResource($user);
         } elseif (!empty($request['email'])) {
             $user = User::where('email', $request['email'])->first();
 
@@ -229,10 +226,7 @@ class UserService extends BaseService
                     );
             }
 
-            return response()->json([
-                'user'  => new UserResource($user),
-                'token' => $token,
-            ]);
+            return new UserResource($user);
         }
     }
 
@@ -320,10 +314,7 @@ class UserService extends BaseService
                 );
         }
 
-        return response()->json([
-            'user'  => new UserResource($user),
-            'token' => $token,
-        ]);
+        return new UserResource($user);
     }
 
     public static function logout($request)
