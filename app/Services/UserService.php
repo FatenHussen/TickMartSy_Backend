@@ -79,22 +79,42 @@ class UserService extends BaseService
         // return new UserResource($user);
         $token = $user->createToken('AUTH')->plainTextToken;
 
+        // if ($this->isWebClient()) {
+        //     Log::info('ffsdef');
+        //     dd(response()->headers->all());
+        //     return response()
+        //         ->json([
+        //             'user' => new UserResource($user),
+        //         ])
+        //         ->cookie(
+        //         'AUTH',
+        //             $token,
+        //             120,    
+        //             '/',
+        //             null,
+        //             true,   // Secure
+        //             true,   // HttpOnly
+        //             false,
+        //             'lax'   // SameSite
+        //         );
+        // }
         if ($this->isWebClient()) {
-            return response()
-                ->json([
-                    'user' => new UserResource($user),
-                ])
-                ->cookie(
-                    'auth_token',
-                    $token,
-                    120,    
-                    '/',
-                    null,
-                    true,   // Secure
-                    true,   // HttpOnly
-                    false,
-                    'lax'   // SameSite
-                );
+            $response = response()->json([
+                'user' => new UserResource($user),
+            ])->cookie(
+                'AUTH',
+                $token,
+                120,
+                '/',
+                null,
+                true,   // Secure
+                true,   // HttpOnly
+                false,
+                'lax'   // SameSite
+            );
+
+            // dd($response->headers->all()); // الآن صحيح
+            return $response;
         }
 
         return response()->json([
