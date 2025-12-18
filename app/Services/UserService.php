@@ -112,7 +112,7 @@ class UserService extends BaseService
             );
         }
         return [
-            'user'  => new UserResource($user),
+            new UserResource($user),
             'token' => $token,
         ];
     }
