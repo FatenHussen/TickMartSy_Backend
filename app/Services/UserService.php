@@ -78,20 +78,31 @@ class UserService extends BaseService
 
         $token = $user->createToken('AUTH')->plainTextToken;
         if ($this->isWebClient()) {
-            $response = response()->json([
-                'user' => new UserResource($user),
-            ])->cookie(
-                'AUTH',
-                $token,
-                120,
-                '/',
-                null,
-                false,   // ❌ Secure
-                true,    // HttpOnly
-                false,
-                'none'    // SameSite
-            );
-
+            // $response = response()->json([
+            //     'user' => new UserResource($user),
+            // ])->cookie(
+            //     'AUTH',
+            //     $token,
+            //     120,
+            //     '/',
+            //     null,
+            //     false,   // ❌ Secure
+            //     true,    // HttpOnly
+            //     false,
+            //     'none'    // SameSite
+            // );
+            return response()->json(['ok' => true])
+                ->cookie(
+                    'auth_token',
+                    $token,
+                    60 * 24 * 7,
+                    '/',
+                    'tikmool.octopus-software.online', // أو api.example.com حسب وضعك (مهم يكون دومين السيرفر)
+                    true,           // Secure (لأن السيرفر https)
+                    true,           // HttpOnly
+                    false,
+                    'None'          // SameSite=None
+                );
             // dd($response->headers->all()); // الآن صحيح
             return $response;
         }
