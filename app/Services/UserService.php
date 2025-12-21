@@ -64,16 +64,16 @@ class UserService extends BaseService
         $user = User::where($field, $data[$field])->first();
 
         if (!$user || !Hash::check($data['password'], $user->password)) {
-            throw new CustomExceptionWithMessage('wrong_credential');
+            // throw new CustomExceptionWithMessage('wrong_credential');
         }
         if($user->is_block)
         {
-            throw new CustomExceptionWithMessage('account_blocked');
+            // throw new CustomExceptionWithMessage('account_blocked');
         }
 
         if (!$user->{$field . '_verified_at'}) {
             $this->send_otp($data, $user->id);
-            throw new VerificationException();
+            // throw new VerificationException();
         }
 
         $token = $user->createToken('AUTH')->plainTextToken;
