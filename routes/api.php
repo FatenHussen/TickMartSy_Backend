@@ -11,6 +11,9 @@ use App\Http\Controllers\User\CategoryController;
 use App\Http\Controllers\User\CityController;
 use App\Http\Controllers\User\GovernorateController;
 
+require base_path('routes/api/admin.php');
+
+
 Route::group(["middleware" => ['setLocale']], function () {
 
     Route::post('/register', [AuthController::class, 'register']);

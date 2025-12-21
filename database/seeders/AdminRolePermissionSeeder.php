@@ -1,0 +1,88 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\Admin;
+use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+
+class AdminRolePermissionSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $models = [
+            'Role',
+            'Admin',
+            'User',
+            'City',
+            'Governorate',
+        ];
+
+        $actions = ['view', 'create', 'update', 'delete'];
+
+        $permissions = [];
+
+        foreach ($models as $model) {
+            foreach ($actions as $action) {
+                $permissions[] = strtolower($model) . '.' . $action;
+            }
+        }
+
+      foreach ($permissions as $permission) {
+        Permission::firstOrCreate([
+            'name' => $permission,
+            'guard_name' => 'admin',
+        ]);
+      }
+        $superAdmin = Role::firstOrCreate([
+            'name' => 'admin',
+            'guard_name' => 'admin',
+        ]);
+
+        $employee   = Role::firstOrCreate([
+            'name' => 'employee',
+            'guard_name' => 'admin',
+        ]);
+
+        //assign permissions to super-admin role
+        $superAdminPermissions = Permission::all();
+        $superAdmin->syncPermissions($superAdminPermissions);
+
+
+        //assign permissions to employee role
+        $employeePermissions = Permission::whereNotIn('name', [
+            'admin.view',
+            'admin.create',
+            'admin.update',
+            'admin.delete',
+            'role.view',
+            'role.create',
+            'role.update',
+            'role.delete',
+        ])->get();
+        $employee->syncPermissions($employeePermissions);
+
+
+        //create Admins
+        $Em1 = Admin::firstOrCreate(
+            ['email' => 'superadmin@admin.com'],
+            [
+                'name' => 'Super Admin',
+                'password' => bcrypt('password'),
+            ]
+        );
+        $Em1->assignRole($superAdmin);
+
+
+        $Em2 = Admin::firstOrCreate(
+            ['email' => 'employee@admin.com'],
+            [
+                'name' => 'Employee',
+                'password' => bcrypt('password'),
+            ]
+        );
+        $Em2->assignRole($employee);
+
+    }
+}
