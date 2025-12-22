@@ -5,29 +5,31 @@ use App\Exceptions\CustomExceptionWithMessage;
 use App\Exceptions\InactiveAccountException;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\UnActivatedException;
+use App\Http\Resources\Admin\Admin\OneResource;
+use App\Models\Admin;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Hash;
 
 class AuthService{
 
-    public function login($user , $credentials){
+    public function login(Admin $admin,array $credentials){
         
-        if(! $user){
+        if(! $admin){
             throw new NotFoundException();
         }
 
-        if(! $user->is_active){
+        if(! $admin->is_active){
             throw new InactiveAccountException();
         }
 
-        if (! Hash::check($credentials['password'], $user->password)) {
+        if (! Hash::check($credentials['password'], $admin->password)) {
             throw new AuthenticationException();
         }
 
-        $token = $user->createToken('admin-token')->plainTextToken;
+        $token = $admin->createToken('admin-token')->plainTextToken;
 
         return [
-            'user'  => $user,
+            'user'  => OneResource::make($admin),
             'token' => $token,
         ];
     }

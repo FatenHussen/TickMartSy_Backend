@@ -80,8 +80,8 @@ return [
             'model' => env('AUTH_MODEL', App\Models\Store::class),
         ],
         'admins' => [
-            'driver' => 'database',
-            'table' => 'admins',
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
         ],
         // 'users' => [
         //     'driver' => 'database',

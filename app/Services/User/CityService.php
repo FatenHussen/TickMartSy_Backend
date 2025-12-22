@@ -2,7 +2,7 @@
 
 namespace App\Services\User;
 
-use App\Http\Resources\User\CityResource;
+use App\Http\Resources\User\City\CityResource;
 use App\Models\City;
 use App\Services\BaseService;
 

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources\User;
+namespace App\Http\Resources\Admin\City;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class GovernorateResource extends JsonResource
+class OneResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,10 +14,6 @@ class GovernorateResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $locale = app()->getLocale();
-        return [
-            'id' => $this->id,
-            'name' => $this->getTranslation('name', $locale)
-        ];
+        return parent::toArray($request);
     }
 }

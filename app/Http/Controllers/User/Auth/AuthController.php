@@ -39,7 +39,7 @@ class AuthController extends Controller
         $user = $this->service->login($request->validated());
 
         return $this->sendResponse(
-            __('custom.Success'),
+            message:__('custom.Success'),
             data: $user
         );
     }
@@ -53,7 +53,7 @@ class AuthController extends Controller
         $this->service->sendPasswordOtp($request->validated());
 
         return $this->sendResponse(
-            __('custom.Success')
+            message:__('custom.Success')
         );
     }
 
@@ -62,7 +62,7 @@ class AuthController extends Controller
         $user = $this->service->verifyOtp($request->validated());
 
         return $this->sendResponse(
-            __('custom.Success'),
+            message:__('custom.Success'),
             data: $user
         );
     }
@@ -76,7 +76,7 @@ class AuthController extends Controller
         $this->service->sendPasswordOtp($request->validated());
 
         return $this->sendResponse(
-            __('custom.Success')
+            message:__('custom.Success')
         );
     }
 
@@ -85,7 +85,7 @@ class AuthController extends Controller
         $user = $this->service->verifyPassword($request->validated());
 
         return $this->sendResponse(
-            __('custom.Success'),
+            message:__('custom.Success'),
             data: $user
         );
     }
@@ -98,7 +98,7 @@ class AuthController extends Controller
         );
 
         return $this->sendResponse(
-            __('custom.Success')
+            message:__('custom.Success')
         );
     }
 

@@ -2,7 +2,7 @@
 
 namespace App\Services\User;
 
-use App\Http\Resources\User\GovernorateResource;
+use App\Http\Resources\User\Governorate\GovernorateResource;
 use App\Models\Governorate;
 use App\Services\BaseService;
 

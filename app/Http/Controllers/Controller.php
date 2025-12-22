@@ -2,31 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\BaseException;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Support\Facades\DB;
-
-class Controller extends BaseController
+abstract class Controller
 {
-    use AuthorizesRequests, ValidatesRequests;
 
-    protected function sendResponse($message, $code = 200, $data = [])
+    protected function sendResponse($data = [], $message = null, $code = 200, $meta = [])
     {
+        if ($message === null) {
+            $message = __('custom.Success');
+        }
+
         $response = [
-            'data' => $data,
+            'status'  => true,
             'message' => $message,
+            'data'    => $data,
         ];
+
+        if (!empty($meta)) {
+            $response['meta'] = $meta;
+        }
 
         return response()->json($response, $code);
     }
 
-    protected function sendError($message, $code = 400)
+    protected function sendError($message = null, $code = 400, $errors = [])
     {
+        if ($message === null) {
+            $message = __('custom.Error');
+        }
         $response = [
-            'error' => $message,
+            'status'  => 'error',
+            'message' => $message,
         ];
+
+        if (!empty($errors)) {
+            $response['errors'] = $errors;
+        }
 
         return response()->json($response, $code);
     }
