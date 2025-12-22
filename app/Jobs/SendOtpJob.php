@@ -36,6 +36,5 @@ class SendOtpJob implements ShouldQueue
             'to'      => $this->phone,
             'message' => "This is OTP : {$this->otp}",
         ]);
-        Log::info('OTP API response: ' . $response->body());
     }
 }

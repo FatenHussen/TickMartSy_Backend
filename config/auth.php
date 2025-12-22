@@ -48,7 +48,10 @@ return [
             'driver' => 'session',
             'provider' => 'stores',
         ],
-    ],
+        'admin' => [
+            'driver' => 'sanctum',
+            'provider' => 'admins',
+        ],   ],
 
     /*
     |--------------------------------------------------------------------------
@@ -75,6 +78,10 @@ return [
         'stores' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\Store::class),
+        ],
+        'admins' => [
+            'driver' => 'database',
+            'table' => 'admins',
         ],
         // 'users' => [
         //     'driver' => 'database',

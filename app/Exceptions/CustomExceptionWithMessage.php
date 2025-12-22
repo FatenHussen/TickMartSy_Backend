@@ -3,27 +3,33 @@
 namespace App\Exceptions;
 
 use Exception;
-use Illuminate\Support\Facades\Log;
 
-class CustomExceptionWithMessage extends BaseException
+class CustomExceptionWithMessage extends Exception
 {
+    protected string $translationKey;
+    protected int $status;
 
-    protected $message;
-
-    public function __construct($message = "Error")
+    public function __construct(string $translationKey = 'custom.custom_error', int $status = 400)
     {
-        $this->message = $message;
+        parent::__construct();
+        $this->translationKey = $translationKey;
+        $this->status = $status;
     }
 
-    public function report()
+    public function getTranslationKey(): string
     {
-        //
+        return $this->translationKey;
+    }
+
+    public function getStatus(): int
+    {
+        return $this->status;
     }
 
     public function render()
     {
         return response()->json([
-            'error' => __("custom.$this->message")
-        ], 400);
+            'message' => __($this->translationKey),
+        ], $this->status);
     }
 }

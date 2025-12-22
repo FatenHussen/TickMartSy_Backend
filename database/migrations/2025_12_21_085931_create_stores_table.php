@@ -10,18 +10,18 @@ return new class extends Migration {
         Schema::create('stores', function (Blueprint $table) {
             $table->id();
 
-            $table->string('owner_name');
-            $table->string('owner_email')->unique();
+            $table->string('name');
+            $table->string('email')->unique();
             $table->string('owner_phone', 20)->unique();
             $table->string('password');
 
-            $table->string('store_name');
-            $table->text('description')->nullable();
+            $table->json('store_name');
+            $table->json('description')->nullable();
             $table->string('logo', 500)->nullable();
             $table->string('cover', 500)->nullable();
             $table->string('store_phone', 20)->nullable();
             $table->string('store_email')->nullable();
-            $table->text('store_address')->nullable();
+            $table->json('store_address')->nullable();
             $table->foreignId('area_id')->constrained('areas')->onDelete('cascade');
             $table->decimal('lat', 10, 8)->nullable();
             $table->decimal('lng', 11, 8)->nullable();

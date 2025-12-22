@@ -9,10 +9,10 @@ return new class extends Migration {
     {
         Schema::create('areas', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('description')->nullable();
+            $table->json('name');
             $table->decimal('lat', 10, 8)->nullable();
             $table->decimal('lng', 11, 8)->nullable();
+            $table->foreignId('city_id')->constrained('cities');
             $table->timestamps();
         });
     }

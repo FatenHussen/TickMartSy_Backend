@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\BaseIndexController;
-use App\Services\GovernorateService;
+use App\Services\User\GovernorateService;
 
 class GovernorateController extends BaseIndexController
 {

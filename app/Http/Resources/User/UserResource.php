@@ -9,7 +9,6 @@ class UserResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $isWeb = strtolower($request->header('X-CLIENT')) === 'web';
 
         $response = [
             'user' => [
@@ -19,9 +18,7 @@ class UserResource extends JsonResource
             ],
         ];
 
-        if (! $isWeb) {
-            $response['token'] = $this->createToken('AUTH')->plainTextToken;
-        }
+        $response['token'] = $this->createToken('AUTH')->plainTextToken;
 
         return $response;
     }

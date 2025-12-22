@@ -3,16 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Translatable\HasTranslations;
 
 class Store extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
+
+    public $translatable = ['store_name', 'description', 'store_address'];
 
     protected $fillable = [
-        'owner_name',
-        'owner_email',
+        'name',
+        'email',
         'owner_phone',
         'password',
         'store_name',
@@ -36,14 +38,12 @@ class Store extends Authenticatable
         'agreed_percentage',
     ];
 
+    protected $hidden = ['password'];
+
     protected $casts = [
         'time_work' => 'array',
         'date_contract' => 'date',
         'duration_contract' => 'time',
-    ];
-
-    protected $hidden = [
-        'password',
     ];
 
     public function area()
