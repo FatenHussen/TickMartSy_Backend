@@ -44,14 +44,15 @@ return [
             'driver' => 'sanctum',
             'provider' => 'users',
         ],
-        'store' => [
+        'store-user' => [
             'driver' => 'session',
             'provider' => 'stores',
         ],
         'admin' => [
             'driver' => 'sanctum',
             'provider' => 'admins',
-        ],   ],
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -77,7 +78,7 @@ return [
         ],
         'stores' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\Store::class),
+            'model' => App\Models\StoreUser::class,
         ],
         'admins' => [
             'driver' => 'eloquent',

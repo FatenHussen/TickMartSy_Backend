@@ -54,6 +54,6 @@ class StorePanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ])->authGuard('store');
+            ])->authGuard('store-user');
     }
 }
