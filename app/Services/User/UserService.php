@@ -2,7 +2,9 @@
 
 namespace App\Services\User;
 
+use App\Exceptions\AccountAlreadyExistsException;
 use App\Exceptions\CustomExceptionWithMessage;
+use App\Exceptions\InactiveAccountException;
 use App\Exceptions\InvalidVerificationCodeException;
 use App\Exceptions\NotFoundException;
 use App\Http\Resources\User\UserResource;
@@ -19,7 +21,9 @@ class UserService
 {
     use FileTrait;
 
-    public function __construct(public User $model) {}
+    public function __construct(public User $model) {
+        $this->model = $model;
+    }
 
     /* =========================
         Helpers
@@ -34,7 +38,7 @@ class UserService
     {
         $field = $this->resolveField($data);
 
-        $user = User::where($field, $data[$field])->first();
+        $user = $this->model->where($field, $data[$field])->first();
 
         if (!$user) {
             throw new NotFoundException();
@@ -46,14 +50,12 @@ class UserService
     private function createOtp(
         User $user,
         string $type,
-        ?string $value = null,
         int $minutes = 60
     ): Verification {
         return Verification::create([
             'code'    => rand(10000, 99999),
             'user_id' => $user->id,
             'type'    => $type,
-            'value'   => $value,
             'end_at'  => now()->addMinutes($minutes),
         ]);
     }
@@ -77,7 +79,20 @@ class UserService
     {
         $field = $this->resolveField($data);
 
-        $user = User::create([
+        $existingUser = $this->model
+            ->where($field, $data[$field])
+            ->first();
+
+        if ($existingUser) {
+            if (!$existingUser->{$field . '_verified_at'}) {
+                $verification = $this->createOtp($existingUser, 'verification');
+                $this->sendOtp($existingUser, $verification, $field);
+                throw new InactiveAccountException();
+            }
+            throw new AccountAlreadyExistsException();
+        }
+
+        $user = $this->model->create([
             $field           => $data[$field],
             'password'       => $data['password'],
             'name'           => $data['name'],
@@ -85,11 +100,15 @@ class UserService
             'governorate_id' => $data['governorate_id'],
         ]);
 
-        $verification = $this->createOtp($user, 'verification');
-        $this->sendOtp($user, $verification, $field);
+        try {
+            $verification = $this->createOtp($user, 'verification');
+            $this->sendOtp($user, $verification, $field);
+        } catch (\Throwable $e) {
+        }
 
         return true;
     }
+
 
     public function login(array $data)
     {
@@ -97,7 +116,7 @@ class UserService
         $user  = $this->resolveUser($data);
 
         if (!Hash::check($data['password'], $user->password)) {
-            throw new CustomExceptionWithMessage('wrong_credential');
+            throw new CustomExceptionWithMessage('custom.wrong_credential');
         }
 
         if (!$user->{$field . '_verified_at'}) {
@@ -135,7 +154,7 @@ class UserService
             ->first();
 
         if (!$verification) {
-            throw new CustomExceptionWithMessage('Otp_valid');
+            throw new CustomExceptionWithMessage('custom.otp_valid');
         }
 
         $user->update([$field . '_verified_at' => now()]);
@@ -172,7 +191,7 @@ class UserService
             ->first();
 
         if (!$verification) {
-            throw new CustomExceptionWithMessage('password_valid');
+            throw new CustomExceptionWithMessage('custom.password_valid');
         }
 
         return new UserResource($user);
@@ -180,7 +199,7 @@ class UserService
 
     public function resetPassword(int $id, string $newPassword)
     {
-        $user = User::find($id);
+        $user = $this->model->find($id);
 
         if (!$user) {
             throw new NotFoundException();
@@ -194,10 +213,10 @@ class UserService
 
     public function updatePassword(int $id, array $data): bool
     {
-        $user = User::findOrFail($id);
+        $user = $this->model->findOrFail($id);
 
         if (!Hash::check($data['old_password'], $user->password)) {
-            throw new CustomExceptionWithMessage('wrong_password');
+            throw new CustomExceptionWithMessage('custom.wrong_password');
         }
 
         $user->update(['password' => Hash::make($data['new_password'])]);
@@ -208,22 +227,22 @@ class UserService
         Update Contact
     ========================= */
 
-    public function updateContact(string $type, string $value): bool
+    public function updateContact(string $type, string $code): bool
     {
-        $user = auth('users')->user();
+        $user = auth('user')->user();
 
-        $verification = $this->createOtp($user, $type, $value);
+        $verification = $this->createOtp($user, $type, $code);
 
         $type === 'update_phone'
-            ? SendOtpJob::dispatch($value, $verification->code)
-            : Mail::to($value)->send(new OtpMail($user, $verification->code, $verification->end_at));
+            ? SendOtpJob::dispatch($code, $verification->code)
+            : Mail::to($code)->send(new OtpMail($user, $verification->code, $verification->end_at));
 
         return true;
     }
 
     public function verifyUpdate(array $data)
     {
-        $user = auth('users')->user();
+        $user = auth('user')->user();
 
         $verification = Verification::where('user_id', $user->id)
             ->where('code', $data['code'])
@@ -234,13 +253,13 @@ class UserService
             ->first();
 
         if (!$verification) {
-            throw new CustomExceptionWithMessage('otp_invalid');
+            throw new CustomExceptionWithMessage('custom.otp_invalid');
         }
 
         $field = $verification->type === 'update_email' ? 'email' : 'phone';
 
         $user->update([
-            $field => $verification->value,
+            $field => $verification->code,
             $field . '_verified_at' => now(),
         ]);
 
@@ -255,8 +274,8 @@ class UserService
 
     public function deleteAccount(): bool
     {
-        $userId = auth('users')->id();
-        User::where('id', $userId)->delete();
+        $userId = auth('user')->id();
+        $this->model->where('id', $userId)->delete();
         return true;
     }
 }

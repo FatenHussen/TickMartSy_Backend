@@ -13,12 +13,12 @@ abstract class BaseIndexController extends Controller
     {
         $filters = $this->filterRequest ? app($this->filterRequest)->validated() : [];
         $res = $this->service->getAll($filters);
-        return $this->sendResponse(__('custom.Success'), 200, $res);
+        return $this->sendResponse(data: $res);
     }
 
     public function get_one($id)
     {
         $res = $this->service->getOne($id);
-        return $this->sendResponse(__('custom.Success'), 200, $res);
+        return $this->sendResponse(data:$res);
     }
 }

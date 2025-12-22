@@ -99,7 +99,8 @@ return [
     | specify a specific custom language line for a given attribute rule.
     |
     */
-
+    'account_not_verified ' => ' هذا الحساب غير مفعّل، يرجى التحقق من الحساب ',
+    ' account_already_exists ' => ' هذا الحساب مسجل مسبقًا ',
     'custom'               => [
         'attribute-name' => [
             'rule-name' => 'custom-message',
@@ -121,6 +122,8 @@ return [
     */
 
     'attributes'           => [
+        'city_id' => 'المدينة',
+        'governorate_id' => 'المحافظة',
         'name'             => 'اسم العميل',
         'mobile'           => 'رقم جوال ',
         'email'            => 'العنوان البريدي',
@@ -157,5 +160,6 @@ return [
 
     'only_english' => 'يُسمح فقط بالأحرف الإنجليزية (يمكن استخدام الأرقام والرموز)',
     'at_least_one_arabic' => 'يجب أن يحتوي النص على حرف عربي واحد على الأقل (يمكن استخدام أحرف إنجليزية أو أرقام أو رموز)',
+    'required_without' => 'يرجى إدخال :attribute في حال عدم إدخال :values.',
 
 ];

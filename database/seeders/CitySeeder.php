@@ -35,6 +35,7 @@ class CitySeeder extends Seeder
                     'ar' => $city['ar'],
                     'en' => $city['en'],
                 ], JSON_UNESCAPED_UNICODE),
+                'governorate_id' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
