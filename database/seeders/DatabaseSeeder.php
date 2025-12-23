@@ -30,6 +30,8 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             AreaSeeder::class,
             StoreSeeder::class,
+            StoreRolePermissionSeeder::class,
+            StoreUserSeeder::class,
         ]);
     }
 }
