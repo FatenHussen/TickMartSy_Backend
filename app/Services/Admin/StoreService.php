@@ -3,27 +3,14 @@
 namespace App\Services\Admin;
 
 use App\Models\Store;
+use App\Services\Base\MediaService;
+use App\Services\BaseService;
+use Illuminate\Support\Facades\DB;
 
-class StoreService
+class StoreService extends BaseService
 {
-    public function list()
-    {
-        return Store::latest()->paginate(10);
-    }
-
-    public function create(array $data): Store
-    {
-        return Store::create($data);
-    }
-
-    public function update(Store $store, array $data): Store
-    {
-        $store->update($data);
-        return $store;
-    }
-
-    public function delete(Store $store): void
-    {
-        $store->delete();
-    }
+    public function __construct(
+        protected MediaService $mediaService
+    ) {}
+  
 }

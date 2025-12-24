@@ -2,55 +2,43 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-class Store extends Authenticatable
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
+class Shop extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasTranslations;
 
     public array $translatable = ['name', 'description', 'address'];
 
     protected $fillable = [
         'name',
-        'owner_name',
-        'owner_phone',
         'description',
         'address',
         'phone',
         'mobile',
-        'email',
-        'commercial_register',
-        'contract_date',
-        'contract_number',
-        'contract_duration_months',
-        'commission_rate',
+        'lat',
+        'lng',
+        'area_id',
         'working_hours',
         'is_active',
         'ratings_count',
         'ratings_sum',
+        'vendor_id'
     ];
 
-  
     protected $casts = [
-        'working_hours'     => 'array',
-        'cover_images'      => 'array',
-        'contract_date'     => 'date',
-        'commission_rate'   => 'decimal:2',
-        'is_active'         => 'boolean',
-        'ratings_count'     => 'integer',
-        'ratings_sum'       => 'integer',
+    'working_hours'     => 'array',
+    'cover_images'      => 'array',
+    'is_active'         => 'boolean',
+    'ratings_count'     => 'integer',
+    'ratings_sum'       => 'integer',
     ];
-
-     public function vendor()
-    {
+ 
+     public function vendor(){
         return $this->belongsTo(Vendor::class);
     }
-
     protected function averageRating(): Attribute
     {
         return Attribute::make(
@@ -60,12 +48,12 @@ class Store extends Authenticatable
         );
     }
 
-    public function media(): MorphMany
+    public function media()
     {
         return $this->morphMany(Media::class, 'mediable');
     }
 
-    public function coverImages(): MorphMany
+    public function coverImages()
     {
         return $this->media()->where('collection', 'cover')
             ->orderBy('order');
@@ -89,22 +77,10 @@ class Store extends Authenticatable
     }
 
 
-    public function areas(): BelongsToMany
+    public function area()
     {
-        return $this->belongsToMany(Area::class, 'store_area');
+        return $this->belongsTo(Area::class);
     }
-
-    public function services(): BelongsToMany
-    {
-        return $this->belongsToMany(Service::class, 'store_service');
-    }
-
-  
-    public function categories(): BelongsToMany
-    {
-        return $this->belongsToMany(Category::class, 'store_category');
-    }
-
 
     // public function products(): HasMany
     // {
@@ -148,5 +124,4 @@ class Store extends Authenticatable
             ->map(fn($media) => $media->url)
             ->toArray();
     }
-
 }

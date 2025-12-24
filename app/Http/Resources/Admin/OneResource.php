@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\Admin\City;
+namespace App\Http\Resources\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -14,6 +14,11 @@ class OneResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'active' => $this->is_active,
+            'roles' => $this->roles->pluck(['name'])
+        ];
     }
 }

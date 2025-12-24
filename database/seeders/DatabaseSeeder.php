@@ -28,11 +28,11 @@ class DatabaseSeeder extends Seeder
             AdminRolePermissionSeeder::class,
             RolePermissionSeeder::class,
             CategorySeeder::class,
-            AreaSeeder::class,
-            StoreSeeder::class,
             StoreRolePermissionSeeder::class,
             StoreUserSeeder::class,
-            LanguageSeeder::class
+            LanguageSeeder::class,
+            AreaSeeder::class,
+            // StoreSeeder::class,
         ]);
     }
 }

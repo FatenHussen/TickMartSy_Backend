@@ -7,38 +7,46 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('stores', function (Blueprint $table) {
+      Schema::create('stores', function (Blueprint $table) {
             $table->id();
-
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('owner_phone', 20)->unique();
-            $table->string('password');
-
-            $table->json('store_name');
-            $table->json('description')->nullable();
-            $table->string('logo', 500)->nullable();
-            $table->string('cover', 500)->nullable();
-            $table->string('store_phone', 20)->nullable();
-            $table->string('store_email')->nullable();
-            $table->json('store_address')->nullable();
-            $table->foreignId('area_id')->constrained('areas')->onDelete('cascade');
-            $table->decimal('lat', 10, 8)->nullable();
-            $table->decimal('lng', 11, 8)->nullable();
-
-            $table->enum('status', ['pending', 'active', 'suspended', 'rejected'])->default('pending');
-            $table->decimal('rating', 3, 2)->default(0.00);
-
-            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
-
-            $table->json('time_work')->nullable();
-            $table->date('date_contract')->nullable();
-            $table->time('duration_contract')->nullable();
-            $table->string('contract_number')->nullable();
-            $table->string('Commercial_registration_number')->nullable();
-            $table->integer('agreed_percentage')->nullable();
-
+            $table->json('name');                  // اسم المتجر بالعربية
+            $table->string('owner_name');               // اسم المسؤول/البائع
+            $table->string('owner_phone');               // اسم المسؤول/البائع
+            $table->json('description')->nullable();    // وصف أو تخصص المتجر
+            $table->json('address');                    // العنوان التفصيلي
+            $table->string('phone')->nullable(); //store
+            $table->string('mobile');
+            $table->string('email')->unique()->nullable();
+            $table->string('commercial_register')->nullable(); // رقم السجل التجاري
+            $table->date('contract_date');              // تاريخ العقد
+            $table->string('contract_number')->unique(); // رقم العقد
+            $table->integer('contract_duration_months'); // مدة العقد بالأشهر
+            $table->decimal('commission_rate', 5, 2)->default(5.00); // نسبة العمولة %
+            $table->json('working_hours');              // JSON لأيام وساعات العمل (مرن)
+            $table->string('logo')->nullable();         // مسار الشعار
+            $table->json('cover_images')->nullable();   // مصفوفة صور الغلاف (دعم متعدد + GIF)
+            $table->boolean('is_active')->default(true);
+            $table->unsignedInteger('ratings_count')->default(0); // عدد التقييمات
+            $table->unsignedInteger('ratings_sum')->default(0);   // مجموع قيم التقييمات (rating * 1)
             $table->timestamps();
+        });
+
+        Schema::create('store_area', function (Blueprint $table) {
+            $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
+            $table->foreignId('area_id')->constrained()->cascadeOnDelete();
+            $table->primary(['store_id', 'area_id']);
+        });
+
+        Schema::create('store_service', function (Blueprint $table) {
+            $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
+            $table->foreignId('service_id')->constrained()->cascadeOnDelete();
+            $table->primary(['store_id', 'service_id']);
+        });
+
+        Schema::create('store_category', function (Blueprint $table) {
+            $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
+            $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete(); 
+            $table->primary(['store_id', 'category_id']);
         });
     }
 

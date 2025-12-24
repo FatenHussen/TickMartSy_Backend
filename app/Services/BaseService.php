@@ -39,9 +39,14 @@ abstract class BaseService
         } else {
             $result = $query->get();
         }
+        if ($this->collection) {
+            return ($this->collection)::collection($result);
+        }
 
-        return ($this->collection)::collection($result);
+       return $result;
+
     }
+
 
     public function getOne($id)
     {

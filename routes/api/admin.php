@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\Auth\AuthController;
+use App\Http\Controllers\Admin\Store\StoreCrudController;
+use App\Http\Controllers\Admin\Shop\ShopCrudController;
+use App\Http\Controllers\Admin\Vendor\VendorCrudController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(
@@ -18,9 +21,12 @@ Route::prefix('admin')->group(
             });
         });
 
-        Route::prefix('category')->group(function () {
-            
-        });
-        
+        Route::prefix('category')->group(function () {});
+        Route::resources([
+            'stores'       => StoreCrudController::class,
+            'shops'       => ShopCrudController::class,
+            'vendors'       => VendorCrudController::class,
 
-     });
+        ]);
+    }
+);
