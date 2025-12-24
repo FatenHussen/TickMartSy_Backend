@@ -18,6 +18,9 @@ Route::prefix('admin')->group(
             });
         });
 
+        Route::prefix('category')->group(function () {
+            
+        });
         
 
      });

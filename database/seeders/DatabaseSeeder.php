@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
             StoreSeeder::class,
             StoreRolePermissionSeeder::class,
             StoreUserSeeder::class,
+            LanguageSeeder::class
         ]);
     }
 }
