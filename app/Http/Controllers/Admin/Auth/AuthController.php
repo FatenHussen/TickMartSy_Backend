@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Auth\LoginRequest;
-use App\Http\Resources\Admin\Admin\OneResource;
+use App\Http\Resources\Admin\OneResource;
 use App\Models\Admin;
 use App\Models\User;
 use App\Services\Admin\AuthService;

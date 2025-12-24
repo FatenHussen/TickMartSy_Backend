@@ -7,6 +7,7 @@ use App\Models\Category;
 
 class CategorySeeder extends Seeder
 {
+
     public function run(): void
     {
         $categories = [
@@ -25,5 +26,40 @@ class CategorySeeder extends Seeder
         foreach ($categories as $cat) {
             Category::create($cat);
         }
+
+            $food = Category::create([
+            'name' => [
+                'ar' => 'مطاعم',
+                'en' => 'Restaurants',
+            ],
+            'description' => [
+                'ar' => 'مطاعم ومقاهي',
+                'en' => 'Restaurants & Cafes',
+            ],
+        ]);
+
+        Category::create([
+            'name' => [
+                'ar' => 'وجبات سريعة',
+                'en' => 'Fast Food',
+            ],
+            'description' => [
+                'ar' => 'مطاعم الوجبات السريعة',
+                'en' => 'Fast food restaurants',
+            ],
+            'parent_id' => $food->id,
+        ]);
+
+        Category::create([
+            'name' => [
+                'ar' => 'حلويات',
+                'en' => 'Desserts',
+            ],
+            'description' => [
+                'ar' => 'محلات الحلويات',
+                'en' => 'Dessert shops',
+            ],
+            'parent_id' => $food->id,
+        ]);
     }
 }

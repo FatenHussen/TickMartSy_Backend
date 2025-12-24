@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Admin\Store;
+namespace App\Http\Requests\Admin\Vendor;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Log;
@@ -22,40 +22,27 @@ class UpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $storeId = $this->route('store')->id;
-
+        $vendorId = $this->route('vendor');
         return [
             'name.ar'              => 'nullable|string|max:255',
             'name.en'              => 'nullable|string|max:255',
-            'owner_name'           => 'nullable|string|max:255',
-            'owner_phone'          => 'nullable|string|max:20',
             'description.ar'       => 'nullable|string',
             'description.en'       => 'nullable|string',
-            'address.ar'           => 'nullable|string',
-            'address.en'           => 'nullable|string',
-            'phone'                => 'nullable|string|max:20',
-            'mobile'               => 'nullable|string|max:20',
-            'email'                => ['nullable', 'email','unique:stores,email,'.$storeId],
+
+            'owner_name'           => 'nullable|string|max:255',
+            'owner_phone'          => 'nullable|string|max:20',
+           
             'commercial_register'  => 'nullable|string|max:100',
             'contract_date'        => 'nullable|date',
-            'contract_number'      => ['nullable', 'required', 'string','unique:stores,contract_number,'.$storeId],
+            'contract_number'      => ['nullable', 'required', 'string','unique:vendors,contract_number,'.$vendorId],
             'contract_duration_months' => 'nullable|integer|min:1',
             'commission_rate'      => 'nullable|numeric|min:0|max:100',
-            'working_hours'        => 'nullable|array',
-            'working_hours.*'      => 'array',
-            'working_hours.*.open' => 'required_without:working_hours.*.closed|date_format:H:i',
-            'working_hours.*.close'=> 'required_without:working_hours.*.closed|date_format:H:i',
-            'working_hours.*.closed'=> 'sometimes|boolean',
+
             'logo'                 => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'cover_images'         => 'nullable|array',
             'cover_images.*'       => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+
             'is_active'            => 'nullable|boolean',
-            'area_ids'             => 'nullable|array',
-            'area_ids.*'           => 'exists:areas,id',
-            'service_ids'          => 'nullable|array',
-            'service_ids.*'        => 'exists:services,id',
-            'category_ids'         => 'nullable|array',
-            'category_ids.*'       => 'exists:categories,id',
         ];
     }
 

@@ -12,6 +12,7 @@ class BaseService
     protected $collection;
     protected $relations = [];
     protected $pagination;
+
     public function getAll($filters = [])
     {
         $query = $this->model::query()->with($this->relations);
@@ -23,21 +24,31 @@ class BaseService
         } else {
             $result = $query->get();
         }
+        if ($this->collection) {
+            return ($this->collection)::collection($result);
+        }
 
-        return ($this->collection)::collection($result);
+       return $result;
+
     }
+
     public function getOne($id)
     {
         $object = $this->model::find($id);
         if (!$object) {
             throw new NotFoundException();
         }
-        return new ($this->resource)($object);
+        if ($this->resource) {
+         return new ($this->resource)($object);
+        
+        }
+       return $object;
     }
 
     public function create($data)
     {
         $object = $this->model::create($data);
+        Log::info($object);
         return new $this->resource($object);
     }
 

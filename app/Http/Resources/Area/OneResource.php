@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Resources\Admin\Admin;
+namespace App\Http\Resources\Area;
 
+use App\Http\Resources\City\OneResource as CityOneResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -14,11 +15,10 @@ class OneResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+            return [
             'id' => $this->id,
-            'name' => $this->name,
-            'active' => $this->is_active,
-            'roles' => $this->roles->pluck(['name'])
+            'name' => $this->name,   
+            'city' => CityOneResource::make($this->city)
         ];
     }
 }

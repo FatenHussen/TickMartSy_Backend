@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\City;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -30,14 +31,8 @@ class CitySeeder extends Seeder
         ];
 
         foreach ($cities as $city) {
-            DB::table('cities')->insert([
-                'name' => json_encode([
-                    'ar' => $city['ar'],
-                    'en' => $city['en'],
-                ], JSON_UNESCAPED_UNICODE),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            
+         City::create($city);
         }
     }
 }
