@@ -45,6 +45,88 @@ return [
         'phone' => [
             'regex' => 'Phone number must start with 9 and contain exactly 9 digits.',
         ],
+        'code' => [
+            'required' => 'The language code is required.',
+            'unique' => 'The language code has already been taken.',
+            'max' => 'The language code may not be greater than :max characters.',
+        ],
+
+        'name' => [
+            'required' => 'The language name is required.',
+            'max' => 'The language name may not be greater than :max characters.',
+        ],
+
+        'native_name' => [
+            'required' => 'The native name is required.',
+            'max' => 'The native name may not be greater than :max characters.',
+        ],
+
+        'direction' => [
+            'required' => 'The text direction is required.',
+            'in' => 'The text direction must be either ltr or rtl.',
+        ],
+
+        'is_active' => [
+            'required' => 'The active status is required.',
+            'boolean' => 'The active status field must be true or false.',
+        ],
+
+        'is_default' => [
+            'boolean' => 'The default language field must be true or false.',
+        ],
+
+        'order' => [
+            'integer' => 'The order must be an integer.',
+            'min' => 'The order must be at least zero.',
+        ],
+
+        'flag_icon' => [
+            'max' => 'The flag icon may not be greater than :max characters.',
+        ],
+
+        'locale' => [
+            'max' => 'The locale may not be greater than :max characters.',
+        ],
+
+        'timezone' => [
+            'timezone' => 'The timezone must be a valid timezone.',
+        ],
+
+        'date_format' => [
+            'max' => 'The date format may not be greater than :max characters.',
+        ],
+
+        'time_format' => [
+            'max' => 'The time format may not be greater than :max characters.',
+        ],
+
+        'decimal_separator' => [
+            'max' => 'The decimal separator may not be greater than 2 characters.',
+        ],
+
+        'thousands_separator' => [
+            'max' => 'The thousands separator may not be greater than 2 characters.',
+        ],
+
+        'currency_code' => [
+            'max' => 'The currency code may not be greater than :max characters.',
+        ],
+
+        'currency_symbol' => [
+            'max' => 'The currency symbol may not be greater than :max characters.',
+        ],
+
+        'show_in_menu' => [
+            'boolean' => 'The show in menu field must be true or false.',
+        ],
+
+        'show_in_switcher' => [
+            'boolean' => 'The show in language switcher field must be true or false.',
+        ],
+
+        'og_locale' => [
+            'max' => 'The Open Graph locale may not be greater than :max characters.',
+        ],
     ],
 
     /*
@@ -78,6 +160,31 @@ return [
         'amount'            => 'Amount',
         'city_id'           => 'City',
         'governorate_id'    => 'Governorate',
+        'code' => 'language code',
+        'name' => 'language name',
+        'native_name' => 'native name',
+        'direction' => 'text direction',
+        'is_active' => 'active status',
+        'is_default' => 'default language',
+        'order' => 'order',
+        'flag_icon' => 'flag icon',
+        'locale' => 'locale',
+        'timezone' => 'timezone',
+        'date_format' => 'date format',
+        'time_format' => 'time format',
+        'decimal_separator' => 'decimal separator',
+        'thousands_separator' => 'thousands separator',
+        'currency_code' => 'currency code',
+        'currency_symbol' => 'currency symbol',
+        'show_in_menu' => 'show in menu',
+        'show_in_switcher' => 'show in language switcher',
+        'og_locale' => 'Open Graph locale',
+        'name.ar' => 'Name in Arabic',
+        'name.en' => 'Name in English',
+        'description.ar' => 'Description in Arabic',
+        'description.en' => 'Description in English',
+        'icon' => 'Icon',
+        'parent_id' => 'Parent Category',
     ],
 
 

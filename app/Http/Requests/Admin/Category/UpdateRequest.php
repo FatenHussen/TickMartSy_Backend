@@ -3,29 +3,39 @@
 namespace App\Http\Requests\Admin\Category;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use App\Models\Language;
 
 class UpdateRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
-        return [
-            'name' => '',
-            'description' => '',
-            'icon' => '',
-            'parent_id' =>  'nullable|integer|exists:categories,id',
+        $categoryId = $this->route('categories.update')?->id
+            ?? $this->route('categories.update');
+
+        $locales = Language::active()->pluck('code')->toArray();
+
+        $rules = [
+            'icon' => 'nullable|file',
+            'parent_id' => [
+                'nullable',
+                'integer',
+                'exists:categories,id',
+                Rule::notIn([$categoryId]),
+            ],
         ];
+
+        foreach ($locales as $locale) {
+            $rules["name.{$locale}"] = 'nullable|string|max:255';
+            $rules["description.{$locale}"] = 'nullable|string';
+        }
+
+        return $rules;
     }
+
 }

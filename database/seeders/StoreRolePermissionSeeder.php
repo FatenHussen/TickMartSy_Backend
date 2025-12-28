@@ -18,7 +18,8 @@ class StoreRolePermissionSeeder extends Seeder
             'Item',
             'Category',
             'Role',
-            'Permission'
+            'Permission',
+            'Language'
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];

@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\Auth\AuthController;
+use App\Http\Controllers\Admin\Category\CategoryController;
+use App\Http\Controllers\Admin\Language\LanguageController;
 use App\Http\Controllers\Admin\Store\StoreCrudController;
 use App\Http\Controllers\Admin\Shop\ShopCrudController;
 use App\Http\Controllers\Admin\Vendor\VendorCrudController;
@@ -20,13 +22,16 @@ Route::prefix('admin')->group(
                 Route::get('profile', [AuthController::class, 'profile']);
             });
         });
-
-        Route::prefix('category')->group(function () {});
+        // Route::middleware('auth:admin')->group(
+        //     function () {
         Route::resources([
-            'stores'       => StoreCrudController::class,
-            'shops'       => ShopCrudController::class,
-            'vendors'       => VendorCrudController::class,
-
+            'stores'         => StoreCrudController::class,
+            'shops'          => ShopCrudController::class,
+            'vendors'        => VendorCrudController::class,
+            'languages'      => LanguageController::class,
+            'categories' => CategoryController::class,
         ]);
+        //     }
+        // );
     }
 );
