@@ -11,15 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('media', function (Blueprint $table) {
+        Schema::create('vendor_media', function (Blueprint $table) {
             $table->id();
             /** Polymorphic relation */
             $table->morphs('mediable'); // mediable_id + mediable_type
 
             /** Media data */
             $table->string('collection')->default('default'); // cover, logo, slider
-            $table->string('file_path'); 
+            $table->string('path'); 
             $table->integer('order')->default(0); 
+            
             $table->timestamps();
         });
     }
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('media');
+        Schema::dropIfExists('vendor_media');
     }
 };

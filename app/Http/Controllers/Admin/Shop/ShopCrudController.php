@@ -13,9 +13,10 @@ class ShopCrudController extends BaseCRUDController
          ShopService $service
     ) {
         $this->service=$service;
-        // $this->filterRequest = AdsFilterRequest::class;
+        // $this->filterRequest = FilterRequest::class;
         $this->createRequest = StoreRequest::class;
         $this->updateRequest = UpdateRequest::class;
+        $this->searchableFields = ['name', 'description'];
+        $this->sortableFields   = ['id'];
     }
-
 }

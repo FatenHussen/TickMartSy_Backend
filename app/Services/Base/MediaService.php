@@ -33,11 +33,8 @@ class MediaService
 
         return $model->media()->create([
             'collection' => $collection,
-            'file_name'  => $fileName,
-            'file_path'  => $filePath,
-            'file_type'  => $file->getClientMimeType(),
+            'path'  => $filePath,
             'order'      => $order,
-            'is_active'  => true,
         ]);
     }
 

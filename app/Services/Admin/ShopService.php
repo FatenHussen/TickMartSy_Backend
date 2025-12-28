@@ -18,6 +18,20 @@ class ShopService extends BaseService
         $this->collection = AllResource::class;
         $this->relations = ['vendor'];
         $this->pagination=true;
-  
+        $this->syncRelations= [
+        'services'   => 'service_ids', 
+     ];
+
+        $this->mediaCollections = [
+            'logo' => [
+                'collection' => 'logo',   
+                'type'       => 'single', 
+            ],
+            'cover_images' => [
+                'collection' => 'cover',  
+                'type'       => 'multiple',
+            ],
+        ];
+        
     }
 }
