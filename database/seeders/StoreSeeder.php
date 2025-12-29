@@ -69,7 +69,7 @@ class StoreSeeder extends Seeder
             $store->media()->create([
                 'collection' => 'logo',
                 'file_name'  => 'logo.png',
-                'file_path'  => 'media/logo/logo.png',
+                'path'  => 'media/logo/logo.png',
                 'file_type'  => 'image/png',
                 'order'      => 0,
                 'is_active'  => true,
@@ -80,7 +80,7 @@ class StoreSeeder extends Seeder
                 $store->media()->create([
                     'collection' => 'cover',
                     'file_name'  => "cover{$index}.jpg",
-                    'file_path'  => "media/cover/cover{$index}.jpg",
+                    'path'  => "media/cover/cover{$index}.jpg",
                     'file_type'  => 'image/jpeg',
                     'order'      => $index,
                     'is_active'  => true,

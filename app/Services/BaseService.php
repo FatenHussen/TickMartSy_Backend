@@ -100,30 +100,30 @@ class BaseService
         }
     }
 
-    protected function handleMedia($model, array $data)
-{
-    if (!property_exists($this, 'mediaCollections')) return;
+        protected function handleMedia($model, array $data)
+    {
+        if (!property_exists($this, 'mediaCollections')) return;
 
-    $mediaService = new \App\Services\Base\MediaService();
+        $mediaService = new \App\Services\Base\MediaService();
 
-    foreach ($this->mediaCollections as $field => $options) {
-        if (!isset($data[$field])) continue;
+        foreach ($this->mediaCollections as $field => $options) {
+            if (!isset($data[$field])) continue;
 
-        $files = $data[$field];
-        $collection = $options['collection'] ?? $field;
-        $type = $options['type'] ?? 'single';
+            $files = $data[$field];
+            $collection = $options['collection'] ?? $field;
+            $type = $options['type'] ?? 'single';
 
-        if ($type === 'single' && $files instanceof \Illuminate\Http\UploadedFile) {
+            if ($type === 'single' && $files instanceof \Illuminate\Http\UploadedFile) {
 
-            $mediaService->deleteByCollection($model, $collection);
-            $mediaService->upload($model, $files, $collection);
-        }
+                $mediaService->deleteByCollection($model, $collection);
+                $mediaService->upload($model, $files, $collection);
+            }
 
-        if ($type === 'multiple' && is_array($files)) {
-            $mediaService->uploadMultiple($model, $files, $collection);
+            if ($type === 'multiple' && is_array($files)) {
+                $mediaService->uploadMultiple($model, $files, $collection);
+            }
         }
     }
-}
 
 
     public function create($data)

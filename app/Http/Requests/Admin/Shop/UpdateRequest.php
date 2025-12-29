@@ -51,7 +51,7 @@ class UpdateRequest extends FormRequest
 
             'is_active'            => 'nullable|boolean',
             'area_id'           => 'nullable|exists:areas,id',
-             'vendor_id' => 'nullable|exists:vendors,id',
+            'vendor_id' => 'nullable|exists:vendors,id',
             'service_ids'          => 'nullable|array',
             'service_ids.*'        => 'exists:services,id',
         ];

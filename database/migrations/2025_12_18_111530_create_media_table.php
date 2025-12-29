@@ -18,7 +18,7 @@ return new class extends Migration
 
             /** Media data */
             $table->string('collection')->default('default'); // cover, logo, slider
-            $table->string('file_path'); 
+            $table->string('path'); 
             $table->integer('order')->default(0); 
             $table->timestamps();
         });

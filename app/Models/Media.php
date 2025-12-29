@@ -10,7 +10,7 @@ class Media extends Model
     protected $fillable = [
         'collection',
         'file_name',
-        'file_path',
+        'path',
         'file_type',
         'order',
         'is_active',
@@ -30,6 +30,6 @@ class Media extends Model
      */
     public function getUrlAttribute(): string
     {
-        return asset('storage/' . $this->file_path);
+        return asset('storage/' . $this->path);
     }
 }
