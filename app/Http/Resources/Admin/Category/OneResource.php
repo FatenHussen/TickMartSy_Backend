@@ -16,8 +16,8 @@ class OneResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'name' => $this->getTranslation('name', $locale),
-            'description' => $this->getTranslation('description', $locale),
+            'name' => $this->getTranslations('name'),
+            'description' => $this->getTranslations('description'),
             'icon' => $this->icon,
             'parent_id' => $this->parent_id,
             'parent' => $this->whenLoaded('parent', function () use ($locale) {
@@ -34,7 +34,6 @@ class OneResource extends JsonResource
                     ];                                              
                 });
             }),
-            // 'stores_count' => $this->stores()->count(),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];

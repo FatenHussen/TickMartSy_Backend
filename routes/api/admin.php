@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\Auth\AuthController;
+use App\Http\Controllers\Admin\Brand\BrandController;
 use App\Http\Controllers\Admin\Category\CategoryController;
 use App\Http\Controllers\Admin\Language\LanguageController;
 use App\Http\Controllers\Admin\Store\StoreCrudController;
@@ -30,6 +31,7 @@ Route::prefix('admin')->group(
             'vendors'        => VendorCrudController::class,
             'languages'      => LanguageController::class,
             'categories' => CategoryController::class,
+            'brands' => BrandController::class,
         ]);
         //     }
         // );

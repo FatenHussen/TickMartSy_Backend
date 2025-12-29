@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             // StoreUserSeeder::class,
             LanguageSeeder::class,
             AreaSeeder::class,
+            BrandSeeder::class,
             // StoreSeeder::class,
         ]);
     }

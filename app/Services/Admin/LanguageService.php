@@ -25,37 +25,34 @@ class LanguageService extends BaseService
 
     public function createLangFiles(string $code): void
     {
-        $langPath = resource_path("lang/{$code}");
+        $sourceLang = 'en';
 
-        if (!File::exists($langPath)) {
-            File::makeDirectory($langPath, 0755, true);
+        $sourcePath = resource_path("lang/{$sourceLang}");
+        $targetPath = resource_path("lang/{$code}");
+
+        if (!File::exists($sourcePath)) {
+            throw new \Exception("Source language [{$sourceLang}] does not exist.");
         }
 
-        $defaultFiles = [
-            'auth.php' => "<?php\n\nreturn [\n    'failed' => 'These credentials do not match our records.',\n];",
-            'pagination.php' => "<?php\n\nreturn [\n    'previous' => '&laquo; Previous',\n    'next' => 'Next &raquo;',\n];",
-            'validation.php' => "<?php\n\nreturn [\n    'required' => 'The :attribute field is required.',\n];",
-            'custom.php' => "<?php\n\nreturn [];",
-            'filament.php' => "<?php\n\nreturn [];",
-        ];
+        if (!File::exists($targetPath)) {
+            File::makeDirectory($targetPath, 0755, true);
+        }
 
-        foreach ($defaultFiles as $file => $content) {
-            $filePath = $langPath . '/' . $file;
+        foreach (File::files($sourcePath) as $file) {
+            $targetFile = $targetPath . '/' . $file->getFilename();
 
-            if (!File::exists($filePath)) {
-                File::put($filePath, $content);
+            if (!File::exists($targetFile)) {
+                File::copy($file->getPathname(), $targetFile);
             }
         }
 
-        $jsonPath = resource_path("lang/{$code}.json");
-        if (!File::exists($jsonPath)) {
-            File::put(
-                $jsonPath,
-                json_encode(new \stdClass(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
-            );
+        $sourceJson = resource_path("lang/{$sourceLang}.json");
+        $targetJson = resource_path("lang/{$code}.json");
+
+        if (File::exists($sourceJson) && !File::exists($targetJson)) {
+            File::copy($sourceJson, $targetJson);
         }
     }
-
     /* ================= Override Create ================= */
 
     public function create(array $data)
