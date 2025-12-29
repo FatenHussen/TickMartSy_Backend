@@ -2,17 +2,17 @@
 
 namespace Database\Seeders;
 
-use App\Models\StoreUser;
+use App\Models\VendorUser;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
-class StoreRolePermissionSeeder extends Seeder
+class VendorRolePermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        $storeModels = [
-            'StoreUser',
+        $vendorModels = [
+            'VendorUser',
             'Product',
             'Order',
             'Item',
@@ -24,34 +24,34 @@ class StoreRolePermissionSeeder extends Seeder
 
         $actions = ['view', 'create', 'update', 'delete'];
 
-        foreach ($storeModels as $model) {
+        foreach ($vendorModels as $model) {
             foreach ($actions as $action) {
                 Permission::firstOrCreate([
                     'name' => strtolower($model) . '.' . $action,
-                    'guard_name' => 'store-user',
+                    'guard_name' => 'vendor-user',
                 ]);
             }
         }
 
-        $storeAdmin = Role::firstOrCreate([
-            'name' => 'store-admin',
-            'guard_name' => 'store-user',
+        $vendorAdmin = Role::firstOrCreate([
+            'name' => 'vendor-admin',
+            'guard_name' => 'vendor-user',
         ]);
 
-        $storeEmployee = Role::firstOrCreate([
-            'name' => 'store-employee',
-            'guard_name' => 'store-user',
+        $vendorEmployee = Role::firstOrCreate([
+            'name' => 'vendor-employee',
+            'guard_name' => 'vendor-user',
         ]);
 
-        $storeAdmin->syncPermissions(Permission::where('guard_name', 'store-user')->get());
+        $vendorAdmin->syncPermissions(Permission::where('guard_name', 'vendor-user')->get());
 
-        $storeEmployee->syncPermissions(
-            Permission::where('guard_name', 'store-user')
+        $vendorEmployee->syncPermissions(
+            Permission::where('guard_name', 'vendor-user')
                 ->whereNotIn('name', [
-                    'storeuser.view',
-                    'storeuser.create',
-                    'storeuser.delete',
-                    'storeuser.update',
+                    'vendoruser.view',
+                    'vendoruser.create',
+                    'vendoruser.delete',
+                    'vendoruser.update',
                     'role.create',
                     'role.view',
                     'role.update',
@@ -65,25 +65,25 @@ class StoreRolePermissionSeeder extends Seeder
                 ])->get()
         );
 
-        $adminUser = StoreUser::firstOrCreate(
-            ['email' => 'storeadmin@store.com'],
+        $adminUser = VendorUser::firstOrCreate(
+            ['email' => 'vendoradmin@vendor.com'],
             [
-                'name' => 'Store Admin',
+                'name' => 'vendor Admin',
                 'password' => bcrypt('password'),
                 'is_active' => true,
-                'store_id' => 1,
+                'vendor_id' => 1,
             ]
         );
-        $adminUser->assignRole($storeAdmin);
-        $EmployeeUser = StoreUser::firstOrCreate(
-            ['email' => 'storeemployee@store.com'],
+        $adminUser->assignRole($vendorAdmin);
+        $EmployeeUser = VendorUser::firstOrCreate(
+            ['email' => 'vendoremployee@vendor.com'],
             [
-                'name' => 'Store Employee',
+                'name' => 'vendor Employee',
                 'password' => bcrypt('password'),
                 'is_active' => true,
-                'store_id' => 1,
+                'vendor_id' => 1,
             ]
         );
-        $EmployeeUser->assignRole($storeEmployee);
+        $EmployeeUser->assignRole($vendorEmployee);
     }
 }

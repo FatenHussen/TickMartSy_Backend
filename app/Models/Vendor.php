@@ -42,7 +42,12 @@ class Vendor extends Model
 
     public function users()
     {
-        return $this->hasMany(VendorUser::class);
+        return $this->belongsToMany(
+            \App\Models\VendorUser::class,
+            'shop_users',
+            'shop_id',
+            'vendor_user_id'
+        );
     }
     
     

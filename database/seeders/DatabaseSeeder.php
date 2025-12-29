@@ -21,12 +21,14 @@ class DatabaseSeeder extends Seeder
             AdminRolePermissionSeeder::class,
             RolePermissionSeeder::class,
             CategorySeeder::class,
-            // StoreRolePermissionSeeder::class,
-            // StoreUserSeeder::class,
             LanguageSeeder::class,
             AreaSeeder::class,
             BrandSeeder::class,
-            // StoreSeeder::class,
+            VendorSeeder::class,
+            VendorUserSeeder::class,
+            VendorRolePermissionSeeder::class,
+            ShopSeeder::class,
+            ShopUserSeeder::class,
         ]);
     }
 }
