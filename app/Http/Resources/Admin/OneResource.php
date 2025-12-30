@@ -17,8 +17,11 @@ class OneResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'email' => $this->email,
             'active' => $this->is_active,
-            'roles' => $this->roles->pluck(['name'])
+            'roles' => $this->roles->pluck(['name']),
+            'created_at' => $this->created_at?->format('Y-m-d H:i'),
+
         ];
     }
 }

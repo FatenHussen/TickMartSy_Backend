@@ -10,13 +10,11 @@ use App\Services\Admin\VendorService;
 class VendorCrudController extends BaseCRUDController
 {
     public function __construct(
-         VendorService $service
+        VendorService $service
     ) {
-        $this->service=$service;
+        $this->service = $service;
         // $this->filterRequest = AdsFilterRequest::class;
         $this->createRequest = StoreRequest::class;
         $this->updateRequest = UpdateRequest::class;
     }
-
-
 }

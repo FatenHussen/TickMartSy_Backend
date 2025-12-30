@@ -16,35 +16,44 @@ abstract class BaseService
     protected $model;
     protected $resource;
     protected $collection;
-    protected array $relations = [];
-    protected bool $pagination = false;
+    protected $relations = [];
+    protected $pagination = true;
+    protected $syncRelations = [];
+    protected $mediaCollections = [];
+    protected $searchableFields = ['id'];
+    protected $sortableFields   = ['id'];
+    protected $imageColumn;
+    protected $imageFolder;
+    protected $imagesFolder;
 
-    /* ================= Images ================= */
+    protected $imagesRelation;
 
-    protected ?string $imagesRelation = null; 
-    protected ?string $imagesFolder   = null; 
-    protected ?string $imageColumn = null;    
-    protected ?string $imageFolder = null;    
-
-    /* ================= CRUD ================= */
-
-    public function getAll(array $filters = [])
+    public function getAll($filters = [], $config = [])
     {
         $query = $this->model::query()->with($this->relations);
-        $query = $this->queryBuilder($query, $filters);
+        $query = $this->queryBuilder($query, $filters, $config);
 
         if ($this->pagination) {
-            $perPage = request('per_page', 10);
-            $result  = $query->paginate($perPage);
+            $perPage = $config['per_page'] ?? 10;
+            $page    = $config['page'] ?? 1;
+            $result = $query->paginate($perPage, ['*'], 'page', $page);
+
+            return [
+                'items' => ($this->collection)::collection($result->items()),
+                'pagination' => [
+                    'current_page' => $result->currentPage(),
+                    'last_page'    => $result->lastPage(),
+                    'per_page'     => $result->perPage(),
+                    'total'        => $result->total(),
+                ],
+            ];
         } else {
             $result = $query->get();
+            return [
+                'items' => ($this->collection)::collection($result),
+                'pagination' => null,
+            ];
         }
-        if ($this->collection) {
-            return ($this->collection)::collection($result);
-        }
-
-       return $result;
-
     }
 
 
@@ -55,26 +64,86 @@ abstract class BaseService
         if (!$object) {
             throw new NotFoundException();
         }
-
-        return new $this->resource($object);
+        if ($this->resource) {
+            return new ($this->resource)($object);
+        }
+        return $object;
     }
 
-    public function create(array $data)
+    protected function handleRelations($object, array &$data)
     {
-        DB::beginTransaction();
-
-        try {
-            $object = $this->model::create($data);
-
-            $this->handleImages($object, $data);
-
-            DB::commit();
-
-            return new $this->resource($object->load($this->relations));
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            throw $e;
+        if (!property_exists($this, 'syncRelations')) {
+            return;
         }
+
+        foreach ($this->syncRelations as $relation => $requestKey) {
+
+            if (!array_key_exists($requestKey, $data)) {
+                continue;
+            }
+
+            $items = $data[$requestKey];
+            unset($data[$requestKey]);
+
+            if (!method_exists($object, $relation)) {
+                continue;
+            }
+
+            $relationObj = $object->$relation();
+
+            // many-to-many
+            if (method_exists($relationObj, 'sync')) {
+
+                $syncData = [];
+                foreach ($items as $item) {
+                    $id = $item['id'];
+                    unset($item['id']);
+                    $syncData[$id] = $item;
+                    $relationObj->sync($syncData);
+                }
+            } else {
+                // hasMany
+                $relationObj->delete();
+                foreach ($items as $item) {
+                    $relationObj->create($item);
+                }
+            }
+        }
+    }
+
+    protected function handleMedia($model, array $data)
+    {
+        if (!property_exists($this, 'mediaCollections')) return;
+
+        $mediaService = new \App\Services\Base\MediaService();
+
+        foreach ($this->mediaCollections as $field => $options) {
+            if (!isset($data[$field])) continue;
+
+            $files = $data[$field];
+            $collection = $options['collection'] ?? $field;
+            $type = $options['type'] ?? 'single';
+
+            if ($type === 'single' && $files instanceof \Illuminate\Http\UploadedFile) {
+
+                $mediaService->deleteByCollection($model, $collection);
+                $mediaService->upload($model, $files, $collection);
+            }
+
+            if ($type === 'multiple' && is_array($files)) {
+                $mediaService->uploadMultiple($model, $files, $collection);
+            }
+        }
+    }
+
+
+    public function create($data)
+    {
+
+        $object = $this->model::create($data);
+        $this->handleRelations($object, $data);
+        $this->handleMedia($object, $data);
+        return new $this->resource($object);
     }
 
     public function update($id, array $data)
@@ -86,19 +155,11 @@ abstract class BaseService
         if (!$object) {
             throw new NotFoundException();
         }
+        $object->update($data);
+        $this->handleRelations($object, $data);
+        $this->handleMedia($object, $data);
 
-        try {
-            $object->update($data);
-
-            $this->handleImages($object, $data, true);
-
-            DB::commit();
-
-            return new $this->resource($object->load($this->relations));
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            throw $e;
-        }
+        return new $this->resource($object);
     }
 
     public function delete($id): bool
@@ -116,20 +177,26 @@ abstract class BaseService
         return true;
     }
 
-    /* ================= Filters ================= */
-
-    protected function queryBuilder(Builder $query, array $filters): Builder
+    public function queryBuilder($query, $filters = [], $config = [])
     {
         foreach ($filters as $key => $value) {
-            if ($value === null || $value === '') {
-                continue;
-            }
+            if ($value === null) continue;
 
-            if (in_array($key, ['name', 'title', 'description'])) {
-                $query->where($key, 'LIKE', "%{$value}%");
-            } else {
-                $query->where($key, $value);
-            }
+            $query->where($key, $value);
+        }
+
+        if (!empty($config['search'])) {
+            $search = $config['search'];
+            $query->where(function ($q) use ($search) {
+                foreach ($this->searchableFields as $field) {
+                    $q->orWhere($field, 'LIKE', "%$search%");
+                }
+            });
+        }
+
+        if (!empty($config['sortField']) && in_array($config['sortField'], $this->sortableFields ?? [])) {
+            $order = strtolower($config['sortOrder'] ?? 'asc') === 'desc' ? 'desc' : 'asc';
+            $query->orderBy($config['sortField'], $order);
         }
 
         return $query;

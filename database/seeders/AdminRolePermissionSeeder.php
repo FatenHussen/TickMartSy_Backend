@@ -7,6 +7,8 @@ use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
+use function PHPSTORM_META\map;
+
 class AdminRolePermissionSeeder extends Seeder
 {
     public function run(): void
@@ -17,7 +19,9 @@ class AdminRolePermissionSeeder extends Seeder
             'User',
             'City',
             'Governorate',
-            'Store'
+            'Area',
+            'Shop',
+            'Vendor'
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];
@@ -30,12 +34,12 @@ class AdminRolePermissionSeeder extends Seeder
             }
         }
 
-      foreach ($permissions as $permission) {
-        Permission::firstOrCreate([
-            'name' => $permission,
-            'guard_name' => 'admin',
-        ]);
-      }
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate([
+                'name' => $permission,
+                'guard_name' => 'admin',
+            ]);
+        }
         $superAdmin = Role::firstOrCreate([
             'name' => 'admin',
             'guard_name' => 'admin',
@@ -84,6 +88,5 @@ class AdminRolePermissionSeeder extends Seeder
             ]
         );
         $Em2->assignRole($employee);
-
     }
 }

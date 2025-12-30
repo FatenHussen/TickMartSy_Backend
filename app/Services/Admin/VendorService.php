@@ -10,14 +10,12 @@ use Illuminate\Support\Facades\DB;
 
 class VendorService extends BaseService
 {
- 
     public function __construct(Vendor $model)
     {
         $this->model      = $model;
         $this->resource   = OneResource::class;
         $this->collection = AllResource::class;
-        $this->pagination=true;
-
+        $this->pagination = true;
+        $this->searchableFields = ['id', 'name', 'owner_name', 'owner_phone'];
     }
-  
 }

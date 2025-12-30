@@ -7,16 +7,26 @@ use Illuminate\Support\Facades\Log;
 
 class BaseCRUDController extends Controller
 {
-
     protected $service;
     protected $filterRequest;
     protected $createRequest;
     protected $updateRequest;
+    protected $searchableFields;
+    protected $sortableFields;
 
     public function index(Request $request)
     {
         $filters = $this->filterRequest ? app($this->filterRequest)->validated() : [];
-        $res = $this->service->getAll($filters);
+
+        $config = [
+            'search'     => $request->input('search'),
+            'sortField'  => $request->input('sort_field') ?? 'id',
+            'sortOrder'  => $request->input('sort_order') ?? 'desc',
+            'page'       => (int) $request->input('page', 1),
+            'per_page'    => (int) $request->input('per_page', 10),
+        ];
+
+        $res = $this->service->getAll($filters, $config);
         return $this->sendResponse(data: $res);
     }
     public function show($id)
@@ -40,6 +50,6 @@ class BaseCRUDController extends Controller
     public function destroy($id)
     {
         $res = $this->service->delete($id);
-        return $this->sendResponse(data:$res);
+        return $this->sendResponse(data: $res);
     }
 }

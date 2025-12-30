@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\Admin\AdminCrudController;
 use App\Http\Controllers\Admin\Auth\AuthController;
+use App\Http\Controllers\Admin\Role_Permission\PermissionIndexController;
+use App\Http\Controllers\Admin\Role_Permission\RoleCrudController;
 use App\Http\Controllers\Admin\Brand\BrandController;
 use App\Http\Controllers\Admin\Category\CategoryController;
 use App\Http\Controllers\Admin\Language\LanguageController;
@@ -23,6 +26,8 @@ Route::prefix('admin')->group(
                 Route::get('profile', [AuthController::class, 'profile']);
             });
         });
+
+
         // Route::middleware('auth:admin')->group(
         //     function () {
         Route::resources([
@@ -35,5 +40,20 @@ Route::prefix('admin')->group(
         ]);
         //     }
         // );
+    //  });
+     Route::apiResource('shops', ShopCrudController::class)
+            ->middleware('crud.permission:shops');
+
+        Route::apiResource('stores', StoreCrudController::class)
+            ->middleware('crud.permission:stores');
+
+        Route::apiResource('vendors', VendorCrudController::class);
+
+        Route::apiResource('roles', RoleCrudController::class);
+        Route::get('permissions', [PermissionIndexController::class, 'index']);
+
+
+        Route::apiResource('admins', AdminCrudController::class);
+        // });
     }
 );

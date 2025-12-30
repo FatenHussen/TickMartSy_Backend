@@ -15,8 +15,8 @@ class AllResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return[
-           'id'                    => $this->id,
+        return [
+            'id'                    => $this->id,
             'name'                  => $this->name,
             'owner_name'            => $this->owner_name,
             'logo_url'                => $this->getLogoUrl(),

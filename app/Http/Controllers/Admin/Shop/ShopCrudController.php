@@ -10,12 +10,11 @@ use App\Services\Admin\ShopService;
 class ShopCrudController extends BaseCRUDController
 {
     public function __construct(
-         ShopService $service
+        ShopService $service
     ) {
-        $this->service=$service;
-        // $this->filterRequest = AdsFilterRequest::class;
+        $this->service = $service;
+        // $this->filterRequest = FilterRequest::class;
         $this->createRequest = StoreRequest::class;
         $this->updateRequest = UpdateRequest::class;
     }
-
 }

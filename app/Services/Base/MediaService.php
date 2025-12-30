@@ -2,7 +2,6 @@
 
 namespace App\Services\Base;
 
-use App\Models\Media;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
@@ -23,9 +22,10 @@ class MediaService
         UploadedFile $file,
         string $collection = 'default',
         ?int $order = null
-    ): Media {
+    ) {
+        $folder = Str::kebab(class_basename($model)); 
         $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
-        $filePath = $file->storeAs("media/{$collection}", $fileName, $this->disk);
+        $filePath = $file->storeAs("{$folder}/{$collection}", $fileName, $this->disk);
 
         $order ??= ($model->media()
             ->where('collection', $collection)
@@ -33,11 +33,8 @@ class MediaService
 
         return $model->media()->create([
             'collection' => $collection,
-            'file_name'  => $fileName,
-            'file_path'  => $filePath,
-            'file_type'  => $file->getClientMimeType(),
+            'path'  => $filePath,
             'order'      => $order,
-            'is_active'  => true,
         ]);
     }
 
@@ -55,9 +52,9 @@ class MediaService
      | Delete
      ========================================================= */
 
-    public function delete(Media $media): bool
+    public function delete( $media): bool
     {
-        Storage::disk($this->disk)->delete($media->file_path);
+        Storage::disk($this->disk)->delete($media->path);
         return $media->delete();
     }
 
@@ -87,7 +84,7 @@ class MediaService
      | Replace
      ========================================================= */
 
-    public function replace(Media $media, UploadedFile $file): Media
+    public function replace( $media, UploadedFile $file)
     {
         $order      = $media->order;
         $collection = $media->collection;
@@ -110,7 +107,7 @@ class MediaService
             ->get();
     }
 
-    public function getFirst(Model $model, string $collection): ?Media
+    public function getFirst(Model $model, string $collection)
     {
         return $model->media()
             ->where('collection', $collection)

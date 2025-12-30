@@ -1,24 +1,27 @@
 <?php
+
 namespace App\Services\Admin;
 
 use App\Exceptions\CustomExceptionWithMessage;
 use App\Exceptions\InactiveAccountException;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\UnActivatedException;
-use App\Http\Resources\Admin\Admin\OneResource;
+use App\Http\Resources\Admin\OneResource;
 use App\Models\Admin;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Hash;
 
-class AuthService{
+class AuthService
+{
 
-    public function login(Admin $admin,array $credentials){
-        
-        if(! $admin){
+    public function login(Admin $admin, array $credentials)
+    {
+
+        if (! $admin) {
             throw new NotFoundException();
         }
 
-        if(! $admin->is_active){
+        if (! $admin->is_active) {
             throw new InactiveAccountException();
         }
 

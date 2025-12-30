@@ -29,6 +29,10 @@ class DatabaseSeeder extends Seeder
             VendorRolePermissionSeeder::class,
             ShopSeeder::class,
             ShopUserSeeder::class,
+            PageSectionSeeder::class
+
+            // AreaSeeder::class,
+            // StoreSeeder::class,
         ]);
     }
 }

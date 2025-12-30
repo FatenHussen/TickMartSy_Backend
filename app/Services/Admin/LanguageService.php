@@ -55,7 +55,7 @@ class LanguageService extends BaseService
     }
     /* ================= Override Create ================= */
 
-    public function create(array $data)
+    public function create($data)
     {
         DB::beginTransaction();
 

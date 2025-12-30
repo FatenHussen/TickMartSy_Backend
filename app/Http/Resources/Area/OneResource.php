@@ -15,10 +15,12 @@ class OneResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-            return [
+        return [
             'id' => $this->id,
-            'name' => $this->name,   
-            'city' => CityOneResource::make($this->city)
+            'name' => $this->name,
+            'city' => CityOneResource::make($this->city),
+            'created_at' => $this->created_at?->format('Y-m-d H:i'),
+
         ];
     }
 }

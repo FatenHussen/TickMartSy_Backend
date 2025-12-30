@@ -35,6 +35,12 @@ return new class extends Migration
 
             $table->timestamps();
         });
+
+        Schema::create('shop_service', function (Blueprint $table) {
+            $table->foreignId('shop_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('service_id')->constrained()->cascadeOnDelete();
+            $table->primary(['shop_id', 'service_id']);
+        });
     }
 
     /**

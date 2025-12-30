@@ -28,7 +28,7 @@ class OneResource extends JsonResource
             'commission_rate'       => $this->commission_rate,
 
             'logo_url'                => $this->getLogoUrl(),
-            'cover_images_urls'              => $this->getCoverImagesUrls(),
+            'cover_images_urls'      => $this->getCoverImagesUrls(),
 
             'is_active'             => $this->is_active,
             'average_rating'        => $this->average_rating,

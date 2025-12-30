@@ -18,6 +18,7 @@ class Shop extends Model
         'address',
         'phone',
         'mobile',
+        'email',
         'lat',
         'lng',
         'area_id',
@@ -50,7 +51,7 @@ class Shop extends Model
 
     public function media()
     {
-        return $this->morphMany(Media::class, 'mediable');
+        return $this->morphMany(VendorMedia::class, 'mediable');
     }
 
     public function coverImages()
@@ -124,4 +125,10 @@ class Shop extends Model
             ->map(fn($media) => $media->url)
             ->toArray();
     }
+
+        public function services()
+    {
+        return $this->belongsToMany(Service::class, 'shop_service');
+    }
+
 }

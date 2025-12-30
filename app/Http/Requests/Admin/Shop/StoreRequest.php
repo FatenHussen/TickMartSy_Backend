@@ -42,8 +42,10 @@ class StoreRequest extends FormRequest
 
             'area_id'           => 'required|exists:areas,id',
             'vendor_id' => 'required|exists:vendors,id',
+        
             'service_ids'          => 'nullable|array',
-            'service_ids.*'        => 'exists:services,id',
+            'service_ids.*.id'  => 'required|integer|exists:services,id',
+        
         ];
     }
 

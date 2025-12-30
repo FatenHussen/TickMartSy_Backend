@@ -14,36 +14,36 @@ use Illuminate\Support\Facades\Auth as FacadesAuth;
 
 class AuthController extends Controller
 {
-    public function __construct(public AuthService $auth_service)
+    public function __construct(public AuthService $auth_service) {}
+    public function login(LoginRequest $request)
     {
-    }
-    public function login(LoginRequest $request){
 
-        $request_data=$request->validated();
+        $request_data = $request->validated();
 
         /** @var Admin */
-        $admin=Admin::where('email',$request_data['email'])->first();
+        $admin = Admin::where('email', $request_data['email'])->first();
 
-        $response=$this->auth_service->login($admin , $request_data);
+        $response = $this->auth_service->login($admin, $request_data);
 
-        return $this->sendResponse(data:$response);
+        return $this->sendResponse(data: $response);
     }
 
-    public function profile(){
+    public function profile()
+    {
 
         /** @var Admin */
-        $admin=auth('admin')->user();
+        $admin = auth('admin')->user();
 
-        return $this->sendResponse(data:OneResource::make($admin)); 
+        return $this->sendResponse(data: OneResource::make($admin));
     }
-    public function logout(){
+    public function logout()
+    {
 
         /** @var Admin */
-        $admin=auth('admin')->user();
+        $admin = auth('admin')->user();
 
         $admin->currentAccessToken()?->delete();
 
         return $this->sendResponse();
     }
-
 }
