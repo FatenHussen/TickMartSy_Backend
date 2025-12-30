@@ -11,9 +11,11 @@ class BaseService
     protected $resource;
     protected $collection;
     protected $relations = [];
-    protected $pagination;
-    protected $syncRelations=[];
-    protected $mediaCollections=[];
+    protected $pagination = true;
+    protected $syncRelations = [];
+    protected $mediaCollections = [];
+    protected $searchableFields = ['id'];
+    protected $sortableFields   = ['id'];
 
 
     public function getAll($filters = [], $config = [])
@@ -51,10 +53,9 @@ class BaseService
             throw new NotFoundException();
         }
         if ($this->resource) {
-         return new ($this->resource)($object);
-        
+            return new ($this->resource)($object);
         }
-       return $object;
+        return $object;
     }
 
     protected function handleRelations($object, array &$data)
@@ -85,22 +86,20 @@ class BaseService
                 foreach ($items as $item) {
                     $id = $item['id'];
                     unset($item['id']);
-                    $syncData[$id] = $item; 
-                $relationObj->sync($syncData);} 
-
-            }
-            else {
+                    $syncData[$id] = $item;
+                    $relationObj->sync($syncData);
+                }
+            } else {
                 // hasMany
                 $relationObj->delete();
                 foreach ($items as $item) {
                     $relationObj->create($item);
                 }
             }
-
         }
     }
 
-        protected function handleMedia($model, array $data)
+    protected function handleMedia($model, array $data)
     {
         if (!property_exists($this, 'mediaCollections')) return;
 
@@ -128,10 +127,13 @@ class BaseService
 
     public function create($data)
     {
+        Log::info("data");
+        Log::info($data);
+
         $object = $this->model::create($data);
         Log::info($object);
-        $this->handleRelations($object,$data);
-        $this->handleMedia($object,$data);
+        $this->handleRelations($object, $data);
+        $this->handleMedia($object, $data);
         return new $this->resource($object);
     }
 
@@ -142,8 +144,8 @@ class BaseService
             throw new NotFoundException();
         }
         $object->update($data);
-        $this->handleRelations($object,$data);
-        $this->handleMedia($object,$data);
+        $this->handleRelations($object, $data);
+        $this->handleMedia($object, $data);
 
         return new $this->resource($object);
     }
@@ -171,7 +173,7 @@ class BaseService
     //     return $query;
     // }
 
-    
+
     public function queryBuilder($query, $filters = [], $config = [])
     {
         foreach ($filters as $key => $value) {
@@ -180,16 +182,16 @@ class BaseService
             $query->where($key, $value);
         }
 
-        if (!empty($config['search']) && !empty($config['searchable'])) {
+        if (!empty($config['search'])) {
             $search = $config['search'];
-            $query->where(function ($q) use ($search, $config) {
-                foreach ($config['searchable'] as $field) {
+            $query->where(function ($q) use ($search) {
+                foreach ($this->searchableFields as $field) {
                     $q->orWhere($field, 'LIKE', "%$search%");
                 }
             });
         }
 
-        if (!empty($config['sortField']) && in_array($config['sortField'], $config['sortable'] ?? [])) {
+        if (!empty($config['sortField']) && in_array($config['sortField'], $this->sortableFields ?? [])) {
             $order = strtolower($config['sortOrder'] ?? 'asc') === 'desc' ? 'desc' : 'asc';
             $query->orderBy($config['sortField'], $order);
         }

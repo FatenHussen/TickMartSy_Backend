@@ -15,7 +15,7 @@ use Spatie\Permission\Traits\HasRoles;
 class Admin extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens,HasRoles;
+    use HasFactory, Notifiable, HasApiTokens, HasRoles;
 
     protected $guard_name = 'admin';
 
@@ -57,5 +57,10 @@ class Admin extends Authenticatable
     public function isSuperAdmin(): bool
     {
         return $this->hasRole('super-admin');
+    }
+
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = Hash::make($value);
     }
 }

@@ -9,6 +9,7 @@ use App\Services\BaseService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\Shop\AllResource;
 use App\Http\Resources\Shop\OneResource;
+
 class ShopService extends BaseService
 {
 
@@ -17,21 +18,22 @@ class ShopService extends BaseService
         $this->model      = $model;
         $this->resource   = OneResource::class;
         $this->collection = AllResource::class;
+        $this->searchableFields = ['name', 'description'];
+        $this->sortableFields   = ['id'];
         $this->relations = ['vendor'];
-        $this->pagination=true;
-        $this->syncRelations= [
-        'services'   => 'service_ids', 
+        $this->pagination = true;
+        $this->syncRelations = [
+            'services'   => 'service_ids',
         ];
         $this->mediaCollections = [
             'logo' => [
-                'collection' => 'logo',   
-                'type'       => 'single', 
+                'collection' => 'logo',
+                'type'       => 'single',
             ],
             'cover_images' => [
-                'collection' => 'cover',  
+                'collection' => 'cover',
                 'type'       => 'multiple',
             ],
         ];
-        
     }
 }

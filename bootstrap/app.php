@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\Handler;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -19,8 +20,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'ability' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
             'check.blocked' => \App\Http\Middleware\CheckIfBlocked::class,
             'api' => \App\Http\Middleware\AttachTokenFromCookie::class,
+            'crud.permission' => \App\Http\Middleware\CrudPermissionMiddleware::class,
+
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        app(Handler::class)->register($exceptions);
     })->create();

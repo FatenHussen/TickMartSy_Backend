@@ -1,0 +1,34 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('page_sections', function (Blueprint $table) {
+            $table->id();
+            $table->json('name')->nullable();
+            $table->foreignId('page_id')->constrained()->onDelete('cascade');
+            $table->foreignId('section_id')->constrained()->onDelete('cascade');
+            $table->foreignId('display_type_id')->nullable()->constrained('display_types');
+            $table->enum('position', ['before', 'after']);
+            $table->integer('order')->default(1);
+            $table->json('filters')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('page_sections');
+    }
+};

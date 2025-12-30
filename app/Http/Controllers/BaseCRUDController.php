@@ -20,15 +20,13 @@ class BaseCRUDController extends Controller
 
         $config = [
             'search'     => $request->input('search'),
-            'searchable' => $this->searchableFields ?? [],
-            'sortable'   => $this->sortableFields ?? [],
             'sortField'  => $request->input('sort_field') ?? 'id',
             'sortOrder'  => $request->input('sort_order') ?? 'desc',
             'page'       => (int) $request->input('page', 1),
             'per_page'    => (int) $request->input('per_page', 10),
         ];
 
-        $res = $this->service->getAll($filters,$config);
+        $res = $this->service->getAll($filters, $config);
         return $this->sendResponse(data: $res);
     }
     public function show($id)
@@ -52,6 +50,6 @@ class BaseCRUDController extends Controller
     public function destroy($id)
     {
         $res = $this->service->delete($id);
-        return $this->sendResponse(data:$res);
+        return $this->sendResponse(data: $res);
     }
 }

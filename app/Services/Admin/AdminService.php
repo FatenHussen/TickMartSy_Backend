@@ -2,20 +2,21 @@
 
 namespace App\Services\Admin;
 
-use App\Http\Resources\Vendor\AllResource;
-use App\Http\Resources\Vendor\OneResource;
-use App\Models\Vendor;
+use App\Http\Resources\Admin\AllResource;
+use App\Http\Resources\Admin\OneResource;
+use App\Models\Admin;
 use App\Services\BaseService;
 use Illuminate\Support\Facades\DB;
 
-class VendorService extends BaseService
+class AdminService extends BaseService
 {
-    public function __construct(Vendor $model)
+
+    public function __construct(Admin $model)
     {
         $this->model      = $model;
         $this->resource   = OneResource::class;
         $this->collection = AllResource::class;
         $this->pagination = true;
-        $this->searchableFields = ['id', 'name', 'owner_name', 'owner_phone'];
+        $this->searchableFields = ['id', 'name', 'email'];
     }
 }

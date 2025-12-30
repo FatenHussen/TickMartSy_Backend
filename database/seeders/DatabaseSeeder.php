@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             AdminRolePermissionSeeder::class,
             RolePermissionSeeder::class,
             CategorySeeder::class,
+            PageSectionSeeder::class
             // AreaSeeder::class,
             // StoreSeeder::class,
         ]);
