@@ -139,10 +139,9 @@ class BaseService
 
     public function update($id, $data)
     {
-        $object = $this->model::find($id);
-        if (!$object) {
-            throw new NotFoundException();
-        }
+
+        $object = $this->model::findOrFail($id);
+
         $object->update($data);
         $this->handleRelations($object, $data);
         $this->handleMedia($object, $data);
@@ -152,10 +151,8 @@ class BaseService
 
     public function delete($id)
     {
-        $object = $this->model::find($id);
-        if (!$object) {
-            throw new NotFoundException();
-        }
+        $object = $this->model::findOrFail($id);
+
         $object->delete();
         return true;
     }

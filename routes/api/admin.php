@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\Admin\AdminCrudController;
 use App\Http\Controllers\Admin\Auth\AuthController;
+use App\Http\Controllers\Admin\Banner\BannerCrudController;
 use App\Http\Controllers\Admin\Role_Permission\PermissionIndexController;
 use App\Http\Controllers\Admin\Role_Permission\RoleCrudController;
 use App\Http\Controllers\Admin\Store\StoreCrudController;
@@ -33,17 +34,17 @@ Route::prefix('admin')->group(
         //         'vendors'       => VendorCrudController::class,
         //    ]);
 
-        Route::apiResource('shops', ShopCrudController::class)
-            ->middleware('crud.permission:shops');
+        Route::apiResource('shops', ShopCrudController::class);
 
-        Route::apiResource('stores', StoreCrudController::class)
-            ->middleware('crud.permission:stores');
+        Route::apiResource('stores', StoreCrudController::class);
+        // ->middleware('crud.permission:stores');
 
         Route::apiResource('vendors', VendorCrudController::class);
 
         Route::apiResource('roles', RoleCrudController::class);
         Route::get('permissions', [PermissionIndexController::class, 'index']);
 
+        Route::apiResource('banners', BannerCrudController::class);
 
         Route::apiResource('admins', AdminCrudController::class);
         // });

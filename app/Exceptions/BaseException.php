@@ -13,7 +13,9 @@ abstract class BaseException extends Exception
     public function render()
     {
         return response()->json([
+            'status' => false,
             'message' => __($this->translationKey),
+            'errors' => [],
         ], $this->status);
     }
 }

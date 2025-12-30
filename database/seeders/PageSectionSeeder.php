@@ -23,7 +23,7 @@ class PageSectionSeeder extends Seeder
             'image' => '/images/banners/banner1.jpg',
             'link' => '/sale',
             'order' => 1,
-            'active' => true,
+            'is_active' => true,
         ]);
 
         $banner2 = Banner::create([
@@ -31,7 +31,7 @@ class PageSectionSeeder extends Seeder
             'image' => '/images/banners/banner2.jpg',
             'link' => '/new-arrivals',
             'order' => 2,
-            'active' => true,
+            'is_active' => true,
         ]);
 
         // ---------- Pages ----------
