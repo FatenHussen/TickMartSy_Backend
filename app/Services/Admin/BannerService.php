@@ -13,8 +13,6 @@ use App\Models\Banner;
 
 class BannerService extends BaseService
 {
-
-
     public function __construct(Banner $model)
     {
         $this->model      = $model;
@@ -29,5 +27,9 @@ class BannerService extends BaseService
         //         'type'       => 'single',
         //     ],
         // ];
+
+        $this->singleImages = [
+            'image'
+        ];
     }
 }

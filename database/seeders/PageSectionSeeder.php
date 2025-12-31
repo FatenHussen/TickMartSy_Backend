@@ -19,19 +19,19 @@ class PageSectionSeeder extends Seeder
     {
         // ---------- Banners ----------
         $banner1 = Banner::create([
-            'title' => 'خصم 50%',
+            'title' => ['en' => 'Dis 50%', 'ar' => 'خصم حتى 50%'],
             'image' => '/images/banners/banner1.jpg',
             'link' => '/sale',
-            'order' => 1,
-            'is_active' => true,
+            // 'order' => 1,
+            // 'is_active' => true,
         ]);
 
         $banner2 = Banner::create([
-            'title' => 'وصل حديثًا',
+            'title' => ['en' => 'new arr', 'ar' => 'وصل حديثا'],
             'image' => '/images/banners/banner2.jpg',
             'link' => '/new-arrivals',
-            'order' => 2,
-            'is_active' => true,
+            // 'order' => 2,
+            // 'is_active' => true,
         ]);
 
         // ---------- Pages ----------
@@ -42,17 +42,17 @@ class PageSectionSeeder extends Seeder
         $slider = DisplayType::create([
             'name' => 'Slider',
             'preview_image' => '/images/display/slider.png',
-            'fields' => json_encode(['image', 'title', 'price'])
+            'fields' =>  ['image', 'title', 'price']
         ]);
         $grid = DisplayType::create([
             'name' => 'Grid',
             'preview_image' => '/images/display/grid.png',
-            'fields' => json_encode(['image', 'title', 'price', 'brand'])
+            'fields' => ['image', 'title', 'price', 'brand']
         ]);
 
         // ---------- Sections ----------
         $trendingProductsSection = Section::create([
-            'name' => json_encode(['en' => 'Trending Products', 'ar' => 'المنتجات الترند']),
+            'name' => ['en' => 'Trending Products', 'ar' => 'المنتجات الترند'],
             'type' => 'api',
             'api_source' => 'trending_products',
             'filters' => json_encode([
@@ -62,18 +62,21 @@ class PageSectionSeeder extends Seeder
         ]);
 
         $manualProductsSection = Section::create([
-            'name' => json_encode(['en' => 'Manual Products', 'ar' => 'منتجات مختارة']),
+            'name' => ['en' => 'Manual Products', 'ar' => 'منتجات مختارة'],
             'type' => 'manual'
         ]);
 
         $manualBannerSection = Section::create([
-            'name' => json_encode(['en' => 'Manual Banners', 'ar' => 'إعلانات']),
-            'type' => 'manual'
+            'name' => ['en' => 'Manual Banners', 'ar' => 'إعلانات'],
+            'type' => 'manual',
+            'manual_model' => 'Banner'
         ]);
 
         $manualRecipesSection = Section::create([
-            'name' => json_encode(['en' => 'Manual Recipes', 'ar' => 'وصفات']),
-            'type' => 'manual'
+            'name' => ['en' => 'Manual Recipes', 'ar' => 'وصفات'],
+            'type' => 'manual',
+            'manual_model' => 'Banner'
+
         ]);
 
         // ---------- Page Sections ----------
@@ -87,7 +90,7 @@ class PageSectionSeeder extends Seeder
         ]);
 
         $homeManualProducts = PageSection::create([
-            'name' => json_encode(['en' => 'Manual Products', 'ar' => 'منتجات مختارة']),
+            'name' => ['en' => 'Manual Products', 'ar' => 'منتجات مختارة'],
 
             'page_id' => $homePage->id,
             'section_id' => $manualProductsSection->id,
@@ -97,7 +100,7 @@ class PageSectionSeeder extends Seeder
         ]);
 
         $homeManualBanners = PageSection::create([
-            'name' => json_encode(['en' => 'Manual Banners', 'ar' => 'إعلانات']),
+            'name' => ['en' => 'Manual Banners', 'ar' => 'إعلانات'],
             'page_id' => $homePage->id,
             'section_id' => $manualBannerSection->id,
             'display_type_id' => $slider->id,
@@ -122,14 +125,14 @@ class PageSectionSeeder extends Seeder
 
         SectionItem::create([
             'section_id' => $manualProductsSection->id,
-            'item_type' => 'Product',
+            'item_type' => 'App\Models\Banner',
             'item_id' => $product1->id,
             'link' => '/product/' . $product1->id,
             'order' => 1
         ]);
         SectionItem::create([
             'section_id' => $manualProductsSection->id,
-            'item_type' => 'Product',
+            'item_type' => 'App\Models\Banner',
             'item_id' => $product2->id,
             'link' => '/product/' . $product2->id,
             'order' => 2
@@ -138,14 +141,14 @@ class PageSectionSeeder extends Seeder
         // Manual Banners
         SectionItem::create([
             'section_id' => $manualBannerSection->id,
-            'item_type' => 'Banner',
+            'item_type' => 'App\Models\Banner',
             'item_id' => $banner1->id,
             'link' => $banner1->link,
             'order' => 1
         ]);
         SectionItem::create([
             'section_id' => $manualBannerSection->id,
-            'item_type' => 'Banner',
+            'item_type' => 'App\Models\Banner',
             'item_id' => $banner2->id,
             'link' => $banner2->link,
             'order' => 2
