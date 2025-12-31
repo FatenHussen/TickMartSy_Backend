@@ -27,5 +27,15 @@ return [
         500 => 'Server error, please try again later.',
         503 => 'Service unavailable.',
     ],
+    'custom_error' => 'Something went wrong. Please try again later.',
 
+    'wrong_credential' => 'Invalid login credentials.',
+
+    'wrong_password' => 'The current password is incorrect.',
+
+    'otp_invalid' => 'The verification code is invalid or expired.',
+
+    'otp_valid' => 'The verification code is invalid or has expired.',
+
+    'password_valid' => 'The reset code is invalid or has expired.',
 ];

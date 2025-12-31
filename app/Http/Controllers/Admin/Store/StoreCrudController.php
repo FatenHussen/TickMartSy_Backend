@@ -14,11 +14,12 @@ use App\Services\Admin\StoreService;
 class StoreCrudController extends BaseCRUDController
 {
     public function __construct(
-        protected StoreService $service
+    StoreService $service
     ) {
         // $this->filterRequest = AdsFilterRequest::class;
         $this->createRequest = StoreRequest::class;
         $this->updateRequest = UpdateRequest::class;
+        $this->service = $service;
     }
 
 

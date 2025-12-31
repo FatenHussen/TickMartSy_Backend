@@ -25,9 +25,7 @@ class AuthController extends Controller
     {
         $this->service->register($request->validated());
 
-        return $this->sendResponse(
-            message: __('custom.Success')
-        );
+        return $this->sendResponse();
     }
 
     /* =========================
@@ -39,7 +37,6 @@ class AuthController extends Controller
         $user = $this->service->login($request->validated());
 
         return $this->sendResponse(
-            message:__('custom.Success'),
             data: $user
         );
     }
@@ -52,9 +49,7 @@ class AuthController extends Controller
     {
         $this->service->sendPasswordOtp($request->validated());
 
-        return $this->sendResponse(
-            message:__('custom.Success')
-        );
+        return $this->sendResponse();
     }
 
     public function verifyOtp(VerifyOtpRequest $request)
@@ -62,7 +57,6 @@ class AuthController extends Controller
         $user = $this->service->verifyOtp($request->validated());
 
         return $this->sendResponse(
-            message:__('custom.Success'),
             data: $user
         );
     }
@@ -75,9 +69,7 @@ class AuthController extends Controller
     {
         $this->service->sendPasswordOtp($request->validated());
 
-        return $this->sendResponse(
-            message:__('custom.Success')
-        );
+        return $this->sendResponse();
     }
 
     public function verifyPassword(VerifyPasswordRequest $request)
@@ -85,21 +77,18 @@ class AuthController extends Controller
         $user = $this->service->verifyPassword($request->validated());
 
         return $this->sendResponse(
-            message:__('custom.Success'),
             data: $user
         );
     }
 
     public function resetPassword(ResetPasswordRequest $request)
     {
-        $this->service->resetPassword(
-            auth('users')->id(),
+        $user = $this->service->resetPassword(
+            auth('user')->id(),
             $request->validated()['new_password']
         );
 
-        return $this->sendResponse(
-            message:__('custom.Success')
-        );
+        return $this->sendResponse(data: $user);
     }
 
     /* =========================
@@ -110,8 +99,6 @@ class AuthController extends Controller
     {
         $this->service->logout();
 
-        return $this->sendResponse(
-            message: __('custom.Success')
-        );
+        return $this->sendResponse();
     }
 }

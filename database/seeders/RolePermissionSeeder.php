@@ -17,7 +17,7 @@ class RolePermissionSeeder extends Seeder
             'User',
             'City',
             'Governorate',
-            'Store'
+            'Vendor'
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];

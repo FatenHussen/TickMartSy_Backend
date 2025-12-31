@@ -3,10 +3,16 @@
 namespace App\Services;
 
 use App\Exceptions\NotFoundException;
-use Illuminate\Support\Facades\Log;
+use App\Traits\FileTrait;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
-class BaseService
+abstract class BaseService
 {
+    use FileTrait;
+
+    /* ================= Core ================= */
+
     protected $model;
     protected $resource;
     protected $collection;
@@ -16,7 +22,11 @@ class BaseService
     protected $mediaCollections = [];
     protected $searchableFields = ['id'];
     protected $sortableFields   = ['id'];
+    protected $imageColumn;
+    protected $imageFolder;
+    protected $imagesFolder;
 
+    protected $imagesRelation;
 
     public function getAll($filters = [], $config = [])
     {
@@ -46,9 +56,11 @@ class BaseService
         }
     }
 
+
     public function getOne($id)
     {
-        $object = $this->model::find($id);
+        $object = $this->model::with($this->relations)->find($id);
+
         if (!$object) {
             throw new NotFoundException();
         }
@@ -127,17 +139,14 @@ class BaseService
 
     public function create($data)
     {
-        Log::info("data");
-        Log::info($data);
 
         $object = $this->model::create($data);
-        Log::info($object);
         $this->handleRelations($object, $data);
         $this->handleMedia($object, $data);
         return new $this->resource($object);
     }
 
-    public function update($id, $data)
+    public function update($id, array $data)
     {
 
         $object = $this->model::findOrFail($id);
@@ -149,27 +158,14 @@ class BaseService
         return new $this->resource($object);
     }
 
-    public function delete($id)
+    public function delete($id): bool
     {
         $object = $this->model::findOrFail($id);
 
         $object->delete();
+
         return true;
     }
-
-    // public function queryBuilder($query, $filters)
-    // {
-    //     foreach ($filters as $key => $value) {
-    //         if (in_array($key, ['name', 'description'])) {
-    //             $query->where($key, 'LIKE', "%$value%");
-    //         } else {
-    //             $query->where($key, $value);
-    //         }
-    //     }
-
-    //     return $query;
-    // }
-
 
     public function queryBuilder($query, $filters = [], $config = [])
     {
@@ -194,5 +190,80 @@ class BaseService
         }
 
         return $query;
+    }
+
+    /* ================= Images Logic ================= */
+
+    protected function handleImages($model, array $data, bool $isUpdate = false): void
+    {
+        // --------- Relation images ---------
+        if ($this->imagesRelation && $this->imagesFolder) {
+            $this->handleRelationImages($model, $data, $isUpdate);
+        }
+
+        // --------- Column image ---------
+        if ($this->imageColumn && $this->imageFolder) {
+            $this->handleColumnImage($model, $data, $isUpdate);
+        }
+    }
+
+    protected function handleRelationImages($model, array $data, bool $isUpdate): void
+    {
+        if ($isUpdate && !empty($data['deleted_images'])) {
+            $model->{$this->imagesRelation}()
+                ->whereIn('id', $data['deleted_images'])
+                ->each(function ($image) {
+                    $this->deleteFile('storage', $this->imagesFolder, $image->path);
+                    $image->delete();
+                });
+        }
+
+        if (!empty($data['images'])) {
+            $mainIndex = $data['main_image_index'] ?? 0;
+
+            foreach ($data['images'] as $index => $file) {
+                $path = $this->uploadFile('storage', $this->imagesFolder, $file);
+
+                if ($path) {
+                    $model->{$this->imagesRelation}()->create([
+                        'path'    => $path,
+                        'is_main' => $index === $mainIndex,
+                    ]);
+                }
+            }
+        }
+    }
+
+    protected function handleColumnImage($model, array $data, bool $isUpdate): void
+    {
+        $column = $this->imageColumn;
+
+        if (empty($data[$column])) {
+            return;
+        }
+
+        if ($isUpdate && $model->{$column}) {
+            $this->deleteFile('storage', $this->imageFolder, $model->{$column});
+        }
+
+        $path = $this->uploadFile('storage', $this->imageFolder, $data[$column]);
+
+        if ($path) {
+            $model->update([$column => $path]);
+        }
+    }
+
+    protected function deleteImages($model): void
+    {
+        if ($this->imagesRelation && $this->imagesFolder) {
+            $model->{$this->imagesRelation}?->each(function ($image) {
+                $this->deleteFile('storage', $this->imagesFolder, $image->path);
+                $image->delete();
+            });
+        }
+
+        if ($this->imageColumn && $this->imageFolder && $model->{$this->imageColumn}) {
+            $this->deleteFile('storage', $this->imageFolder, $model->{$this->imageColumn});
+        }
     }
 }

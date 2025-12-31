@@ -28,45 +28,6 @@ class VerifyUpdateRequest extends BaseRequest
             'code' => 'required|string',
         ];
     }
-
-    public function messages(): array
-    {
-        $locale = $this->getLocale();
-
-        if ($locale === 'ar') {
-            return $this->arabicMessages();
-        }
-
-        return $this->englishMessages();
-    }
-
-    private function arabicMessages(): array
-    {
-        return [
-            'phone.string' => 'الهاتف يجب أن يكون نصاً.',
-            'phone.required_without' => 'الهاتف مطلوب عندما البريد الإلكتروني غير مدخل.',
-
-            'email.string' => 'البريد الإلكتروني يجب أن يكون نصاً.',
-            'email.required_without' => 'البريد الإلكتروني مطلوب عندما الهاتف غير مدخل.',
-
-            'code.required' => 'الكود مطلوب.',
-            'code.string' => 'الكود يجب أن يكون نصاً.',
-        ];
-    }
-
-    private function englishMessages(): array
-    {
-        return [
-            'phone.string' => 'The phone must be a string.',
-            'phone.required_without' => 'The phone field is required when email is not present.',
-
-            'email.string' => 'The email must be a string.',
-            'email.required_without' => 'The email field is required when phone is not present.',
-
-            'code.required' => 'The code field is required.',
-            'code.string' => 'The code must be a string.',
-        ];
-    }
     protected function prepareForValidation()
     {
         Log::info('Incoming VerifyPasswordRequest data:', $this->all());

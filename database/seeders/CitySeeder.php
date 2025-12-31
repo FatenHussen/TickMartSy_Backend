@@ -31,8 +31,15 @@ class CitySeeder extends Seeder
         ];
 
         foreach ($cities as $city) {
-            
-         City::create($city);
+            DB::table('cities')->insert([
+                'name' => json_encode([
+                    'ar' => $city['ar'],
+                    'en' => $city['en'],
+                ], JSON_UNESCAPED_UNICODE),
+                'governorate_id' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
     }
 }

@@ -16,6 +16,8 @@ class Verification extends Model
         'value',
         'verified_at',
         'end_at',
+        'driver_id',
+
     ];
 
     protected $casts = [

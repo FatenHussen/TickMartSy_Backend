@@ -99,13 +99,96 @@ return [
     | specify a specific custom language line for a given attribute rule.
     |
     */
-
+    'account_not_verified ' => ' هذا الحساب غير مفعّل، يرجى التحقق من الحساب ',
+    ' account_already_exists ' => ' هذا الحساب مسجل مسبقًا ',
     'custom'               => [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
         'phone' => [
             'regex' => 'رقم الهاتف يجب أن يبدأ بـ 9 ويتكون من 9 أرقام فقط.',
+        ],
+        'code' => [
+            'required' => 'رمز اللغة مطلوب',
+            'unique' => 'رمز اللغة مستخدم مسبقًا',
+            'max' => 'رمز اللغة يجب ألا يتجاوز :max أحرف',
+        ],
+
+        'name' => [
+            'required' => 'اسم اللغة مطلوب',
+            'max' => 'اسم اللغة يجب ألا يتجاوز :max حرف',
+        ],
+
+        'native_name' => [
+            'required' => 'الاسم الأصلي للغة مطلوب',
+            'max' => 'الاسم الأصلي يجب ألا يتجاوز :max حرف',
+        ],
+
+        'direction' => [
+            'required' => 'اتجاه اللغة مطلوب',
+            'in' => 'اتجاه اللغة يجب أن يكون ltr أو rtl',
+        ],
+
+        'is_active' => [
+            'required' => 'حالة التفعيل مطلوبة',
+            'boolean' => 'قيمة التفعيل غير صحيحة',
+        ],
+
+        'is_default' => [
+            'boolean' => 'قيمة اللغة الافتراضية غير صحيحة',
+        ],
+
+        'order' => [
+            'integer' => 'الترتيب يجب أن يكون رقمًا صحيحًا',
+            'min' => 'الترتيب لا يمكن أن يكون أقل من صفر',
+        ],
+
+        'flag_icon' => [
+            'max' => 'أيقونة العلم يجب ألا تتجاوز :max حرف',
+        ],
+
+        'locale' => [
+            'max' => 'المنطقة يجب ألا تتجاوز :max حرف',
+        ],
+
+        'timezone' => [
+            'timezone' => 'المنطقة الزمنية غير صحيحة',
+        ],
+
+        'date_format' => [
+            'max' => 'تنسيق التاريخ يجب ألا يتجاوز :max حرف',
+        ],
+
+        'time_format' => [
+            'max' => 'تنسيق الوقت يجب ألا يتجاوز :max حرف',
+        ],
+
+        'decimal_separator' => [
+            'max' => 'فاصل الكسور يجب ألا يتجاوز حرفين',
+        ],
+
+        'thousands_separator' => [
+            'max' => 'فاصل الآلاف يجب ألا يتجاوز حرفين',
+        ],
+
+        'currency_code' => [
+            'max' => 'رمز العملة يجب ألا يتجاوز :max أحرف',
+        ],
+
+        'currency_symbol' => [
+            'max' => 'رمز العملة يجب ألا يتجاوز :max أحرف',
+        ],
+
+        'show_in_menu' => [
+            'boolean' => 'قيمة إظهار في القائمة غير صحيحة',
+        ],
+
+        'show_in_switcher' => [
+            'boolean' => 'قيمة إظهار في مبدل اللغات غير صحيحة',
+        ],
+
+        'og_locale' => [
+            'max' => 'لغة Open Graph يجب ألا تتجاوز :max حرف',
         ],
     ],
 
@@ -121,6 +204,8 @@ return [
     */
 
     'attributes'           => [
+        'city_id' => 'المدينة',
+        'governorate_id' => 'المحافظة',
         'name'             => 'اسم العميل',
         'mobile'           => 'رقم جوال ',
         'email'            => 'العنوان البريدي',
@@ -153,9 +238,36 @@ return [
         'clinic_name'      => 'اسم العيادة',
         'clinic_address'   => 'عنوان العيادة',
         'time'             => 'الوقت',
+        'code' => 'رمز اللغة',
+        'name' => 'اسم اللغة',
+        'native_name' => 'الاسم الأصلي للغة',
+        'direction' => 'اتجاه اللغة',
+        'is_active' => 'حالة التفعيل',
+        'is_default' => 'اللغة الافتراضية',
+        'order' => 'الترتيب',
+        'flag_icon' => 'أيقونة العلم',
+        'locale' => 'المنطقة (Locale)',
+        'timezone' => 'المنطقة الزمنية',
+        'date_format' => 'تنسيق التاريخ',
+        'time_format' => 'تنسيق الوقت',
+        'decimal_separator' => 'فاصل الكسور',
+        'thousands_separator' => 'فاصل الآلاف',
+        'currency_code' => 'رمز العملة',
+        'currency_symbol' => 'رمز العملة',
+        'show_in_menu' => 'إظهار في القائمة',
+        'show_in_switcher' => 'إظهار في مبدل اللغات',
+        'og_locale' => 'لغة Open Graph',
+        'name.ar' => 'الاسم بالعربية',
+        'name.en' => 'الاسم بالإنجليزية',
+        'description.ar' => 'الوصف بالعربية',
+        'description.en' => 'الوصف بالإنجليزية',
+        'icon' => 'الأيقونة',
+        'parent_id' => 'الفئة الأب',
+
     ],
 
     'only_english' => 'يُسمح فقط بالأحرف الإنجليزية (يمكن استخدام الأرقام والرموز)',
     'at_least_one_arabic' => 'يجب أن يحتوي النص على حرف عربي واحد على الأقل (يمكن استخدام أحرف إنجليزية أو أرقام أو رموز)',
+    'required_without' => 'يرجى إدخال :attribute في حال عدم إدخال :values.',
 
 ];

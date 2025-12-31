@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->json('description')->nullable();
             $table->string('icon')->nullable();
             $table->foreignId('parent_id')->nullable()->constrained('categories')->nullOnDelete('cascade');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
