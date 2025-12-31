@@ -29,7 +29,16 @@ class DatabaseSeeder extends Seeder
             VendorRolePermissionSeeder::class,
             ShopSeeder::class,
             ShopUserSeeder::class,
-            PageSectionSeeder::class
+            PageSectionSeeder::class,
+            CategoryAttributeSeeder::class,
+            AttributeValueSeeder::class,
+            CategoryDetailSeeder::class,
+            ProductSeeder::class,
+            ProductCategoryDetailSeeder::class,
+            ProductExtraDetailSeeder::class,
+            ProductVariantSeeder::class,
+            ProductMediaSeeder::class,
+            ShopProductVariantSeeder::class,
 
             // AreaSeeder::class,
             // StoreSeeder::class,

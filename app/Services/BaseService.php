@@ -146,6 +146,21 @@ abstract class BaseService
         return new $this->resource($object);
     }
 
+    // public function update($id, array $data)
+    // {
+    //     DB::beginTransaction();
+
+    //     $object = $this->model::find($id);
+
+    //     if (!$object) {
+    //         throw new NotFoundException();
+    //     }
+    //     $object->update($data);
+    //     $this->handleRelations($object, $data);
+    //     $this->handleMedia($object, $data);
+    //     $object->save();
+    //     return new $this->resource($object);
+    // }
     public function update($id, array $data)
     {
         DB::beginTransaction();
@@ -155,9 +170,23 @@ abstract class BaseService
         if (!$object) {
             throw new NotFoundException();
         }
+
+        // ==== handle translatable fields ====
+        if (property_exists($object, 'translatable')) {
+            foreach ($object->translatable as $field) {
+                if (isset($data[$field])) {
+                    $object->setTranslations($field, $data[$field]);
+                    unset($data[$field]);
+                }
+            }
+        }
+
         $object->update($data);
+
         $this->handleRelations($object, $data);
         $this->handleMedia($object, $data);
+
+        DB::commit();
 
         return new $this->resource($object);
     }

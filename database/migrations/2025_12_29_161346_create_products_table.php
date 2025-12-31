@@ -26,6 +26,8 @@ return new class extends Migration
             $table->string('barcode')->nullable();
             $table->time('time_prepare')->nullable();
             $table->json('bought_with')->nullable();
+            $table->boolean('is_instant_delivery')->default(false);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

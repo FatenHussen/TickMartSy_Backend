@@ -5,8 +5,11 @@ use App\Http\Controllers\Admin\Auth\AuthController;
 use App\Http\Controllers\Admin\Role_Permission\PermissionIndexController;
 use App\Http\Controllers\Admin\Role_Permission\RoleCrudController;
 use App\Http\Controllers\Admin\Brand\BrandController;
+use App\Http\Controllers\Admin\Category\CategoryAttributeController;
 use App\Http\Controllers\Admin\Category\CategoryController;
+use App\Http\Controllers\Admin\Category\CategoryDetailController;
 use App\Http\Controllers\Admin\Language\LanguageController;
+use App\Http\Controllers\Admin\Product\ProductController;
 use App\Http\Controllers\Admin\Store\StoreCrudController;
 use App\Http\Controllers\Admin\Shop\ShopCrudController;
 use App\Http\Controllers\Admin\Vendor\VendorCrudController;
@@ -37,6 +40,9 @@ Route::prefix('admin')->group(
             'languages'      => LanguageController::class,
             'categories' => CategoryController::class,
             'brands' => BrandController::class,
+            'category-attributes' => CategoryAttributeController::class,
+            'category-details' => CategoryDetailController::class,
+            'products' => ProductController::class
         ]);
         //     }
         // );

@@ -17,5 +17,6 @@ class CategoryService extends BaseService
         $this->imageColumn = 'icon';
         $this->imageFolder = 'categories'; 
         $this->relations = ['parent', 'children'];
+        $this->pagination = true;
     }
 }

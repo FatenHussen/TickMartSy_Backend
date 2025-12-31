@@ -16,6 +16,7 @@ class LanguageService extends BaseService
         $this->model        = $model;
         $this->resource     = OneResource::class;
         $this->collection   = AllResource::class;
+        $this->pagination = true;
 
         $this->imageColumn  = 'flag_icon';
         $this->imageFolder  = 'flags';
