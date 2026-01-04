@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 
 class AttributeValue extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory, HasTranslations, SoftDeletes;
 
     protected $table = 'attribute_values';
 
@@ -17,7 +18,7 @@ class AttributeValue extends Model
         'name',
     ];
 
-    public array $translatable = [
+    public $translatable = [
         'name',
     ];
 

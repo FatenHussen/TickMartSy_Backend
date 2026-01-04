@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 
 class CategoryAttribute extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory, HasTranslations, SoftDeletes;
 
     protected $table = 'category_attributes';
 
@@ -16,8 +17,8 @@ class CategoryAttribute extends Model
         'category_id',
         'name',
     ];
-    
-    public array $translatable = [
+
+    public $translatable = [
         'name',
     ];
 

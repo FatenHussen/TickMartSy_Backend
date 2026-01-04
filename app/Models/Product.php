@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 
 class Product extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory, HasTranslations, SoftDeletes;
 
     protected $fillable = [
         'category_id',
@@ -24,6 +25,9 @@ class Product extends Model
         'barcode',
         'time_prepare',
         'bought_with',
+        'is_instant_delivery',
+        'vendor_id',
+
     ];
 
     public array $translatable = [
@@ -48,7 +52,10 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class);
     }
-
+    public function vendor()
+    {
+        return $this->belongsTo(Vendor::class);
+    }
     public function variants()
     {
         return $this->hasMany(ProductVariant::class);
@@ -62,5 +69,11 @@ class Product extends Model
     public function extraDetails()
     {
         return $this->hasMany(ProductExtraDetail::class);
+    }
+    public function media()
+    {
+        return $this->morphMany(ProductMedia::class, 'mediable')
+            ->where('collection', 'product')
+            ->orderBy('order');
     }
 }

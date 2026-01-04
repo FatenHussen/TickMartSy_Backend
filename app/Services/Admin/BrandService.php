@@ -14,5 +14,6 @@ class BrandService extends BaseService
         $this->collection   = AllResource::class;
         $this->imageColumn  = 'image';
         $this->imageFolder  = 'brands';
+        $this->pagination = true;
     }
 }

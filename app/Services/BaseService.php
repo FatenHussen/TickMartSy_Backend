@@ -185,13 +185,25 @@ abstract class BaseService
         $this->handleMedia($object, $data);
         return new $this->resource($object);
     }
+
     public function update($id, array $data)
     {
+        DB::beginTransaction();
+
         $object = $this->model::findOrFail($id);
+        if (property_exists($object, 'translatable')) {
+            foreach ($object->translatable as $field) {
+                if (isset($data[$field])) {
+                    $object->setTranslations($field, $data[$field]);
+                    unset($data[$field]);
+                }
+            }
+        }
         $object->update($data);
         $this->handleSingleImages($object, $data);
         $this->handleRelations($object, $data);
         $this->handleMedia($object, $data);
+        DB::commit();
         return new $this->resource($object);
     }
     public function delete($id): bool

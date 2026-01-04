@@ -49,8 +49,8 @@ class Vendor extends Model
             'vendor_user_id'
         );
     }
-
-
+    
+    
     protected function averageRating(): Attribute
     {
         return Attribute::make(
@@ -59,7 +59,10 @@ class Vendor extends Model
                 : 0.00
         );
     }
-
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
     public function media()
     {
         return $this->morphMany(Media::class, 'mediable');

@@ -130,5 +130,8 @@ class Shop extends Model
     {
         return $this->belongsToMany(Service::class, 'shop_service');
     }
-
+    public function productVariants()
+    {
+        return $this->hasMany(ShopProductVariant::class);
+    }
 }

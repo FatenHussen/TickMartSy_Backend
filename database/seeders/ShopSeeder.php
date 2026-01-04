@@ -11,33 +11,39 @@ class ShopSeeder extends Seeder
 {
     public function run(): void
     {
-        $vendors = Vendor::all();
-        $areas   = Area::all();
+        $vendor = Vendor::first();
+        $areas  = Area::all();
 
-        if ($vendors->isEmpty() || $areas->isEmpty()) {
+        if (! $vendor || $areas->isEmpty()) {
             return;
         }
 
-        foreach ($vendors as $vendor) {
+        $shops = [
+            'Tikmool Damascus',
+            'Tikmool Aleppo',
+            'Tikmool Homs',
+        ];
+
+        foreach ($shops as $index => $shopName) {
             Shop::create([
                 'name' => [
-                    'ar' => 'متجر ' . $vendor->getTranslation('name', 'ar'),
-                    'en' => 'Shop ' . $vendor->getTranslation('name', 'en'),
+                    'ar' => 'تيكمول - فرع ' . ($index + 1),
+                    'en' => $shopName,
                 ],
 
                 'description' => [
-                    'ar' => 'وصف المتجر التابع لـ ' . $vendor->getTranslation('name', 'ar'),
-                    'en' => 'Shop description for ' . $vendor->getTranslation('name', 'en'),
+                    'ar' => 'المتجر الرسمي لمنصة تيكمول',
+                    'en' => 'Official Tikmool store',
                 ],
 
                 'address' => [
-                    'ar' => 'دمشق - شارع الثورة',
-                    'en' => 'Damascus - Al Thawra Street',
+                    'ar' => 'سوريا - دمشق',
+                    'en' => 'Syria - Damascus',
                 ],
 
-                'phone' => '0111234567',
-                'mobile' => '0999999999',
-                'email' => 'shop' . $vendor->id . '@example.com',
+                'phone' => '011000000' . $index,
+                'mobile' => '099000000' . $index,
+                'email' => 'shop' . ($index + 1) . '@tikmool.com',
 
                 'lat' => 33.5138,
                 'lng' => 36.2765,
@@ -54,16 +60,16 @@ class ShopSeeder extends Seeder
                     'sunday'    => ['closed' => true],
                 ],
 
-                'logo' => 'shops/logos/logo-' . $vendor->id . '.png',
+                'logo' => 'shops/logos/tikmool.png',
 
                 'cover_images' => [
-                    'shops/covers/cover1.png',
-                    'shops/covers/cover2.png',
+                    'shops/covers/tikmool-1.png',
+                    'shops/covers/tikmool-2.png',
                 ],
 
                 'is_active' => true,
-                'ratings_count' => rand(0, 50),
-                'ratings_sum'   => rand(0, 250),
+                'ratings_count' => rand(0, 100),
+                'ratings_sum'   => rand(0, 500),
 
                 'vendor_id' => $vendor->id,
             ]);

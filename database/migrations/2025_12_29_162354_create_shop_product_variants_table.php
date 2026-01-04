@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('shop_id')->constrained('shops')->cascadeOnDelete();
             $table->integer('quantity')->nullable();
             $table->integer('price')->nullable();
-
+            $table->softDeletes();
             $table->timestamps();
         });
     }
