@@ -34,7 +34,10 @@ class ProductVariant extends Model
     {
         return $this->hasMany(ShopProductVariant::class, 'product_variant_id');
     }
-
+    public function shops()
+    {
+        return $this->hasMany(ShopProductVariant::class, 'product_variant_id');
+    }
     public function media()
     {
         return $this->morphMany(ProductMedia::class, 'mediable')
@@ -46,5 +49,16 @@ class ProductVariant extends Model
         return $this->media->count()
             ? $this->media
             : $this->product->media;
+    }
+    public function attributesValues()
+    {
+        return $this->belongsToMany(AttributeValue::class, 'attribute_values', 'product_variant_id', 'attribute_value_id');
+    }
+
+
+    public function getAttributesValuesAttribute()
+    {
+        // ترجمة IDs المخزنة في attributes_values_ids إلى Collection من AttributeValue
+        return AttributeValue::whereIn('id', $this->attributes_values_ids ?? [])->get();
     }
 }

@@ -19,6 +19,7 @@ class ProductService extends BaseService
         'variants.shops',
         'categoryDetails.categoryDetail',
         'extraDetails',
+        'variants.shopVariants.shop',
     ];
 
     /**
@@ -36,7 +37,11 @@ class ProductService extends BaseService
      */
     protected $mediaCollections = [
         'images' => [
-            'collection' => 'product_images',
+            'collection' => 'product',
+            'type'       => 'multiple',
+        ],
+        'variant_images' => [
+            'collection' => 'variant',
             'type'       => 'multiple',
         ],
     ];

@@ -75,7 +75,7 @@ class StoreRequest extends FormRequest
             'price_after_discount'  => 'nullable|integer|min:0',
             'quantity'              => 'nullable|integer|min:0',
             'barcode'               => 'nullable|string',
-            'time_prepare'          => 'nullable|date_format:H:i',
+            'time_prepare'          => 'nullable|string',
             'bought_with'           => 'nullable|array',
             'bought_with.*'         => 'nullable|integer|exists:products,id',
             'is_instant_delivery'   => 'nullable|boolean',
@@ -85,7 +85,6 @@ class StoreRequest extends FormRequest
             'variants.*.attributes_values_ids' => 'nullable|array',
             'variants.*.attributes_values_ids.*' => 'required|integer|exists:attribute_values,id',
             'variants.*.price'              => 'nullable|integer|min:0',
-            'variants.*.sku'                => 'nullable|string',
             'variants.*.images' => 'nullable|array',
             'variants.*.images.*' => 'image|max:2048',
 
@@ -108,6 +107,8 @@ class StoreRequest extends FormRequest
             'shop_variants.*.shop_id'       => 'nullable|exists:shops,id',
             'shop_variants.*.variant_id'    => 'nullable|exists:product_variants,id',
             'shop_variants.*.price'         => 'nullable|integer|min:0',
+            'shop_variants.*.quantity' => 'nullable|integer|min:0',
+
         ];
 
         // Add locale-specific validation
