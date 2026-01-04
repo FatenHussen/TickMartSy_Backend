@@ -81,6 +81,7 @@ class UpdateRequest extends FormRequest
             'bought_with'           => 'nullable|array',
             'bought_with.*'         => 'nullable|integer|exists:products,id',
             'is_instant_delivery'   => 'nullable|boolean',
+            'vendor_id' => 'nullable|exists:vendors,id',
 
             // Variants
             'variants'                      => 'nullable|array',

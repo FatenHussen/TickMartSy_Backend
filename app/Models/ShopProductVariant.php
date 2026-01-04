@@ -14,6 +14,7 @@ class ShopProductVariant extends Model
         'shop_id',
         'quantity',
         'price',
+        'product_variant_id'
     ];
 
     /*

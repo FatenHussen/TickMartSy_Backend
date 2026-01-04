@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductMedia extends Model
 {
+    const COLLECTION_PRODUCT = 'product';
+    const COLLECTION_VARIANT = 'variant';
     use SoftDeletes;
     protected $fillable = [
         'collection',

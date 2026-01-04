@@ -14,15 +14,19 @@ class ShopUserSeeder extends Seeder
         $shops = Shop::with('vendor')->get();
 
         foreach ($shops as $shop) {
-            $vendorUsers = VendorUser::where('vendor_id', $shop->vendor_id)->get();
+            $users = VendorUser::where('vendor_id', $shop->vendor_id)->get();
 
-            foreach ($vendorUsers as $user) {
-                DB::table('shop_users')->insert([
-                    'shop_id' => $shop->id,
-                    'vendor_user_id' => $user->id,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+            foreach ($users as $user) {
+                DB::table('shop_users')->updateOrInsert(
+                    [
+                        'shop_id' => $shop->id,
+                        'vendor_user_id' => $user->id,
+                    ],
+                    [
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
             }
         }
     }

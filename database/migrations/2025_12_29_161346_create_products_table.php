@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete();
+            $table->foreignId('vendor_id')->default(1)->constrained('vendors')->cascadeOnDelete();
             $table->json('name');
             $table->json('description');
             $table->json('full_description');

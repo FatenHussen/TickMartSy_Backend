@@ -30,14 +30,21 @@ class ProductVariant extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function shops()
+    public function shopVariants()
     {
-        return $this->hasMany(ShopProductVariant::class);
+        return $this->hasMany(ShopProductVariant::class, 'product_variant_id');
     }
+
     public function media()
     {
         return $this->morphMany(ProductMedia::class, 'mediable')
             ->where('collection', 'variant')
             ->orderBy('order');
+    }
+    public function getImagesAttribute()
+    {
+        return $this->media->count()
+            ? $this->media
+            : $this->product->media;
     }
 }

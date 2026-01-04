@@ -11,16 +11,18 @@ class VendorUserSeeder extends Seeder
 {
     public function run(): void
     {
-        $vendors = Vendor::all();
+        $vendor = Vendor::first();
 
-        foreach ($vendors as $vendor) {
-            VendorUser::create([
-                'name' => $vendor->getTranslation('name', 'en') . ' Admin',
-                'email' => 'vendor' . $vendor->id . '@example.com',
-                'password' => Hash::make('password'),
-                'is_active' => true,
-                'vendor_id' => $vendor->id,
-            ]);
+        if (! $vendor) {
+            return;
         }
+
+        VendorUser::create([
+            'name' => 'Tikmool Admin',
+            'email' => 'admin@tikmool.com',
+            'password' => Hash::make('password'),
+            'is_active' => true,
+            'vendor_id' => $vendor->id,
+        ]);
     }
 }

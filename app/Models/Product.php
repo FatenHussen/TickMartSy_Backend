@@ -25,7 +25,9 @@ class Product extends Model
         'barcode',
         'time_prepare',
         'bought_with',
-        'is_instant_delivery'
+        'is_instant_delivery',
+        'vendor_id',
+
     ];
 
     public array $translatable = [
@@ -50,7 +52,10 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class);
     }
-
+    public function vendor()
+    {
+        return $this->belongsTo(Vendor::class);
+    }
     public function variants()
     {
         return $this->hasMany(ProductVariant::class);

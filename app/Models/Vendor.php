@@ -49,8 +49,11 @@ class Vendor extends Model
             'vendor_user_id'
         );
     }
-    
-    
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
     protected function averageRating(): Attribute
     {
         return Attribute::make(
