@@ -33,7 +33,6 @@ class DatabaseSeeder extends Seeder
             ProductVariantSeeder::class,
             ProductMediaSeeder::class,
             ShopProductVariantSeeder::class,
-            PageSectionSeeder::class
         ]);
     }
 }
