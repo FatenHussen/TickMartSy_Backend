@@ -17,12 +17,12 @@ return new class extends Migration
             $table->foreignId('vendor_id')->default(1)->constrained('vendors')->cascadeOnDelete();
             $table->json('name');
             $table->json('description');
-            $table->json('full_description');
+            $table->json('full_description')->nullable();
             $table->string('sku')->nullable()->unique();
             $table->json('country')->nullable();
             $table->string('model')->nullable()->unique();
             $table->integer('price');
-            $table->integer('price_after_discount');
+            $table->integer('price_after_discount')->nullable();
             $table->integer('quantity')->nullable();
             $table->string('barcode')->nullable();
             $table->time('time_prepare')->nullable();
