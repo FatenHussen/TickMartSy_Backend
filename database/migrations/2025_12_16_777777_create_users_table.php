@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email')->nullable()->unique();
             $table->string('phone')->nullable()->unique();
             $table->foreignId('city_id')->constrained('cities');
-            $table->foreignId('governorate_id')->constrained('governorates');
+            // $table->foreignId('governorate_id')->constrained('governorates');
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('phone_verified_at')->nullable();
             $table->string('password');

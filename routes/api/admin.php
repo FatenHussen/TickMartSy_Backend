@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\Role_Permission\PermissionIndexController;
 use App\Http\Controllers\Admin\Role_Permission\RoleCrudController;
 use App\Http\Controllers\Admin\Brand\BrandController;
 use App\Http\Controllers\Admin\Category\CategoryController;
+use App\Http\Controllers\Admin\Driver\DriverCrudController;
 use App\Http\Controllers\Admin\Language\LanguageController;
 use App\Http\Controllers\Admin\Store\StoreCrudController;
 use App\Http\Controllers\Admin\Shop\ShopCrudController;
@@ -65,6 +66,8 @@ Route::prefix('admin')->group(
         Route::apiResource('banners', BannerCrudController::class);
 
         Route::apiResource('admins', AdminCrudController::class);
+        Route::apiResource('drivers', DriverCrudController::class);
+
         // });
     }
 );

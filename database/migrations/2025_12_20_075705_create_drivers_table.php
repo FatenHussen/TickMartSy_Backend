@@ -15,7 +15,17 @@ return new class extends Migration
             $table->id();
             $table->string('phone')->unique();
             $table->string('password');
+            $table->boolean('is_active')->default(true);
+            $table->string('address')->nullable();
+            $table->enum('status', ['available', 'busy', 'inactive'])->default('available');
+            $table->decimal('rate_per_order', 8, 2)->default(0);
             $table->timestamps();
+        });
+
+        Schema::create('area_driver', function (Blueprint $table) {
+            $table->foreignId('area_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('driver_id')->constrained()->cascadeOnDelete();
+            $table->primary(['area_id', 'driver_id']);
         });
     }
 
@@ -24,6 +34,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('area_driver');
         Schema::dropIfExists('drivers');
     }
 };
