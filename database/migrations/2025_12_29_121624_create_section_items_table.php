@@ -14,8 +14,7 @@ return new class extends Migration
         Schema::create('section_items', function (Blueprint $table) {
             $table->id();
             $table->foreignId('section_id')->constrained()->onDelete('cascade');
-            $table->string('item_type');    // Category, Recipe, Banner
-            $table->unsignedBigInteger('item_id');
+            $table->morphs('item');
             $table->string('link')->nullable();
             $table->integer('order')->default(1);
             $table->timestamps();

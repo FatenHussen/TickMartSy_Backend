@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\Auth\AuthController;
+use App\Http\Controllers\User\SectionController;
 use App\Http\Controllers\User\CityController;
 use App\Http\Controllers\User\GovernorateController;
 
@@ -11,7 +12,7 @@ Route::prefix('user')->group(
         // public routes 
         Route::get('/governorates', [GovernorateController::class, 'index']);
         Route::get('/cities', [CityController::class, 'index']);
-        
+
         //authetication routes user 
         Route::prefix('auth')->group(
             function () {
@@ -22,7 +23,7 @@ Route::prefix('user')->group(
                 Route::post('/login', [AuthController::class, 'login']);
                 Route::post('/send-password', [AuthController::class, 'sendPassword']);
                 Route::post('/verify-password', [AuthController::class, 'verifyPassword']);
-                
+
                 // protected routes 
                 Route::middleware(['auth:user'])->group(function () {
                     Route::get('/logout', [AuthController::class, 'logout']);
@@ -32,5 +33,12 @@ Route::prefix('user')->group(
                 });
             }
         );
+
+
+        //  Section routes
+        Route::prefix('sections')->group(function () {
+            // Public routes
+            Route::get('/', [SectionController::class, 'index']);
+        });
     }
 );

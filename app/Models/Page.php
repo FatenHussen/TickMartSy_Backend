@@ -12,9 +12,4 @@ class Page extends Model
     {
         return $this->hasMany(PageSection::class)->orderBy('order');
     }
-
-    public function sections()
-    {
-        return $this->hasMany(PageSection::class)->with('section')->orderBy('order');
-    }
 }

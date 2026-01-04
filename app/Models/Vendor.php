@@ -9,7 +9,7 @@ use Spatie\Translatable\HasTranslations;
 class Vendor extends Model
 {
     use HasTranslations;
-    
+    protected $imageFolder = "vendors";
     public array $translatable = ['name'];
 
     protected $fillable = [
@@ -27,14 +27,14 @@ class Vendor extends Model
     ];
 
     protected $casts = [
-    'contract_date'     => 'date',
-    'commission_rate'   => 'decimal:2',
-    'is_active'         => 'boolean',
-    'ratings_count'     => 'integer',
-    'ratings_sum'       => 'integer',
+        'contract_date'     => 'date',
+        'commission_rate'   => 'decimal:2',
+        'is_active'         => 'boolean',
+        'ratings_count'     => 'integer',
+        'ratings_sum'       => 'integer',
     ];
-    
-   
+
+
     public function shops()
     {
         return $this->hasMany(Shop::class);
@@ -49,20 +49,20 @@ class Vendor extends Model
             'vendor_user_id'
         );
     }
-
-    public function products()
-    {
-        return $this->hasMany(Product::class);
-    }
+    
+    
     protected function averageRating(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->ratings_count > 0
+            get: fn() => $this->ratings_count > 0
                 ? round($this->ratings_sum / $this->ratings_count, 2)
                 : 0.00
         );
     }
-
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
     public function media()
     {
         return $this->morphMany(Media::class, 'mediable');
@@ -108,13 +108,13 @@ class Vendor extends Model
         return $query->where('is_active', true);
     }
 
-  
+
     public function getLogoUrl(): ?string
     {
         return $this->media()->where('collection', 'logo')->first()?->url;
     }
 
-   
+
     public function getCoverImagesUrls(): array
     {
         return $this->media()
@@ -134,6 +134,4 @@ class Vendor extends Model
             ->map(fn($media) => $media->url)
             ->toArray();
     }
-
-
 }

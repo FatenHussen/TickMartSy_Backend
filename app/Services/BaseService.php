@@ -6,6 +6,7 @@ use App\Exceptions\NotFoundException;
 use App\Traits\FileTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 abstract class BaseService
 {
@@ -25,7 +26,7 @@ abstract class BaseService
     protected $imageColumn;
     protected $imageFolder;
     protected $imagesFolder;
-
+    protected $singleImages;
     protected $imagesRelation;
 
     public function getAll($filters = [], $config = [])
@@ -93,14 +94,13 @@ abstract class BaseService
 
             // many-to-many
             if (method_exists($relationObj, 'sync')) {
-
                 $syncData = [];
                 foreach ($items as $item) {
                     $id = $item['id'];
                     unset($item['id']);
                     $syncData[$id] = $item;
-                    $relationObj->sync($syncData);
                 }
+                $relationObj->sync($syncData);
             } else {
                 // hasMany
                 $relationObj->delete();
@@ -110,6 +110,8 @@ abstract class BaseService
             }
         }
     }
+
+
 
     protected function handleMedia($model, array $data)
     {
@@ -137,41 +139,58 @@ abstract class BaseService
     }
 
 
+    protected function handleSingleImages($object, array &$data): array
+    {
+        if (empty($this->singleImages)) return $data;
+
+        $fileService = new \App\Services\Base\SimpleFileService();
+        $updateData = [];
+
+        foreach ($this->singleImages as $column) {
+            if (isset($data[$column]) && $data[$column] instanceof \Illuminate\Http\UploadedFile) {
+                $updateData[$column] = $fileService->upload(
+                    $object,
+                    $object->{$column} ?? null,
+                    $data[$column]
+                );
+            }
+        }
+
+        if (!empty($updateData)) {
+            $object->update($updateData);
+        }
+
+        return $data;
+    }
+
+    protected function deleteSingleImages($object): void
+    {
+        if (empty($this->singleImages)) return;
+        $fileService = new \App\Services\Base\SimpleFileService();
+
+        foreach ($this->singleImages as $column) {
+            if (!empty($object->{$column})) {
+                $fileService->delete($object->{$column});
+            }
+        }
+    }
+
     public function create($data)
     {
 
         $object = $this->model::create($data);
+        $this->handleSingleImages($object, $data);
+
         $this->handleRelations($object, $data);
         $this->handleMedia($object, $data);
         return new $this->resource($object);
     }
 
-    // public function update($id, array $data)
-    // {
-    //     DB::beginTransaction();
-
-    //     $object = $this->model::find($id);
-
-    //     if (!$object) {
-    //         throw new NotFoundException();
-    //     }
-    //     $object->update($data);
-    //     $this->handleRelations($object, $data);
-    //     $this->handleMedia($object, $data);
-    //     $object->save();
-    //     return new $this->resource($object);
-    // }
     public function update($id, array $data)
     {
         DB::beginTransaction();
 
-        $object = $this->model::find($id);
-
-        if (!$object) {
-            throw new NotFoundException();
-        }
-
-        // ==== handle translatable fields ====
+        $object = $this->model::findOrFail($id);
         if (property_exists($object, 'translatable')) {
             foreach ($object->translatable as $field) {
                 if (isset($data[$field])) {
@@ -180,28 +199,20 @@ abstract class BaseService
                 }
             }
         }
-
         $object->update($data);
-
+        $this->handleSingleImages($object, $data);
         $this->handleRelations($object, $data);
         $this->handleMedia($object, $data);
-
         DB::commit();
-
         return new $this->resource($object);
     }
-
     public function delete($id): bool
     {
-        $object = $this->model::find($id);
-
-        if (!$object) {
-            throw new NotFoundException();
-        }
-
-        $this->deleteImages($object);
+        $object = $this->model::findOrFail($id);
+        $this->deleteSingleImages($object);
 
         $object->delete();
+
 
         return true;
     }

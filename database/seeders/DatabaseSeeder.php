@@ -17,16 +17,10 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             GovernorateSeeder::class,
-            CitySeeder::class,
             AdminRolePermissionSeeder::class,
             RolePermissionSeeder::class,
             CategorySeeder::class,
-            LanguageSeeder::class,
-            AreaSeeder::class,
-            BrandSeeder::class,
             VendorSeeder::class,
-            VendorUserSeeder::class,
-            VendorRolePermissionSeeder::class,
             ShopSeeder::class,
             ShopUserSeeder::class,
             PageSectionSeeder::class,
@@ -39,6 +33,7 @@ class DatabaseSeeder extends Seeder
             ProductVariantSeeder::class,
             ProductMediaSeeder::class,
             ShopProductVariantSeeder::class,
+            PageSectionSeeder::class
         ]);
     }
 }

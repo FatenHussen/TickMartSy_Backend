@@ -34,4 +34,18 @@ class Category extends Model
     {
         return $this->hasMany(Store::class);
     }
+
+    public function getSectionData(): array
+    {
+        return [
+            'id'       => $this->id,
+            'title'     => $this->name,
+            'desc'     => $this->description,
+            'image'    => $this->icon,
+            'price' => null,
+            'discount' => null,
+            'top_badges' => [],
+            'bottom_badges' => [],
+        ];
+    }
 }
