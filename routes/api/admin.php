@@ -40,13 +40,13 @@ Route::prefix('admin')->group(
         //         'vendors'       => VendorCrudController::class,
         //    ]);
 
-        Route::apiResource('shops', ShopCrudController::class);
+        // Route::apiResource('shops', ShopCrudController::class);
         // Route::middleware('auth:admin')->group(
         //     function () {
         Route::resources([
             'stores'         => StoreCrudController::class,
-            'shops'          => ShopCrudController::class,
-            'vendors'        => VendorCrudController::class,
+            // 'shops'          => ShopCrudController::class,
+            // 'vendors'        => VendorCrudController::class,
             'languages'      => LanguageController::class,
             'categories' => CategoryController::class,
             'brands' => BrandController::class,
