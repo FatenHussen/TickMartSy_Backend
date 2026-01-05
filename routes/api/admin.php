@@ -57,8 +57,8 @@ Route::prefix('admin')->group(
         //     }
         // );
         //  });
-        Route::apiResource('shops', ShopCrudController::class)
-            ->middleware('crud.permission:shops');
+        Route::apiResource('shops', ShopCrudController::class);
+        // ->middleware('crud.permission:shops');
 
         Route::apiResource('stores', StoreCrudController::class);
         // ->middleware('crud.permission:stores');
