@@ -16,10 +16,9 @@ class OneResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'link' => $this->item_type == 'App\Models\Banner' ? $this->item->link : $this->link,
             'order' => $this->order,
-            'link' => $this->link,
-            'item' => $this->item->toSectionArray(),
-
+            'item' => $this->item->toSectionArray()
         ];
     }
 }
