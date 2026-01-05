@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 
-class Category extends Model
+class Category extends Model implements Sectionable
 {
     use HasFactory, HasTranslations, SoftDeletes;
 
@@ -35,7 +35,7 @@ class Category extends Model
         return $this->hasMany(Store::class);
     }
 
-    public function getSectionData(): array
+    public function toSectionArray(): array
     {
         return [
             'id'       => $this->id,

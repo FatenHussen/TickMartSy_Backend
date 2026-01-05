@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 
-class Product extends Model
+class Product extends Model implements Sectionable
 {
     use HasFactory, HasTranslations, SoftDeletes;
 
@@ -27,7 +27,6 @@ class Product extends Model
         'bought_with',
         'is_instant_delivery',
         'vendor_id',
-
     ];
 
     public array $translatable = [
@@ -77,14 +76,14 @@ class Product extends Model
             ->orderBy('order');
     }
 
-    public function getSectionData(): array
+    public function toSectionArray(): array
     {
         return [
             'id'       => $this->id,
             'title'     => $this->title,
             'desc'     => $this->description,
             'image'    => $this->image_url,
-            'price' => null,
+            'price' => $this->price,
             'discount' => null,
             'top_badges' => [],
             'bottom_badges' => [],

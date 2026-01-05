@@ -17,12 +17,9 @@ class OneResource extends JsonResource
         return [
             'id' => $this->id,
             'order' => $this->order,
-            'item' => $this->item->getSectionData(),
-            'action' => [
-                'type' => 'page',
-                // 'page' => ['slug' => $this->item->getSlug()],
-                'params' => ['id' => $this->item->id]
-            ]
+            'link' => $this->link,
+            'item' => $this->item->toSectionArray(),
+
         ];
     }
 }

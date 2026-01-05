@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('api_method')->nullable();
             $table->string('manual_model')->nullable();
             $table->json('filters')->nullable();
+            $table->boolean('see_more')->default(false);
+            $table->string('see_more_slug')->nullable();
+            $table->string('details_slug')->nullable();
             $table->timestamps();
         });
     }

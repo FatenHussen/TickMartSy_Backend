@@ -28,7 +28,7 @@ class Banner extends Model
     {
         return asset('storage/' . $this->image);
     }
-    public function getSectionData(): array
+    public function toSectionArray(): array
     {
         return [
             'id'       => $this->id,

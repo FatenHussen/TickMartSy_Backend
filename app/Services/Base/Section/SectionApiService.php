@@ -32,7 +32,6 @@ class SectionApiService
         return $limit ? $query->limit($limit)->get() : $query->paginate($paginate);
     }
 
-    // تحويل api_method إلى Handler class
     protected function resolveHandler(string $method)
     {
         $map = [

@@ -30,7 +30,7 @@ class PageSectionSeeder extends Seeder
         ]);
 
         $homePage = Page::create(['title' => 'Home', 'slug' => 'home']);
-        $shopPage = Page::create(['title' => 'Shop', 'slug' => 'shop']);
+        // $shopPage = Page::create(['title' => 'Shop', 'slug' => 'shop']);
 
         $slider = DisplayType::create([
             'name' => 'Slider',
@@ -52,8 +52,13 @@ class PageSectionSeeder extends Seeder
             'filters' => [
                 'category_id' => ['type' => 'select'],
                 'price_max' => ['type' => 'number']
-            ]
+            ],
+            'see_more' => true,
+            'see_more_slug' => 'products',
+            'details_slug' => 'product_details',
+
         ]);
+
 
         $manualProductsSection = Section::create([
             'name' => ['en' => 'Manual Products', 'ar' => 'منتجات مختارة'],
@@ -105,7 +110,7 @@ class PageSectionSeeder extends Seeder
         // Manual Recipes - Shop (optional)
         $shopManualRecipes = PageSection::create([
             'name' => ['en' => 'Manual Recipes', 'ar' => 'وصفات'],
-            'page_id' => $shopPage->id,
+            'page_id' => $homePage->id,
             'section_id' => $manualRecipesSection->id,
             'display_type_id' => $grid->id,
             'position' => 'after',
