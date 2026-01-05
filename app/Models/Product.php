@@ -76,4 +76,18 @@ class Product extends Model
             ->where('collection', 'product')
             ->orderBy('order');
     }
+
+    public function getSectionData(): array
+    {
+        return [
+            'id'       => $this->id,
+            'title'     => $this->title,
+            'desc'     => $this->description,
+            'image'    => $this->image_url,
+            'price' => null,
+            'discount' => null,
+            'top_badges' => [],
+            'bottom_badges' => [],
+        ];
+    }
 }

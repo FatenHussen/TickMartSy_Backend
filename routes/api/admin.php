@@ -10,6 +10,9 @@ use App\Http\Controllers\Admin\Category\CategoryAttributeController;
 use App\Http\Controllers\Admin\Category\CategoryController;
 use App\Http\Controllers\Admin\Driver\DriverCrudController;
 use App\Http\Controllers\Admin\Category\CategoryDetailController;
+use App\Http\Controllers\Admin\Governorate\AreaCrudController;
+use App\Http\Controllers\Admin\Governorate\CityCrudController;
+use App\Http\Controllers\Admin\Governorate\GovernorateCrudController;
 use App\Http\Controllers\Admin\Language\LanguageController;
 use App\Http\Controllers\Admin\Product\ProductController;
 use App\Http\Controllers\Admin\Store\StoreCrudController;
@@ -73,6 +76,9 @@ Route::prefix('admin')->group(
 
         Route::apiResource('admins', AdminCrudController::class);
         Route::apiResource('drivers', DriverCrudController::class);
+        Route::apiResource('governorates', GovernorateCrudController::class);
+        Route::apiResource('cities', CityCrudController::class);
+        Route::apiResource('areas', AreaCrudController::class);
 
         // });
     }

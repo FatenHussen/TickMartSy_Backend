@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->json('name');
             $table->enum('type', ['manual', 'api']);
-            $table->string('api_source')->nullable();
+            $table->string('api_method')->nullable();
             $table->string('manual_model')->nullable();
             $table->json('filters')->nullable();
             $table->timestamps();

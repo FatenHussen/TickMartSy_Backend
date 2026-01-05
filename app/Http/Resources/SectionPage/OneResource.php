@@ -18,17 +18,17 @@ class OneResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name ?? $this->section->name,
-            'display_type_id' => $this->display_type_id,
-            'position' => $this->position,
-            'order' => $this->order,
             'type' => $this->section->type,
-            'api' => [
-                'api_source' =>  $this->section->api_source,
-                'filters' => $this->filters,
-            ],
-            'manual' => [
-                'section_items' => SectionItemOneResource::collection($this->section->sectionItems)
-            ]
+            'items' => $this->section->type === 'api'
+                ? $this->api_data
+                : SectionItemOneResource::collection($this->section->sectionItems),
+            'see_more' => $this->section->see_more
+                ? [
+                    'type' => 'page',
+                    'page' => ['slug' => $this->section->see_more_slug],
+                    'params' => $this->section->filters
+                ]
+                : null,
         ];
     }
 }

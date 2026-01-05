@@ -10,7 +10,7 @@ class Section extends Model
     use HasTranslations;
     public array $translatable = ['name'];
 
-    protected $fillable = ['name', 'type', 'api_source', 'filters', 'reusable'];
+    protected $fillable = ['name', 'type', 'api_method', 'filters'];
     protected $casts = ['filters' => 'array'];
 
     public function pages()
