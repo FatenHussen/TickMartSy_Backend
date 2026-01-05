@@ -23,7 +23,6 @@ class DatabaseSeeder extends Seeder
             VendorSeeder::class,
             ShopSeeder::class,
             ShopUserSeeder::class,
-            PageSectionSeeder::class,
             CategoryAttributeSeeder::class,
             AttributeValueSeeder::class,
             CategoryDetailSeeder::class,
@@ -33,6 +32,7 @@ class DatabaseSeeder extends Seeder
             ProductVariantSeeder::class,
             ProductMediaSeeder::class,
             ShopProductVariantSeeder::class,
+            PageSectionSeeder::class,
         ]);
     }
 }

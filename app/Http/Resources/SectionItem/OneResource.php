@@ -14,12 +14,11 @@ class OneResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-
         return [
             'id' => $this->id,
             'link' => $this->item_type == 'App\Models\Banner' ? $this->item->link : $this->link,
             'order' => $this->order,
-            'item' => $this->item->getSectionData()
+            'item' => $this->item->toSectionArray()
         ];
     }
 }

@@ -17,49 +17,48 @@ class PageSectionSeeder extends Seeder
 {
     public function run()
     {
-        // ---------- Banners ----------
         $banner1 = Banner::create([
             'title' => ['en' => 'Dis 50%', 'ar' => 'خصم حتى 50%'],
             'image' => '/images/banners/banner1.jpg',
             'link' => '/sale',
-            // 'order' => 1,
-            // 'is_active' => true,
         ]);
 
         $banner2 = Banner::create([
-            'title' => ['en' => 'new arr', 'ar' => 'وصل حديثا'],
+            'title' => ['en' => 'New Arrivals', 'ar' => 'وصل حديثا'],
             'image' => '/images/banners/banner2.jpg',
             'link' => '/new-arrivals',
-            // 'order' => 2,
-            // 'is_active' => true,
         ]);
 
-        // ---------- Pages ----------
         $homePage = Page::create(['title' => 'Home', 'slug' => 'home']);
-        $shopPage = Page::create(['title' => 'Shop', 'slug' => 'shop']);
+        // $shopPage = Page::create(['title' => 'Shop', 'slug' => 'shop']);
 
-        // ---------- Display Types ----------
         $slider = DisplayType::create([
             'name' => 'Slider',
             'preview_image' => '/images/display/slider.png',
-            'fields' =>  ['image', 'title', 'price']
+            'fields' => ['image', 'title', 'price']
         ]);
+
         $grid = DisplayType::create([
             'name' => 'Grid',
             'preview_image' => '/images/display/grid.png',
             'fields' => ['image', 'title', 'price', 'brand']
         ]);
 
-        // ---------- Sections ----------
+        // API Section with schema filters
         $trendingProductsSection = Section::create([
             'name' => ['en' => 'Trending Products', 'ar' => 'المنتجات الترند'],
             'type' => 'api',
-            'api_source' => 'trending_products',
-            'filters' => json_encode([
+            'api_method' => 'trending_products',
+            'filters' => [
                 'category_id' => ['type' => 'select'],
                 'price_max' => ['type' => 'number']
-            ])
+            ],
+            'see_more' => true,
+            'see_more_slug' => 'products',
+            'details_slug' => 'product_details',
+
         ]);
+
 
         $manualProductsSection = Section::create([
             'name' => ['en' => 'Manual Products', 'ar' => 'منتجات مختارة'],
@@ -75,23 +74,22 @@ class PageSectionSeeder extends Seeder
         $manualRecipesSection = Section::create([
             'name' => ['en' => 'Manual Recipes', 'ar' => 'وصفات'],
             'type' => 'manual',
-            'manual_model' => 'Banner'
-
+            'manual_model' => 'Recipe'
         ]);
 
-        // ---------- Page Sections ----------
+        // Trending Products - Home
         $homeTrending = PageSection::create([
             'page_id' => $homePage->id,
             'section_id' => $trendingProductsSection->id,
             'display_type_id' => $slider->id,
             'position' => 'before',
             'order' => 1,
-            'filters' => json_encode(['category_id' => 1, 'price_max' => 100])
+            'filters' => ['category_id' => 1, 'price_max' => 100]
         ]);
 
+        // Manual Products - Home
         $homeManualProducts = PageSection::create([
             'name' => ['en' => 'Manual Products', 'ar' => 'منتجات مختارة'],
-
             'page_id' => $homePage->id,
             'section_id' => $manualProductsSection->id,
             'display_type_id' => $grid->id,
@@ -99,6 +97,7 @@ class PageSectionSeeder extends Seeder
             'order' => 2
         ]);
 
+        // Manual Banners - Home
         $homeManualBanners = PageSection::create([
             'name' => ['en' => 'Manual Banners', 'ar' => 'إعلانات'],
             'page_id' => $homePage->id,
@@ -108,37 +107,37 @@ class PageSectionSeeder extends Seeder
             'order' => 3
         ]);
 
-        // $shopManualRecipes = PageSection::create([
-        //     'page_id' => $shopPage->id,
-        //     'section_id' => $manualRecipesSection->id,
-        //     'display_type_id' => $grid->id,
-        //     'position' => 'after',
-        //     'order' => 1
-        // ]);
+        // Manual Recipes - Shop (optional)
+        $shopManualRecipes = PageSection::create([
+            'name' => ['en' => 'Manual Recipes', 'ar' => 'وصفات'],
+            'page_id' => $homePage->id,
+            'section_id' => $manualRecipesSection->id,
+            'display_type_id' => $grid->id,
+            'position' => 'after',
+            'order' => 1
+        ]);
 
-
-
-        // ---------- Section Items ----------
-        // Manual Products
-        $product1 = Category::first();
-        $product2 = Category::skip(1)->first();
+        // Manual Products Items
+        $product1 = Product::first(); // مثال
+        $product2 = Product::skip(1)->first();
 
         SectionItem::create([
             'section_id' => $manualProductsSection->id,
-            'item_type' => 'App\Models\Banner',
+            'item_type' => 'App\Models\Product',
             'item_id' => $product1->id,
             'link' => '/product/' . $product1->id,
             'order' => 1
         ]);
+
         SectionItem::create([
             'section_id' => $manualProductsSection->id,
-            'item_type' => 'App\Models\Banner',
+            'item_type' => 'App\Models\Product',
             'item_id' => $product2->id,
             'link' => '/product/' . $product2->id,
             'order' => 2
         ]);
 
-        // Manual Banners
+        // Manual Banners Items
         SectionItem::create([
             'section_id' => $manualBannerSection->id,
             'item_type' => 'App\Models\Banner',
@@ -146,6 +145,7 @@ class PageSectionSeeder extends Seeder
             'link' => $banner1->link,
             'order' => 1
         ]);
+
         SectionItem::create([
             'section_id' => $manualBannerSection->id,
             'item_type' => 'App\Models\Banner',

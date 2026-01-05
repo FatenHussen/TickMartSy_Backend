@@ -25,8 +25,7 @@ class User extends Authenticatable
         'email_verified_at',
         'phone_verified_at',
         'city_id',
-        'governorate_id'
-        
+
     ];
 
     /**
@@ -51,7 +50,7 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    
+
     // public function images()
     // {
     //     return $this->morphMany(Image::class, 'imageable');
@@ -68,13 +67,9 @@ class User extends Authenticatable
     // {
     //     return $this->mainImage?->path;
     // }
-   
+
     public function city()
     {
         return $this->belongsTo(City::class);
-    }
-    public function governorate()
-    {
-        return $this->belongsTo(Governorate::class);
     }
 }

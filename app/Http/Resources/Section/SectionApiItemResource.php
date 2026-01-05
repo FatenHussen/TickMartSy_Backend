@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Http\Resources\Section;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class SectionApiItemResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        if (method_exists($this->resource, 'toSectionArray')) {
+            return $this->resource->toSectionArray();
+        }
+        return parent::toArray($request);
+    }
+}

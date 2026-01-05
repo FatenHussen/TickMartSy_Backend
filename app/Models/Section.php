@@ -9,9 +9,21 @@ class Section extends Model
 {
     use HasTranslations;
     public array $translatable = ['name'];
+    protected $casts = [
+        'filters' => 'array',
+        'see_more_params' => 'array',
+    ];
 
-    protected $fillable = ['name', 'type', 'api_source', 'filters', 'reusable'];
-    protected $casts = ['filters' => 'array'];
+    protected $fillable = [
+        'name',
+        'type',
+        'api_method',
+        'filters',
+        'manual_model',
+        'see_more',
+        'see_more_slug',
+        'details_slug'
+    ];
 
     public function pages()
     {

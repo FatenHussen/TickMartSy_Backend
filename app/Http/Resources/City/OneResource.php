@@ -21,7 +21,6 @@ class OneResource extends JsonResource
             'name' => $this->name,
             'governorate' => GovernorateOneResource::make($this->governorate),
             'created_at' => $this->created_at?->format('Y-m-d H:i'),
-
         ];
     }
 }

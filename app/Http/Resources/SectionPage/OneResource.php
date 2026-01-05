@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\SectionPage;
 
+use App\Http\Resources\Section\SectionApiItemResource;
 use App\Http\Resources\SectionItem\OneResource as SectionItemOneResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -18,17 +19,23 @@ class OneResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name ?? $this->section->name,
-            'display_type_id' => $this->display_type_id,
+            'type' => $this->section->type,
             'position' => $this->position,
             'order' => $this->order,
-            'type' => $this->section->type,
-            'api' => [
-                'api_source' =>  $this->section->api_source,
-                'filters' => $this->filters,
+            'see_more' => $this->section->see_more
+                ? [
+                    'page_slug' => $this->section->see_more_slug,
+                    'params' => $this->filters
+                ]
+                : null,
+
+            'action' => [
+                'page_slug' => $this->section->details_slug,
+
             ],
-            'manual' => [
-                'section_items' => SectionItemOneResource::collection($this->section->sectionItems)
-            ]
+            'items' => $this->section->type === 'api'
+                ? SectionApiItemResource::collection($this->api_data)
+                : SectionItemOneResource::collection($this->section->sectionItems),
         ];
     }
 }

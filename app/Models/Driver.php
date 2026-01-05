@@ -10,11 +10,22 @@ use Laravel\Sanctum\HasApiTokens;
 class Driver extends Authenticatable
 {
     use HasFactory, Notifiable, HasApiTokens;
-    protected $fillable = ['phone', 'password'];
+    protected $fillable = [
+        'phone',
+        'password',
+        'is_active',
+        'address',
+        'status',
+        'rate_per_order',
+    ];
     protected $hidden = [
         'password',
     ];
     protected $casts = [
         'password' => 'hashed',
     ];
+    public function areas()
+    {
+        return $this->belongsToMany(Area::class, 'area_driver');
+    }
 }

@@ -15,9 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->use([SetLocale::class,
-        HandleCors::class,
-    ]);
+        $middleware->use([
+            SetLocale::class,
+            HandleCors::class,
+        ]);
 
         $middleware->alias([
             'setLocale' => SetLocale::class,
