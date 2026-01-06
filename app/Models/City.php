@@ -11,10 +11,11 @@ class City extends Model
     protected $fillable = ['name', 'governorate_id'];
     public $translatable = ['name'];
 
-    public function users() {
+    public function users()
+    {
         return $this->hasMany(User::class);
     }
-    public function governorates()
+    public function governorate()
     {
         return $this->belongsTo(Governorate::class);
     }

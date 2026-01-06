@@ -74,7 +74,7 @@ class AdminRolePermissionSeeder extends Seeder
             ['email' => 'superadmin@admin.com'],
             [
                 'name' => 'Super Admin',
-                'password' => bcrypt('password'),
+                'password' => 'password',
             ]
         );
         $Em1->assignRole($superAdmin);
@@ -84,7 +84,7 @@ class AdminRolePermissionSeeder extends Seeder
             ['email' => 'employee@admin.com'],
             [
                 'name' => 'Employee',
-                'password' => bcrypt('password'),
+                'password' => 'password',
             ]
         );
         $Em2->assignRole($employee);

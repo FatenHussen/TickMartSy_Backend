@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Admin\Area;
+namespace App\Http\Requests\Admin\Service;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -16,8 +16,6 @@ class StoreRequest extends FormRequest
         return [
             'name.ar'              => 'required|string|max:255',
             'name.en'              => 'required|string|max:255',
-            'city_id' => 'required|exists:cities,id',
-            'is_active'            => 'nullable|boolean',
         ];
     }
 }

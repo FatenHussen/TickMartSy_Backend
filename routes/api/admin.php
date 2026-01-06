@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\Governorate\CityCrudController;
 use App\Http\Controllers\Admin\Governorate\GovernorateCrudController;
 use App\Http\Controllers\Admin\Language\LanguageController;
 use App\Http\Controllers\Admin\Product\ProductController;
+use App\Http\Controllers\Admin\Service\ServiceCrudController;
 use App\Http\Controllers\Admin\Store\StoreCrudController;
 use App\Http\Controllers\Admin\Shop\ShopCrudController;
 use App\Http\Controllers\Admin\Vendor\VendorCrudController;
@@ -79,6 +80,7 @@ Route::prefix('admin')->group(
         Route::apiResource('governorates', GovernorateCrudController::class);
         Route::apiResource('cities', CityCrudController::class);
         Route::apiResource('areas', AreaCrudController::class);
+        Route::apiResource('services', ServiceCrudController::class);
 
         // });
     }

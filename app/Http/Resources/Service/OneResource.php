@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Resources\Admin;
+namespace App\Http\Resources\Service;
 
+use App\Http\Resources\City\OneResource as CityOneResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,10 +18,6 @@ class OneResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'email' => $this->email,
-            'is_active' => $this->is_active,
-            'roles' => $this->roles->pluck(['name']),
-            'permissions' => $this->roles->flatMap->permissions->pluck('name')->unique(),
             'created_at' => $this->created_at?->format('Y-m-d H:i'),
         ];
     }

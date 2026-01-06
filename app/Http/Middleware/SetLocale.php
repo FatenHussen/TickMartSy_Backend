@@ -20,7 +20,7 @@ class SetLocale
         $locale = $request->header('Accept-Language');
 
         if (!in_array($locale, $availableLocales)) {
-            $locale = Language::getDefault()?->code ?? 'en';
+            $locale = Language::getDefault()?->code ?? 'ar';
         }
 
         App::setLocale($locale);

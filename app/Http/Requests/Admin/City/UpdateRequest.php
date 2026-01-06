@@ -24,7 +24,8 @@ class UpdateRequest extends FormRequest
     {
         $adminId = $this->route('admin');
         return [
-            'name'              => 'nullable|string|max:255',
+            'name.ar'              => 'nullable|string|max:255',
+            'name.en'              => 'nullable|string|max:255',
             'governorate_id' => 'nullable|exists:governorates,id',
             'is_active'            => 'nullable|boolean',
         ];
