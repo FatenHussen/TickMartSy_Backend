@@ -22,6 +22,7 @@ class OneResource extends JsonResource
             'type' => $this->section->type,
             'position' => $this->position,
             'order' => $this->order,
+            'display_type_id' => $this->display_type_id,
             'see_more' => $this->section->see_more
                 ? [
                     'page_slug' => $this->section->see_more_slug,
