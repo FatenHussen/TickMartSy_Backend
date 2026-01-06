@@ -12,7 +12,7 @@ return new class extends Migration {
             $table->json('name');
             $table->decimal('lat', 10, 8)->nullable();
             $table->decimal('lng', 11, 8)->nullable();
-            $table->foreignId('city_id')->constrained('cities');
+            $table->foreignId('city_id')->constrained('cities')->cascadeOnDelete();
             $table->timestamps();
         });
     }
