@@ -2,6 +2,8 @@
 
 namespace App\Services\User;
 
+use Illuminate\Database\Eloquent\Builder;
+
 use App\Models\Product;
 use App\Services\BaseService;
 use App\Http\Resources\Product\OneResource;
@@ -22,42 +24,6 @@ class ProductService extends BaseService
     ];
     protected $searchableFields = ['name', 'description', 'country'];
     protected $sortableFields   = ['id', 'price', 'created_at', 'name'];
-    public function query(array $filters)
-    {
-        $query = Product::query()
-            ->with($this->relations)
-            ->latest();
-
-        $this->applyBasicFilters($query, $filters);
-        $this->applyTypeFilters($query, $filters);
-
-        return $query;
-    }
-    protected function applyBasicFilters($query, $filters)
-    {
-        // if (!empty($filters['category_id'])) {
-        //     $query->where('category_id', $filters['category_id']);
-        // }
-
-        if (!empty($filters['price_min'])) {
-            $query->where('price', '>=', $filters['price_min']);
-        }
-
-        if (!empty($filters['price_max'])) {
-            $query->where('price', '<=', $filters['price_max']);
-        }
-
-        if (!empty($filters['country'])) {
-            $query->where('country->' . app()->getLocale(), 'like', '%' . $filters['country'] . '%');
-        }
-
-        if (!empty($filters['search'])) {
-            $query->where(function ($q) use ($filters) {
-                $q->where('name->' . app()->getLocale(), 'like', '%' . $filters['search'] . '%')
-                    ->orWhere('description->' . app()->getLocale(), 'like', '%' . $filters['search'] . '%');
-            });
-        }
-    }
     protected function applyTypeFilters($query, $filters)
     {
         if (empty($filters['type'])) {
@@ -133,5 +99,59 @@ class ProductService extends BaseService
                 ->orWhere('description->' . app()->getLocale(), 'like', '%' . $filters['search'] . '%')
                 ->orWhere('country->' . app()->getLocale(), 'like', '%' . $filters['search'] . '%');
         });
+    }
+    public function queryBuilder($query, $filters = [], $config = [])
+    {
+        parent::queryBuilder($query, $filters, $config);
+
+        $query->with([
+            'category',
+            'variants.attributes.attribute',
+            'variants.shopVariants.shop',
+            'variants.images',
+            'categoryDetails',
+            'extraDetails',
+            'media',
+        ]);
+
+        if (!empty($filters['category_id'])) {
+            $query->where('category_id', $filters['category_id']);
+        }
+
+        if (!empty($filters['shop_id'])) {
+            $query->whereHas('variants.shopVariants', function (Builder $q) use ($filters) {
+                $q->where('shop_id', $filters['shop_id']);
+            });
+        }
+
+        if (!empty($filters['price_min'])) {
+            $query->whereHas('variants.shopVariants', function (Builder $q) use ($filters) {
+                $q->where('price', '>=', $filters['price_min']);
+            });
+        }
+
+        if (!empty($filters['price_max'])) {
+            $query->whereHas('variants.shopVariants', function (Builder $q) use ($filters) {
+                $q->where('price', '<=', $filters['price_max']);
+            });
+        }
+
+        if (!empty($filters['search'])) {
+            $locale = app()->getLocale();
+            $query->where(function (Builder $q) use ($filters, $locale) {
+                $q->where("name->{$locale}", 'like', '%' . $filters['search'] . '%')
+                    ->orWhere("description->{$locale}", 'like', '%' . $filters['search'] . '%');
+            });
+        }
+
+        if (!empty($filters['country'])) {
+            $query->where('country->' . app()->getLocale(), 'like', '%' . $filters['country'] . '%');
+        }
+
+        if (!empty($filters['type'])) {
+            $this->applyTypeFilters($query, $filters['type'], $filters);
+        }
+
+        return $query;
     }
 }
