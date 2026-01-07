@@ -55,4 +55,5 @@ class ProductVariant extends Model
     {
         return AttributeValue::whereIn('id', $this->attributes_values_ids ?? [])->get();
     }
+    
 }

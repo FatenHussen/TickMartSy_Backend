@@ -154,4 +154,43 @@ class ProductService extends BaseService
 
         return $query;
     }
+    protected function getNearestShopId($user)
+    {
+        if (!$user || !$user->lat || !$user->lng) {
+            return null;
+        }
+
+        return \App\Models\Shop::selectRaw("
+            id,
+            ( 6371 * acos( cos( radians(?) ) *
+            cos( radians( lat ) )
+            * cos( radians( lng ) - radians(?) )
+            + sin( radians(?) ) *
+            sin( radians( lat ) ) ) ) AS distance
+        ", [$user->lat, $user->lng, $user->lat])
+            ->orderBy('distance')
+            ->value('id');
+    }
+    public function getOne($id)
+    {
+        $product =Product::find($id);
+        $user = auth()->user();
+        $shopId = $this->getNearestShopId($user) ?? null;
+        $product->load([
+            'variants.attributes.attribute',
+            'variants.images',
+            'variants.shopVariants' => function ($q) use ($shopId) {
+                if ($shopId) {
+                    $q->where('shop_id', $shopId);
+                }
+                $q->with('shop');
+            },
+            'category',
+            'categoryDetails',
+            'extraDetails',
+            'media',
+        ]);
+
+        return new ($this->resource)($product);
+        }
 }
