@@ -103,7 +103,6 @@ class ProductService extends BaseService
     }
     public function queryBuilder($query, $filters = [], $config = [])
     {
-        parent::queryBuilder($query, $filters, $config);
 
         $query->with([
             'category',
