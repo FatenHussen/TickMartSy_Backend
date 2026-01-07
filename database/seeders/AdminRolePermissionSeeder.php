@@ -21,7 +21,13 @@ class AdminRolePermissionSeeder extends Seeder
             'Governorate',
             'Area',
             'Shop',
-            'Vendor'
+            'Vendor',
+            'Driver',
+            'Brand',
+            'Category',
+            'Products',
+            'Banner',
+            'Service'
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];
