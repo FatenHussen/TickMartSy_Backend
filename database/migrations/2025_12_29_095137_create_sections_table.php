@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('sections', function (Blueprint $table) {
             $table->id();
             $table->json('name');
-            $table->enum('type', ['manual', 'api']);
+            $table->enum('type', ['manual', 'api'])->default('manual');
             $table->string('api_method')->nullable();
             $table->string('manual_model')->nullable();
             $table->json('filters')->nullable();
