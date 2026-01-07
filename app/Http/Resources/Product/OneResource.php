@@ -119,6 +119,12 @@ class OneResource extends JsonResource
 
                 'price'    => $shopVariant->price,
                 'quantity' => $shopVariant->quantity,
+                'images' => ($variant->media ?? collect())->map(function ($img) {
+                    return [
+                        'id'   => $img->id,
+                        'path' => $img->path,
+                    ];
+                })->values(),
             ];
         })->filter()->values();
     }
