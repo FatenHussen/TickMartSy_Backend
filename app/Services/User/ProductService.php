@@ -107,11 +107,11 @@ class ProductService extends BaseService
 
         $query->with([
             'category',
-            // 'variants.attributes.attribute', //yomna
-            'variants.shopVariants.shop',
-            // 'variants.images', //yomna
-            'categoryDetails',
+            'variants',
+            'variants.shopVariants',
+            'categoryDetails.categoryDetail',
             'extraDetails',
+            'variants.shopVariants.shop',
             'media',
         ]);
 

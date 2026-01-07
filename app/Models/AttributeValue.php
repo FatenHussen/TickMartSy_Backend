@@ -32,4 +32,8 @@ class AttributeValue extends Model
     {
         return $this->belongsTo(CategoryAttribute::class);
     }
+    public function attribute()
+    {
+        return $this->belongsTo(CategoryAttribute::class);
+    }
 }
