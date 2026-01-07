@@ -40,25 +40,19 @@ class ProductVariant extends Model
     }
     public function media()
     {
-        return $this->morphMany(ProductMedia::class, 'mediable')
-            ->where('collection', 'variant')
-            ->orderBy('order');
+        return $this->morphMany(\App\Models\ProductMedia::class, 'mediable');
     }
+
     public function getImagesAttribute()
     {
         return $this->media->count()
             ? $this->media
             : $this->product->media;
     }
-    public function attributesValues()
-    {
-        return $this->belongsToMany(AttributeValue::class, 'attribute_values', 'product_variant_id', 'attribute_value_id');
-    }
 
 
     public function getAttributesValuesAttribute()
     {
-        // ترجمة IDs المخزنة في attributes_values_ids إلى Collection من AttributeValue
         return AttributeValue::whereIn('id', $this->attributes_values_ids ?? [])->get();
     }
 }

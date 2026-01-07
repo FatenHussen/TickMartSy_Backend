@@ -1,8 +1,9 @@
 <?php
 
 
-namespace App\Http\Resources\Admin\Product;
+namespace App\Http\Resources\Product;
 
+use App\Models\Product;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Collection;
 
@@ -12,12 +13,10 @@ class OneResource extends JsonResource
     {
         return [
             'id' => $this->id,
-
-            'name' => $this->getTranslations('name'),
-            'description' => $this->getTranslations('description'),
-            'full_description' => $this->getTranslations('full_description'),
-            'country' => $this->getTranslations('country'),
-
+            'name' => $this->name,
+            'description' => $this->description,
+            'full_description' => $this->full_description,
+            'country' => $this->country,
             'price' => $this->price,
             'price_after_discount' => $this->price_after_discount,
             'quantity' => $this->quantity,
@@ -26,7 +25,11 @@ class OneResource extends JsonResource
             'model' => $this->model,
             'barcode' => $this->barcode,
             'time_prepare' => optional($this->time_prepare)->format('H:i'),
-            'bought_with' => $this->bought_with ?? [],
+            'bought_with' => !empty($this->bought_with)
+                ? AllResource::collection(
+                    Product::whereIn('id', $this->bought_with)->get()
+                )
+                : [],
             'is_instant_delivery' => $this->is_instant_delivery,
 
             'category' => [
@@ -67,7 +70,7 @@ class OneResource extends JsonResource
                 return [
                     'id' => $detail->id,
                     'name' => $detail->categoryDetail?->name,
-                    'value' => $detail->getTranslations('detail_value'),
+                    'value' => $detail->detail_value
                 ];
             })->values(),
 
@@ -75,8 +78,8 @@ class OneResource extends JsonResource
             'extra_details' => ($this->extraDetails ?? collect())->map(function ($detail) {
                 return [
                     'id' => $detail->id,
-                    'key' => $detail->getTranslations('detail_key') ?? [],
-                    'value' => $detail->getTranslations('detail_value') ?? [],
+                    'key' => $detail->detail_key,
+                    'value' => $detail->detail_value,
                 ];
             })->values(),
 

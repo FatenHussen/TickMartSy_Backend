@@ -85,7 +85,6 @@ class UpdateRequest extends FormRequest
             'bought_with'           => 'nullable|array',
             'bought_with.*'         => 'nullable|integer|exists:products,id',
             'is_instant_delivery'   => 'nullable|boolean',
-            'vendor_id' => 'nullable|exists:vendors,id',
 
             // Variants
             'variants'                      => 'nullable|array',
@@ -113,12 +112,10 @@ class UpdateRequest extends FormRequest
 
             // Shop Product Variants (اختياري)
             'shop_variants'                 => 'nullable|array',
-            'shop_variants.*.id'            => 'nullable|exists:shop_product_variants,id',
-            'shop_variants.*.shop_id'       => 'nullable|exists:shops,id',
-            'shop_variants.*.variant_id'    => 'nullable|exists:product_variants,id',
-            'shop_variants.*.price'         => 'nullable|integer|min:0',
-            'shop_variants.*.quantity' => 'nullable|integer|min:0',
-
+            'shop_variants.*.shop_id'           => 'required|exists:shops,id',
+            'shop_variants.*.variant_index'     => 'required|integer|min:0',
+            'shop_variants.*.price'             => 'nullable|integer|min:0',
+            'shop_variants.*.quantity'          => 'nullable|integer|min:0',
         ];
 
         // Locale-specific validation

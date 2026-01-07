@@ -84,9 +84,8 @@ class StoreRequest extends FormRequest
             'variants'                      => 'nullable|array',
             'variants.*.attributes_values_ids' => 'nullable|array',
             'variants.*.attributes_values_ids.*' => 'required|integer|exists:attribute_values,id',
-            'variants.*.price'              => 'nullable|integer|min:0',
             'variants.*.images' => 'nullable|array',
-            'variants.*.images.*' => 'image|max:2048',
+            'variants.*.images.*' => 'nullable|image|max:2048',
 
             // Category Details
             'category_details'              => 'nullable|array',
@@ -103,11 +102,13 @@ class StoreRequest extends FormRequest
             'images.*' => 'image|max:2048',
 
             // Shop Product Variants
-            'shop_variants'                 => 'nullable|array',
-            'shop_variants.*.shop_id'       => 'nullable|exists:shops,id',
-            'shop_variants.*.variant_id'    => 'nullable|exists:product_variants,id',
-            'shop_variants.*.price'         => 'nullable|integer|min:0',
-            'shop_variants.*.quantity' => 'nullable|integer|min:0',
+            // Shop Product Variants
+            'shop_variants'                     => 'nullable|array',
+            'shop_variants.*.shop_id'           => 'required|exists:shops,id',
+            'shop_variants.*.variant_index'     => 'required|integer|min:0',
+            'shop_variants.*.price'             => 'nullable|integer|min:0',
+            'shop_variants.*.quantity'          => 'nullable|integer|min:0',
+
 
         ];
 
