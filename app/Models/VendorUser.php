@@ -5,11 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Permission\Traits\HasRoles;
 
 class VendorUser extends Authenticatable
 {
-    use HasApiTokens;
+    use HasApiTokens, HasRoles;
 
+    protected $guard_name = 'vendor-user';
     protected $fillable = [
         'name',
         'email',
