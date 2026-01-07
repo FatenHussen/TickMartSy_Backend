@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Services\User;
 
@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Services\BaseService;
 use App\Http\Resources\Product\OneResource;
 use App\Http\Resources\Product\AllResource;
+
 class ProductService extends BaseService
 {
     protected $model      = Product::class;
@@ -106,9 +107,9 @@ class ProductService extends BaseService
 
         $query->with([
             'category',
-            'variants.attributes.attribute',
+            // 'variants.attributes.attribute', //yomna
             'variants.shopVariants.shop',
-            'variants.images',
+            // 'variants.images', //yomna
             'categoryDetails',
             'extraDetails',
             'media',
