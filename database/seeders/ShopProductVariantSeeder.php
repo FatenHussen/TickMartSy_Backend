@@ -19,8 +19,8 @@ class ShopProductVariantSeeder extends Seeder
                 ShopProductVariant::create([
                     'product_variant_id' => $variant->id,
                     'shop_id' => $shop->id,
-                    'quantity' => rand(10, 100), // كمية عشوائية
-                    'price' => rand(50, 200),    // سعر عشوائي
+                    'quantity' => rand(10, 100), 
+                    'price' => rand(50, 200),   
                 ]);
             }
         }

@@ -4,6 +4,7 @@
 namespace App\Http\Resources\Product;
 
 use App\Models\Product;
+use App\Services\Base\LocationService;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Collection;
 
@@ -66,38 +67,6 @@ class OneResource extends JsonResource
             })->values(),
         ];
     }
-    // protected function buildAttributesMap()
-    // {
-    //     $map = [];
-
-    //     foreach ($this->variants as $variant) {
-    //         foreach ($variant->attributesValues as $attrValue) {
-    //             $attrName = $attrValue?->categoryAttribute?->name;
-    //             $value    = $attrValue->name;
-    //             $type     = $attrValue->type;
-    //             if (!$attrName) continue;
-
-    //             if (!isset($map[$attrName])) {
-    //                 $map[$attrName] = [];
-    //             }
-
-    //             if (!in_array($value, $map[$attrName])) {
-    //                 $map[$attrName][] = $value;
-    //             }
-    //             if (!isset($map[$type])) {
-    //                 $map[$type] = [];
-    //             }
-    //         }
-    //     }
-
-    //     return collect($map)->map(function ($values, $attrName, $type) {
-    //         return [
-    //             'attribute' => $attrName,
-    //             'values'    => array_values($values),
-    //             'type'      =>$type
-    //         ];
-    //     })->values();
-    // }
     protected function buildAttributesMap()
     {
         $map = [];
@@ -127,9 +96,48 @@ class OneResource extends JsonResource
         return array_values($map);
     }
 
+    // protected function buildShopVariantsList()
+    // {
+    //     $shopId = request()->get('shop_id');
+
+    //     if (!$shopId) return [];
+
+    //     return $this->variants->map(function ($variant) use ($shopId) {
+
+    //         $shopVariant = $variant->shopVariants
+    //             ->firstWhere('shop_id', $shopId);
+
+    //         if (!$shopVariant) return null;
+
+    //         return [
+    //             'variant_id' => $variant->id,
+
+    //             'attributes' => $variant->attributesValues->map(function ($attr) {
+    //                 return [
+    //                     'attribute' => $attr?->categoryAttribute?->name,
+    //                     'value'     => $attr->name,
+    //                     'type'      => $attr->categoryAttribute->type
+    //                 ];
+    //             })->values(),
+
+    //             'price'    => $shopVariant->price,
+    //             'quantity' => $shopVariant->quantity,
+    //             'images' => ($variant->media ?? collect())->map(function ($img) {
+    //                 return [
+    //                     'id'   => $img->id,
+    //                     'path' => $img->path,
+    //                 ];
+    //             })->values(),
+    //         ];
+    //     })->filter()->values();
+    // }
     protected function buildShopVariantsList()
     {
         $shopId = request()->get('shop_id');
+
+        if (!$shopId) {
+            $shopId = app(LocationService::class)->getNearestShopId();
+        }
 
         if (!$shopId) return [];
 
@@ -142,17 +150,17 @@ class OneResource extends JsonResource
 
             return [
                 'variant_id' => $variant->id,
-
                 'attributes' => $variant->attributesValues->map(function ($attr) {
                     return [
                         'attribute' => $attr?->categoryAttribute?->name,
                         'value'     => $attr->name,
-                        'type'      => $attr->categoryAttribute->type
+                        'type'      => $attr->categoryAttribute->type,
                     ];
                 })->values(),
 
                 'price'    => $shopVariant->price,
                 'quantity' => $shopVariant->quantity,
+
                 'images' => ($variant->media ?? collect())->map(function ($img) {
                     return [
                         'id'   => $img->id,
@@ -163,100 +171,3 @@ class OneResource extends JsonResource
         })->filter()->values();
     }
 }
-// class OneResource extends JsonResource
-// {
-//     public function toArray($request)
-//     {
-//         return [
-//             'id' => $this->id,
-//             'name' => $this->name,
-//             'description' => $this->description,
-//             'full_description' => $this->full_description,
-//             'country' => $this->country,
-//             'time_prepare' => $this->time_prepare,
-
-//             'category' => $this->category?->name,
-
-//             'attributes_map' => $this->buildAttributesMap(),
-
-//             'variants_list' => $this->buildVariantsList(),
-
-//             'category_details' => $this->categoryDetails->map(fn($cd) => [
-//                 'id' => $cd->id,
-//                 'name' => $cd->categoryDetail?->name,
-//                 'value' => $cd->detail_value,
-//             ])->values(),
-
-//             'extra_details' => $this->extraDetails->map(fn($ed) => [
-//                 'id' => $ed->id,
-//                 'key' => $ed->detail_key,
-//                 'value' => $ed->detail_value,
-//             ])->values(),
-
-//             'images' => $this->media->map(fn($img) => [
-//                 'id' => $img->id,
-//                 'path' => $img->path,
-//             ])->values(),
-//         ];
-//     }
-
-//     // =========================
-//     // مصفوفة Attributes Map
-//     // =========================
-//     protected function buildAttributesMap()
-//     {
-//         $map = [];
-
-//         foreach ($this->variants as $variant) {
-//             foreach ($variant->attributesValues as $attrValue) {
-//                 $attrName = $attrValue?->categoryAttribute->name ?? 'غير معروف';
-//                 $value = $attrValue->name;
-
-//                 if (!isset($map[$attrName])) {
-//                     $map[$attrName] = [];
-//                 }
-//                 if (!in_array($value, $map[$attrName])) {
-//                     $map[$attrName][] = $value;
-//                 }
-//             }
-//         }
-
-//         return collect($map)->map(fn($values, $name) => [
-//             'attribute' => $name,
-//             'values' => array_values($values),
-//         ])->values();
-//     }
-
-//     // =========================
-//     // مصفوفة Variants List حسب shop
-//     // =========================
-//     protected function buildVariantsList()
-//     {
-//         $shopId = request()->get('shop_id');
-
-//         return $this->variants->map(function ($variant) use ($shopId) {
-
-//             $shopVariant = $variant->shopVariants
-//                 ->firstWhere('shop_id', $shopId);
-
-//             if (!$shopVariant) return null;
-
-//             return [
-//                 'variant_id' => $variant->id,
-
-//                 'values' => $variant->attributesValues->map(fn($attr) => [
-//                     'attribute' => $attr?->categoryAttribute->name,
-//                     'value'     => $attr->name,
-//                 ])->values(),
-
-//                 'price'    => $shopVariant->price,
-//                 'quantity' => $shopVariant->quantity,
-
-//                 'images' => $variant->images->map(fn($img) => [
-//                     'id'   => $img->id,
-//                     'path' => $img->path,
-//                 ])->values(),
-//             ];
-//         })->filter()->values();
-//     }
-// }

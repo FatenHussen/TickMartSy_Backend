@@ -26,24 +26,27 @@ class Shop extends Model
         'is_active',
         'ratings_count',
         'ratings_sum',
-        'vendor_id'
+        'vendor_id',
+        'is_default'
     ];
 
     protected $casts = [
-    'working_hours'     => 'array',
-    'cover_images'      => 'array',
-    'is_active'         => 'boolean',
-    'ratings_count'     => 'integer',
-    'ratings_sum'       => 'integer',
+        'working_hours'     => 'array',
+        'cover_images'      => 'array',
+        'is_active'         => 'boolean',
+        'is_active'         => 'boolean',
+        'ratings_count'     => 'integer',
+        'ratings_sum'       => 'integer',
     ];
- 
-     public function vendor(){
+
+    public function vendor()
+    {
         return $this->belongsTo(Vendor::class);
     }
     protected function averageRating(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->ratings_count > 0
+            get: fn() => $this->ratings_count > 0
                 ? round($this->ratings_sum / $this->ratings_count, 2)
                 : 0.00
         );
@@ -99,13 +102,13 @@ class Shop extends Model
         return $query->where('is_active', true);
     }
 
-  
+
     public function getLogoUrl(): ?string
     {
         return $this->media()->where('collection', 'logo')->first()?->url;
     }
 
-   
+
     public function getCoverImagesUrls(): array
     {
         return $this->media()
@@ -126,7 +129,7 @@ class Shop extends Model
             ->toArray();
     }
 
-        public function services()
+    public function services()
     {
         return $this->belongsToMany(Service::class, 'shop_service');
     }
