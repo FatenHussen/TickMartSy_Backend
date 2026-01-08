@@ -41,6 +41,7 @@ class OneResource extends JsonResource
                         return [
                             'attribute' => $value->categoryAttribute?->name,
                             'value' => $value->name,
+                            'type' => $value->categoryAttribute->type,
                         ];
                     }),
 

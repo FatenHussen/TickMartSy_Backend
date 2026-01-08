@@ -35,15 +35,15 @@ class LanguageSeeder extends Seeder
                 'order' => 2,
                 'flag_icon' => '🇺🇸',
             ],
-            [
-                'code' => 'fr',
-                'native_name' => 'Français',
-                'direction' => 'ltr',
-                'is_active' => true,
-                'is_default' => false,
-                'order' => 3,
-                'flag_icon' => '🇫🇷',
-            ],
+            // [
+            //     'code' => 'fr',
+            //     'native_name' => 'Français',
+            //     'direction' => 'ltr',
+            //     'is_active' => true,
+            //     'is_default' => false,
+            //     'order' => 3,
+            //     'flag_icon' => '🇫🇷',
+            // ],
            
         ];
 
@@ -54,8 +54,8 @@ class LanguageSeeder extends Seeder
             );
         }
 
-        if (app()->environment('local')) {
-            Language::factory()->count(5)->create();
-        }
+        // if (app()->environment('local')) {
+        //     Language::factory()->count(5)->create();
+        // }
     }
 }

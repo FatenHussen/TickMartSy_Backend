@@ -66,6 +66,38 @@ class OneResource extends JsonResource
             })->values(),
         ];
     }
+    // protected function buildAttributesMap()
+    // {
+    //     $map = [];
+
+    //     foreach ($this->variants as $variant) {
+    //         foreach ($variant->attributesValues as $attrValue) {
+    //             $attrName = $attrValue?->categoryAttribute?->name;
+    //             $value    = $attrValue->name;
+    //             $type     = $attrValue->type;
+    //             if (!$attrName) continue;
+
+    //             if (!isset($map[$attrName])) {
+    //                 $map[$attrName] = [];
+    //             }
+
+    //             if (!in_array($value, $map[$attrName])) {
+    //                 $map[$attrName][] = $value;
+    //             }
+    //             if (!isset($map[$type])) {
+    //                 $map[$type] = [];
+    //             }
+    //         }
+    //     }
+
+    //     return collect($map)->map(function ($values, $attrName, $type) {
+    //         return [
+    //             'attribute' => $attrName,
+    //             'values'    => array_values($values),
+    //             'type'      =>$type
+    //         ];
+    //     })->values();
+    // }
     protected function buildAttributesMap()
     {
         $map = [];
@@ -74,26 +106,27 @@ class OneResource extends JsonResource
             foreach ($variant->attributesValues as $attrValue) {
                 $attrName = $attrValue?->categoryAttribute?->name;
                 $value    = $attrValue->name;
+                $type     = $attrValue->categoryAttribute->type;
 
                 if (!$attrName) continue;
 
                 if (!isset($map[$attrName])) {
-                    $map[$attrName] = [];
+                    $map[$attrName] = [
+                        'attribute' => $attrName,
+                        'type' => $type,
+                        'values' => [],
+                    ];
                 }
 
-                if (!in_array($value, $map[$attrName])) {
-                    $map[$attrName][] = $value;
+                if (!in_array($value, $map[$attrName]['values'])) {
+                    $map[$attrName]['values'][] = $value;
                 }
             }
         }
 
-        return collect($map)->map(function ($values, $attrName) {
-            return [
-                'attribute' => $attrName,
-                'values'    => array_values($values),
-            ];
-        })->values();
+        return array_values($map);
     }
+
     protected function buildShopVariantsList()
     {
         $shopId = request()->get('shop_id');
@@ -114,6 +147,7 @@ class OneResource extends JsonResource
                     return [
                         'attribute' => $attr?->categoryAttribute?->name,
                         'value'     => $attr->name,
+                        'type'      => $attr->categoryAttribute->type
                     ];
                 })->values(),
 

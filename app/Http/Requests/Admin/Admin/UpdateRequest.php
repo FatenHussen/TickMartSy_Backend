@@ -28,6 +28,8 @@ class UpdateRequest extends FormRequest
             'email' => ['required', 'email', 'unique:admins,email,' . $adminId],
             'password' => ['required'],
             'is_active'            => 'nullable|boolean',
+            'type' => 'nullable|in:square,circle,color'
+
         ];
     }
 }

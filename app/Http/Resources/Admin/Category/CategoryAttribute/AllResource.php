@@ -14,11 +14,12 @@ class AllResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $locale = app()->getLocale();
         return [
             'id'       => $this->id,
-            'name'     => $this->getTranslation('name',$locale),
-            'category' => $this->category->getTranslation('name',$locale)
+            'name'     => $this->name,
+            'category' => $this->category->name,
+            'type' => $this->type,
+            
         ];
     }
 }

@@ -16,6 +16,7 @@ class CategoryAttribute extends Model
     protected $fillable = [
         'category_id',
         'name',
+        'type'
     ];
 
     public $translatable = [
