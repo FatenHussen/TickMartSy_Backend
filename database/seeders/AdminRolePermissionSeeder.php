@@ -25,9 +25,11 @@ class AdminRolePermissionSeeder extends Seeder
             'Driver',
             'Brand',
             'Category',
-            'Products',
+            'Product',
             'Banner',
-            'Service'
+            'Service',
+            'CategoryAttribute',
+            'CategoryDetail',
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];
