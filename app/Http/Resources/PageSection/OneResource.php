@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\SectionPage;
+namespace App\Http\Resources\PageSection;
 
 use App\Http\Resources\Section\SectionApiItemResource;
 use App\Http\Resources\SectionItem\OneResource as SectionItemOneResource;
@@ -23,6 +23,8 @@ class OneResource extends JsonResource
             'position' => $this->position,
             'order' => $this->order,
             'display_type_id' => $this->display_type_id,
+            'background_color' => $this->background_color,
+            'background_crad_color' => $this->background_crad_color,
             'see_more' => $this->section->see_more
                 ? [
                     'page_slug' => $this->section->see_more_slug,
@@ -35,7 +37,7 @@ class OneResource extends JsonResource
 
             ],
             'items' => $this->section->type === 'api'
-                ? SectionApiItemResource::collection($this->api_data)
+                ? SectionApiItemResource::collection($this->section->apiData($this->filters))
                 : SectionItemOneResource::collection($this->section->sectionItems),
         ];
     }

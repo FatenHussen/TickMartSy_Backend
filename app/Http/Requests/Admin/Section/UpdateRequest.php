@@ -35,8 +35,8 @@ class UpdateRequest extends FormRequest
 
         return [
             'name' => ['nullable', 'array'],
-            'name.ar' => ['required', 'string', 'max:255'],
-            'name.en' => ['required', 'string', 'max:255'],
+            'name.ar' => ['nullable', 'string', 'max:255'],
+            'name.en' => ['nullable', 'string', 'max:255'],
 
             'manual_model' => ['required', 'string', Rule::in($allowedTypes)],
 

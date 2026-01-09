@@ -3,14 +3,8 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\User\Auth\ResetPasswordRequest;
-use App\Http\Requests\User\Auth\SendOtpRequest;
-use App\Http\Requests\User\Auth\SendPasswordRequest;
-use App\Http\Requests\User\Auth\UserLoginRequest;
-use App\Http\Requests\User\Auth\UserRegisterRequest;
-use App\Http\Requests\User\Auth\VerifyOtpRequest;
-use App\Http\Requests\User\Auth\VerifyPasswordRequest;
-use App\Http\Resources\SectionPage\OneResource;
+
+use App\Http\Resources\PageSection\OneResource;
 use App\Models\Page;
 use App\Models\Section;
 use App\Services\Base\Section\SectionApiService;

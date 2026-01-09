@@ -4,6 +4,7 @@ namespace App\Http\Resources\Section;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\SectionItem\OneResource as SectionItemOneResource;
 
 class OneResource extends JsonResource
 {
@@ -36,7 +37,10 @@ class OneResource extends JsonResource
             ],
             'manual' => [
                 'manual_model' => $this->manual_model
-            ]
+            ],
+            'items' => $this->type === 'api'
+                ? SectionApiItemResource::collection($this->apiData())
+                : SectionItemOneResource::collection($this->sectionItems),
         ];
     }
 }

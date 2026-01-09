@@ -17,7 +17,7 @@ class Handler
         $exceptions->render(function (AuthenticationException $e, $request) {
             return response()->json([
                 'status' => false,
-                'message' => __('custom.errors.401'),
+                'message' => __('custom.errors.401') . ' ,' . $e->getMessage(),
                 'errors' => [],
             ], 401);
         });
@@ -35,7 +35,7 @@ class Handler
         $exceptions->render(function (ModelNotFoundException $e, $request) {
             return response()->json([
                 'status' => false,
-                'message' => __('custom.errors.404'),
+                'message' => __('custom.errors.404') . ' ,' . $e->getMessage(),
                 'errors' => [],
             ], 404);
         });
@@ -44,7 +44,7 @@ class Handler
         $exceptions->render(function (MethodNotAllowedHttpException $e, $request) {
             return response()->json([
                 'status' => false,
-                'message' => __('custom.errors.405'),
+                'message' => __('custom.errors.405') . ' ,' . $e->getMessage(),
                 'errors' => [],
             ], 405);
         });

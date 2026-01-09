@@ -2,18 +2,14 @@
 
 namespace App\Services\Admin;
 
-use App\Http\Resources\Section\AllResource;
-use App\Http\Resources\Section\OneResource;
-use App\Models\Admin;
-use App\Models\Section;
-use App\Models\Service;
+use App\Http\Resources\PageSection\AllResource;
+use App\Http\Resources\PageSection\OneResource;
+use App\Models\PageSection;
 use App\Services\BaseService;
-use Illuminate\Support\Facades\DB;
 
-class SectionService extends BaseService
+class PageSectionService extends BaseService
 {
-
-    public function __construct(Section $model)
+    public function __construct(PageSection $model)
     {
         $this->model      = $model;
         $this->resource   = OneResource::class;
