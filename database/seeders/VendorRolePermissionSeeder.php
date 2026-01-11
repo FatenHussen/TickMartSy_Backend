@@ -2,88 +2,134 @@
 
 namespace Database\Seeders;
 
-use App\Models\VendorUser;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
+use App\Models\Vendor;
+use App\Models\Shop;
+use App\Models\VendorUser;
+use Illuminate\Support\Facades\Hash;
 
 class VendorRolePermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        $vendorModels = [
-            'VendorUser',
-            'Product',
-            'Order',
-            'Item',
-            'Category',
-            'Role',
-            'Permission',
-            'Language'
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+
+        $guard = 'vendor-user';
+
+        /*
+        |--------------------------------------------------------------------------
+        | Permissions
+        |--------------------------------------------------------------------------
+        */
+
+        $permissions = [
+            // Vendor level
+            'vendor.dashboard',
+            'vendor.reports',
+            'vendor.settings',
+
+            // Shop level
+            'shop.dashboard',
+            'shop.orders.view',
+            'shop.orders.manage',
+            'shop.inventory.adjust',
         ];
 
-        $actions = ['view', 'create', 'update', 'delete'];
-
-        foreach ($vendorModels as $model) {
-            foreach ($actions as $action) {
-                Permission::firstOrCreate([
-                    'name' => strtolower($model) . '.' . $action,
-                    'guard_name' => 'vendor-user',
-                ]);
-            }
+        foreach ($permissions as $perm) {
+            Permission::firstOrCreate([
+                'name' => $perm,
+                'guard_name' => $guard,
+            ]);
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Roles
+        |--------------------------------------------------------------------------
+        */
+
+        $vendorOwner = Role::firstOrCreate([
+            'name' => 'vendor-owner',
+            'guard_name' => $guard,
+        ]);
+        $vendorOwner->syncPermissions(Permission::where('guard_name', $guard)->get());
 
         $vendorAdmin = Role::firstOrCreate([
             'name' => 'vendor-admin',
-            'guard_name' => 'vendor-user',
+            'guard_name' => $guard,
+        ]);
+        $vendorAdmin->syncPermissions([
+            'vendor.dashboard',
+            'vendor.reports',
+            'vendor.settings',
         ]);
 
-        $vendorEmployee = Role::firstOrCreate([
-            'name' => 'vendor-employee',
-            'guard_name' => 'vendor-user',
+        $shopManager = Role::firstOrCreate([
+            'name' => 'shop-manager',
+            'guard_name' => $guard,
+        ]);
+        $shopManager->syncPermissions([
+            'shop.dashboard',
+            'shop.orders.manage',
+            'shop.inventory.adjust',
         ]);
 
-        $vendorAdmin->syncPermissions(Permission::where('guard_name', 'vendor-user')->get());
+        $shopEmployee = Role::firstOrCreate([
+            'name' => 'shop-employee',
+            'guard_name' => $guard,
+        ]);
+        $shopEmployee->syncPermissions([
+            'shop.dashboard',
+            'shop.orders.view',
+        ]);
 
-        $vendorEmployee->syncPermissions(
-            Permission::where('guard_name', 'vendor-user')
-                ->whereNotIn('name', [
-                    'vendoruser.view',
-                    'vendoruser.create',
-                    'vendoruser.delete',
-                    'vendoruser.update',
-                    'role.create',
-                    'role.view',
-                    'role.update',
-                    'role.create',
-                    'role.delete',
-                    'role.create',
-                    'permission.view',
-                    'permission.update',
-                    'permission.create',
-                    'permission.delete',
-                ])->get()
-        );
+        /*
+        |--------------------------------------------------------------------------
+        | Vendor
+        |--------------------------------------------------------------------------
+        */
 
-        $adminUser = VendorUser::firstOrCreate(
-            ['email' => 'vendoradmin@vendor.com'],
+        $vendor = Vendor::find(1);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Shops (2 branches)
+        |--------------------------------------------------------------------------
+        */
+
+        $shop1 = Shop::find(1);
+
+        $shop2 = Shop::find(2);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Users
+        |--------------------------------------------------------------------------
+        */
+
+        $employee = VendorUser::firstOrCreate(
+            ['email' => 'employee@vendor.com'],
             [
-                'name' => 'vendor Admin',
-                'password' => bcrypt('password'),
+                'name' => 'Multi Branch Employee',
+                'password' => Hash::make('password'),
                 'is_active' => true,
-                'vendor_id' => 1,
+                'vendor_id' => $vendor->id,
             ]
         );
-        $adminUser->assignRole($vendorAdmin);
-        $EmployeeUser = VendorUser::firstOrCreate(
-            ['email' => 'vendoremployee@vendor.com'],
-            [
-                'name' => 'vendor Employee',
-                'password' => bcrypt('password'),
-                'is_active' => true,
-                'vendor_id' => 1,
-            ]
-        );
-        $EmployeeUser->assignRole($vendorEmployee);
+
+
+
+        app(PermissionRegistrar::class)->setPermissionsTeamId($shop1->id);
+        $employee->assignRole('shop-manager');
+
+        $employee->unsetRelation('roles')->unsetRelation('permissions');
+
+        app(PermissionRegistrar::class)->setPermissionsTeamId(0);
+        $employee->assignRole('shop-employee');
+
+        app(PermissionRegistrar::class)->setPermissionsTeamId(null);
     }
 }

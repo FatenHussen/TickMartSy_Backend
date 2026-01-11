@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\Base\Section\SectionApiService;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
 
@@ -14,6 +15,7 @@ class Section extends Model
         'see_more_params' => 'array',
     ];
 
+
     protected $fillable = [
         'name',
         'type',
@@ -24,6 +26,11 @@ class Section extends Model
         'see_more_slug',
         'details_slug'
     ];
+
+    public function apiData(array $filters = [])
+    {
+        return app(SectionApiService::class)->preview($this, $filters);
+    }
 
     public function pages()
     {

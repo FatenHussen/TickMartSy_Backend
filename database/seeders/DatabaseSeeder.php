@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             AdminRolePermissionSeeder::class,
             LanguageSeeder::class,
             RolePermissionSeeder::class,
+            // RolePermissionSeeder::class,
             CategorySeeder::class,
             VendorSeeder::class,
             ShopSeeder::class,
@@ -34,7 +35,8 @@ class DatabaseSeeder extends Seeder
             ProductMediaSeeder::class,
             ShopProductVariantSeeder::class,
             PageSectionSeeder::class,
-            ServiceSeeder::class
+            ServiceSeeder::class,
+            VendorRolePermissionSeeder::class,
         ]);
     }
 }

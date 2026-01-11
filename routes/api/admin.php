@@ -14,8 +14,13 @@ use App\Http\Controllers\Admin\Governorate\AreaCrudController;
 use App\Http\Controllers\Admin\Governorate\CityCrudController;
 use App\Http\Controllers\Admin\Governorate\GovernorateCrudController;
 use App\Http\Controllers\Admin\Language\LanguageController;
+use App\Http\Controllers\Admin\PageSection\PageSectionCrudController;
 use App\Http\Controllers\Admin\Product\ProductController;
+use App\Http\Controllers\Admin\Section\SectionCrudController;
+use App\Http\Controllers\Admin\Section\SectionController;
+
 use App\Http\Controllers\Admin\Service\ServiceCrudController;
+
 use App\Http\Controllers\Admin\Store\StoreCrudController;
 use App\Http\Controllers\Admin\Shop\ShopCrudController;
 use App\Http\Controllers\Admin\Vendor\VendorCrudController;
@@ -35,6 +40,19 @@ Route::prefix('admin')->group(
                 Route::get('profile', [AuthController::class, 'profile']);
             });
         });
+
+        //  Auth routes
+        Route::prefix('sections')->group(function () {
+            // Public routes
+            Route::get('pages', [SectionController::class, 'pages']);
+            Route::get('item-types', [SectionController::class, 'sectionItemTypes']);
+            Route::get('display-types', [SectionController::class, 'displayTypes']);
+
+
+            // Protected routes
+            Route::middleware('auth:admin')->group(function () {});
+        });
+
 
 
 
@@ -81,6 +99,9 @@ Route::prefix('admin')->group(
         Route::apiResource('cities', CityCrudController::class);
         Route::apiResource('areas', AreaCrudController::class);
         Route::apiResource('services', ServiceCrudController::class);
+        Route::apiResource('sections', SectionCrudController::class);
+        Route::apiResource('page-sections', PageSectionCrudController::class);
+
 
         // });
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\SectionPage;
+namespace App\Http\Resources\Section;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -14,6 +14,10 @@ class AllResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'type' => $this->type,
+        ];
     }
 }

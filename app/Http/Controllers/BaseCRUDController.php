@@ -37,6 +37,7 @@ class BaseCRUDController extends Controller
     public function store(Request $request)
     {
         $data = app($this->createRequest)->validated();
+        Log::info($data);
         $res = $this->service->create($data);
         return $this->sendResponse(data: $res);
     }

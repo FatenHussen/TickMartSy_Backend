@@ -19,6 +19,8 @@ return new class extends Migration
             $table->foreignId('display_type_id')->nullable()->constrained('display_types');
             $table->enum('position', ['before', 'after']);
             $table->integer('order')->default(1);
+            $table->string('background_color')->nullable();
+            $table->string('background_card_color')->nullable();
             $table->json('filters')->nullable();
             $table->timestamps();
         });

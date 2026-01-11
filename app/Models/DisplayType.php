@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class DisplayType extends Model
 {
-    protected $fillable = ['name', 'preview_image', 'fields'];
+    protected $fillable = ['manual_model', 'image', 'fields'];
     protected $casts = ['fields' => 'array'];
+    public function  getImageUrlAttribute()
+    {
+        return asset('storage/' . $this->image);
+    }
 }

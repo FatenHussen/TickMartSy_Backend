@@ -17,7 +17,7 @@ class Handler
         $exceptions->render(function (AuthenticationException $e, $request) {
             return response()->json([
                 'status' => false,
-                'message' => __('custom.errors.401'),
+                'message' => __('custom.errors.401') . ' ,' . $e->getMessage(),
                 'errors' => [],
             ], 401);
         });
@@ -32,30 +32,30 @@ class Handler
         });
 
         // 404 Model
-        $exceptions->render(function (ModelNotFoundException $e, $request) {
-            return response()->json([
-                'status' => false,
-                'message' => __('custom.errors.404'),
-                'errors' => [],
-            ], 404);
-        });
+        // $exceptions->render(function (ModelNotFoundException $e, $request) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'message' => __('custom.errors.404') . ' ,' . $e->getMessage(),
+        //         'errors' => [],
+        //     ], 404);
+        // });
 
         // 405
         $exceptions->render(function (MethodNotAllowedHttpException $e, $request) {
             return response()->json([
                 'status' => false,
-                'message' => __('custom.errors.405'),
+                'message' => __('custom.errors.405') . ' ,' . $e->getMessage(),
                 'errors' => [],
             ], 405);
         });
 
         // HTTP Exceptions
-        $exceptions->render(function (HttpException $e, $request) {
-            return response()->json([
-                'status' => false,
-                'message' => __('custom.errors.' . $e->getStatusCode()) ?? $e->getMessage(),
-                'errors' => [],
-            ], $e->getStatusCode());
-        });
+        // $exceptions->render(function (HttpException $e, $request) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'message' => __('custom.errors.' . $e->getStatusCode()) ?? $e->getMessage(),
+        //         'errors' => [],
+        //     ], $e->getStatusCode());
+        // });
     }
 }

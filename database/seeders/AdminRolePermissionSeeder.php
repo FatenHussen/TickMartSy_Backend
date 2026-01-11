@@ -6,6 +6,7 @@ use App\Models\Admin;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
 
 use function PHPSTORM_META\map;
 
@@ -13,6 +14,8 @@ class AdminRolePermissionSeeder extends Seeder
 {
     public function run(): void
     {
+        app(PermissionRegistrar::class)->setPermissionsTeamId(0);
+
         $models = [
             'Role',
             'Admin',

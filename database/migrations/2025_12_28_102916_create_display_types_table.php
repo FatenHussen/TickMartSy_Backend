@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('display_types', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // slider, grid, carousel...
-            $table->string('preview_image')->nullable();
+            $table->string('manual_model'); // brand , product
+            $table->string('image')->nullable();
             $table->json('fields')->nullable();
             $table->timestamps();
         });
