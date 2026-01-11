@@ -27,7 +27,8 @@ return [
     
     */
     'allowed_origins' => [
-        'http://localhost:8081'
+        'http://localhost:8081',
+        'https://tikmool-dashboard.octopus-software.online'
     ],
 
     /*
