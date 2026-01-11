@@ -17,6 +17,38 @@ class PageSectionSeeder extends Seeder
 {
     public function run()
     {
+
+        $bannerDisplayType = DisplayType::create([
+            'manual_model' => 'brand',
+            'image' => '/images/display/slider.png',
+            'fields' => ['image', 'title', 'price']
+        ]);
+        $productDisplayType = DisplayType::create([
+            'manual_model' => 'product',
+            'image' => '/images/display/grid.png',
+            'fields' => ['image', 'title', 'price', 'brand']
+        ]);
+        $storeDisplayType = DisplayType::create([
+            'manual_model' => 'shop',
+            'image' => '/images/display/grid.png',
+            'fields' => ['image', 'title', 'price', 'brand']
+        ]);
+        $suggestedBasketsDisplayType = DisplayType::create([
+            'manual_model' => 'basket',
+            'image' => '/images/display/grid.png',
+            'fields' => ['image', 'title', 'price', 'brand']
+        ]);
+        $suggestedBasketsDisplayType = DisplayType::create([
+            'manual_model' => 'suggested-basket',
+            'image' => '/images/display/grid.png',
+            'fields' => ['image', 'title', 'price', 'brand']
+        ]);
+        $brandsDisplayType = DisplayType::create([
+            'manual_model' => 'brand',
+            'image' => '/images/display/grid.png',
+            'fields' => ['image', 'title', 'price', 'brand']
+        ]);
+
         $banner1 = Banner::create([
             'title' => ['en' => 'Dis 50%', 'ar' => 'خصم حتى 50%'],
             'image' => '/images/banners/banner1.jpg',
@@ -32,17 +64,6 @@ class PageSectionSeeder extends Seeder
         $homePage = Page::create(['title' => 'Home', 'slug' => 'home']);
         // $shopPage = Page::create(['title' => 'Shop', 'slug' => 'shop']);
 
-        $slider = DisplayType::create([
-            'manual_model' => 'brand',
-            'image' => '/images/display/slider.png',
-            'fields' => ['image', 'title', 'price']
-        ]);
-
-        $grid = DisplayType::create([
-            'manual_model' => 'product',
-            'image' => '/images/display/grid.png',
-            'fields' => ['image', 'title', 'price', 'brand']
-        ]);
 
         // API Section with schema filters
         $trendingProductsSection = Section::create([
@@ -56,70 +77,68 @@ class PageSectionSeeder extends Seeder
             'see_more' => true,
             'see_more_slug' => 'products',
             'details_slug' => 'product_details',
-
+        ]);
+        // Trending Products - Home
+        $homeTrending = PageSection::create([
+            'page_id' => $homePage->id,
+            'section_id' => $trendingProductsSection->id,
+            'display_type_id' => $productDisplayType->id,
+            'position' => 'before',
+            'order' => 1,
+            'filters' => ['category_id' => 1, 'price_max' => 100]
         ]);
 
+
+        $manualBannerSection = Section::create([
+            'name' => ['en' => 'Manual Banners', 'ar' => 'إعلانات'],
+            'type' => 'manual',
+            'manual_model' => 'banner'
+        ]);
+        // Manual Banners - Home
+        $homeManualBanners = PageSection::create([
+            'name' => ['en' => 'Manual Banners', 'ar' => 'إعلانات'],
+            'page_id' => $homePage->id,
+            'section_id' => $manualBannerSection->id,
+            'display_type_id' => $bannerDisplayType->id,
+            'position' => 'after',
+            'order' => 2
+        ]);
+        // Manual Banners Items
+        SectionItem::create([
+            'section_id' => $manualBannerSection->id,
+            'item_type' => 'App\Models\Banner',
+            'item_id' => $banner1->id,
+            'link' => $banner1->link,
+            'order' => 1
+        ]);
+
+        SectionItem::create([
+            'section_id' => $manualBannerSection->id,
+            'item_type' => 'App\Models\Banner',
+            'item_id' => $banner2->id,
+            'link' => $banner2->link,
+            'order' => 2
+        ]);
+
+
+        // Manual Products Items
+        $product1 = Product::first(); // مثال
+        $product2 = Product::skip(1)->first();
 
         $manualProductsSection = Section::create([
             'name' => ['en' => 'Manual Products', 'ar' => 'منتجات مختارة'],
             'type' => 'manual'
         ]);
 
-        $manualBannerSection = Section::create([
-            'name' => ['en' => 'Manual Banners', 'ar' => 'إعلانات'],
-            'type' => 'manual',
-            'manual_model' => 'Banner'
-        ]);
-
-        $manualRecipesSection = Section::create([
-            'name' => ['en' => 'Manual Recipes', 'ar' => 'وصفات'],
-            'type' => 'manual',
-            'manual_model' => 'Recipe'
-        ]);
-
-        // Trending Products - Home
-        $homeTrending = PageSection::create([
-            'page_id' => $homePage->id,
-            'section_id' => $trendingProductsSection->id,
-            'display_type_id' => $slider->id,
-            'position' => 'before',
-            'order' => 1,
-            'filters' => ['category_id' => 1, 'price_max' => 100]
-        ]);
-
-        // Manual Products - Home
-        $homeManualProducts = PageSection::create([
+        // Manual Banners - Home
+        $homeManualBanners = PageSection::create([
             'name' => ['en' => 'Manual Products', 'ar' => 'منتجات مختارة'],
             'page_id' => $homePage->id,
             'section_id' => $manualProductsSection->id,
-            'display_type_id' => $grid->id,
+            'display_type_id' => $productDisplayType->id,
             'position' => 'after',
             'order' => 2
         ]);
-
-        // Manual Banners - Home
-        $homeManualBanners = PageSection::create([
-            'name' => ['en' => 'Manual Banners', 'ar' => 'إعلانات'],
-            'page_id' => $homePage->id,
-            'section_id' => $manualBannerSection->id,
-            'display_type_id' => $slider->id,
-            'position' => 'after',
-            'order' => 3
-        ]);
-
-        // Manual Recipes - Shop (optional)
-        $shopManualRecipes = PageSection::create([
-            'name' => ['en' => 'Manual Recipes', 'ar' => 'وصفات'],
-            'page_id' => $homePage->id,
-            'section_id' => $manualRecipesSection->id,
-            'display_type_id' => $grid->id,
-            'position' => 'after',
-            'order' => 1
-        ]);
-
-        // Manual Products Items
-        $product1 = Product::first(); // مثال
-        $product2 = Product::skip(1)->first();
 
         SectionItem::create([
             'section_id' => $manualProductsSection->id,
@@ -137,21 +156,23 @@ class PageSectionSeeder extends Seeder
             'order' => 2
         ]);
 
-        // Manual Banners Items
-        SectionItem::create([
-            'section_id' => $manualBannerSection->id,
-            'item_type' => 'App\Models\Banner',
-            'item_id' => $banner1->id,
-            'link' => $banner1->link,
-            'order' => 1
+        $brandSection = Section::create([
+            'name' => ['en' => 'Brands', 'ar' => 'قسم البراندات'],
+            'type' => 'api',
+            'api_method' => 'brands',
+            'filters' => [],
+            'see_more' => true,
+            'see_more_slug' => 'brands',
+            'details_slug' => 'brand_details',
         ]);
 
-        SectionItem::create([
-            'section_id' => $manualBannerSection->id,
-            'item_type' => 'App\Models\Banner',
-            'item_id' => $banner2->id,
-            'link' => $banner2->link,
-            'order' => 2
+        $homeTrending = PageSection::create([
+            'page_id' => $homePage->id,
+            'section_id' => $brandSection->id,
+            'display_type_id' => $brandsDisplayType->id,
+            'position' => 'before',
+            'order' => 4,
+            'filters' => []
         ]);
     }
 }
