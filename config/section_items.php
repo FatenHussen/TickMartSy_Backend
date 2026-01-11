@@ -19,7 +19,7 @@ return [
         'item_type' => 'App\Models\Brand',
         'url'   => 'admin/brands',
     ],
-    'vendor' => [   // صححت هنا
+    'vendor' => [
         'item_type' => 'App\Models\Vendor',
         'url'   => 'admin/shop',
     ],

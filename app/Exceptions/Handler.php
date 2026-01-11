@@ -32,13 +32,13 @@ class Handler
         });
 
         // 404 Model
-        $exceptions->render(function (ModelNotFoundException $e, $request) {
-            return response()->json([
-                'status' => false,
-                'message' => __('custom.errors.404') . ' ,' . $e->getMessage(),
-                'errors' => [],
-            ], 404);
-        });
+        // $exceptions->render(function (ModelNotFoundException $e, $request) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'message' => __('custom.errors.404') . ' ,' . $e->getMessage(),
+        //         'errors' => [],
+        //     ], 404);
+        // });
 
         // 405
         $exceptions->render(function (MethodNotAllowedHttpException $e, $request) {
@@ -50,12 +50,12 @@ class Handler
         });
 
         // HTTP Exceptions
-        $exceptions->render(function (HttpException $e, $request) {
-            return response()->json([
-                'status' => false,
-                'message' => __('custom.errors.' . $e->getStatusCode()) ?? $e->getMessage(),
-                'errors' => [],
-            ], $e->getStatusCode());
-        });
+        // $exceptions->render(function (HttpException $e, $request) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'message' => __('custom.errors.' . $e->getStatusCode()) ?? $e->getMessage(),
+        //         'errors' => [],
+        //     ], $e->getStatusCode());
+        // });
     }
 }

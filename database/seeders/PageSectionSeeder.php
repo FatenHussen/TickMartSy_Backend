@@ -33,14 +33,14 @@ class PageSectionSeeder extends Seeder
         // $shopPage = Page::create(['title' => 'Shop', 'slug' => 'shop']);
 
         $slider = DisplayType::create([
-            'name' => 'Slider',
-            'preview_image' => '/images/display/slider.png',
+            'manual_model' => 'brand',
+            'image' => '/images/display/slider.png',
             'fields' => ['image', 'title', 'price']
         ]);
 
         $grid = DisplayType::create([
-            'name' => 'Grid',
-            'preview_image' => '/images/display/grid.png',
+            'manual_model' => 'product',
+            'image' => '/images/display/grid.png',
             'fields' => ['image', 'title', 'price', 'brand']
         ]);
 

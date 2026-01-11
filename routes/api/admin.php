@@ -46,6 +46,8 @@ Route::prefix('admin')->group(
             // Public routes
             Route::get('pages', [SectionController::class, 'pages']);
             Route::get('item-types', [SectionController::class, 'sectionItemTypes']);
+            Route::get('display-types', [SectionController::class, 'displayTypes']);
+
 
             // Protected routes
             Route::middleware('auth:admin')->group(function () {});
