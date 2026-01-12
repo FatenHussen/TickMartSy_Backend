@@ -3,13 +3,16 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Basket;
 use App\Models\BasketItem;
+use App\Models\BasketItemCompany;
+use App\Models\Brand;
 
 class BasketItemSeeder extends Seeder
 {
     public function run(): void
     {
+        $brands = Brand::all(); 
+
         $itemsData = [
             1 => [
                 ['product_id' => 1,  'variant_id' => 1, 'quantity' => 2, 'price' => 18.90, 'is_required' => true],
@@ -37,7 +40,8 @@ class BasketItemSeeder extends Seeder
 
         foreach ($itemsData as $basketId => $items) {
             foreach ($items as $itemData) {
-                BasketItem::create(array_merge(
+
+                $basketItem = BasketItem::create(array_merge(
                     $itemData,
                     [
                         'basket_id'     => $basketId,
@@ -45,6 +49,15 @@ class BasketItemSeeder extends Seeder
                         'max_quantity'  => 10,
                     ]
                 ));
+
+                foreach ($brands as $index => $brand) {
+                    BasketItemCompany::create([
+                        'basket_item_id' => $basketItem->id,
+                        'brand_id'       => $brand->id,
+                        'is_default'     => $index === 0, // أول براند default
+                        'company_specific_price' => null,
+                    ]);
+                }
             }
         }
     }

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Brand;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -22,6 +23,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             // RolePermissionSeeder::class,
             CategorySeeder::class,
+            BrandSeeder::class,
             VendorSeeder::class,
             ShopSeeder::class,
             ShopUserSeeder::class,
@@ -39,7 +41,8 @@ class DatabaseSeeder extends Seeder
             VendorRolePermissionSeeder::class,
             RecipeSeeder::class,
             BasketSeeder::class,
-
+            BasketItemSeeder::class,
+            // BasketItemCompanySeeder::class,
         ]);
     }
 }

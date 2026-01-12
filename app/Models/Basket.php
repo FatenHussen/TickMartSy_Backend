@@ -35,7 +35,7 @@ class Basket extends Model
 
     public function items()
     {
-        return $this->hasMany(BasketItem::class);
+        return $this->hasMany(BasketItem::class, 'basket_id', 'id');
     }
 
     public function getCalculatedPriceAttribute()
