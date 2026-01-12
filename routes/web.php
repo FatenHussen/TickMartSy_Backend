@@ -9,3 +9,6 @@ Route::get('/', function () {
 })->middleware([CheckIfBlocked::class, SetLocale::class]);
 
 Route::middleware([CheckIfBlocked::class])->group(function () {});
+// Route::group(['prefix' => 'translations', 'middleware' => ['web', 'auth']], function () {
+//     \Barryvdh\TranslationManager\Controller::routes();
+// });
