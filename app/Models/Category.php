@@ -35,6 +35,12 @@ class Category extends Model implements Sectionable
         return $this->hasMany(Store::class);
     }
 
+    // recursively
+    public function descendants()
+    {
+        return $this->children()->with('descendants');
+    }
+
     public function toSectionArray(): array
     {
         return [

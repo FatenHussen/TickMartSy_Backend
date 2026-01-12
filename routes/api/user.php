@@ -5,7 +5,7 @@ use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\User\SectionController;
 use App\Http\Controllers\User\CityController;
 use App\Http\Controllers\User\GovernorateController;
-
+use App\Http\Controllers\User\RecipeController;
 
 Route::prefix('user')->group(
     function () {
@@ -39,6 +39,13 @@ Route::prefix('user')->group(
         Route::prefix('sections')->group(function () {
             // Public routes
             Route::get('/', [SectionController::class, 'index']);
+        });
+
+        //  Section routes
+        Route::prefix('recipes')->group(function () {
+            // Public routes
+            Route::get('/', [RecipeController::class, 'index']);
+            Route::get('/{recipe}', [RecipeController::class, 'show']);
         });
     }
 );
