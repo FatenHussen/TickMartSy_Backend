@@ -15,7 +15,7 @@ class VendorRolePermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        app(PermissionRegistrar::class)->forgetCachedPermissions();
+        // app(PermissionRegistrar::class)->forgetCachedPermissions();
 
         $guard = 'vendor-user';
 
@@ -122,14 +122,14 @@ class VendorRolePermissionSeeder extends Seeder
 
 
 
-        app(PermissionRegistrar::class)->setPermissionsTeamId($shop1->id);
+        // app(PermissionRegistrar::class)->setPermissionsTeamId($shop1->id);
         $employee->assignRole('shop-manager');
 
         $employee->unsetRelation('roles')->unsetRelation('permissions');
 
-        app(PermissionRegistrar::class)->setPermissionsTeamId(0);
+        // app(PermissionRegistrar::class)->setPermissionsTeamId(0);
         $employee->assignRole('shop-employee');
 
-        app(PermissionRegistrar::class)->setPermissionsTeamId(null);
+        // app(PermissionRegistrar::class)->setPermissionsTeamId(null);
     }
 }

@@ -14,7 +14,7 @@ class AdminRolePermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        app(PermissionRegistrar::class)->setPermissionsTeamId(0);
+        // app(PermissionRegistrar::class)->setPermissionsTeamId(0);
 
         $models = [
             'Role',
