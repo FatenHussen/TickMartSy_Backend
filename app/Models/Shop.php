@@ -26,12 +26,14 @@ class Shop extends Model
         'is_active',
         'ratings_count',
         'ratings_sum',
-        'vendor_id'
+        'vendor_id',
+        'is_default'
     ];
 
     protected $casts = [
         'working_hours'     => 'array',
         'cover_images'      => 'array',
+        'is_active'         => 'boolean',
         'is_active'         => 'boolean',
         'ratings_count'     => 'integer',
         'ratings_sum'       => 'integer',

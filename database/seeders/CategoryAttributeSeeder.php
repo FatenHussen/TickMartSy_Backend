@@ -19,6 +19,7 @@ class CategoryAttributeSeeder extends Seeder
                     'en' => 'Color',
                     'ar' => 'اللون',
                 ],
+                'type' => 'color'
             ]);
 
             CategoryAttribute::create([
@@ -27,6 +28,7 @@ class CategoryAttributeSeeder extends Seeder
                     'en' => 'Size',
                     'ar' => 'المقاس',
                 ],
+                'type' => 'square'
             ]);
         }
     }

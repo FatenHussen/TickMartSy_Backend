@@ -24,12 +24,14 @@ class CategoryAttributeService extends BaseService
     protected $searchableFields = [
         'id',
         'name',
-        'category_id'
+        'category_id',
+        'type'
     ];
 
     protected $sortableFields = [
         'id',
         'name',
+        'type',
         'created_at',
     ];
 }

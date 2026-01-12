@@ -16,9 +16,9 @@ class AttributeValueSeeder extends Seeder
 
             if ($attribute->getTranslation('name', 'en') === 'Color') {
                 $values = [
-                    ['en' => 'Red', 'ar' => 'أحمر'],
-                    ['en' => 'Blue', 'ar' => 'أزرق'],
-                    ['en' => 'Black', 'ar' => 'أسود'],
+                    ['en' => '#fc0303', 'ar' => '#fc0303'],
+                    ['en' => '#0303fc', 'ar' => '#0303fc'],
+                    ['en' => '#00000a', 'ar' => '#00000a'],
                 ];
             } else {
                 $values = [

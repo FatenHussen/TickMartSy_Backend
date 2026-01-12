@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Controllers\User\Product\ProductController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\Auth\AuthController;
+use App\Http\Controllers\User\Basket\BasketController;
+use App\Http\Controllers\User\Category\CategoryController;
 use App\Http\Controllers\User\SectionController;
 use App\Http\Controllers\User\CityController;
 use App\Http\Controllers\User\GovernorateController;
@@ -40,12 +43,27 @@ Route::prefix('user')->group(
             // Public routes
             Route::get('/', [SectionController::class, 'index']);
         });
-
+        //  Product routes
+        Route::prefix('products')->group(function () {
+            // Public routes
+            Route::get('/', [ProductController::class, 'index']);
+            Route::get('/{id}', [ProductController::class, 'get_one']);
+        });
+        // Category routes
+        Route::prefix('categories')->group(function () {
+            // Public routes
+            Route::get('/', [CategoryController::class, 'index']);
+        });
         //  Section routes
         Route::prefix('recipes')->group(function () {
             // Public routes
             Route::get('/', [RecipeController::class, 'index']);
             Route::get('/{recipe}', [RecipeController::class, 'show']);
+        });
+        Route::prefix('baskets')->group(function () {
+            // Public routes
+            Route::get('/', [BasketController::class, 'index']);
+            Route::get('/{id}', [BasketController::class, 'get_one']);
         });
     }
 );

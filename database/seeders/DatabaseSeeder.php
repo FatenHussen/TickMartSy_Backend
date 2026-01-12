@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             GovernorateSeeder::class,
             AdminRolePermissionSeeder::class,
+            LanguageSeeder::class,
+            RolePermissionSeeder::class,
             // RolePermissionSeeder::class,
             CategorySeeder::class,
             VendorSeeder::class,
@@ -35,7 +37,9 @@ class DatabaseSeeder extends Seeder
             PageSectionSeeder::class,
             ServiceSeeder::class,
             VendorRolePermissionSeeder::class,
-            RecipeSeeder::class
+            RecipeSeeder::class,
+            BasketSeeder::class,
+
         ]);
     }
 }

@@ -15,7 +15,11 @@ class ProductVariantSeeder extends Seeder
         foreach ($products as $product) {
             ProductVariant::create([
                 'product_id' => $product->id,
-                'attributes_values_ids' => [1, 2], // IDs من AttributeValue
+                'attributes_values_ids' => [1, 5], // IDs من AttributeValue
+            ]);
+            ProductVariant::create([
+                'product_id' => $product->id,
+                'attributes_values_ids' => [2, 6], // IDs من AttributeValue
             ]);
         }
     }

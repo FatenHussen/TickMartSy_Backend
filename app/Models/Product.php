@@ -46,7 +46,7 @@ class Product extends Model implements Sectionable
     | Relationships
     |--------------------------------------------------------------------------
     */
-
+    
     public function category()
     {
         return $this->belongsTo(Category::class);
@@ -63,6 +63,10 @@ class Product extends Model implements Sectionable
     public function categoryDetails()
     {
         return $this->hasMany(ProductCategoryDetail::class);
+    }
+    public function boughtWithProducts()
+    {
+        return $this->belongsToMany(Product::class, 'bought_with', 'product_id', 'bought_with_id');
     }
 
     public function extraDetails()

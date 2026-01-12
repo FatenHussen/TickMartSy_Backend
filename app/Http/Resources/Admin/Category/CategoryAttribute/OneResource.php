@@ -14,11 +14,11 @@ class OneResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $locale = app()->getLocale();
         return [
             'id'       => $this->id,
             'name'     => $this->getTranslations('name'),
-            'category' => $this->category->getTranslation('name', $locale),
+            'category' => $this->category->name,
+            'type'     =>$this->type,
             'values'   => $this->values->map(fn($value) => [
                 'id'   => $value->id,
                 'name' => $value->getTranslations('name'),

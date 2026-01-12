@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('category_attributes', function (Blueprint $table) {
+        Schema::create('bascket_item_companies', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('category_id')->constrained()->cascadeOnDelete();
-            $table->json('name');
-            $table->enum('type',['square','circle','color'])->nullable()->default('square');
-            $table->softDeletes();
-
+            $table->foreignId('basket_item_id')->constrained('basket_items')->onDelete('cascade');
+            $table->json('company');
+            $table->boolean('is_default');
+            $table->decimal('company_specific_price', 10, 2)->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('category_attributes');
+        Schema::dropIfExists('bascket_item_companies');
     }
 };
