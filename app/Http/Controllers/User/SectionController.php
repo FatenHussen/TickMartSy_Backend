@@ -18,14 +18,15 @@ class SectionController extends Controller
     {
         $page = Page::where('slug', $request->page_slug)->firstOrFail();
 
-        $sections = $page->pageSections()->with('section.sectionItems.item')->get()
-            ->map(function ($pageSection) {
-                $section = $pageSection->section;
+        // $sections = $page->pageSections()->with('section.sectionItems.item')->get()
+        //     ->map(function ($pageSection) {
+        //         $section = $pageSection->section;
 
-                $pageSection->api_data = app(SectionApiService::class)->preview($section);
+        //         $pageSection->api_data = app(SectionApiService::class)->preview($section);
 
-                return $pageSection;
-            });
+        //         return $pageSection;
+        //     });
+        $sections = $page->pageSections()->with('section.sectionItems.item')->get();
 
         return $this->sendResponse(data: OneResource::collection($sections));
     }

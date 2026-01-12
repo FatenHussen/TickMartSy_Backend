@@ -7,7 +7,7 @@ use App\Http\Controllers\User\Category\CategoryController;
 use App\Http\Controllers\User\SectionController;
 use App\Http\Controllers\User\CityController;
 use App\Http\Controllers\User\GovernorateController;
-
+use App\Http\Controllers\User\RecipeController;
 
 Route::prefix('user')->group(
     function () {
@@ -52,6 +52,12 @@ Route::prefix('user')->group(
         Route::prefix('categories')->group(function () {
             // Public routes
             Route::get('/', [CategoryController::class, 'index']);
+
+        //  Section routes
+        Route::prefix('recipes')->group(function () {
+            // Public routes
+            Route::get('/', [RecipeController::class, 'index']);
+            Route::get('/{recipe}', [RecipeController::class, 'show']);
         });
     }
 );
