@@ -33,6 +33,7 @@ class AdminRolePermissionSeeder extends Seeder
             'Service',
             'CategoryAttribute',
             'CategoryDetail',
+            'Language'
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];
