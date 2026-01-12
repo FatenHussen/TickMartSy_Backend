@@ -34,7 +34,8 @@ class DatabaseSeeder extends Seeder
             ProductMediaSeeder::class,
             ShopProductVariantSeeder::class,
             PageSectionSeeder::class,
-            ServiceSeeder::class
+            ServiceSeeder::class,
+            BasketSeeder::class,
         ]);
     }
 }

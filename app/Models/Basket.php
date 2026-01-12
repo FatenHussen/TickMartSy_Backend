@@ -4,27 +4,27 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
 
 class Basket extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
 
     protected $fillable = [
         'category_id',
         'name',
         'num_varieties',
-        'num_components',
         'offer_ends_at',
         'price',
         'discount',
         'discount_type',
-        'savings',
         'rating',
         'num_sold',
+        'image'
     ];
+    public $translatable = ['name'];
 
     protected $casts = [
-        'images' => 'array',
         'offer_ends_at' => 'date',
     ];
 
@@ -64,8 +64,12 @@ class Basket extends Model
     protected static function booted()
     {
         static::saving(function ($basket) {
-            $basket->savings = $basket->discount_amount;
             $basket->price = $basket->calculated_price;
         });
     }
+    public function  getImageUrlAttribute()
+    {
+        return asset('storage/' . $this->image);
+    }
+    
 }
