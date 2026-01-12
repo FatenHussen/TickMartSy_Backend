@@ -7,7 +7,6 @@ use App\Http\Resources\Recipe\AllResource;
 use App\Http\Resources\Recipe\OneResource as RecipeOneResource;
 use App\Models\Category;
 use App\Models\Recipe;
-use App\Models\ShopProductVariant;
 
 class RecipeController extends Controller
 {

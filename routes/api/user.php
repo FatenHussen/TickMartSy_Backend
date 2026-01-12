@@ -53,7 +53,7 @@ Route::prefix('user')->group(
         Route::prefix('categories')->group(function () {
             // Public routes
             Route::get('/', [CategoryController::class, 'index']);
-
+        });
         //  Section routes
         Route::prefix('recipes')->group(function () {
             // Public routes
@@ -63,7 +63,7 @@ Route::prefix('user')->group(
         Route::prefix('baskets')->group(function () {
             // Public routes
             Route::get('/', [BasketController::class, 'index']);
-            Route::get('/{id}', [BasketController::class,'get_one']);
+            Route::get('/{id}', [BasketController::class, 'get_one']);
         });
     }
 );
