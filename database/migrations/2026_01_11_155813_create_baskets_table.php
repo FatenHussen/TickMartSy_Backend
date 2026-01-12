@@ -16,13 +16,13 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained('categories');
             $table->json('name');
             $table->integer('num_varieties');
-            $table->integer('num_components');
             $table->date('offer_ends_at')->nullable();
             $table->decimal('price', 8, 2); 
             $table->decimal('discount', 8, 2)->default(0); 
             $table->enum('discount_type', ['fixed', 'percentage'])->default('percentage'); 
             $table->decimal('rating', 3, 2)->default(0);
             $table->integer('num_sold')->default(0);
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }
