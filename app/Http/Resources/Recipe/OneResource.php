@@ -46,6 +46,9 @@ class OneResource extends JsonResource
                     ];
                 }),
             ],
+            'steps' => RecipeStepResource::collection(
+                $this->whenLoaded('steps')
+            ),
 
             'items' => RecipeItemResource::collection(
                 $this->whenLoaded('items')

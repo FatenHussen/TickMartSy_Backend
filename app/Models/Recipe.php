@@ -31,4 +31,9 @@ class Recipe extends Model
     {
         return $this->hasMany(RecipeItem::class);
     }
+
+    public function steps()
+    {
+        return $this->hasMany(RecipeStep::class)->orderBy('step_number');
+    }
 }

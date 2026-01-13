@@ -71,7 +71,7 @@ class PageSectionSeeder extends Seeder
             'type' => 'api',
             'api_method' => 'trending_products',
             'filters' => [
-                'category_id' => ['type' => 'select'],
+                'category_id' => ['type' => 'select', 'url' => 'admin/categories'],
                 'price_max' => ['type' => 'number']
             ],
             'see_more' => true,

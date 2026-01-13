@@ -18,18 +18,13 @@ class AllResource extends JsonResource
 
         return [
             'id' => $this->id,
-
             'name' => $this->name,
             'description' => $this->description,
-
-            'image' => $this->image,
-            'video_url' => $this->video_url,
-
+            'image' => $this->image_url,
             'rating' => $this->rating,
-            'orders_count' => $this->orders_count,
-
             'discount' => $this->discount,
 
+            'orders_count' => $this->orders_count,
             'badges' => [
                 'top' => $this->whenLoaded('topBadge', function () {
                     return [

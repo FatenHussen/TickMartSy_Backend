@@ -40,6 +40,27 @@ class Category extends Model implements Sectionable
     {
         return $this->children()->with('descendants');
     }
+    public function leafDescendants()
+    {
+        $leaves = collect();
+
+        $this->loadMissing('children');
+
+        foreach ($this->children as $child) {
+
+            $child->loadMissing('children');
+
+            if ($child->children->isEmpty()) {
+                $leaves->push($child);
+            } else {
+                $leaves = $leaves->merge($child->leafDescendants());
+            }
+        }
+
+        return $leaves;
+    }
+
+
 
     public function toSectionArray(): array
     {

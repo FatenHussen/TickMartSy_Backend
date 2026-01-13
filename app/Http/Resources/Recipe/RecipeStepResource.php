@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources\Section;
+namespace App\Http\Resources\Recipe;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class AllResource extends JsonResource
+class RecipeStepResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,11 +15,10 @@ class AllResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'type' => $this->type,
-            'filters' => $this->filters,
-
+            'step_number' => $this->step_number,
+            'instruction' => $this->instruction,
+            'time_minutes' => $this->time_minutes,
+            'heat_level' => $this->heat_level,
         ];
     }
 }
