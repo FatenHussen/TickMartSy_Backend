@@ -14,13 +14,11 @@ class BasketItemCompany extends Model
 
     protected $fillable = [
         'basket_item_id',
-        'company',
+        'brand_id',
         'is_default',
         'company_specific_price',
     ];
-
     protected $casts = [
-        'company'                 => 'array',
         'is_default'              => 'boolean',
         'company_specific_price'  => 'decimal:2',
     ];
@@ -30,18 +28,10 @@ class BasketItemCompany extends Model
     {
         return $this->belongsTo(BasketItem::class, 'basket_item_id');
     }
-
-
-    public function getCompanyNameAttribute(): ?string
+    public function brand(): BelongsTo
     {
-        return $this->company['name'] ?? null;
+        return $this->belongsTo(Brand::class, 'brand_id');
     }
-
-    public function getCompanyIdAttribute()
-    {
-        return $this->company['id'] ?? null;
-    }
-
     public function isDefault(): bool
     {
         return (bool) $this->is_default;

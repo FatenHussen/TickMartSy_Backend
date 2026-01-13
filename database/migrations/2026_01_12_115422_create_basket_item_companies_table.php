@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bascket_item_companies', function (Blueprint $table) {
+        Schema::create('basket_item_companies', function (Blueprint $table) {
             $table->id();
             $table->foreignId('basket_item_id')->constrained('basket_items')->onDelete('cascade');
-            $table->json('company');
+            $table->foreignId('brand_id')->constrained('brands')->onDelete('cascade');
             $table->boolean('is_default');
             $table->decimal('company_specific_price', 10, 2)->nullable();
             $table->timestamps();

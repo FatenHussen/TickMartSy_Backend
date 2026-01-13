@@ -14,9 +14,11 @@ class BasketService extends BaseService
     protected $collection = AllResource::class;
 
     protected $relations = [
+        'items',
         'items.product',
         'items.variant',
         'items.companies',
+        'items.companies.brand',
     ];
     protected $searchableFields = ['name'];
     protected $sortableFields   = ['id'];

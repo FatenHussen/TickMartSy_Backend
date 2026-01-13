@@ -45,31 +45,38 @@ class OneResource extends JsonResource
                         'max_quantity'  => (int) $item->max_quantity,
                         'can_adjust'    => $item->canAdjustQuantity(),
 
-                        'product' => $this->whenLoaded('items.product', fn() => [
-                            'id'    => $item->product?->id,
-                            'name'  => $item->product?->name,
-                        ]),
+                        'product' => $item->relationLoaded('product') && $item->product ? [
+                            'id'   => $item->product->id,
+                            'name' => $item->product->name,
+                            'image' => $item->product->media->first()?->url
+                        ] : null,
 
-                        'variant' => $item->whenLoaded('variant', fn() => $item->variant ? [
-                            'id'    => $item->variant->id,
-                            'name'  => $item->variant->name ?? $item->variant->value,
-                        ] : null),
+                        'variant' => $item->relationLoaded('variant') && $item->variant
+                            ? $item->variant->attributes_values->pluck('name')->toArray()
+                            : null,
 
-                        'companies' => $item->whenLoaded('companies', function () use ($item) {
-                            return $item->companies->map(function ($company) use ($item) {
+
+                        'companies' => $item->relationLoaded('companies')
+                            ? $item->companies->map(function ($company) use ($item) {
                                 return [
-                                    'name'              => $company->name,
+                                    'id'=>  $company->relationLoaded('brand') && $company->brand
+                                    ? $company->brand->id : null,
+                                    'name' => $company->relationLoaded('brand') && $company->brand
+                                        ? $company->brand->name
+                                        : null,
                                     'is_default'        => $company->isDefault(),
                                     'has_custom_price'  => $company->hasCustomPrice(),
-                                    'effective_price'   => $company->effective_price
+                                    'effective_price'   => $company->effective_price !== null
                                         ? round($company->effective_price, 2)
                                         : round($item->price, 2),
                                 ];
-                            })->values();
-                        }),
+                            })->values()
+                            : [],
                     ];
                 })->values();
             }),
+
+
         ];
     }
 }
