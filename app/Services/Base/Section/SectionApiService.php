@@ -4,6 +4,7 @@ namespace App\Services\Base\Section;
 
 use App\Models\Section;
 use App\Services\User\BrandService;
+use App\Services\User\RecipeService;
 
 // use App\Services\Base\Section\TrendingProductsHandler;
 
@@ -39,6 +40,7 @@ class SectionApiService
         $map = [
             'trending_products' => TrendingProductsHandler::class,
             'brands' => BrandService::class,
+            'recipes' => RecipeService::class
         ];
 
         return $map[$method] ?? null;

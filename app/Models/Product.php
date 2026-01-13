@@ -46,7 +46,7 @@ class Product extends Model implements Sectionable
     | Relationships
     |--------------------------------------------------------------------------
     */
-    
+
     public function category()
     {
         return $this->belongsTo(Category::class);
@@ -88,6 +88,7 @@ class Product extends Model implements Sectionable
             'desc'     => $this->description,
             'image'    => $this->image_url,
             'price' => $this->price,
+            'price_after_discount' => $this->price,
             'discount' => null,
             'top_badges' => [],
             'bottom_badges' => [],

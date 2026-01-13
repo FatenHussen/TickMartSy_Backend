@@ -49,6 +49,12 @@ class PageSectionSeeder extends Seeder
             'fields' => ['image', 'title', 'price', 'brand']
         ]);
 
+        $recipeDisplayType = DisplayType::create([
+            'manual_model' => 'recipe',
+            'image' => '/images/display/recipe.png',
+            'fields' => ['image', 'title', 'decription', 'price', 'brand']
+        ]);
+
         $banner1 = Banner::create([
             'title' => ['en' => 'Dis 50%', 'ar' => 'خصم حتى 50%'],
             'image' => '/images/banners/banner1.jpg',
@@ -78,6 +84,7 @@ class PageSectionSeeder extends Seeder
             'see_more_slug' => 'products',
             'details_slug' => 'product_details',
         ]);
+
         // Trending Products - Home
         $homeTrending = PageSection::create([
             'page_id' => $homePage->id,
@@ -88,12 +95,12 @@ class PageSectionSeeder extends Seeder
             'filters' => ['category_id' => 1, 'price_max' => 100]
         ]);
 
-
         $manualBannerSection = Section::create([
             'name' => ['en' => 'Manual Banners', 'ar' => 'إعلانات'],
             'type' => 'manual',
             'manual_model' => 'banner'
         ]);
+
         // Manual Banners - Home
         $homeManualBanners = PageSection::create([
             'name' => ['en' => 'Manual Banners', 'ar' => 'إعلانات'],
@@ -103,6 +110,7 @@ class PageSectionSeeder extends Seeder
             'position' => 'after',
             'order' => 2
         ]);
+
         // Manual Banners Items
         SectionItem::create([
             'section_id' => $manualBannerSection->id,
@@ -173,6 +181,40 @@ class PageSectionSeeder extends Seeder
             'position' => 'before',
             'order' => 4,
             'filters' => []
+        ]);
+
+
+        $recipeSection = Section::create([
+            'name' => ['en' => 'recipe', 'ar' => 'قسم الطبخة'],
+            'type' => 'api',
+            'api_method' => 'recipes',
+            'filters' => [
+                'discount' => ['type' => 'number'],
+            ],
+            'see_more' => true,
+            'see_more_slug' => 'recipes',
+            'details_slug' => 'recipe_details',
+        ]);
+
+        $homeTrending = PageSection::create([
+            'page_id' => $homePage->id,
+            'section_id' => $recipeSection->id,
+            'display_type_id' => $recipeDisplayType->id,
+            'position' => 'after',
+            'order' => 5,
+            'filters' => []
+        ]);
+
+        $homeTrending = PageSection::create([
+            'name' => ['en' => 'طبخات بخصومات تصل ل 50%', 'ar' => 'طبخات بخصومات تصل ل 50 %'],
+            'page_id' => $homePage->id,
+            'section_id' => $recipeSection->id,
+            'display_type_id' => $recipeDisplayType->id,
+            'position' => 'after',
+            'order' => 5,
+            'filters' => [
+                'discount' => 30
+            ]
         ]);
     }
 }

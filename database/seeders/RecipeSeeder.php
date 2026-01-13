@@ -134,6 +134,7 @@ class RecipeSeeder extends Seeder
             'description' => ['ar' => 'كبسة رز بالدجاج', 'en' => 'Rice Kabsa with Chicken'],
             'image' => 'recipes/kabsa.jpg',
             'rating' => 4.5,
+            'discount' => 20,
             'is_active' => true,
         ]);
 

@@ -4,9 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Translatable\HasTranslations;
 
-class Recipe extends Model
+class Recipe extends Model implements Sectionable
 {
+    use HasTranslations;
+
+    public $translatable = ['name', 'description'];
 
     protected $fillable = [
         'name',
@@ -35,5 +39,41 @@ class Recipe extends Model
     public function steps()
     {
         return $this->hasMany(RecipeStep::class)->orderBy('step_number');
+    }
+    public function getTotalItemsPrice(): float
+    {
+        return round($this->items->sum(function ($item) {
+            return $item->shopProductVariant->price * $item->quantity;
+        }), 2);
+    }
+
+
+    public function getTotalAfterDiscount(): float
+    {
+        $total_before_discount = $this->getTotalItemsPrice();
+        $discount_percentage = $this->discount ?? 0;
+
+        $total_after_discount = $total_before_discount * (1 - $discount_percentage / 100);
+
+        return round($total_after_discount, 2);
+    }
+    public function  getImageUrlAttribute()
+    {
+        return asset('storage/' . $this->image);
+    }
+
+    public function toSectionArray(): array
+    {
+        return [
+            'id'       => $this->id,
+            'title'     => $this->title,
+            'desc'     => $this->description,
+            'image'    => $this->image_url,
+            'price' => $this->getTotalItemsPrice(),
+            'price_after_discount' => $this->getTotalAfterDiscount(),
+            'discount' => $this->discount,
+            'top_badges' => [],
+            'bottom_badges' => [],
+        ];
     }
 }

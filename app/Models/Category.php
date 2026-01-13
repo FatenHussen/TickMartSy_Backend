@@ -30,10 +30,7 @@ class Category extends Model implements Sectionable
         return $this->hasMany(Category::class, 'parent_id');
     }
 
-    public function stores()
-    {
-        return $this->hasMany(Store::class);
-    }
+
 
     // recursively
     public function descendants()
@@ -60,6 +57,10 @@ class Category extends Model implements Sectionable
         return $leaves;
     }
 
+    public function stores()
+    {
+        return $this->hasMany(Store::class);
+    }
 
 
     public function toSectionArray(): array

@@ -12,12 +12,11 @@ class ShopProductVariantResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'shop_product_variant_id' => $this->id,
             'product_id' => $this->productVariant->product->id,
+            'shop_product_variant_id' => $this->id,
             'name' => $this->productVariant->product->name,
+            'image_url' => $this->productVariant->product->image_url,
             'price' => $this->price,
-            'shop_id' => $this->shop_id,
-            'shop_name' => $this->shop->name,
         ];
     }
 }

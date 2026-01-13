@@ -23,27 +23,7 @@ class AllResource extends JsonResource
             'image' => $this->image_url,
             'rating' => $this->rating,
             'discount' => $this->discount,
-
             'orders_count' => $this->orders_count,
-            'badges' => [
-                'top' => $this->whenLoaded('topBadge', function () {
-                    return [
-                        'id' => $this->topBadge->id,
-                        'name' => $this->topBadge->name,
-                        'color' => $this->topBadge->color,
-                        'icon' => $this->topBadge->icon,
-                    ];
-                }),
-                'bottom' => $this->whenLoaded('bottomBadge', function () {
-                    return [
-                        'id' => $this->bottomBadge->id,
-                        'name' => $this->bottomBadge->name,
-                        'color' => $this->bottomBadge->color,
-                        'icon' => $this->bottomBadge->icon,
-                    ];
-                }),
-            ],
-
             'created_at' => $this->created_at,
         ];
     }

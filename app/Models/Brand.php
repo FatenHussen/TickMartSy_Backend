@@ -25,6 +25,7 @@ class Brand extends Model implements Sectionable
             'desc'     => null,
             'image'    => $this->image_url,
             'price' => null,
+            'price_after_discount' => null,
             'discount' => null,
             'top_badges' => [],
             'bottom_badges' => [],

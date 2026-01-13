@@ -16,10 +16,8 @@ class RecipeItemResource extends JsonResource
     {
         $itemShopId = $this->shopProductVariant->shop_id;
 
-        $alternatives = [
-            'same_shop' => [],
-            'other_shops' => [],
-        ];
+        $same_shop = [];
+        $other_shops = [];
 
         if ($this->switchable_category_level) {
 
@@ -32,16 +30,10 @@ class RecipeItemResource extends JsonResource
                     ->pluck('id')
                     ->toArray();
 
-                // إذا بدك تسمح بالمنتج من نفس الفئة لو كانت Leaf
                 if ($parentCategory->children()->count() === 0) {
                     $categoryIds[] = $parentCategory->id;
                 }
-                Log::info("Hi");
-                Log::info($parentCategory);
 
-                Log::info($categoryIds);
-
-                // 3️⃣ كل البدائل
                 $variants = ShopProductVariant::with([
                     'productVariant.product',
                     'shop'
@@ -50,29 +42,35 @@ class RecipeItemResource extends JsonResource
                         $q->whereIn('category_id', $categoryIds);
                     })
                     ->where('quantity', '>', 0)
+                    ->where('id', '!=', $this->shop_product_variant_id)
                     ->get();
 
-                // 4️⃣ تقسيمهم
-                $alternatives['same_shop'] = ShopProductVariantResource::collection(
+                $same_shop = ShopProductVariantResource::collection(
                     $variants->where('shop_id', $itemShopId)->values()
                 );
 
-                $alternatives['other_shops'] = ShopProductVariantResource::collection(
+                $other_shops = ShopProductVariantResource::collection(
                     $variants->where('shop_id', '!=', $itemShopId)->values()
                 );
             }
         }
 
         return [
-            'product_id' => $this->shopProductVariant->productVariant->product->id,
-            'shop_product_variant_id' => $this->shop_product_variant_id,
-            'name' => $this->shopProductVariant->productVariant->product->name,
-            'is_required' => $this->is_required,
-            'default_quantity' => $this->quantity,
-            'min_quantity' => $this->min_quantity ?? $this->quantity,
-            'max_quantity' => $this->max_quantity ?? $this->quantity,
-            'price' => $this->shopProductVariant->price,
-            'alternatives' => $alternatives,
+            'terms' => [
+                'is_required' => $this->is_required,
+                'default_quantity' => $this->quantity,
+                'min_quantity' => $this->min_quantity ?? $this->quantity,
+                'max_quantity' => $this->max_quantity ?? $this->quantity,
+            ],
+            'main_item' => [
+                'product_id' => $this->shopProductVariant->productVariant->product->id,
+                'shop_product_variant_id' => $this->shop_product_variant_id,
+                'image_url' => $this->shopProductVariant->productVariant->product->image_url,
+                'name' => $this->shopProductVariant->productVariant->product->name,
+                'price' => $this->shopProductVariant->price,
+            ],
+            'alternatives' => $same_shop,
+            'other_shops' => $other_shops
         ];
     }
 }

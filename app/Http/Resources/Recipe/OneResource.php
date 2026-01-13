@@ -46,6 +46,21 @@ class OneResource extends JsonResource
                     ];
                 }),
             ],
+            'totals' => $this->whenLoaded('items', function () {
+                $total_before_discount = $this->items->sum(function ($item) {
+                    return $item->shopProductVariant->price * $item->quantity;
+                });
+
+                $discount_percentage = $this->discount ?? 0;
+                $total_after_discount = $total_before_discount * (1 - $discount_percentage / 100);
+                $discount_value = $total_before_discount - $total_after_discount;
+
+                return [
+                    'total_before_discount' => round($total_before_discount, 2),
+                    'total_after_discount' => round($total_after_discount, 2),
+                    'discount_value' => round($discount_value, 2),
+                ];
+            }),
             'steps' => RecipeStepResource::collection(
                 $this->whenLoaded('steps')
             ),

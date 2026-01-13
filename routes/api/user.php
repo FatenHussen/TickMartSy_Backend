@@ -58,7 +58,7 @@ Route::prefix('user')->group(
         Route::prefix('recipes')->group(function () {
             // Public routes
             Route::get('/', [RecipeController::class, 'index']);
-            Route::get('/{recipe}', [RecipeController::class, 'show']);
+            Route::get('/{id}', [RecipeController::class, 'get_one']);
         });
         Route::prefix('baskets')->group(function () {
             // Public routes
