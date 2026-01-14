@@ -19,7 +19,10 @@ class AllResource extends JsonResource
             'name'     => $this->name,
             'category' => $this->category->name,
             'type' => $this->type,
-            
+            'values'   => $this->values->map(fn($value) => [
+                'id'   => $value->id,
+                'name' => $value->name,
+            ]),
         ];
     }
 }

@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
             RecipeSeeder::class,
             BasketSeeder::class,
             BasketItemSeeder::class,
-            // BasketItemCompanySeeder::class,
+            BasketScheduleSeeder::class,
         ]);
     }
 }
