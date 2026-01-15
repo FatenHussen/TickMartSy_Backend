@@ -5,6 +5,7 @@ use App\Http\Controllers\User\Product\ProductController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\User\Basket\BasketController;
+use App\Http\Controllers\User\Basket\BasketScheduleController;
 use App\Http\Controllers\User\Category\CategoryController;
 use App\Http\Controllers\User\SectionController;
 use App\Http\Controllers\User\CityController;
@@ -72,5 +73,10 @@ Route::prefix('user')->group(
         });
 
         Route::apiResource('addresses', AddressController::class);
+        Route::prefix('baskets-schedule')->group(function () {
+            // Public routes
+            Route::get('/', [BasketScheduleController::class, 'index']);
+            Route::get('/{id}', [BasketScheduleController::class, 'get_one']);
+        });
     }
 );

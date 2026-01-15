@@ -45,6 +45,7 @@ class DatabaseSeeder extends Seeder
             BasketItemSeeder::class,
 
             // BasketItemCompanySeeder::class,
+            BasketScheduleSeeder::class,
         ]);
     }
 }
