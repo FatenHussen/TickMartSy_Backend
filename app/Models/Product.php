@@ -80,6 +80,11 @@ class Product extends Model implements Sectionable
             ->orderBy('order');
     }
 
+    public function badges()
+    {
+        return $this->morphToMany(Badge::class, 'badgeable')->withPivot('position');
+    }
+
     public function toSectionArray(): array
     {
         return [

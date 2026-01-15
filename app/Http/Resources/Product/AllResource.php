@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources\Product;
 
+use App\Http\Resources\Badge\OneResource;
+use App\Models\Badge;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class AllResource extends JsonResource
@@ -20,7 +22,7 @@ class AllResource extends JsonResource
             'quantity'              => $this->quantity,
             'image'                 => $this->media->first()?->url,
             'discount'              => '',
-            'budges'                => [],
+            'budges'                => OneResource::collection($this->badges),
             'created_at'            => $this->created_at,
         ];
     }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\User\AddressController;
 use App\Http\Controllers\User\Product\ProductController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\Auth\AuthController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\User\RecipeController;
 
 Route::prefix('user')->group(
     function () {
+
         // public routes 
         Route::get('/governorates', [GovernorateController::class, 'index']);
         Route::get('/cities', [CityController::class, 'index']);
@@ -37,33 +39,38 @@ Route::prefix('user')->group(
             }
         );
 
-
         //  Section routes
         Route::prefix('sections')->group(function () {
             // Public routes
             Route::get('/', [SectionController::class, 'index']);
         });
+
         //  Product routes
         Route::prefix('products')->group(function () {
             // Public routes
             Route::get('/', [ProductController::class, 'index']);
             Route::get('/{id}', [ProductController::class, 'get_one']);
         });
+
         // Category routes
         Route::prefix('categories')->group(function () {
             // Public routes
             Route::get('/', [CategoryController::class, 'index']);
         });
+
         //  Section routes
         Route::prefix('recipes')->group(function () {
             // Public routes
             Route::get('/', [RecipeController::class, 'index']);
             Route::get('/{id}', [RecipeController::class, 'get_one']);
         });
+
         Route::prefix('baskets')->group(function () {
             // Public routes
             Route::get('/', [BasketController::class, 'index']);
             Route::get('/{id}', [BasketController::class, 'get_one']);
         });
+
+        Route::apiResource('addresses', AddressController::class);
     }
 );

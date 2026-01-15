@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Badge;
 use Illuminate\Database\Seeder;
 use Carbon\Carbon;
 use App\Models\Category;
@@ -142,7 +143,7 @@ class RecipeSeeder extends Seeder
             'recipe_id' => $recipe->id,
             'shop_product_variant_id' => $shortShopVariant->id,
             'quantity' => 1,
-            'switchable_category_level' => $riceBulgur->id, // 👈 يجيب القصير + الطويل
+            'switchable_category_level' => $riceBulgur->id,
             'is_required' => true,
             'min_quantity' => 1,
             'max_quantity' => 5,
@@ -218,6 +219,12 @@ class RecipeSeeder extends Seeder
                     'en' => 'Medium heat'
                 ],
             ],
+        ]);
+
+        $recipe->badges()->attach([
+            1 => ['position' => 'top'],
+            2 => ['position' => 'bottom'],
+            3 => ['position' => 'bottom'],
         ]);
     }
 }

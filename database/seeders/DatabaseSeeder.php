@@ -39,9 +39,11 @@ class DatabaseSeeder extends Seeder
             PageSectionSeeder::class,
             ServiceSeeder::class,
             VendorRolePermissionSeeder::class,
+            BadgeSeeder::class,
             RecipeSeeder::class,
             BasketSeeder::class,
             BasketItemSeeder::class,
+
             // BasketItemCompanySeeder::class,
         ]);
     }
