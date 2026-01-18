@@ -14,6 +14,12 @@ class AllResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $nextDelivery = null;
+
+        if ($this->activeSchedule && $this->activeSchedule->count()) {
+            $schedule = $this->activeSchedule->first();
+            $nextDelivery = now()->addDays($schedule->number_of_days)->format('Y-m-d');
+        }
         return [
             'id'              => $this->id,
             'name'            => $this->name,
@@ -30,6 +36,8 @@ class AllResource extends JsonResource
             'saving' => round($this->discount_amount,2),
             'num_sold'        => (int) $this->num_sold,
             'is_on_offer'     => $this->offer_ends_at && $this->offer_ends_at->isFuture(),
+            'next_delivery_date' => $nextDelivery,
+
         ];
     }
 }

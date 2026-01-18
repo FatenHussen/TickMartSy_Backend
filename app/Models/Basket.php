@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 
 class Basket extends Model
@@ -75,5 +76,10 @@ class Basket extends Model
     public function schedules()
     {
         return $this->hasMany(BasketSchedule::class);
+    }
+   
+    public function activeSchedule(): HasMany
+    {
+        return $this->hasMany(BasketSchedule::class)->where('is_active', true);
     }
 }
