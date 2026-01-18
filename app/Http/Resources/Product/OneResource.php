@@ -29,6 +29,7 @@ class OneResource extends JsonResource
             'bought_with' => !empty($this->bought_with)
                 ? AllResource::collection(
                     Product::whereIn('id', $this->bought_with)->get()
+                    //query in mnodel
                 )
                 : [],
             'is_instant_delivery' => $this->is_instant_delivery,
@@ -37,34 +38,54 @@ class OneResource extends JsonResource
                 'id' => $this->category?->id,
                 'name' => $this->category?->name,
             ],
-            'attributes_map' => $this->buildAttributesMap(),
+            'attributes_map' => new AttributeMapResource($this->variants),
 
-            'shop_variants' => $this->buildShopVariantsList(),
-            // Category Details
-            'category_details' => ($this->categoryDetails ?? collect())->map(function ($detail) {
-                return [
-                    'id' => $detail->id,
-                    'name' => $detail->categoryDetail?->name,
-                    'value' => $detail->detail_value
-                ];
-            })->values(),
+            // 'shop_variants' => ShopVariantResource::collection(
+            //     $this->variants
+            // ),
+            'shop_variants' => new ShopVariantResource($this->variants),
 
-            // Extra Details
-            'extra_details' => ($this->extraDetails ?? collect())->map(function ($detail) {
-                return [
-                    'id' => $detail->id,
-                    'key' => $detail->detail_key,
-                    'value' => $detail->detail_value,
-                ];
-            })->values(),
 
-            // Product Images
-            'images' => ($this->media ?? collect())->map(function ($img) {
-                return [
-                    'id' => $img->id,
-                    'path' => $img->path,
-                ];
-            })->values(),
+
+            'category_details' => CategoryDetailResource::collection(
+                $this->categoryDetails
+            ),
+
+            'extra_details' => ExtraDetailResource::collection(
+                $this->extraDetails
+            ),
+
+            'images' => MediaResource::collection(
+                $this->media
+            ),
+            // 'attributes_map' => $this->buildAttributesMap(),
+
+            // 'shop_variants' => $this->buildShopVariantsList(),
+            // // Category Details
+            // 'category_details' => ($this->categoryDetails ?? collect())->map(function ($detail) {
+            //     return [
+            //         'id' => $detail->id,
+            //         'name' => $detail->categoryDetail?->name,
+            //         'value' => $detail->detail_value
+            //     ];
+            // })->values(),
+
+            // // Extra Details
+            // 'extra_details' => ($this->extraDetails ?? collect())->map(function ($detail) {
+            //     return [
+            //         'id' => $detail->id,
+            //         'key' => $detail->detail_key,
+            //         'value' => $detail->detail_value,
+            //     ];
+            // })->values(),
+
+            // // Product Images
+            // 'images' => ($this->media ?? collect())->map(function ($img) {
+            //     return [
+            //         'id' => $img->id,
+            //         'path' => $img->path,
+            //     ];
+            // })->values(),
         ];
     }
     protected function buildAttributesMap()
@@ -96,41 +117,6 @@ class OneResource extends JsonResource
         return array_values($map);
     }
 
-    // protected function buildShopVariantsList()
-    // {
-    //     $shopId = request()->get('shop_id');
-
-    //     if (!$shopId) return [];
-
-    //     return $this->variants->map(function ($variant) use ($shopId) {
-
-    //         $shopVariant = $variant->shopVariants
-    //             ->firstWhere('shop_id', $shopId);
-
-    //         if (!$shopVariant) return null;
-
-    //         return [
-    //             'variant_id' => $variant->id,
-
-    //             'attributes' => $variant->attributesValues->map(function ($attr) {
-    //                 return [
-    //                     'attribute' => $attr?->categoryAttribute?->name,
-    //                     'value'     => $attr->name,
-    //                     'type'      => $attr->categoryAttribute->type
-    //                 ];
-    //             })->values(),
-
-    //             'price'    => $shopVariant->price,
-    //             'quantity' => $shopVariant->quantity,
-    //             'images' => ($variant->media ?? collect())->map(function ($img) {
-    //                 return [
-    //                     'id'   => $img->id,
-    //                     'path' => $img->path,
-    //                 ];
-    //             })->values(),
-    //         ];
-    //     })->filter()->values();
-    // }
     protected function buildShopVariantsList()
     {
         $shopId = request()->get('shop_id');

@@ -20,7 +20,7 @@ class BasketScheduleSeeder extends Seeder
         foreach ($baskets as $basket) {
             $schedules = [
                 [
-                    'type' => '3_days',
+                    'number_of_days' => 3,
                     'title' => [
                         'en' => 'Every 3 Days',
                         'ar' => 'كل 3 أيام',
@@ -29,6 +29,8 @@ class BasketScheduleSeeder extends Seeder
                     'discount_value' => 5,
                 ],
                 [
+                    'number_of_days' => 7,
+
                     'type' => 'weekly',
                     'title' => [
                         'en' => 'Weekly',
@@ -38,7 +40,7 @@ class BasketScheduleSeeder extends Seeder
                     'discount_value' => 10,
                 ],
                 [
-                    'type' => 'biweekly',
+                    'number_of_days' => 14,
                     'title' => [
                         'en' => 'Every Two Weeks',
                         'ar' => 'كل أسبوعين',
@@ -47,7 +49,7 @@ class BasketScheduleSeeder extends Seeder
                     'discount_value' => 15,
                 ],
                 [
-                    'type' => 'monthly',
+                    'number_of_days' => 30,
                     'title' => [
                         'en' => 'Monthly',
                         'ar' => 'شهري',
@@ -61,7 +63,7 @@ class BasketScheduleSeeder extends Seeder
                 BasketSchedule::updateOrCreate(
                     [
                         'basket_id' => $basket->id,
-                        'type' => $schedule['type'],
+                        'number_of_days' => $schedule['number_of_days'],
                     ],
                     [
                         'title'          => $schedule['title'],

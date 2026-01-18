@@ -23,6 +23,7 @@ return new class extends Migration
             $table->decimal('rating', 3, 2)->default(0);
             $table->integer('num_sold')->default(0);
             $table->string('image')->nullable();
+            $table->boolean('is_schedule')->default(false);
             $table->timestamps();
         });
     }

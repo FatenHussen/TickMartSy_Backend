@@ -30,7 +30,6 @@ class AllResource extends JsonResource
             'saving' => round($this->discount_amount,2),
             'num_sold'        => (int) $this->num_sold,
             'is_on_offer'     => $this->offer_ends_at && $this->offer_ends_at->isFuture(),
-
         ];
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources\Basket;
 
+use App\Http\Resources\BasketSchedule\AllResource as BasketScheduleAllResource;
+
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -76,6 +78,9 @@ class OneResource extends JsonResource
                 })->values();
             }),
 
+            'schedules' => $this->is_schedule
+                ? BasketScheduleAllResource::collection($this->schedules)
+                : [],
 
         ];
     }

@@ -9,14 +9,14 @@ class LocationService
 {
     public function getNearestShopId(?float $lat = null, ?float $lng = null): ?int
     {
-        $lat = $lat ?? request()->query('lat');
-        $lng = $lng ?? request()->query('lng');
+        // $lat = $lat ?? request()->query('lat');
+        // $lng = $lng ?? request()->query('lng');
 
-        if (!$lat || !$lng) {
-            $location = $this->getLocationFromIp(request()->ip());
-            $lat = $location['lat'] ?? null;
-            $lng = $location['lng'] ?? null;
-        }
+        // if (!$lat || !$lng) {
+        //     $location = $this->getLocationFromIp(request()->ip());
+        //     $lat = $location['lat'] ?? null;
+        //     $lng = $location['lng'] ?? null;
+        // }
 
         if (!$lat || !$lng) {
             return null;

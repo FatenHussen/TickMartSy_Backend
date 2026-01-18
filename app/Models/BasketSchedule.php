@@ -14,7 +14,7 @@ class BasketSchedule extends Model
 
     protected $fillable = [
         'basket_id',
-        'type',
+        'number_of_days',
         'title',
         'discount_type',
         'discount_value',
@@ -31,13 +31,4 @@ class BasketSchedule extends Model
         return $this->belongsTo(Basket::class);
     }
 
-    public function getIntervalDaysAttribute(): int
-    {
-        return match ($this->type) {
-            '3_days'   => 3,
-            'weekly'   => 7,
-            'biweekly' => 14,
-            'monthly'  => 30,
-        };
-    }
 }

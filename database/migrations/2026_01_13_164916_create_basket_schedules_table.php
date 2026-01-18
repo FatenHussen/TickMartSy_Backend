@@ -14,9 +14,8 @@ return new class extends Migration
         Schema::create('basket_schedules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('basket_id')->constrained()->cascadeOnDelete();
-            $table->enum('type', ['3_days', 'weekly', 'biweekly', 'monthly']);
             $table->json('title');
-
+            $table->integer('number_of_days')->default(1);
             $table->enum('discount_type', ['percentage', 'fixed'])->nullable();
             $table->decimal('discount_value', 8, 2)->nullable();
 

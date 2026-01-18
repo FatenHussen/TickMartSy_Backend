@@ -19,6 +19,7 @@ class BasketService extends BaseService
         'items.variant',
         'items.companies',
         'items.companies.brand',
+        'schedules',
     ];
     protected $searchableFields = ['name'];
     protected $sortableFields   = ['id'];

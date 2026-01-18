@@ -20,7 +20,8 @@ class Basket extends Model
         'discount_type',
         'rating',
         'num_sold',
-        'image'
+        'image',
+        'is_schedule'
     ];
     public $translatable = ['name'];
 
@@ -71,5 +72,8 @@ class Basket extends Model
     {
         return asset('storage/' . $this->image);
     }
-    
+    public function schedules()
+    {
+        return $this->hasMany(BasketSchedule::class);
+    }
 }
