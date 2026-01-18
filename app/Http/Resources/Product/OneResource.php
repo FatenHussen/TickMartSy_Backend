@@ -26,12 +26,7 @@ class OneResource extends JsonResource
             'model' => $this->model,
             'barcode' => $this->barcode,
             'time_prepare' => optional($this->time_prepare)->format('H:i'),
-            'bought_with' => !empty($this->bought_with)
-                ? AllResource::collection(
-                    Product::whereIn('id', $this->bought_with)->get()
-                    //query in mnodel
-                )
-                : [],
+            'bought_with'=>  AllResource::collection($this->boughtWithProduct()),
             'is_instant_delivery' => $this->is_instant_delivery,
 
             'category' => [
@@ -40,10 +35,10 @@ class OneResource extends JsonResource
             ],
             'attributes_map' => new AttributeMapResource($this->variants),
 
-            // 'shop_variants' => ShopVariantResource::collection(
-            //     $this->variants
-            // ),
-            'shop_variants' => new ShopVariantResource($this->variants),
+            'shop_variants' => $this->variants
+                ->map(fn($variant) => new ShopVariantResource($variant))
+                ->filter()
+                ->values(),
 
 
 
@@ -58,102 +53,8 @@ class OneResource extends JsonResource
             'images' => MediaResource::collection(
                 $this->media
             ),
-            // 'attributes_map' => $this->buildAttributesMap(),
-
-            // 'shop_variants' => $this->buildShopVariantsList(),
-            // // Category Details
-            // 'category_details' => ($this->categoryDetails ?? collect())->map(function ($detail) {
-            //     return [
-            //         'id' => $detail->id,
-            //         'name' => $detail->categoryDetail?->name,
-            //         'value' => $detail->detail_value
-            //     ];
-            // })->values(),
-
-            // // Extra Details
-            // 'extra_details' => ($this->extraDetails ?? collect())->map(function ($detail) {
-            //     return [
-            //         'id' => $detail->id,
-            //         'key' => $detail->detail_key,
-            //         'value' => $detail->detail_value,
-            //     ];
-            // })->values(),
-
-            // // Product Images
-            // 'images' => ($this->media ?? collect())->map(function ($img) {
-            //     return [
-            //         'id' => $img->id,
-            //         'path' => $img->path,
-            //     ];
-            // })->values(),
+            
         ];
     }
-    protected function buildAttributesMap()
-    {
-        $map = [];
 
-        foreach ($this->variants as $variant) {
-            foreach ($variant->attributesValues as $attrValue) {
-                $attrName = $attrValue?->categoryAttribute?->name;
-                $value    = $attrValue->name;
-                $type     = $attrValue->categoryAttribute->type;
-
-                if (!$attrName) continue;
-
-                if (!isset($map[$attrName])) {
-                    $map[$attrName] = [
-                        'attribute' => $attrName,
-                        'type' => $type,
-                        'values' => [],
-                    ];
-                }
-
-                if (!in_array($value, $map[$attrName]['values'])) {
-                    $map[$attrName]['values'][] = $value;
-                }
-            }
-        }
-
-        return array_values($map);
-    }
-
-    protected function buildShopVariantsList()
-    {
-        $shopId = request()->get('shop_id');
-
-        if (!$shopId) {
-            $shopId = app(LocationService::class)->getNearestShopId();
-        }
-
-        if (!$shopId) return [];
-
-        return $this->variants->map(function ($variant) use ($shopId) {
-
-            $shopVariant = $variant->shopVariants
-                ->firstWhere('shop_id', $shopId);
-
-            if (!$shopVariant) return null;
-
-            return [
-                'variant_id' => $variant->id,
-                'attributes' => $variant->attributesValues->map(function ($attr) {
-                    return [
-                        'attribute' => $attr?->categoryAttribute?->name,
-                        'value'     => $attr->name,
-                        'type'      => $attr->categoryAttribute->type,
-                    ];
-                })->values(),
-
-                'price'    => $shopVariant->price,
-                'quantity' => $shopVariant->quantity,
-
-                'images' => ($variant->media ?? collect())->map(function ($img) {
-                    return [
-                        'id'   => $img->id,
-                        'path' => $img->path,
-                    ];
-                })->values(),
-            ];
-        })->filter()->values();
-    }
 }

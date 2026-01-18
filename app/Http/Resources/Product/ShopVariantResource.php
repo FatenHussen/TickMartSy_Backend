@@ -4,18 +4,13 @@ namespace App\Http\Resources\Product;
 
 use App\Services\Base\LocationService;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Collection;
 
 class ShopVariantResource extends JsonResource
 {
     public function toArray($request)
     {
-        /** @var Collection $variants */
-        $variants = $this->resource instanceof Collection
-            ? $this->resource
-            : collect([$this->resource]);
-
         $shopId = $request->get('shop_id');
+
         if (!$shopId) {
             $shopId = app(LocationService::class)->getNearestShopId(
                 $request->query('lat'),
@@ -23,32 +18,30 @@ class ShopVariantResource extends JsonResource
             );
         }
 
-        if (!$shopId) return [];
+        $shopVariant = $shopId
+            ? $this->shopVariants->firstWhere('shop_id', $shopId)
+            : null;
 
-        $result = [];
-
-        foreach ($variants as $variant) {
-
-            $shopVariant = $variant->shopVariants
-                ->firstWhere('shop_id', $shopId);
-
-            if (!$shopVariant) {
-                continue;
-            }
-
-            $result[] = [
-                'variant_id' => $variant->id,
-                'attributes' => VariantAttributeResource::collection(
-                    $variant->attributesValues
-                ),
-                'price'    => $shopVariant->price,
-                'quantity' => $shopVariant->quantity,
-                'images'   => MediaResource::collection(
-                    $variant->media
-                ),
-            ];
+        if (!$shopVariant) {
+            $shopVariant = $this->shopVariants->first();
         }
 
-        return $result;
+        if (!$shopVariant) {
+            return null; 
+        }
+
+        return [
+            'variant_id' => $this->id,
+            'attributes' => VariantAttributeResource::collection(
+                $this->attributesValues
+            ),
+            'price'    => $shopVariant->price,
+            'quantity' => $shopVariant->quantity,
+            'shop_id'  => $shopVariant->shop_id,
+            'images'   => MediaResource::collection(
+                $this->media
+            ),
+        ];
     }
+
 }

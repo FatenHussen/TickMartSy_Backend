@@ -79,7 +79,10 @@ class Product extends Model implements Sectionable
             ->where('collection', 'product')
             ->orderBy('order');
     }
-
+    public function boughtWithProduct()
+    {
+        return Product::whereIn('id', $this->bought_with ?? [])->get();
+    }
     public function toSectionArray(): array
     {
         return [
