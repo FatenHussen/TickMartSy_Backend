@@ -18,10 +18,12 @@ return new class extends Migration
             // $table->foreignId('product_id')->constrained();
             // $table->foreignId('product_variant_id')->constrained();
             $table->foreignId('shop_product_variant_id')->constrained('shop_product_variants')->cascadeOnDelete();
-            $table->string('order_status')->default(OrderStatus::PENDING->value);
-            $table->integer('quantity')->default(1);
-            $table->integer('price')->nullable();
-            $table->integer('discount')->nullable();
+            $table->string('product_name');
+            $table->json('variant_attributes')->nullable();
+            $table->string('item_status')->default(OrderStatus::PENDING->value);
+            $table->unsignedInteger('quantity')->default(1);
+            $table->unsignedInteger('price')->nullable();
+            $table->unsignedInteger('discount')->nullable();
             $table->timestamps();
         });
     }

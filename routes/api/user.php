@@ -10,6 +10,7 @@ use App\Http\Controllers\User\Category\CategoryController;
 use App\Http\Controllers\User\SectionController;
 use App\Http\Controllers\User\CityController;
 use App\Http\Controllers\User\GovernorateController;
+use App\Http\Controllers\User\Order\OrderController;
 use App\Http\Controllers\User\RecipeController;
 
 Route::prefix('user')->group(
@@ -78,5 +79,7 @@ Route::prefix('user')->group(
             Route::get('/', [BasketScheduleController::class, 'index']);
             Route::get('/{id}', [BasketScheduleController::class, 'get_one']);
         });
+
+        Route::apiResource('orders', OrderController::class);
     }
 );
