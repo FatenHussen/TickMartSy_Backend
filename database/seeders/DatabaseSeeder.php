@@ -6,6 +6,7 @@ use App\Models\Brand;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,6 +17,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+
         $this->call([
             GovernorateSeeder::class,
             AdminRolePermissionSeeder::class,
@@ -39,13 +41,22 @@ class DatabaseSeeder extends Seeder
             PageSectionSeeder::class,
             ServiceSeeder::class,
             VendorRolePermissionSeeder::class,
+            BadgeSeeder::class,
             RecipeSeeder::class,
             BasketSeeder::class,
             BasketItemSeeder::class,
+
+            // BasketItemCompanySeeder::class,
             BasketScheduleSeeder::class,
             ScheduleSeeder::class,
             UserBasketScheduleSeeder::class,
             UserBasketScheduleItemSeeder::class,
+        ]);
+        User::create([
+            'name' => 'User',
+            'email' => 'user@user.com',
+            'password' => Hash::make('password'),
+            'city_id' => 1
         ]);
     }
 }

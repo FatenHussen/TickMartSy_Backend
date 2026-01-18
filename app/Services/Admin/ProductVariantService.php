@@ -9,8 +9,7 @@ use Illuminate\Support\Facades\Log;
 
 class ProductVariantService
 {
-    use FileTrait
-    ;
+    use FileTrait;
 
     public function handle(Product $product, bool $isUpdate = false): void
     {

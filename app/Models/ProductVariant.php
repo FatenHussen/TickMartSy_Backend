@@ -51,9 +51,9 @@ class ProductVariant extends Model
     }
 
 
+
     public function getAttributesValuesAttribute()
     {
         return AttributeValue::whereIn('id', $this->attributes_values_ids ?? [])->get();
     }
-    
 }

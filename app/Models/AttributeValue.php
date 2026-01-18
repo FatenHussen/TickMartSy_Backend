@@ -28,6 +28,7 @@ class AttributeValue extends Model
     |--------------------------------------------------------------------------
     */
 
+
     public function categoryAttribute()
     {
         return $this->belongsTo(CategoryAttribute::class);

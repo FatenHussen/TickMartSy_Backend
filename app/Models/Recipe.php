@@ -47,7 +47,6 @@ class Recipe extends Model implements Sectionable
         }), 2);
     }
 
-
     public function getTotalAfterDiscount(): float
     {
         $total_before_discount = $this->getTotalItemsPrice();
@@ -57,9 +56,15 @@ class Recipe extends Model implements Sectionable
 
         return round($total_after_discount, 2);
     }
+
     public function  getImageUrlAttribute()
     {
         return asset('storage/' . $this->image);
+    }
+
+    public function badges()
+    {
+        return $this->morphToMany(Badge::class, 'badgeable');
     }
 
     public function toSectionArray(): array

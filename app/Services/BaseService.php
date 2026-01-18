@@ -177,7 +177,6 @@ abstract class BaseService
 
     public function create($data)
     {
-
         $object = $this->model::create($data);
         $this->handleSingleImages($object, $data);
 

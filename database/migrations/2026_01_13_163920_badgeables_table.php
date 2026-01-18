@@ -11,10 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('badges', function (Blueprint $table) {
+        Schema::create('badgeables', function (Blueprint $table) {
             $table->id();
-            $table->json('name');
-            $table->string('color')->nullable();
+            $table->foreignId('badge_id')->constrained()->cascadeOnDelete();
+
+            $table->morphs('badgeable');
+            // badgeable_id
+            // badgeable_type
+
+            $table->enum('position', ['top', 'bottom'])->default('top');
+
             $table->timestamps();
         });
     }
@@ -24,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('badges');
+        //
     }
 };
