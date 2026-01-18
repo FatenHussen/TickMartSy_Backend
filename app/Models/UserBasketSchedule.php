@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -50,8 +51,33 @@ class UserBasketSchedule extends Model
     }
 
     // ================= Helper =================
-    public function canAddProduct(Product $product): bool
+    // public function canAddProduct($product_id): bool
+    // {
+    //     return $product->category_id === $this->category_id;
+    // }
+
+    public function getNextRunDateAttribute()
     {
-        return $product->category_id === $this->category_id;
+        if (!$this->start_date || !$this->schedule) {
+            return null;
+        }
+
+        $startDate = Carbon::parse($this->start_date);
+        $today = Carbon::today();
+
+        if ($startDate->greaterThan($today)) {
+            return $startDate;
+        }
+
+        $intervalDays = (int) $this->schedule->interval_days;
+
+        if ($intervalDays <= 0) {
+            return null;
+        }
+
+        $daysPassed = $startDate->diffInDays($today);
+        $cycles = intdiv($daysPassed, $intervalDays) + 1;
+
+        return $startDate->addDays($cycles * $intervalDays);
     }
 }

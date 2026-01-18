@@ -20,11 +20,12 @@ class UserBasketScheduleItemSeeder extends Seeder
         $products = Product::where('category_id', $basket->category_id)->take(3)->get();
 
         foreach ($products as $product) {
-
-            $variant = ShopProductVariant::where('product_id', $product->id)->first();
+            $variant = ShopProductVariant::whereHas('productVariant', function ($q) use ($product) {
+                $q->where('product_id', $product->id);
+            })->first();
 
             UserBasketScheduleItem::create([
-                'user_basket_id' => $basket->id,
+                'user_basket_schedule_id' => $basket->id,
                 'product_id' => $product->id,
                 'shop_product_variant_id' => $variant?->id,
                 'quantity' => rand(1, 3),

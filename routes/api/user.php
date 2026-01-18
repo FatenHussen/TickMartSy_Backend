@@ -14,6 +14,7 @@ use App\Http\Controllers\User\CityController;
 use App\Http\Controllers\User\GovernorateController;
 use App\Http\Controllers\User\Order\OrderController;
 use App\Http\Controllers\User\RecipeController;
+use App\Http\Controllers\User\Schedule\ScheduleController;
 
 Route::prefix('user')->group(
     function () {
@@ -48,7 +49,10 @@ Route::prefix('user')->group(
             // Public routes
             Route::get('/', [SectionController::class, 'index']);
         });
-
+        Route::prefix('schedules')->group(function () {
+            // Public routes
+            Route::get('/', [ScheduleController::class, 'index']);
+        });
         //  Product routes
         Route::prefix('products')->group(function () {
             // Public routes
@@ -84,11 +88,6 @@ Route::prefix('user')->group(
             });
 
             Route::apiResource('addresses', AddressController::class);
-            Route::prefix('baskets-schedule')->group(function () {
-                // Public routes
-                Route::get('/', [BasketScheduleController::class, 'index']);
-                Route::get('/{id}', [BasketScheduleController::class, 'get_one']);
-            });
 
             Route::apiResource('orders', OrderController::class);
         });
