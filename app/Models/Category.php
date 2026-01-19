@@ -30,7 +30,10 @@ class Category extends Model implements Sectionable
         return $this->hasMany(Category::class, 'parent_id');
     }
 
-
+    public function brands()
+    {
+        return $this->belongsToMany(Brand::class);
+    }
 
     // recursively
     public function descendants()

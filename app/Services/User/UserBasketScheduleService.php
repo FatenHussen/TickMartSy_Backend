@@ -27,9 +27,15 @@ class UserBasketScheduleService extends BaseService
 
     public function getAll($filters = [], $config = [])
     {
-        $this->model = $this->model::where('user_id', auth('user')->id());
+        $query = $this->model::where('user_id', auth('user')->id());
 
-        return parent::getAll($filters, $config);
+        return parent::getAll($filters, $config, $query);
+    }
+    public function query(array $filters)
+    {
+        $query = UserBasketSchedule::query()->latest();
+
+        return $query;
     }
 
     public function getOne($id)
@@ -55,9 +61,7 @@ class UserBasketScheduleService extends BaseService
             $basket = $this->model::create($data);
 
             foreach ($items as $item) {
-                if ($basket->canAddProduct($item['product'])) {
-                    $basket->items()->create($item);
-                }
+                $basket->items()->create($item);
             }
 
             return $basket;
@@ -84,7 +88,7 @@ class UserBasketScheduleService extends BaseService
         foreach ($items as $itemData) {
             if (isset($itemData['id']) && $existingItems->has($itemData['id'])) {
                 $existingItems[$itemData['id']]->update($itemData);
-                $existingItems->forget($itemData['id']); 
+                $existingItems->forget($itemData['id']);
             } else {
                 $basket->items()->create($itemData);
             }

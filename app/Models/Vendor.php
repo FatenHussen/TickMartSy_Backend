@@ -39,7 +39,10 @@ class Vendor extends Model
     {
         return $this->hasMany(Shop::class);
     }
-
+    public function brands()
+    {
+        return $this->belongsToMany(Brand::class);
+    }
     public function users()
     {
         return $this->belongsToMany(

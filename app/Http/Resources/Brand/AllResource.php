@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\Admin\Brand;
+namespace App\Http\Resources\Brand;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -19,9 +19,7 @@ class AllResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'image' => $this->image,
-            'created_at' => $this->created_at?->toISOString(),
-            'updated_at' => $this->updated_at?->toISOString(),
+            'image' => $this->image_url,
         ];
     }
 }

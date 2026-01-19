@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\User\Brand\BrandController;
 use App\Http\Controllers\User\AddressController;
 use App\Http\Controllers\User\Product\ProductController;
 use Illuminate\Support\Facades\Route;
@@ -7,13 +8,13 @@ use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\User\Basket\BasketController;
 use App\Http\Controllers\User\Basket\BasketScheduleController;
 use App\Http\Controllers\User\Basket\UserBasketScheduleController;
-use App\Http\Controllers\User\Basket\UserBasketScheduleItemController;
 use App\Http\Controllers\User\Category\CategoryController;
 use App\Http\Controllers\User\SectionController;
 use App\Http\Controllers\User\CityController;
 use App\Http\Controllers\User\GovernorateController;
 use App\Http\Controllers\User\Order\OrderController;
 use App\Http\Controllers\User\RecipeController;
+use App\Http\Controllers\User\Schedule\ScheduleController;
 
 Route::prefix('user')->group(
     function () {
@@ -48,7 +49,10 @@ Route::prefix('user')->group(
             // Public routes
             Route::get('/', [SectionController::class, 'index']);
         });
-
+        Route::prefix('schedules')->group(function () {
+            // Public routes
+            Route::get('/', [ScheduleController::class, 'index']);
+        });
         //  Product routes
         Route::prefix('products')->group(function () {
             // Public routes
@@ -62,6 +66,12 @@ Route::prefix('user')->group(
             Route::get('/', [CategoryController::class, 'index']);
         });
 
+        // Brand routes
+        Route::prefix('brands')->group(function () {
+            // Public routes
+            Route::get('/', [BrandController::class, 'index']);
+            Route::get('/{id}', [BrandController::class, 'get_one']);
+        });
         //  Section routes
         Route::prefix('recipes')->group(function () {
             // Public routes
@@ -85,9 +95,12 @@ Route::prefix('user')->group(
 
             Route::prefix('baskets-schedule')->group(function () {
                 // Public routes
-                Route::get('/', [BasketScheduleController::class, 'index']);
-                Route::get('/{id}', [BasketScheduleController::class, 'get_one']);
+                // Route::get('/', [BasketScheduleController::class, 'index']);
+                // Route::get('/{id}', [BasketScheduleController::class, 'get_one']);
             });
+            Route::apiResource('addresses', AddressController::class);
+
+            Route::apiResource('orders', OrderController::class);
         });
         Route::apiResource('addresses', AddressController::class);
 

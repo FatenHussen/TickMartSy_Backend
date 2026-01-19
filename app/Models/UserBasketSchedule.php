@@ -2,19 +2,20 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class UserBasketSchedule extends Model
+class UserBasketSchedule extends Model implements Sectionable
 {
     use HasFactory;
 
     protected $fillable = [
         'user_id',
         'category_id',
-        'schedule_id', 
+        'schedule_id',
         'name',
         'is_active',
         'start_date',
@@ -50,8 +51,47 @@ class UserBasketSchedule extends Model
     }
 
     // ================= Helper =================
-    public function canAddProduct(Product $product): bool
+    // public function canAddProduct($product_id): bool
+    // {
+    //     return $product->category_id === $this->category_id;
+    // }
+
+    public function getNextRunDateAttribute()
     {
-        return $product->category_id === $this->category_id;
+        if (!$this->start_date || !$this->schedule) {
+            return null;
+        }
+
+        $startDate = Carbon::parse($this->start_date);
+        $today = Carbon::today();
+
+        if ($startDate->greaterThan($today)) {
+            return $startDate;
+        }
+
+        $intervalDays = (int) $this->schedule->interval_days;
+
+        if ($intervalDays <= 0) {
+            return null;
+        }
+
+        $daysPassed = $startDate->diffInDays($today);
+        $cycles = intdiv($daysPassed, $intervalDays) + 1;
+
+        return $startDate->addDays($cycles * $intervalDays);
+    }
+    public function toSectionArray(): array
+    {
+        return [
+            'id'       => $this->id,
+            'title'     => $this->name,
+            'desc'     => null,
+            'image'    => null,
+            'price' => null,
+            'price_after_discount' => null,
+            'discount' => null,
+            'top_badges' => [],
+            'bottom_badges' => [],
+        ];
     }
 }

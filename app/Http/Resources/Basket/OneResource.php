@@ -36,47 +36,9 @@ class OneResource extends JsonResource
             'is_on_offer' => $this->offer_ends_at && $this->offer_ends_at->isFuture(),
 
             'items' => $this->whenLoaded('items', function () {
-                return $this->items->map(function ($item) {
-                    return [
-                        'id'            => $item->id,
-                        'quantity'      => (int) $item->quantity,
-                        'unit_price'    => round($item->price, 2),
-                        'subtotal'      => $item->subtotal,
-                        'is_required'   => $item->is_required,
-                        'min_quantity'  => (int) $item->min_quantity,
-                        'max_quantity'  => (int) $item->max_quantity,
-                        'can_adjust'    => $item->canAdjustQuantity(),
-
-                        'product' => $item->relationLoaded('product') && $item->product ? [
-                            'id'   => $item->product->id,
-                            'name' => $item->product->name,
-                            'image' => $item->product->media->first()?->url
-                        ] : null,
-
-                        'variant' => $item->relationLoaded('variant') && $item->variant
-                            ? $item->variant->attributes_values->pluck('name')->toArray()
-                            : null,
-
-
-                        'companies' => $item->relationLoaded('companies')
-                            ? $item->companies->map(function ($company) use ($item) {
-                                return [
-                                    'id'=>  $company->relationLoaded('brand') && $company->brand
-                                    ? $company->brand->id : null,
-                                    'name' => $company->relationLoaded('brand') && $company->brand
-                                        ? $company->brand->name
-                                        : null,
-                                    'is_default'        => $company->isDefault(),
-                                    'has_custom_price'  => $company->hasCustomPrice(),
-                                    'effective_price'   => $company->effective_price !== null
-                                        ? round($company->effective_price, 2)
-                                        : round($item->price, 2),
-                                ];
-                            })->values()
-                            : [],
-                    ];
-                })->values();
+                return BasketItemResource::collection($this->items);
             }),
+
 
             'schedules' => $this->is_schedule
                 ? BasketScheduleAllResource::collection($this->schedules)

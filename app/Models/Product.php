@@ -64,6 +64,10 @@ class Product extends Model implements Sectionable
     {
         return $this->belongsTo(Vendor::class);
     }
+    public function brands()
+    {
+        return $this->belongsToMany(Brand::class);
+    }
     public function variants()
     {
         return $this->hasMany(ProductVariant::class);

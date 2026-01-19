@@ -31,4 +31,18 @@ class Brand extends Model implements Sectionable
             'bottom_badges' => [],
         ];
     }
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class);
+    }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class);
+    }
+
+    public function stores()
+    {
+        return $this->belongsToMany(Store::class);
+    }
 }
