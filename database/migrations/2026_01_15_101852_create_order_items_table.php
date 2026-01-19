@@ -14,16 +14,23 @@ return new class extends Migration
     {
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
+
             $table->foreignId('order_id')->constrained()->cascadeOnDelete();
-            // $table->foreignId('product_id')->constrained();
-            // $table->foreignId('product_variant_id')->constrained();
-            $table->foreignId('shop_product_variant_id')->constrained('shop_product_variants')->cascadeOnDelete();
+            $table->foreignId('shop_product_variant_id')->constrained()->cascadeOnDelete();
+
             $table->string('product_name');
             $table->json('variant_attributes')->nullable();
+
             $table->string('item_status')->default(OrderStatus::PENDING->value);
+
             $table->unsignedInteger('quantity')->default(1);
-            $table->unsignedInteger('price')->nullable();
-            $table->unsignedInteger('discount')->nullable();
+
+            /** Base price */
+            $table->unsignedBigInteger('price');
+
+            /** Product discount percentage (ONLY for default cart) */
+            $table->unsignedBigInteger('discount')->default(0);
+
             $table->timestamps();
         });
     }

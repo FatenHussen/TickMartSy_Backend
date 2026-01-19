@@ -22,7 +22,7 @@ class ProductSeeder extends Seeder
                 'country' => ['en' => 'USA', 'ar' => 'أمريكا'],
                 'model' => 'Model-' . rand(100, 999),
                 'price' => 100,
-                'price_after_discount' => 90,
+                'discount' => 20,
                 'quantity' => 50,
                 'barcode' => 'BAR' . rand(1000, 9999),
                 'time_prepare' => now()->format('H:i'),

@@ -83,14 +83,14 @@ Route::prefix('user')->group(
                 Route::delete('/{id}', [UserBasketScheduleController::class, 'destroy']);
             });
 
-            Route::apiResource('addresses', AddressController::class);
             Route::prefix('baskets-schedule')->group(function () {
                 // Public routes
                 Route::get('/', [BasketScheduleController::class, 'index']);
                 Route::get('/{id}', [BasketScheduleController::class, 'get_one']);
             });
-
-            Route::apiResource('orders', OrderController::class);
         });
+        Route::apiResource('addresses', AddressController::class);
+
+        Route::apiResource('orders', OrderController::class);
     }
 );

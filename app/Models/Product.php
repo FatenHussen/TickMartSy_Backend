@@ -27,6 +27,7 @@ class Product extends Model implements Sectionable
         'bought_with',
         'is_instant_delivery',
         'vendor_id',
+        'discount'
     ];
 
     public array $translatable = [
@@ -40,12 +41,20 @@ class Product extends Model implements Sectionable
         'bought_with' => 'array',
         'time_prepare' => 'datetime:H:i',
     ];
+    public function getPriceAfterDiscountAttribute()
+    {
+        if ($this->discount && $this->price) {
+            return round($this->price - ($this->price * $this->discount / 100), 2);
+        }
+        return $this->price;
+    }
 
     /*
     |--------------------------------------------------------------------------
     | Relationships
     |--------------------------------------------------------------------------
     */
+
 
     public function category()
     {
