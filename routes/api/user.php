@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\User\Brand\BrandController;
 use App\Http\Controllers\User\AddressController;
 use App\Http\Controllers\User\Product\ProductController;
 use Illuminate\Support\Facades\Route;
@@ -66,6 +67,12 @@ Route::prefix('user')->group(
             Route::get('/', [CategoryController::class, 'index']);
         });
 
+        // Brand routes
+        Route::prefix('brands')->group(function () {
+            // Public routes
+            Route::get('/', [BrandController::class, 'index']);
+            Route::get('/{id}', [BrandController::class, 'get_one']);
+        });
         //  Section routes
         Route::prefix('recipes')->group(function () {
             // Public routes

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources\Admin\Brand;
+namespace App\Http\Resources\Brand;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class AllResource extends JsonResource
+class OneResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -19,9 +19,10 @@ class AllResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'image' => $this->image,
-            'created_at' => $this->created_at?->toISOString(),
-            'updated_at' => $this->updated_at?->toISOString(),
+            'image' => $this->image_url,
+            'categories_count' => $this->categories->count(),
+            'products_count'  => $this->products->count(),
+            'stores_count'    => $this->vendors->count(),
         ];
     }
 }

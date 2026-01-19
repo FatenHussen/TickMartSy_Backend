@@ -24,4 +24,11 @@ class BasketService extends BaseService
     protected $searchableFields = ['name'];
     protected $sortableFields   = ['id'];
     protected $pagination = true;
+
+    public function query(array $filters)
+    {
+        $query = Basket::query()->latest();
+
+        return $query;
+    }
 }

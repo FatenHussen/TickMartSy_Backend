@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 
-class Basket extends Model
+class Basket extends Model implements Sectionable
 {
     use HasFactory, HasTranslations;
 
@@ -82,5 +82,19 @@ class Basket extends Model
     public function activeSchedule(): HasMany
     {
         return $this->hasMany(BasketSchedule::class)->where('is_active', true);
+    }
+    public function toSectionArray(): array
+    {
+        return [
+            'id'       => $this->id,
+            'title'     => $this->name,
+            'desc'     => null,
+            'image'    => $this->image_url,
+            'price' => $this->price,
+            'price_after_discount' => $this->final_price,
+            'discount' => $this->discount,
+            'top_badges' => [],
+            'bottom_badges' => [],
+        ];
     }
 }

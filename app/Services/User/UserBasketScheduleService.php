@@ -31,6 +31,12 @@ class UserBasketScheduleService extends BaseService
 
         return parent::getAll($filters, $config, $query);
     }
+    public function query(array $filters)
+    {
+        $query = UserBasketSchedule::query()->latest();
+
+        return $query;
+    }
 
     public function getOne($id)
     {
