@@ -14,14 +14,19 @@ class OneResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'image' => $this->image_url,
-            'products_count'  => $this->products->count() ?? 0,
-            'stores_count'    => $this->vendors->count() ?? 0,
-            'rating' => $this->rating ?? 0
+            'id'             => $this->id,
+            'name'           => $this->name,
+            'image'          => $this->image_url,
+
+            'products_count' => $this->products()->count(),
+
+            'shops_count'    => \App\Models\Shop::whereIn(
+                'vendor_id',
+                $this->vendors()->pluck('vendors.id')
+            )->distinct()->count(),
+
+            'rating'         => $this->rating ?? 0,
         ];
     }
 }

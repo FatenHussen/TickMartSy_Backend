@@ -117,7 +117,9 @@ class ProductService extends BaseService
         if (!empty($filters['category_id'])) {
             $query->where('category_id', $filters['category_id']);
         }
-
+        if (!empty($filters['brand_id'])) {
+            $query->where('brand_id', $filters['brand_id']);
+        }
         if (!empty($filters['shop_id'])) {
             $query->whereHas('variants.shopVariants', function (Builder $q) use ($filters) {
                 $q->where('shop_id', $filters['shop_id']);

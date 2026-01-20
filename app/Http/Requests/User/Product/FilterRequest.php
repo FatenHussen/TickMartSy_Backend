@@ -22,6 +22,7 @@ class FilterRequest extends FormRequest
 
             'type'          => ['nullable', 'in:new,trend,top_rated,offers,recommended,for_you,search_based'],
             'search'        => ['nullable', 'string', 'max:255'],
+            'brand_id' => ['nullable', 'integer', 'exists:brands,id']
         ];
     }
 }

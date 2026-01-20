@@ -28,6 +28,7 @@ class ProductSeeder extends Seeder
                 'time_prepare' => now()->format('H:i'),
                 'bought_with' => ['Accessory 1', 'Accessory 2'],
                 'is_instant_delivery' => true,
+                'brand_id' => 1
             ]);
         }
     }
