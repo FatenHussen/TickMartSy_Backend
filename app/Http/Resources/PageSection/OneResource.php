@@ -36,9 +36,17 @@ class OneResource extends JsonResource
                 'page_slug' => $this->section->details_slug,
 
             ],
+            // 'items' => $this->section->type === 'api'
+            //     ? SectionApiItemResource::collection($this->section->apiData($this->filters))
+            //     : SectionItemOneResource::collection($this->section->sectionItems),
             'items' => $this->section->type === 'api'
-                ? SectionApiItemResource::collection($this->section->apiData($this->filters))
-                : SectionItemOneResource::collection($this->section->sectionItems),
+                ? SectionApiItemResource::collection(
+                    $this->section->apiData($this->filters) ?? collect()
+                )
+                : SectionItemOneResource::collection(
+                    $this->section->sectionItems ?? collect()
+                ),
+
         ];
     }
 }
