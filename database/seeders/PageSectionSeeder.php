@@ -37,6 +37,11 @@ class PageSectionSeeder extends Seeder
             'image' => '/images/display/grid.png',
             'fields' => ['image', 'title', 'price', 'brand']
         ]);
+        $basketsScheduleDisplayType = DisplayType::create([
+            'manual_model' => 'basket-shedule',
+            'image' => '/images/display/grid.png',
+            'fields' => ['image', 'title', 'price', 'brand']
+        ]);
         $suggestedBasketsDisplayType = DisplayType::create([
             'manual_model' => 'suggested-basket',
             'image' => '/images/display/grid.png',
@@ -234,7 +239,7 @@ class PageSectionSeeder extends Seeder
         $homeTrending = PageSection::create([
             'page_id' => $homePage->id,
             'section_id' => $basketScheduleSection->id,
-            'display_type_id' => $basketsDisplayType->id,
+            'display_type_id' => $basketsScheduleDisplayType->id,
             'position' => 'after',
             'order' => 7,
             'filters' => []
