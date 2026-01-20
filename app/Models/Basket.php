@@ -90,7 +90,7 @@ class Basket extends Model implements Sectionable
             'title'     => $this->name,
             'desc'     => null,
             'image'    => $this->image_url,
-            'price' => $this->price,
+            'price' => $this->calculated_price,
             'price_after_discount' => $this->final_price,
             'discount' => $this->discount,
             'top_badges' => [],
