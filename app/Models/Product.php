@@ -27,6 +27,7 @@ class Product extends Model implements Sectionable
         'bought_with',
         'is_instant_delivery',
         'vendor_id',
+        'brand_id',
     ];
 
     public array $translatable = [
@@ -55,9 +56,9 @@ class Product extends Model implements Sectionable
     {
         return $this->belongsTo(Vendor::class);
     }
-    public function brands()
+    public function brand()
     {
-        return $this->belongsToMany(Brand::class);
+        return $this->belongsTo(Brand::class);
     }
     public function variants()
     {

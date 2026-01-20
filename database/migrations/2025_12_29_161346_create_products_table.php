@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete();
             $table->foreignId('vendor_id')->default(1)->constrained('vendors')->cascadeOnDelete();
+            $table->foreignId('brand_id')->nullable()->constrained('brands')->cascadeOnDelete();
             $table->json('name');
             $table->json('description');
             $table->json('full_description')->nullable();

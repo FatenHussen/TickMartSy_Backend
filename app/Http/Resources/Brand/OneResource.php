@@ -14,15 +14,14 @@ class OneResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $locale = app()->getLocale();
 
         return [
             'id' => $this->id,
             'name' => $this->name,
             'image' => $this->image_url,
-            'categories_count' => $this->categories->count(),
-            'products_count'  => $this->products->count(),
-            'stores_count'    => $this->vendors->count(),
+            'products_count'  => $this->products->count() ?? 0,
+            'stores_count'    => $this->vendors->count() ?? 0,
+            'rating' => $this->rating ?? 0
         ];
     }
 }
