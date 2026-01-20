@@ -222,5 +222,22 @@ class PageSectionSeeder extends Seeder
             'order' => 6,
             'filters' => []
         ]);
+        $basketScheduleSection = Section::create([
+            'name' => ['en' => 'basket Schedules', 'ar' => 'قسم السلات المجدولة'],
+            'type' => 'api',
+            'api_method' => 'scheduled-baskets',
+            'see_more' => true,
+            'see_more_slug' => 'scheduled-baskets',
+            'details_slug' => 'scheduled_basket_details',
+            'filters' => []
+        ]);
+        $homeTrending = PageSection::create([
+            'page_id' => $homePage->id,
+            'section_id' => $basketScheduleSection->id,
+            'display_type_id' => $basketsDisplayType->id,
+            'position' => 'after',
+            'order' => 7,
+            'filters' => []
+        ]);
     }
 }
