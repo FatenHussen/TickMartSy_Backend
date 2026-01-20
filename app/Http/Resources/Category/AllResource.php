@@ -17,12 +17,6 @@ class AllResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'icon' => $this->icon,
-            'parent' => $this->whenLoaded('parent', function (){
-                return [
-                    'id' => $this->parent?->id,
-                    'name' => $this->parent?->name,
-                ];
-            }),
             'children' => $this->whenLoaded('children', function () {
                 return $this->children->map(function ($child)  {
                     return [
