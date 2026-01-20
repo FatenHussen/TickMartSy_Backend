@@ -23,7 +23,7 @@ return new class extends Migration
             $table->json('country')->nullable();
             $table->string('model')->nullable()->unique();
             $table->integer('price');
-            $table->integer('price_after_discount')->nullable();
+            $table->integer('discount')->nullable();
             $table->integer('quantity')->nullable();
             $table->string('barcode')->nullable();
             $table->time('time_prepare')->nullable();

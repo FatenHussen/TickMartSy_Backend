@@ -17,7 +17,6 @@ class PageSectionSeeder extends Seeder
 {
     public function run()
     {
-
         $bannerDisplayType = DisplayType::create([
             'manual_model' => 'brand',
             'image' => '/images/display/slider.png',
@@ -33,7 +32,7 @@ class PageSectionSeeder extends Seeder
             'image' => '/images/display/grid.png',
             'fields' => ['image', 'title', 'price', 'brand']
         ]);
-        $suggestedBasketsDisplayType = DisplayType::create([
+        $basketsDisplayType = DisplayType::create([
             'manual_model' => 'basket',
             'image' => '/images/display/grid.png',
             'fields' => ['image', 'title', 'price', 'brand']
@@ -205,16 +204,23 @@ class PageSectionSeeder extends Seeder
             'filters' => []
         ]);
 
+        $basketSection = Section::create([
+            'name' => ['en' => 'basket', 'ar' => 'قسم السلات'],
+            'type' => 'api',
+            'api_method' => 'baskets',
+            'see_more' => true,
+            'see_more_slug' => 'baskets',
+            'details_slug' => 'basket_details',
+            'filters' => []
+        ]);
+
         $homeTrending = PageSection::create([
-            'name' => ['en' => 'طبخات بخصومات تصل ل 50%', 'ar' => 'طبخات بخصومات تصل ل 50 %'],
             'page_id' => $homePage->id,
-            'section_id' => $recipeSection->id,
-            'display_type_id' => $recipeDisplayType->id,
+            'section_id' => $basketSection->id,
+            'display_type_id' => $basketsDisplayType->id,
             'position' => 'after',
-            'order' => 5,
-            'filters' => [
-                'discount' => 30
-            ]
+            'order' => 6,
+            'filters' => []
         ]);
     }
 }

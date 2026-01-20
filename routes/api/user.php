@@ -8,7 +8,6 @@ use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\User\Basket\BasketController;
 use App\Http\Controllers\User\Basket\BasketScheduleController;
 use App\Http\Controllers\User\Basket\UserBasketScheduleController;
-use App\Http\Controllers\User\Basket\UserBasketScheduleItemController;
 use App\Http\Controllers\User\Category\CategoryController;
 use App\Http\Controllers\User\SectionController;
 use App\Http\Controllers\User\CityController;
@@ -94,9 +93,17 @@ Route::prefix('user')->group(
                 Route::delete('/{id}', [UserBasketScheduleController::class, 'destroy']);
             });
 
+            Route::prefix('baskets-schedule')->group(function () {
+                // Public routes
+                // Route::get('/', [BasketScheduleController::class, 'index']);
+                // Route::get('/{id}', [BasketScheduleController::class, 'get_one']);
+            });
             Route::apiResource('addresses', AddressController::class);
 
             Route::apiResource('orders', OrderController::class);
         });
+        Route::apiResource('addresses', AddressController::class);
+
+        Route::apiResource('orders', OrderController::class);
     }
 );
