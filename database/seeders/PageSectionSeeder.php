@@ -54,11 +54,7 @@ class PageSectionSeeder extends Seeder
             'image' => '/images/display/recipe.png',
             'fields' => ['image', 'title', 'decription', 'price', 'brand']
         ]);
-        // $basketsScheduleDisplayType = DisplayType::create([
-        //     'manual_model' => 'basket-shedule',
-        //     'image' => '/images/display/grid.png',
-        //     'fields' => ['image', 'title', 'price', 'brand']
-        // ]);
+        
         $banner1 = Banner::create([
             'title' => ['en' => 'Dis 50%', 'ar' => 'خصم حتى 50%'],
             'image' => '/images/banners/banner1.jpg',
@@ -73,7 +69,23 @@ class PageSectionSeeder extends Seeder
 
         $homePage = Page::create(['title' => 'Home', 'slug' => 'home']);
         // $shopPage = Page::create(['title' => 'Shop', 'slug' => 'shop']);
+        $homePage = Page::firstOrCreate(
+            ['slug' => 'home'],
+            ['title' => 'Home']
+        );
 
+        $pages = [
+            ['title' => 'Store Details', 'slug' => 'store-details'],
+            ['title' => 'Category', 'slug' => 'category'],
+            ['title' => 'Brand Products', 'slug' => 'brand-products'],
+            ['title' => 'Cooking Recipes', 'slug' => 'cooking-recipes'],
+            ['title' => 'Subscription Packages', 'slug' => 'subscription-packages'],
+            ['title' => 'Search Results', 'slug' => 'search-results'],
+            ['title' => 'All Baskets', 'slug' => 'all-baskets'],
+            ['title' => 'Cart', 'slug' => 'cart'],
+            ['title' => 'Checkout', 'slug' => 'checkout'],
+            ['title' => 'Review Order', 'slug' => 'review-order'],
+        ];
 
         // API Section with schema filters
         $trendingProductsSection = Section::create([
@@ -114,6 +126,52 @@ class PageSectionSeeder extends Seeder
             'position' => 'after',
             'order' => 2
         ]);
+        $bannerSection = Section::firstOrCreate([
+            'type' => 'manual',
+            'manual_model' => 'banner',
+        ], [
+            'name' => ['en' => 'Banners', 'ar' => 'إعلانات'],
+        ]);
+        SectionItem::firstOrCreate([
+            'section_id' => $bannerSection->id,
+            'item_type' => Banner::class,
+            'item_id' => $banner1->id,
+        ], ['order' => 1]);
+
+        SectionItem::firstOrCreate([
+            'section_id' => $bannerSection->id,
+            'item_type' => Banner::class,
+            'item_id' => $banner2->id,
+        ], ['order' => 2]);
+        $bannerPositions = [
+            'store-details'         => 'before',
+            'category'              => 'before',
+            'brand-products'        => 'after',
+            'cooking-recipes'       => 'before',
+            'subscription-packages' => 'after',
+            'search-results'        => 'middle',
+            'all-baskets'           => 'middle',
+            'cart'                  => 'before',
+            'checkout'              => 'before',
+            'review-order'          => 'after',
+        ];
+
+
+        foreach ($pages as $pageData) {
+
+            $page = Page::firstOrCreate(
+                ['slug' => $pageData['slug']],
+                ['title' => $pageData['title']]
+            );
+
+            PageSection::firstOrCreate([
+                'page_id' => $page->id,
+                'section_id' => $bannerSection->id,
+            ], [
+                'display_type_id' => $bannerDisplayType->id,
+                'position' => $bannerPositions[$page->slug] ?? 'before',
+            ]);
+        }
 
         // Manual Banners Items
         SectionItem::create([

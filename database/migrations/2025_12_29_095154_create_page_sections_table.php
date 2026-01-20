@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('page_id')->constrained()->onDelete('cascade');
             $table->foreignId('section_id')->constrained()->onDelete('cascade');
             $table->foreignId('display_type_id')->nullable()->constrained('display_types');
-            $table->enum('position', ['before', 'after']);
+            $table->enum('position', ['before', 'after', 'middle']);
             $table->integer('order')->default(1);
             $table->string('background_color')->nullable();
             $table->string('background_card_color')->nullable();
