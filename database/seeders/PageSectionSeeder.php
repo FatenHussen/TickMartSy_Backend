@@ -37,11 +37,7 @@ class PageSectionSeeder extends Seeder
             'image' => '/images/display/grid.png',
             'fields' => ['image', 'title', 'price', 'brand']
         ]);
-        $basketsScheduleDisplayType = DisplayType::create([
-            'manual_model' => 'basket-shedule',
-            'image' => '/images/display/grid.png',
-            'fields' => ['image', 'title', 'price', 'brand']
-        ]);
+       
         $suggestedBasketsDisplayType = DisplayType::create([
             'manual_model' => 'suggested-basket',
             'image' => '/images/display/grid.png',
@@ -58,7 +54,11 @@ class PageSectionSeeder extends Seeder
             'image' => '/images/display/recipe.png',
             'fields' => ['image', 'title', 'decription', 'price', 'brand']
         ]);
-
+        // $basketsScheduleDisplayType = DisplayType::create([
+        //     'manual_model' => 'basket-shedule',
+        //     'image' => '/images/display/grid.png',
+        //     'fields' => ['image', 'title', 'price', 'brand']
+        // ]);
         $banner1 = Banner::create([
             'title' => ['en' => 'Dis 50%', 'ar' => 'خصم حتى 50%'],
             'image' => '/images/banners/banner1.jpg',
