@@ -236,13 +236,13 @@ class PageSectionSeeder extends Seeder
             'details_slug' => 'scheduled_basket_details',
             'filters' => []
         ]);
-        $homeTrending = PageSection::create([
-            'page_id' => $homePage->id,
-            'section_id' => $basketScheduleSection->id,
-            'display_type_id' => $basketsScheduleDisplayType->id,
-            'position' => 'after',
-            'order' => 7,
-            'filters' => []
-        ]);
+        // $homeTrending = PageSection::create([
+        //     'page_id' => $homePage->id,
+        //     'section_id' => $basketScheduleSection->id,
+        //     'display_type_id' => $basketsScheduleDisplayType->id,
+        //     'position' => 'after',
+        //     'order' => 7,
+        //     'filters' => []
+        // ]);
     }
 }
