@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Services\User;
 
@@ -11,6 +11,7 @@ class GovernorateService extends BaseService
     public function __construct(Governorate $model)
     {
         $this->model = $model;
+        $this->pagination = false;
         $this->collection = GovernorateResource::class;
     }
 }

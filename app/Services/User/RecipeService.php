@@ -26,6 +26,16 @@ class RecipeService extends BaseService
     public function query(array $filters = [])
     {
         $query = Recipe::query()->latest();
+
+        foreach ($filters as $field => $filter) {
+            if (!empty($filter['value'])) {
+                $operator = $filter['operator'] ?? '=';
+                $value = $filter['value'];
+
+                $query->where($field, $operator, $value);
+            }
+        }
+
         return $query;
     }
 }

@@ -32,10 +32,8 @@ class StoreRequest extends FormRequest
             'background_card_color' => ['nullable', 'string', 'max:50'],
 
             'filters' => ['nullable', 'array'],
-            'filters.category_id' => ['nullable', 'integer', 'exists:categories,id'],
-            'filters.min_price' => ['nullable', 'integer', 'min:1'],
-            'filters.max_price' => ['nullable', 'integer', 'min:1'],
-            'filters.price' => ['nullable', 'integer', 'min:1'],
+            'filters.*.value' => ['required'],
+            'filters.*.operator' => ['required', 'in:=,<=,>=,<,>'],
         ];
     }
 }
