@@ -202,7 +202,8 @@ class PageSectionSeeder extends Seeder
             'section_id' => $manualProductsSection->id,
             'display_type_id' => $productDisplayType->id,
             'position' => 'after',
-            'order' => 2
+            'order' => 2,
+            'filters' => [],
         ]);
 
         $products = Product::take(2)->get();
@@ -297,6 +298,17 @@ class PageSectionSeeder extends Seeder
         ]);
 
         PageSection::create([
+            'page_id' => $homePage->id,
+            'section_id' => $basketSection->id,
+            'display_type_id' => $basketsDisplayType->id,
+            'position' => 'after',
+            'order' => 6,
+            'filters' => []
+        ]);
+
+        PageSection::create([
+            'name' => ['en' => 'schedule basket', 'ar' => 'قسم السلات المجدولة'],
+
             'page_id' => $homePage->id,
             'section_id' => $basketSection->id,
             'display_type_id' => $basketsDisplayType->id,
