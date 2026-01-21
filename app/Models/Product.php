@@ -132,7 +132,7 @@ class Product extends Model implements Sectionable
         return $this->hasManyThrough(
             OrderItem::class,
             ShopProductVariant::class,
-            'product_id',                 
+            'product_variant_id',                 
             'shop_product_variant_id',   
             'id',
             'id'
