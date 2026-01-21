@@ -127,4 +127,31 @@ class Product extends Model implements Sectionable
             'bottom_badges' => [],
         ];
     }
+    public function orderItems()
+    {
+        return $this->hasManyThrough(
+            OrderItem::class,
+            ShopProductVariant::class,
+            'product_id',                 
+            'shop_product_variant_id',   
+            'id',
+            'id'
+        );
+    }
+    public function totalSoldQuantity()
+    {
+        return $this->completedOrderItems()->sum('quantity');
+    }
+
+    public function completedOrderItems()
+    {
+        return $this->orderItems()
+            ->whereHas('order', function ($q) {
+                $q->where('order_status', 'completed');
+            });
+    }
+    public function getSoldQuantityAttribute()
+    {
+        return $this->completedOrderItems()->sum('quantity');
+    }
 }
