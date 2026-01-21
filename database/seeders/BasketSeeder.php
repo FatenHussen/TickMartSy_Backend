@@ -41,7 +41,7 @@ class BasketSeeder extends Seeder
             'discount_type'    => 'fixed',
             'rating'           => 4.5,
             'num_sold'         => 683,
-            'image'            => 'baskets/image.png'
+            'image'            => 'baskets/image1.png'
 
         ]);
 
@@ -58,7 +58,7 @@ class BasketSeeder extends Seeder
             'discount_type'    => 'percentage',
             'rating'           => 4.9,
             'num_sold'         => 2156,
-            'image'            => 'baskets/image.png'
+            'image'            => 'baskets/image2.png'
 
         ]);
 
@@ -75,7 +75,7 @@ class BasketSeeder extends Seeder
             'discount_type'    => 'percentage',
             'rating'           => 4.6,
             'num_sold'         => 892,
-            'image'            => 'baskets/image.png'
+            'image'            => 'baskets/image1.png'
         ]);
 
     }

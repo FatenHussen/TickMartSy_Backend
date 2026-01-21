@@ -60,11 +60,11 @@ class ShopSeeder extends Seeder
                     'sunday'    => ['closed' => true],
                 ],
 
-                'logo' => 'shops/logos/tikmool.png',
+                'logo' => 'shops/logos/image.jpg',
 
                 'cover_images' => [
-                    'shops/covers/tikmool-1.png',
-                    'shops/covers/tikmool-2.png',
+                    'shops/covers/image.png',
+                    'shops/covers/image.png',
                 ],
 
                 'is_active' => true,

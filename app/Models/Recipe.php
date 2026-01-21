@@ -66,7 +66,15 @@ class Recipe extends Model implements Sectionable
     {
         return $this->morphToMany(Badge::class, 'badgeable');
     }
+    public function ratings()
+    {
+        return $this->morphMany(Rating::class, 'rateable');
+    }
 
+    public function averageRating()
+    {
+        return $this->ratings()->avg('rating');
+    }
     public function toSectionArray(): array
     {
         return [

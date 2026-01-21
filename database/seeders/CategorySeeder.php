@@ -14,12 +14,12 @@ class CategorySeeder extends Seeder
             [
                 'name' => ['en' => 'Electronics', 'ar' => 'إلكترونيات'],
                 'description' => ['en' => 'Devices and gadgets', 'ar' => 'أجهزة وإكسسوارات'],
-                'icon' => 'https://tikmool.octopus-software.online/storage/banner/9a37073f-39cc-4860-9366-dd9483112ab0.jpg'
+                'icon' => 'categories/image1.jpg'
             ],
             [
                 'name' => ['en' => 'Fashion', 'ar' => 'أزياء'],
                 'description' => ['en' => 'Clothing and accessories', 'ar' => 'ملابس وإكسسوارات'],
-                'icon' => 'https://tikmool.octopus-software.online/storage/banner/9a37073f-39cc-4860-9366-dd9483112ab0.jpg'
+                'icon' => 'categories/image2.jpg'
             ],
         ];
 

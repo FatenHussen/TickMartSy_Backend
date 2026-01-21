@@ -51,7 +51,15 @@ class Product extends Model implements Sectionable
         }
         return $this->price;
     }
+    public function ratings()
+    {
+        return $this->morphMany(Rating::class, 'rateable');
+    }
 
+    public function averageRating()
+    {
+        return $this->ratings()->avg('rating');
+    }
     /*
     |--------------------------------------------------------------------------
     | Relationships
