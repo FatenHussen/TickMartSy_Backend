@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\User\Brand\BrandController;
 use App\Http\Controllers\User\AddressController;
+use App\Http\Controllers\User\AreaController;
 use App\Http\Controllers\User\Product\ProductController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\Auth\AuthController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\User\GovernorateController;
 use App\Http\Controllers\User\Order\OrderController;
 use App\Http\Controllers\User\RecipeController;
 use App\Http\Controllers\User\Schedule\ScheduleController;
+use App\Models\Area;
 
 Route::prefix('user')->group(
     function () {
@@ -23,6 +25,7 @@ Route::prefix('user')->group(
         // public routes 
         Route::get('/governorates', [GovernorateController::class, 'index']);
         Route::get('/cities', [CityController::class, 'index']);
+        Route::get('/areas', [AreaController::class, 'index']);
 
         //authetication routes user 
         Route::prefix('auth')->group(

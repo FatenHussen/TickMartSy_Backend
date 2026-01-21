@@ -106,18 +106,16 @@ class PageSectionSeeder extends Seeder
 
         /*
         |--------------------------------------------------------------------------
-        | API Sections
+        | Trending Products Section
         |--------------------------------------------------------------------------
         */
-
-        // Trending Products
         $trendingProductsSection = Section::create([
             'name' => ['en' => 'Trending Products', 'ar' => 'المنتجات الترند'],
             'type' => 'api',
             'api_method' => 'trending_products',
             'filters' => [
                 'category_id' => ['type' => 'select', 'url' => 'admin/categories'],
-                'price_max'   => ['type' => 'number'],
+                'discount'   => ['type' => 'number'],
             ],
             'see_more' => true,
             'see_more_slug' => 'products',
@@ -130,12 +128,15 @@ class PageSectionSeeder extends Seeder
             'display_type_id' => $productDisplayType->id,
             'position' => 'before',
             'order' => 1,
-            'filters' => ['category_id' => 1, 'price_max' => 100]
+            'filters' => [
+                'category_id' => ['value' => 1, 'operator' => '='],
+                'discount' => ['value' => 100, 'operator' => '<=']
+            ]
         ]);
 
         /*
         |--------------------------------------------------------------------------
-        | Manual Banner Section
+        | Manual Banners Section
         |--------------------------------------------------------------------------
         */
         $bannerSection = Section::firstOrCreate(
@@ -155,7 +156,7 @@ class PageSectionSeeder extends Seeder
 
         /*
         |--------------------------------------------------------------------------
-        | Banner Positions on Pages
+        | Pages Banner Placement
         |--------------------------------------------------------------------------
         */
         $bannerPositions = [
@@ -218,75 +219,90 @@ class PageSectionSeeder extends Seeder
 
         /*
         |--------------------------------------------------------------------------
-        | Brands / Recipes / Baskets Sections
+        | Brands Section
         |--------------------------------------------------------------------------
         */
-
-        $this->createApiSection(
-            $homePage,
-            'Brands',
-            'قسم البراندات',
-            'brands',
-            $brandsDisplayType,
-            4,
-            'brands',
-            'brand_details'
-        );
-
-        $this->createApiSection(
-            $homePage,
-            'recipe',
-            'قسم الطبخة',
-            'recipes',
-            $recipeDisplayType,
-            5,
-            'recipes',
-            'recipe_details'
-        );
-
-        $this->createApiSection(
-            $homePage,
-            'basket',
-            'قسم السلات',
-            'baskets',
-            $basketsDisplayType,
-            6,
-            'baskets',
-            'basket_details'
-        );
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Helper Method
-    |--------------------------------------------------------------------------
-    */
-    private function createApiSection(
-        Page $page,
-        string $enName,
-        string $arName,
-        string $method,
-        DisplayType $displayType,
-        int $order,
-        string $seeMore,
-        string $details
-    ) {
-        $section = Section::create([
-            'name' => ['en' => $enName, 'ar' => $arName],
+        $brandsSection = Section::create([
+            'name' => ['en' => 'Brands', 'ar' => 'قسم البراندات'],
             'type' => 'api',
-            'api_method' => $method,
-            'see_more' => true,
-            'see_more_slug' => $seeMore,
-            'details_slug' => $details,
+            'api_method' => 'brands',
             'filters' => [],
+            'see_more' => true,
+            'see_more_slug' => 'brands',
+            'details_slug' => 'brand_details',
         ]);
 
         PageSection::create([
-            'page_id' => $page->id,
-            'section_id' => $section->id,
-            'display_type_id' => $displayType->id,
+            'page_id' => $homePage->id,
+            'section_id' => $brandsSection->id,
+            'display_type_id' => $brandsDisplayType->id,
+            'position' => 'before',
+            'order' => 4,
+            'filters' => []
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Recipes Section
+        |--------------------------------------------------------------------------
+        */
+        $recipeSection = Section::create([
+            'name' => ['en' => 'recipe', 'ar' => 'قسم الطبخة'],
+            'type' => 'api',
+            'api_method' => 'recipes',
+            'filters' => ['discount' => ['type' => 'number']],
+            'see_more' => true,
+            'see_more_slug' => 'recipes',
+            'details_slug' => 'recipe_details',
+            'filters' => [
+                'discount'   => ['type' => 'number'],
+            ],
+        ]);
+
+        PageSection::create([
+            'page_id' => $homePage->id,
+            'section_id' => $recipeSection->id,
+            'display_type_id' => $recipeDisplayType->id,
             'position' => 'after',
-            'order' => $order,
+            'order' => 5,
+            'filters' => []
+        ]);
+
+
+        PageSection::create([
+            'name' => ['en' => 'recipe 50% discount', 'ar' => 'طبخات بخصومات تصل ل 50%'],
+            'page_id' => $homePage->id,
+            'section_id' => $recipeSection->id,
+            'display_type_id' => $recipeDisplayType->id,
+            'position' => 'after',
+            'order' => 5,
+            'filters' => [
+                'discount' => ['value' => 50, 'operator' => '<=']
+            ]
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Baskets Section
+        |--------------------------------------------------------------------------
+        */
+        $basketSection = Section::create([
+            'name' => ['en' => 'basket', 'ar' => 'قسم السلات'],
+            'type' => 'api',
+            'api_method' => 'baskets',
+            'see_more' => true,
+            'see_more_slug' => 'baskets',
+            'details_slug' => 'basket_details',
+            'filters' => []
+        ]);
+
+        PageSection::create([
+            'page_id' => $homePage->id,
+            'section_id' => $basketSection->id,
+            'display_type_id' => $basketsDisplayType->id,
+            'position' => 'after',
+            'order' => 6,
+            'filters' => []
         ]);
     }
 }

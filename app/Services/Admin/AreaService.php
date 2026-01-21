@@ -16,8 +16,8 @@ class AreaService extends BaseService
     {
         $this->model      = $model;
         $this->resource   = OneResource::class;
-        $this->collection = OneResource::class;
-        $this->pagination = true;
+        $this->collection = AllResource::class;
+        $this->pagination = false;
         $this->searchableFields = ['id', 'name', 'email'];
     }
 }
