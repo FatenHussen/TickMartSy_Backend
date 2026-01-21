@@ -86,18 +86,70 @@ class Basket extends Model implements Sectionable
     }
     public function toSectionArray(): array
     {
+        $nextDelivery = null;
+
+        if ($this->activeSchedule && $this->activeSchedule->count()) {
+            $schedule = $this->activeSchedule->first();
+            $nextDelivery = now()
+                ->addDays($schedule->number_of_days)
+                ->format('Y-m-d');
+        }
+        $itemsCount = $this->items?->count() ?? 0;
+
         return [
-            'id'       => $this->id,
-            'title'     => $this->name,
-            'desc'     => null,
-            'image'    => $this->image_url,
-            'price' => $this->calculated_price,
-            'price_after_discount' => $this->final_price,
-            'discount' => $this->discount,
+            'id' => $this->id,
+
+            // naming for section
+            'title' => $this->name,
+            'desc'  => null,
+
+            // media
+            'image' => $this->image_url,
+
+            // category
+            'category' => $this->category?->name,
+
+            // pricing
+            'original_price' => round($this->calculated_price, 2),
+            'discount_value' => $this->discount,
+            'discount_type'  => $this->discount_type,
+            'discount_amount' => round($this->discount_amount, 2),
+            'price_after_discount' => round($this->final_price, 2),
+
+            // stats
+            'rating'   => (float) $this->rating,
+            'num_sold' => (int) $this->num_sold,
+            'saving'   => round($this->discount_amount, 2),
+
+            // offer
+            'is_on_offer' => $this->offer_ends_at && $this->offer_ends_at->isFuture(),
+            'offer_ends_at' => $this->offer_ends_at?->format('Y-m-d'),
+
+            // delivery
+            'next_delivery_date' => $nextDelivery,
+
+            // section ui
             'top_badges' => [],
             'bottom_badges' => [],
+            'items_count' => $itemsCount,
+
         ];
     }
+
+    // public function toSectionArray(): array
+    // {
+    //     return [
+    //         'id'       => $this->id,
+    //         'title'     => $this->name,
+    //         'desc'     => null,
+    //         'image'    => $this->image_url,
+    //         'price' => $this->calculated_price,
+    //         'price_after_discount' => $this->final_price,
+    //         'discount' => $this->discount,
+    //         'top_badges' => [],
+    //         'bottom_badges' => [],
+    //     ];
+    // }
     public function ratings(): MorphMany
     {
         return $this->morphMany(Rating::class, 'rateable');
