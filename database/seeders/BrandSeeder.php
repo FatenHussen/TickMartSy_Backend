@@ -12,52 +12,52 @@ class BrandSeeder extends Seeder
         $brands = [
             [
                 'name' => [
-                    'ar' => 'شانيل',
-                    'en' => 'Chanel',
+                    'ar' => 'نايك',
+                    'en' => 'Nike',
                 ],
-                'image' => 'brands/chanel.png',
+                'image' => 'brands/image2.jpg',
             ],
             [
                 'name' => [
-                    'ar' => 'ديور',
-                    'en' => 'Dior',
+                    'ar' => 'أديداس',
+                    'en' => 'Adidas',
                 ],
-                'image' => 'brands/dior.png',
+                'image' => 'brands/image3.jpg',
             ],
             [
                 'name' => [
-                    'ar' => 'غوتشي',
-                    'en' => 'Gucci',
+                    'ar' => 'آبل',
+                    'en' => 'Apple',
                 ],
-                'image' => 'brands/gucci.png',
+                'image' => 'brands/image4.jpg',
             ],
             [
                 'name' => [
-                    'ar' => 'إيف سان لوران',
-                    'en' => 'Yves Saint Laurent',
+                    'ar' => 'سامسونغ',
+                    'en' => 'Samsung',
                 ],
-                'image' => 'brands/ysl.png',
+                'image' => 'brands/image5.jpg',
             ],
             [
                 'name' => [
-                    'ar' => 'توم فورد',
-                    'en' => 'Tom Ford',
+                    'ar' => 'لوريال',
+                    'en' => "L'Oréal",
                 ],
-                'image' => 'brands/tom-ford.png',
+                'image' => 'brands/image7.jpg',
             ],
             [
                 'name' => [
-                    'ar' => 'فيرساتشي',
-                    'en' => 'Versace',
+                    'ar' => 'زارا',
+                    'en' => 'Zara',
                 ],
-                'image' => 'brands/versace.png',
+                'image' => 'brands/image6.jpg',
             ],
             [
                 'name' => [
-                    'ar' => 'باكو رابان',
-                    'en' => 'Paco Rabanne',
+                    'ar' => 'شيغلام',
+                    'en' => 'SHEGLAM',
                 ],
-                'image' => 'brands/paco-rabanne.png',
+                'image' => 'brands/image1.jpg',
             ],
         ];
 

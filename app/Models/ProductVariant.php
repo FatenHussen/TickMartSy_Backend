@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductVariant extends Model
@@ -55,5 +56,9 @@ class ProductVariant extends Model
     public function getAttributesValuesAttribute()
     {
         return AttributeValue::whereIn('id', $this->attributes_values_ids ?? [])->get();
+    }
+    public function ratings(): MorphMany
+    {
+        return $this->morphMany(Rating::class, 'rateable');
     }
 }

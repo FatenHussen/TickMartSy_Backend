@@ -36,7 +36,15 @@ class Brand extends Model implements Sectionable
     {
         return $this->hasMany(Product::class);
     }
+    public function ratings()
+    {
+        return $this->morphMany(Rating::class, 'rateable');
+    }
 
+    public function averageRating()
+    {
+        return $this->ratings()->avg('rating');
+    }
     public function vendors()
     {
         return $this->hasManyThrough(
