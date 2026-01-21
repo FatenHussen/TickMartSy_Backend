@@ -29,10 +29,11 @@ class AddressService extends BaseService
     }
 
 
-    public function create(array $data)
+    public function create($data)
     {
         /** @var User $user */
         $user = auth('user')->user();
+        // $user = User::findOrFail(1);
 
         // Attach address to authenticated user
         $data['user_id'] = $user->id;

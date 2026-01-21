@@ -29,6 +29,11 @@ class Shop extends Model
         'vendor_id',
         'is_default'
     ];
+    public function area()
+    {
+        return $this->belongsTo(Area::class);
+    }
+
 
     protected $casts = [
         'working_hours'     => 'array',
@@ -81,10 +86,6 @@ class Shop extends Model
     }
 
 
-    public function area()
-    {
-        return $this->belongsTo(Area::class);
-    }
 
     // public function products(): HasMany
     // {

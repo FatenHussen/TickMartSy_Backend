@@ -8,6 +8,7 @@ use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\User\Basket\BasketController;
 use App\Http\Controllers\User\Basket\BasketScheduleController;
 use App\Http\Controllers\User\Basket\UserBasketScheduleController;
+use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\Category\CategoryController;
 use App\Http\Controllers\User\SectionController;
 use App\Http\Controllers\User\CityController;
@@ -49,16 +50,19 @@ Route::prefix('user')->group(
             // Public routes
             Route::get('/', [SectionController::class, 'index']);
         });
+
         Route::prefix('schedules')->group(function () {
             // Public routes
             Route::get('/', [ScheduleController::class, 'index']);
         });
+
         //  Product routes
         Route::prefix('products')->group(function () {
             // Public routes
             Route::get('/', [ProductController::class, 'index']);
             Route::get('/{id}', [ProductController::class, 'get_one']);
         });
+
 
         // Category routes
         Route::prefix('categories')->group(function () {
@@ -72,7 +76,8 @@ Route::prefix('user')->group(
             Route::get('/', [BrandController::class, 'index']);
             Route::get('/{id}', [BrandController::class, 'get_one']);
         });
-        //  Section routes
+
+        // Recipe routes
         Route::prefix('recipes')->group(function () {
             // Public routes
             Route::get('/', [RecipeController::class, 'index']);
@@ -84,21 +89,24 @@ Route::prefix('user')->group(
             Route::get('/', [BasketController::class, 'index']);
             Route::get('/{id}', [BasketController::class, 'get_one']);
         });
-        Route::middleware('auth:user')->group(function () {
-            Route::prefix('scheduled-baskets')->group(function () {
-                Route::get('/', [UserBasketScheduleController::class, 'index']);
-                Route::get('/{id}', [UserBasketScheduleController::class, 'show']);
-                Route::post('/', [UserBasketScheduleController::class, 'store']);
-                Route::put('/{id}', [UserBasketScheduleController::class, 'update']);
-                Route::delete('/{id}', [UserBasketScheduleController::class, 'destroy']);
-            });
 
-            Route::apiResource('addresses', AddressController::class);
-
-            Route::apiResource('orders', OrderController::class);
+        Route::prefix('scheduled-baskets')->group(function () {
+            // Public routes
+            Route::get('/', [UserBasketScheduleController::class, 'index']);
+            Route::get('/{id}', [UserBasketScheduleController::class, 'show']);
+            Route::post('/', [UserBasketScheduleController::class, 'store']);
+            Route::put('/{id}', [UserBasketScheduleController::class, 'update']);
+            Route::delete('/{id}', [UserBasketScheduleController::class, 'destroy']);
         });
-        Route::apiResource('addresses', AddressController::class);
 
-        Route::apiResource('orders', OrderController::class);
+        Route::apiResource('orders', OrderController::class)->middleware(['auth:user']);
+
+        Route::apiResource('addresses', AddressController::class)->middleware(['auth:user']);
+
+
+        Route::prefix('cart')->group(function () {
+            // Public routes
+            Route::post('calculate-delivery-price', [CartController::class, 'calculateDeliveryPrice']);
+        });
     }
 );
