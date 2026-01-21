@@ -152,6 +152,7 @@ class Product extends Model implements Sectionable
     }
     public function getSoldQuantityAttribute()
     {
-        return $this->completedOrderItems()->sum('quantity');
+        return $this->completedOrderItems()
+            ->sum('order_items.quantity');
     }
 }
