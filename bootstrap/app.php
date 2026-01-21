@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->use([
             SetLocale::class,
             HandleCors::class,
+
         ]);
 
         $middleware->alias([
