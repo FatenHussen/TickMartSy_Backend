@@ -22,8 +22,9 @@ class CartController extends Controller
         /** @var User $user */
         $user = auth('user')->user();
 
-        $user = User::findOrFail(1);
+        $user = User::find(1);
 
+        // Get address
         if ($request->filled('address_id')) {
             $address = $user->addresses()->findOrFail($request->address_id);
         } else {
@@ -32,28 +33,40 @@ class CartController extends Controller
                 ->firstOrFail();
         }
 
-
+        // Variant IDs
         $variantIds = collect($request->items)
             ->unique()
             ->values();
 
+        // All shop IDs
         $shopIds = ShopProductVariant::whereIn('id', $variantIds)
             ->pluck('shop_id')
             ->unique()
             ->values();
 
+        // Paid shops only (exclude free delivery shops)
+        $paidShopIds = Shop::whereIn('id', $shopIds)
+            ->where('is_free_delivery', false)
+            ->pluck('id')
+            ->values();
 
-        $areaIds = Shop::whereIn('id', $shopIds)
+        // If all shops have free delivery
+        if ($paidShopIds->isEmpty()) {
+            return $this->sendResponse(data: 0);
+        }
+
+        // Area IDs for paid shops
+        $areaIds = Shop::whereIn('id', $paidShopIds)
             ->pluck('area_id')
             ->unique()
             ->values()
             ->toArray();
 
-
         $price = DeliveryPricingService::calculateDeliveryFee(
             $address->area_id,
             $areaIds
         );
+
         return $this->sendResponse(data: $price);
     }
 }

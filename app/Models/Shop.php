@@ -27,7 +27,8 @@ class Shop extends Model
         'ratings_count',
         'ratings_sum',
         'vendor_id',
-        'is_default'
+        'is_default',
+        'is_free_delivery'
     ];
     public function area()
     {
@@ -39,7 +40,7 @@ class Shop extends Model
         'working_hours'     => 'array',
         'cover_images'      => 'array',
         'is_active'         => 'boolean',
-        'is_active'         => 'boolean',
+        'is_free_delivery'         => 'boolean',
         'ratings_count'     => 'integer',
         'ratings_sum'       => 'integer',
     ];
