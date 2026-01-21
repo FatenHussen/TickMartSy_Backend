@@ -16,29 +16,53 @@ class AddressService extends BaseService
         $this->model = $model;
         $this->collection = OneResource::class;
         $this->resource = OneResource::class;
+        $this->pagination = false;
     }
 
-    public function create($data)
+    public function getAll($filters = [], $config = [])
     {
         /** @var User */
         $user = auth('user')->user();
-        $user = User::find(1);
+        // $user = User::findOrFail(2);
+        $filters['user_id'] = $user->id;
+        return parent::getAll($filters, $config);
+    }
+
+
+    public function create(array $data)
+    {
+        /** @var User $user */
+        $user = auth('user')->user();
+
+        // Attach address to authenticated user
         $data['user_id'] = $user->id;
-        if (!empty($data['is_default'])) {
+
+        // If this address is default, unset previous defaults
+        if (isset($data['is_default']) && $data['is_default'] === true) {
             $user->addresses()->update(['is_default' => false]);
         }
+
         return parent::create($data);
     }
 
-    public function update($id, array $data)
-    {
-        /** @var User */
-        $user = auth('user')->user();
-        $user = User::find(1);
 
-        if (!empty($data['is_default'])) {
-            $user->addresses()->update(['is_default' => false]);
+    public function update($id, $data)
+    {
+        /** @var User $user */
+        $user = auth('user')->user();
+        // $user = User::findOrFail(2);
+
+        $address = $user->addresses()->findOrFail($id);
+
+        // If this address is set as default, unset others
+        if (isset($data['is_default']) && $data['is_default'] === true) {
+            $user->addresses()
+                ->where('id', '!=', $address->id)
+                ->update(['is_default' => false]);
         }
-        return parent::update($id, $data);
+
+        $address->update($data);
+
+        return new $this->resource($address);
     }
 }
