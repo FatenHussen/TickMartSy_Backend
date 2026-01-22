@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('basket_id')->constrained()->onDelete('cascade');
             $table->foreignId('product_id')->constrained('products');
-            $table->foreignId('variant_id')->nullable()->constrained('product_variants');
+            $table->foreignId('variant_id')->constrained('variants');
+
+            $table->foreignId('shop_product_variant_id')->nullable()->constrained('shop_product_variant');
 
             $table->integer('quantity')->unsigned()->default(1);
            $table->boolean('is_required')->default(false);

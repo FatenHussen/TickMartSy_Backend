@@ -21,6 +21,8 @@ class BasketItem extends Model
         'min_quantity',
         'max_quantity',
         'price',
+        'shop_product_variant_id'
+
     ];
 
     protected $casts = [
@@ -60,5 +62,9 @@ class BasketItem extends Model
     public function getSubtotalAttribute(): float
     {
         return round($this->quantity * $this->price, 2);
+    }
+    public function shopProductVariant()
+    {
+        return $this->belongsTo(ShopProductVariant::class);
     }
 }
