@@ -26,7 +26,7 @@ class OneResource extends JsonResource
                 $this->vendors()->pluck('vendors.id')
             )->distinct()->count(),
 
-            'rating'         => $this->rating ?? 0,
+            'rating'         => $this->average_rating ?? 0,
         ];
     }
 }

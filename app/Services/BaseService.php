@@ -182,7 +182,7 @@ abstract class BaseService
 
         $this->handleRelations($object, $data);
         $this->handleMedia($object, $data);
-        return new $this->resource($object);
+        return new $this->resource($object) ?? true;
     }
 
     public function update($id, array $data)

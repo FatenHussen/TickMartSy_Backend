@@ -25,6 +25,7 @@ class AllResource extends JsonResource
             'budges'                => OneResource::collection($this->badges),
             'created_at'            => $this->created_at,
             'sold_number'           => $this->sold_quantity ?? 0,
+            'rating' => $this->average_rating ?? 0
         ];
     }
 }

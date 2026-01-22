@@ -20,6 +20,7 @@ class AllResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'image' => $this->image_url,
+            'rating' => $this->average_rating
         ];
     }
 }

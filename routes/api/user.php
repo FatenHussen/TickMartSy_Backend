@@ -15,9 +15,10 @@ use App\Http\Controllers\User\SectionController;
 use App\Http\Controllers\User\CityController;
 use App\Http\Controllers\User\GovernorateController;
 use App\Http\Controllers\User\Order\OrderController;
+use App\Http\Controllers\User\Rating\RatingController;
 use App\Http\Controllers\User\RecipeController;
 use App\Http\Controllers\User\Schedule\ScheduleController;
-use App\Models\Area;
+use App\Http\Controllers\User\SellerRegistrationController;
 
 Route::prefix('user')->group(
     function () {
@@ -37,6 +38,7 @@ Route::prefix('user')->group(
                 Route::post('/login', [AuthController::class, 'login']);
                 Route::post('/send-password', [AuthController::class, 'sendPassword']);
                 Route::post('/verify-password', [AuthController::class, 'verifyPassword']);
+                Route::post('/seller-register', [SellerRegistrationController::class, 'store']);
 
                 // protected routes 
                 Route::middleware(['auth:user'])->group(function () {
@@ -93,16 +95,19 @@ Route::prefix('user')->group(
             Route::get('/{id}', [BasketController::class, 'get_one']);
         });
 
-        Route::prefix('scheduled-baskets')->group(function () {
+        Route::prefix('ratings')->group(function () {
             // Public routes
-            Route::get('/', [UserBasketScheduleController::class, 'index']);
-            Route::get('/{id}', [UserBasketScheduleController::class, 'show']);
-            Route::post('/', [UserBasketScheduleController::class, 'store']);
-            Route::put('/{id}', [UserBasketScheduleController::class, 'update']);
-            Route::delete('/{id}', [UserBasketScheduleController::class, 'destroy']);
+            Route::get('/', [RatingController::class, 'index']);
+            Route::middleware(['auth:user'])->group(function () {
+                Route::get('/my_ratings', [RatingController::class, 'myRatings']);
+                Route::post('/', [RatingController::class, 'store']);
+                Route::put('/{id}', [RatingController::class, 'update']);
+                Route::delete('/{id}', [RatingController::class, 'destroy']);
+            });
         });
-
         Route::apiResource('orders', OrderController::class)->middleware(['auth:user']);
+
+        Route::apiResource('scheduled-baskets', UserBasketScheduleController::class)->middleware(['auth:user']);
 
         Route::apiResource('addresses', AddressController::class)->middleware(['auth:user']);
 

@@ -28,6 +28,7 @@ class OneResource extends JsonResource
             'time_prepare' => optional($this->time_prepare)->format('H:i'),
             'bought_with'=>  AllResource::collection($this->boughtWithProduct()),
             'is_instant_delivery' => $this->is_instant_delivery,
+            'rating' => $this->average_rating,
 
             'category' => [
                 'id' => $this->category?->id,

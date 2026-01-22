@@ -156,4 +156,8 @@ class Basket extends Model implements Sectionable
     {
         return $this->morphMany(Rating::class, 'rateable');
     }
+    public function getAverageRatingAttribute(): float
+    {
+        return round((float) $this->ratings()->avg('rating'), 1);
+    }
 }

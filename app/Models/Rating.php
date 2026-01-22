@@ -14,7 +14,9 @@ class Rating extends Model
         'order_id',
         'comment',
         'image',
-        'is_verified'
+        'is_verified',
+        'rateable_type',   
+        'rateable_id',
     ];
 
     public function rateable(): MorphTo

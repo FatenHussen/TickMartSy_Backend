@@ -32,7 +32,7 @@ class AllResource extends JsonResource
             'discount_type'   => $this->discount_type,
             'discount_amount' => round($this->discount_amount, 2),
             'final_price'     => round($this->final_price, 2),
-            'rating'          => (float) $this->rating,
+            'rating'          => $this->average_rating,
             'saving' => round($this->discount_amount,2),
             'num_sold'        => (int) $this->num_sold,
             'is_on_offer'     => $this->offer_ends_at && $this->offer_ends_at->isFuture(),
