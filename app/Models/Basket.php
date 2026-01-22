@@ -24,7 +24,8 @@ class Basket extends Model implements Sectionable
         'rating',
         'num_sold',
         'image',
-        'is_schedule'
+        'is_schedule',
+        'delivery_price'
     ];
     public $translatable = ['name'];
 
@@ -132,6 +133,7 @@ class Basket extends Model implements Sectionable
             'top_badges' => [],
             'bottom_badges' => [],
             'items_count' => $itemsCount,
+            'delivery_price' => $this->delivery_price
 
         ];
     }

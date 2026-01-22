@@ -24,6 +24,7 @@ return new class extends Migration
             $table->integer('num_sold')->default(0);
             $table->string('image')->nullable();
             $table->boolean('is_schedule')->default(false);
+            $table->integer('delivery_price')->default(0);
             $table->timestamps();
         });
     }
