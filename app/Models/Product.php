@@ -51,7 +51,15 @@ class Product extends Model implements Sectionable
         }
         return $this->price;
     }
+    public function ratings()
+    {
+        return $this->morphMany(Rating::class, 'rateable');
+    }
 
+    public function averageRating()
+    {
+        return $this->ratings()->avg('rating');
+    }
     /*
     |--------------------------------------------------------------------------
     | Relationships
@@ -118,5 +126,33 @@ class Product extends Model implements Sectionable
             'top_badges' => [],
             'bottom_badges' => [],
         ];
+    }
+    public function orderItems()
+    {
+        return $this->hasManyThrough(
+            OrderItem::class,
+            ShopProductVariant::class,
+            'product_variant_id',                 
+            'shop_product_variant_id',   
+            'id',
+            'id'
+        );
+    }
+    public function totalSoldQuantity()
+    {
+        return $this->completedOrderItems()->sum('quantity');
+    }
+
+    public function completedOrderItems()
+    {
+        return $this->orderItems()
+            ->whereHas('order', function ($q) {
+                $q->where('order_status', 'completed');
+            });
+    }
+    public function getSoldQuantityAttribute()
+    {
+        return $this->completedOrderItems()
+            ->sum('order_items.quantity');
     }
 }

@@ -82,16 +82,44 @@ class UserBasketSchedule extends Model implements Sectionable
     }
     public function toSectionArray(): array
     {
+        $totalPrice = $this->items?->sum(
+            fn($item) => $item->price * $item->quantity
+        ) ?? 0;
+
+        $discountValue = $this->schedule?->discount_value ?? 0;
+        $discountType  = $this->schedule?->discount_type ?? null;
+
+        $discountAmount = 0;
+
+        if ($discountValue > 0) {
+            if ($discountType === 'percent') {
+                $discountAmount = round($totalPrice * $discountValue / 100, 2);
+            } else {
+                $discountAmount = round(min($discountValue, $totalPrice), 2);
+            }
+        }
+
+        $finalPrice = round($totalPrice - $discountAmount, 2);
+        $itemsCount = $this->items?->count() ?? 0;
+
         return [
-            'id'       => $this->id,
-            'title'     => $this->name,
-            'desc'     => null,
-            'image'    => null,
-            'price' => null,
-            'price_after_discount' => null,
-            'discount' => null,
+            'id'    => $this->id,
+
+            // section basics
+            'title' => $this->name,
+            'desc'  => $this->category?->name,
+
+            'image' => $this->category?->image_url,
+
+            'price' => round($totalPrice, 2),
+            'price_after_discount' => $finalPrice,
+            'discount' => $discountValue,
+
             'top_badges' => [],
+
             'bottom_badges' => [],
+            'items_count' => $itemsCount,
+
         ];
     }
 }

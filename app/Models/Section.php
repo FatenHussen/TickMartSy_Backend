@@ -27,9 +27,10 @@ class Section extends Model
         'details_slug'
     ];
 
-    public function apiData(array $filters = [])
+    public function apiData(?array $filters = null)
     {
-        return app(SectionApiService::class)->preview($this, $filters);
+        return app(SectionApiService::class)
+            ->preview($this, $filters ?? []);
     }
 
     public function pages()

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Shop extends Model
 {
@@ -27,7 +28,8 @@ class Shop extends Model
         'ratings_count',
         'ratings_sum',
         'vendor_id',
-        'is_default'
+        'is_default',
+        'is_free_delivery'
     ];
     public function area()
     {
@@ -39,7 +41,7 @@ class Shop extends Model
         'working_hours'     => 'array',
         'cover_images'      => 'array',
         'is_active'         => 'boolean',
-        'is_active'         => 'boolean',
+        'is_free_delivery'         => 'boolean',
         'ratings_count'     => 'integer',
         'ratings_sum'       => 'integer',
     ];
@@ -137,5 +139,9 @@ class Shop extends Model
     public function productVariants()
     {
         return $this->hasMany(ShopProductVariant::class);
+    }
+    public function ratings(): MorphMany
+    {
+        return $this->morphMany(Rating::class, 'rateable');
     }
 }

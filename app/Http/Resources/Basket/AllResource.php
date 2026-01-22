@@ -37,7 +37,7 @@ class AllResource extends JsonResource
             'num_sold'        => (int) $this->num_sold,
             'is_on_offer'     => $this->offer_ends_at && $this->offer_ends_at->isFuture(),
             'next_delivery_date' => $nextDelivery,
-
+            'delivery_price' => $this->delivery_price ?? 0
         ];
     }
 }
