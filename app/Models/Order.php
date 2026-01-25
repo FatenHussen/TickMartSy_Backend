@@ -13,15 +13,14 @@ class Order extends Model
         'driver_id',
         'user_address_id',
         'is_instant_delivery',
-        'order_status',
+        'status',
         'cart_type',
         'delivery_price',
         'total_quantity',
         'total',
         'subtotal',
         'basket_discount',
-        'coupon_discount',
-        'discount_source',
+        'cart_type',
         'coupon_discount',
     ];
 

@@ -107,6 +107,8 @@ Route::prefix('user')->group(
         });
         Route::apiResource('orders', OrderController::class)->middleware(['auth:user']);
 
+        // Route::apiResource('orders', OrderController::class);
+
         Route::apiResource('scheduled-baskets', UserBasketScheduleController::class)->middleware(['auth:user']);
 
         Route::apiResource('addresses', AddressController::class)->middleware(['auth:user']);

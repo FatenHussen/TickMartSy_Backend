@@ -22,7 +22,7 @@ return new class extends Migration
 
             $table->boolean('is_instant_delivery')->default(false);
 
-            $table->string('order_status')->default(OrderStatus::PENDING->value);
+            $table->string('status')->default(OrderStatus::PENDING->value);
             $table->string('cart_type')->default(CartType::DEFAULT->value);
              // default | recipe | admin_cart | scheduled_admin_cart
 
@@ -37,9 +37,6 @@ return new class extends Migration
             $table->unsignedBigInteger('basket_discount')->default(0);
             $table->unsignedBigInteger('coupon_discount')->nullable();
 
-            /** Info */
-            $table->string('discount_source')->nullable();
-            // product | recipe | admin_cart | scheduled_admin_cart | coupon
 
             /** Final */
             $table->unsignedBigInteger('total')->default(0);

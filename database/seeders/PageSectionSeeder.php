@@ -130,7 +130,7 @@ class PageSectionSeeder extends Seeder
             'order' => 1,
             'filters' => [
                 'category_id' => ['value' => 1, 'operator' => '='],
-                'discount' => ['value' => 100, 'operator' => '<=']
+                'discount' => ['value' => 50, 'operator' => '<=']
             ]
         ]);
 
@@ -255,9 +255,7 @@ class PageSectionSeeder extends Seeder
             'see_more' => true,
             'see_more_slug' => 'recipes',
             'details_slug' => 'recipe_details',
-            'filters' => [
-                'discount'   => ['type' => 'number'],
-            ],
+
         ]);
 
         PageSection::create([
@@ -315,6 +313,19 @@ class PageSectionSeeder extends Seeder
             'position' => 'after',
             'order' => 6,
             'filters' => []
+        ]);
+
+
+        $recipeSection = Section::create([
+            'name' => ['en' => 'recipe', 'ar' => 'قسم الطبخة'],
+            'type' => 'api',
+            'api_method' => 'products',
+            'filters' => [
+                'discount' => ['type' => 'number']
+            ],
+            'see_more' => true,
+            'see_more_slug' => 'recipes',
+            'details_slug' => 'recipe_details',
         ]);
     }
 }

@@ -32,7 +32,10 @@ class StoreRequest extends FormRequest
                 'exists:shop_product_variants,id'
             ],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
-            'recipe_id' => 'nullable|exists:recipes,id'
+            'recipe_id' => 'nullable|exists:recipes,id',
+            'admin_basket_id' => 'nullable|exists:baskets,id',
+
+
 
         ];
     }

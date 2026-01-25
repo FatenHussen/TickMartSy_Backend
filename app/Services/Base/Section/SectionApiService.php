@@ -5,6 +5,7 @@ namespace App\Services\Base\Section;
 use App\Models\Section;
 use App\Services\User\BasketService;
 use App\Services\User\BrandService;
+use App\Services\User\ProductService;
 use App\Services\User\RecipeService;
 use App\Services\User\ScheduleService;
 
@@ -44,6 +45,7 @@ class SectionApiService
             'brands' => BrandService::class,
             'recipes' => RecipeService::class,
             'baskets' => BasketService::class,
+            'products' => ProductService::class
 
         ];
 
