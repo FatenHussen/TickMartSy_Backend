@@ -14,6 +14,7 @@ class ProductVariant extends Model
     protected $fillable = [
         'product_id',
         'attributes_values_ids',
+        'is_trend'
     ];
 
     protected $casts = [

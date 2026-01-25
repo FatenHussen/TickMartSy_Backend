@@ -29,6 +29,11 @@ class BasketService extends BaseService
     {
         $query = Basket::query()->latest();
 
+        // Filter by schedule status
+        if (isset($filters['is_schedule'])) {
+            $query->where('is_schedule', $filters['is_schedule']);
+        }
+
         return $query;
     }
 }

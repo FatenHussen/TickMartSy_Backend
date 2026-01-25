@@ -5,6 +5,7 @@ namespace App\Services\User;
 use Illuminate\Database\Eloquent\Builder;
 
 use App\Models\Product;
+use App\Models\Category;
 use App\Services\BaseService;
 use App\Http\Resources\Product\OneResource;
 use App\Http\Resources\Product\AllResource;
@@ -25,6 +26,19 @@ class ProductService extends BaseService
     ];
     protected $searchableFields = ['name', 'description', 'country'];
     protected $sortableFields   = ['id', 'price', 'created_at', 'name'];
+    
+    /**
+     * Recursively collect all descendant category IDs
+     */
+    private function collectDescendantIds($categories, &$categoryIds)
+    {
+        foreach ($categories as $category) {
+            $categoryIds->push($category->id);
+            if ($category->descendants && $category->descendants->count() > 0) {
+                $this->collectDescendantIds($category->descendants, $categoryIds);
+            }
+        }
+    }
     protected function applyTypeFilters($query, $filters)
     {
         if (empty($filters['type'])) {
@@ -48,21 +62,28 @@ class ProductService extends BaseService
     }
     protected function filterTrend($query)
     {
-        $query;
-        // $query->withCount('items')
-        //     ->orderBy('items_count', 'desc');
+        $query->whereHas('variants', function ($q) {
+            $q->where('is_trend', true);
+        })
+        ->withCount(['variants as sold_count' => function ($q) {
+            $q->join('shop_product_variants', 'product_variants.id', '=', 'shop_product_variants.product_variant_id')
+              ->join('order_items', 'shop_product_variants.id', '=', 'order_items.shop_product_variant_id')
+              ->join('orders', 'order_items.order_id', '=', 'orders.id')
+              ->where('orders.order_status', 'completed')
+              ->selectRaw('COALESCE(SUM(order_items.quantity), 0)');
+        }])
+        ->orderByDesc('sold_count');
     }
     protected function filterTopRated($query)
     {
-        $query;
-        // $query->withAvg('reviews', 'rating')
-        //     ->orderByDesc('reviews_avg_rating');
+        $query->withAvg('ratings', 'rating')
+            ->orderByDesc('ratings_avg_rating');
     }
     protected function filterOffers($query)
     {
-        $query;
-        // $query->whereNotNull('price_after_discount')
-        //     ->whereColumn('price_after_discount', '<', 'price');
+        $query->whereNotNull('discount')
+            ->where('discount', '>', 0)
+            ->orderByDesc('discount');
     }
     protected function filterRecommended($query)
     {
@@ -115,7 +136,17 @@ class ProductService extends BaseService
         ]);
 
         if (!empty($filters['category_id'])) {
-            $query->where('category_id', $filters['category_id']);
+            $category = Category::find($filters['category_id']);
+            if ($category) {
+                // Get all descendant category IDs
+                $categoryIds = collect([$category->id]);
+                $descendants = $category->descendants()->get();
+                
+                // Recursively collect all descendant IDs
+                $this->collectDescendantIds($descendants, $categoryIds);
+                
+                $query->whereIn('category_id', $categoryIds->toArray());
+            }
         }
         if (!empty($filters['brand_id'])) {
             $query->where('brand_id', $filters['brand_id']);
