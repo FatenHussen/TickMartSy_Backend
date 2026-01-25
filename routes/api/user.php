@@ -102,7 +102,7 @@ Route::prefix('user')->group(
             Route::delete('/{id}', [UserBasketScheduleController::class, 'destroy']);
         });
 
-        Route::apiResource('orders', OrderController::class)->middleware(['auth:user']);
+        Route::apiResource('orders', OrderController::class);
 
         Route::apiResource('addresses', AddressController::class)->middleware(['auth:user']);
 

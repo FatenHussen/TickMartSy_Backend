@@ -21,13 +21,9 @@ return new class extends Migration
 
 
             $table->decimal('discount', 5, 2)->default(0);
+            $table->unsignedInteger('delivery_price')->default(0);
             $table->float('rating')->default(0);
             $table->integer('orders_count')->default(0);
-
-            // $table->foreignId('top_badge_id')->nullable()->constrained('badges')->nullOnDelete();
-            // $table->foreignId('bottom_badge_id')->nullable()->constrained('badges')->nullOnDelete();
-
-            $table->boolean('is_active')->default(true);
 
             $table->timestamps();
         });

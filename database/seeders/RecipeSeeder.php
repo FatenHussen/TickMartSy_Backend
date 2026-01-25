@@ -16,6 +16,7 @@ use App\Models\RecipeItem;
 
 class RecipeSeeder extends Seeder
 {
+
     public function run()
     {
         $now = Carbon::now();
@@ -63,7 +64,7 @@ class RecipeSeeder extends Seeder
             'contract_number' => 'KABSA001',
             'contract_duration_months' => 12,
             'commission_rate' => 5,
-            'is_active' => true,
+
         ]);
 
         /* =======================
@@ -77,7 +78,7 @@ class RecipeSeeder extends Seeder
             'address' => ['ar' => 'المزة', 'en' => 'Al-Mazza'],
             'vendor_id' => $vendor->id,
             'working_hours' => ['sat-sun' => '08:00-20:00'],
-            'is_active' => true,
+
         ]);
 
         /* =======================
@@ -136,7 +137,7 @@ class RecipeSeeder extends Seeder
             'image' => 'recipes/image1.jpg',
             'rating' => 4.5,
             'discount' => 20,
-            'is_active' => true,
+
         ]);
 
         RecipeItem::create([

@@ -15,11 +15,7 @@ class OneResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        //  'subtotal'           => round($subtotalBeforeDiscount, 2),
-        //     'total_quantity'     => $totalQuantity,
-        //     'basket_discount'    => $basketDiscountPercentage,
-        //     'discount_source'    => $discountSource,
-        //     'total'              => round($finalTotal, 2),
+
         return [
             'id' => $this->id,
             'status' => $this->order_status,
@@ -29,12 +25,10 @@ class OneResource extends JsonResource
             'total' => $this->total,
             'subtotal' => $this->subtotal,
             'total_quantity' => $this->total_quantity,
-            'discount_source' => $this->discount_source,
             'basket_discount' => $this->basket_discount,
             'coupon_discount' => $this->coupon_discount,
             'created_at' => $this->created_at?->toDateTimeString(),
             'user' => AllResource::make($this->user),
-
             'items' => OrderItemResource::collection(
                 $this->whenLoaded('items')
             ),
