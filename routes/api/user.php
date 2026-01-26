@@ -4,8 +4,10 @@ use App\Http\Controllers\User\Brand\BrandController;
 use App\Http\Controllers\User\AddressController;
 use App\Http\Controllers\User\AreaController;
 use App\Http\Controllers\User\Product\ProductController;
+use App\Http\Controllers\User\Shop\ShopController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\Auth\AuthController;
+use App\Http\Controllers\User\Auth\ProfileController;
 use App\Http\Controllers\User\Basket\BasketController;
 use App\Http\Controllers\User\Basket\BasketScheduleController;
 use App\Http\Controllers\User\Basket\UserBasketScheduleController;
@@ -43,6 +45,15 @@ Route::prefix('user')->group(
                 // protected routes 
                 Route::middleware(['auth:user'])->group(function () {
                     Route::get('/logout', [AuthController::class, 'logout']);
+                    Route::prefix('/profile')->group(function () {
+                        Route::get('/', [ProfileController::class, 'get_profile']);
+                        Route::post('/update', [ProfileController::class, 'update_profile']);
+                        Route::post('/update_password', [ProfileController::class, 'update_password']);
+                        
+                        Route::post('/update_email', [ProfileController::class, 'update_email']);
+                        Route::post('/update_phone', [ProfileController::class, 'update_phone']);
+                        Route::post('/verify', [ProfileController::class, 'verify_update']);
+                    });
                     Route::middleware(['auth:user', 'abilities:reset-password'])->group(function () {
                         Route::post('/reset-password', [AuthController::class, 'resetPassword']);
                     });
@@ -66,6 +77,13 @@ Route::prefix('user')->group(
             // Public routes
             Route::get('/', [ProductController::class, 'index']);
             Route::get('/{id}', [ProductController::class, 'get_one']);
+        });
+
+        // Shop routes
+        Route::prefix('shops')->group(function () {
+            // Public routes
+            Route::get('/', [ShopController::class, 'index']);
+            Route::get('/{id}', [ShopController::class, 'get_one']);
         });
 
 

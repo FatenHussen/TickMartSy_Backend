@@ -25,7 +25,7 @@ class User extends Authenticatable
         'email_verified_at',
         'phone_verified_at',
         'city_id',
-
+        'image'
     ];
 
     /**
@@ -75,5 +75,9 @@ class User extends Authenticatable
     public function addresses()
     {
         return $this->hasMany(UserAddress::class, 'user_id');
+    }
+    public function  getImageUrlAttribute()
+    {
+        return asset('storage/' . $this->image);
     }
 }

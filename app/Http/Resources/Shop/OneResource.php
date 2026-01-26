@@ -31,9 +31,9 @@ class OneResource extends JsonResource
             'ratings_count'         => $this->ratings_count,
             'is_open_now'           => $this->isOpenNow(),
 
-            'area_id'                 => $this->area_id,
-            // 'services'              => $this->whenLoaded('services', fn() => $this->services),
-            // 'categories'            => $this->whenLoaded('categories', fn() => $this->categories),
+            'area'                 => $this->area->name,
+            'services'              => $this->whenLoaded('services', fn() => $this->services),
+            'categories'            => $this->whenLoaded('categories', fn() => $this->categories),
 
             'created_at'            => $this->created_at?->format('Y-m-d H:i'),
             'updated_at'            => $this->updated_at?->format('Y-m-d H:i')
