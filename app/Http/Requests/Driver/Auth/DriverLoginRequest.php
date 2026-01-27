@@ -11,7 +11,7 @@ class DriverLoginRequest extends BaseRequest
     {
         return [
             'phone' => 'required|string|exists:drivers,phone',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string',
 
         ];
     }
