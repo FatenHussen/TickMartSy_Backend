@@ -23,7 +23,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'address_id' => ['required', 'exists:user_addresses,id'],
-            'cart_type' => ['nullable', 'string'],
+            'cart_type' => ['nullable', 'string', 'in:defaut,recipe,admin_cart,schedule_admin_cart'],
             'is_instant_delivery' => ['boolean'],
 
             'items' => ['required', 'array', 'min:1'],
@@ -34,9 +34,7 @@ class StoreRequest extends FormRequest
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'recipe_id' => 'nullable|exists:recipes,id',
             'admin_basket_id' => 'nullable|exists:baskets,id',
-
-
-
+            'coupon' => 'nullable|string'
         ];
     }
 }

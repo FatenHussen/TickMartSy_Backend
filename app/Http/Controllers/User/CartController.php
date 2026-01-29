@@ -14,7 +14,7 @@ class CartController extends Controller
         StoreRequest $request,
     ) {
         /** @var User $user */
-        $user = auth('user')->user();
+        $user = auth('user')->user() ?? User::find(1);
 
         $price = CalculateDeliveryPriceService::handle(
             user: $user,

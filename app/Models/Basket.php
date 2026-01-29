@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
+use App\Models\Favorite;
 
 class Basket extends Model implements Sectionable
 {
@@ -27,6 +28,11 @@ class Basket extends Model implements Sectionable
         'is_schedule',
         'delivery_price'
     ];
+
+    public function favorites(): MorphMany
+    {
+        return $this->morphMany(Favorite::class, 'favoriteable');
+    }
     public $translatable = ['name'];
 
     protected $casts = [
@@ -52,7 +58,7 @@ class Basket extends Model implements Sectionable
 
     public function getDiscountAmountAttribute()
     {
-        $total = $this->calculated_price; 
+        $total = $this->calculated_price;
 
         if ($this->discount_type === 'percentage') {
             return $total * ($this->discount / 100);
@@ -80,7 +86,7 @@ class Basket extends Model implements Sectionable
     {
         return $this->hasMany(BasketSchedule::class);
     }
-   
+
     public function activeSchedule(): HasMany
     {
         return $this->hasMany(BasketSchedule::class)->where('is_active', true);

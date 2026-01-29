@@ -12,7 +12,7 @@ class SectionApiItemResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-    public function toArray(Request $request): array
+    public function toArray(Request $request)
     {
         if (method_exists($this->resource, 'toSectionArray')) {
             return $this->resource->toSectionArray();

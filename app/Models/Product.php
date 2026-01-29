@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
+use App\Http\Resources\Product\AllResource;
+use App\Models\Favorite;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Product extends Model implements Sectionable
 {
@@ -116,27 +119,17 @@ class Product extends Model implements Sectionable
         return $this->morphToMany(Badge::class, 'badgeable')->withPivot('position');
     }
 
-    public function toSectionArray(): array
+    public function toSectionArray()
     {
-        return [
-            'id'       => $this->id,
-            'title'     => $this->title,
-            'desc'     => $this->description,
-            'image'    => $this->image_url,
-            'price' => $this->price,
-            'price_after_discount' => $this->price,
-            'discount' => null,
-            'top_badges' => [],
-            'bottom_badges' => [],
-        ];
+        return AllResource::make($this);
     }
     public function orderItems()
     {
         return $this->hasManyThrough(
             OrderItem::class,
             ShopProductVariant::class,
-            'product_variant_id',                 
-            'shop_product_variant_id',   
+            'product_variant_id',
+            'shop_product_variant_id',
             'id',
             'id'
         );
@@ -150,12 +143,17 @@ class Product extends Model implements Sectionable
     {
         return $this->orderItems()
             ->whereHas('order', function ($q) {
-                $q->where('order_status', 'completed');
+                $q->where('status', 'completed');
             });
     }
     public function getSoldQuantityAttribute()
     {
         return $this->completedOrderItems()
             ->sum('order_items.quantity');
+    }
+
+    public function favorites(): MorphMany
+    {
+        return $this->morphMany(Favorite::class, 'favoriteable');
     }
 }

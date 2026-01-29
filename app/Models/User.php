@@ -72,6 +72,7 @@ class User extends Authenticatable
     {
         return $this->belongsTo(City::class);
     }
+
     public function addresses()
     {
         return $this->hasMany(UserAddress::class, 'user_id');
@@ -79,5 +80,9 @@ class User extends Authenticatable
     public function  getImageUrlAttribute()
     {
         return asset('storage/' . $this->image);
+    }
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class, 'user_id');
     }
 }

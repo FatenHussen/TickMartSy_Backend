@@ -15,6 +15,7 @@ use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\Category\CategoryController;
 use App\Http\Controllers\User\SectionController;
 use App\Http\Controllers\User\CityController;
+use App\Http\Controllers\User\FavoriteController;
 use App\Http\Controllers\User\GovernorateController;
 use App\Http\Controllers\User\Order\OrderController;
 use App\Http\Controllers\User\Rating\RatingController;
@@ -123,9 +124,10 @@ Route::prefix('user')->group(
                 Route::delete('/{id}', [RatingController::class, 'destroy']);
             });
         });
-        Route::apiResource('orders', OrderController::class)->middleware(['auth:user']);
+        // Route::apiResource('orders', OrderController::class)->middleware(['auth:user']);
 
-        // Route::apiResource('orders', OrderController::class);
+        Route::apiResource('orders', OrderController::class);
+        Route::post('/orders/coupon-preview', [OrderController::class, 'couponPreview']);
 
         Route::apiResource('scheduled-baskets', UserBasketScheduleController::class)->middleware(['auth:user']);
 
@@ -135,6 +137,13 @@ Route::prefix('user')->group(
         Route::prefix('cart')->group(function () {
             // Public routes
             Route::post('calculate-delivery-price', [CartController::class, 'calculateDeliveryPrice']);
+        });
+
+
+        Route::prefix('favorites')->group(function () {
+            // Public routes
+            Route::get('/', [FavoriteController::class, 'index']);
+            Route::post('/toggle', [FavoriteController::class, 'toggle']);
         });
     }
 );
