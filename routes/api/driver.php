@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Driver\Auth\AuthController;
+use App\Http\Controllers\Driver\DriverController;
+use App\Http\Controllers\Driver\ProfileController;
 
 
 Route::prefix('driver')->group(
@@ -22,5 +24,19 @@ Route::prefix('driver')->group(
                 });
             }
         );
+
+        // Driver management routes
+        Route::middleware(['auth:driver'])->group(function () {
+            // Status management
+            Route::post('/update-status', [DriverController::class, 'updateStatus']);
+            
+            // Profile management
+            Route::prefix('/profile')->group(function () {
+                Route::get('/', [ProfileController::class, 'getProfile']);
+                Route::post('/update', [ProfileController::class, 'updateProfile']);
+                Route::post('/update-phone', [ProfileController::class, 'updatePhone']);
+                Route::post('/verify', [ProfileController::class, 'verifyUpdate']);
+            });
+        });
     }
 );

@@ -7,6 +7,7 @@ use App\Exceptions\CustomExceptionWithMessage;
 use App\Exceptions\InactiveAccountException;
 use App\Exceptions\InvalidVerificationCodeException;
 use App\Exceptions\NotFoundException;
+use App\Http\Resources\User\ProfileResource;
 use App\Http\Resources\User\UserResource;
 use App\Jobs\SendOtpJob;
 use App\Mail\OtpMail;
@@ -14,6 +15,7 @@ use App\Models\User;
 use App\Models\Verification;
 use App\Services\BaseService;
 use App\Traits\FileTrait;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 
@@ -131,7 +133,7 @@ class UserService
 
     public static function logout(): bool
     {
-        auth()->user()?->currentAccessToken()?->delete();
+        auth('user')->user()?->currentAccessToken()?->delete();
         return true;
     }
 
@@ -206,7 +208,7 @@ class UserService
         }
 
         $user->update(['password' => Hash::make($newPassword)]);
-        auth()->user()?->tokens()->delete();
+        auth('user')->user()?->tokens()->delete();
 
         return new UserResource($user);
     }
@@ -277,5 +279,144 @@ class UserService
         $userId = auth('user')->id();
         $this->model->where('id', $userId)->delete();
         return true;
+    }
+    public function get_profile()
+    {
+        $data =  auth('user')->user();
+
+        return new ProfileResource($data);
+    }
+
+    public function update_profile($data, $id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            throw new NotFoundException();
+        }
+
+        if (isset($data['image'])) {
+
+            if ($user->image) {
+                $this->deleteFile("public", "users", $user->image);
+            }
+
+            $path = $this->uploadFile("public", "users", $data['image']);
+
+            $data['image'] = $path;
+        }
+
+        $user->update(
+            collect($data)->except('image')->toArray()
+                + (isset($data['image']) ? ['image' => $data['image']] : [])
+        );
+
+        return new ProfileResource($user->fresh());
+    }
+
+
+    public function update_password($id, $request)
+    {
+        $user = User::findOrFail($id);
+
+        if (!Hash::check($request['old_password'], $user->password)) {
+            throw new CustomExceptionWithMessage('wrong_password');
+        }
+
+        $user->update(['password' => Hash::make($request['new_password'])]);
+        return true;
+    }
+    public function delete_account($request)
+    {
+        $user = auth('user')->id();
+        $delete = User::where('id', $user)->first();
+        $delete->delete();
+        return true;
+    }
+
+    public function update_email($request)
+    {
+        $user = auth('user')->user();
+
+
+        $otp = rand(10000, 99999);
+
+        $verification = Verification::create([
+            'code' => $otp,
+            'user_id' => $user->id,
+            'end_at' => Carbon::now()->addMinutes(60),
+            'type' => 'update_email',
+            'value' => $request['email'],
+        ]);
+
+        Mail::to($request['email'])->send(new OtpMail($user, $otp, $verification->end_at));
+
+        return true;
+    }
+
+    public function update_phone($request)
+    {
+        $user = auth('user')->user();
+
+        $otp = rand(10000, 99999);
+
+        $verification = Verification::create([
+            'code' => $otp,
+            'user_id' => $user->id,
+            'end_at' => Carbon::now()->addMinutes(60),
+            'type' => 'update_phone',
+            'value' => $request['phone'],
+        ]);
+
+        SendOtpJob::dispatch($request['phone'], $otp);
+
+        return true;
+    }
+
+    public function verify_update($request)
+    {
+        $user = auth('user')->user();
+
+        $verification = Verification::where('user_id', $user->id)
+            ->where('code', $request['code'])
+            ->whereIn('type', ['update_email', 'update_phone'])
+            ->whereNull('verified_at')
+            ->where('end_at', '>', now())
+            ->latest()
+            ->first();
+
+        if (!$verification) {
+            throw new CustomExceptionWithMessage('otp_invalid');
+        }
+
+        if ($verification->type === 'update_email') {
+            $user->update(['email' => $verification->value, 'email_verified_at' => now()]);
+        } elseif ($verification->type === 'update_phone') {
+            $user->update(['phone' => $verification->value, 'phone_verified_at' => now()]);
+        }
+
+        $verification->update(['verified_at' => now()]);
+
+        $title = [
+            'en' => 'Profile Updated',
+            'ar' => 'تم تحديث معلومات حسابك',
+        ];
+
+        $body = [
+            'en' => 'Your account information has been successfully updated.',
+            'ar' => 'تم تحديث بيانات حسابك بنجاح.',
+        ];
+
+        $type = 'user';
+        $payload = $user->id;
+
+        //app(\App\Services\NotificationService::class)->send($user, $title, $body, 0, $type, $payload);
+
+        \Filament\Notifications\Notification::make()
+            ->title($title['ar'])
+            ->body($body['ar'])
+            ->sendToDatabase($user);
+
+        return new UserResource($user);
     }
 }

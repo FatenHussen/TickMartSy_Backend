@@ -16,9 +16,10 @@ return new class extends Migration
             $table->string('code');
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete('cascade');
             $table->foreignId('driver_id')->nullable()->constrained('drivers')->nullOnDelete('cascade');
-            $table->enum('type', ['verification', 'reset_password']);
+            $table->enum('type', ['verification', 'reset_password','update_email','update_phone']);
             $table->timestamp('verified_at')->nullable();
             $table->timestamp('end_at')->nullable();
+            $table->string('value')->nullable();
             $table->timestamps();
         });
     }

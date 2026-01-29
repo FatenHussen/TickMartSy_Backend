@@ -15,6 +15,7 @@ class FilterRequest extends FormRequest
     {
         return [
             'category_id'   => ['nullable', 'exists:categories,id'],
+            'shop_id'       => ['nullable', 'exists:shops,id'],
             'price_min'     => ['nullable', 'numeric', 'min:0'],
             'price_max'     => ['nullable', 'numeric', 'min:0'],
             'country'       => ['nullable', 'string', 'max:100'],

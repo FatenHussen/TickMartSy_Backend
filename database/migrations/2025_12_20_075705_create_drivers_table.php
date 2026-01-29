@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('phone')->unique();
             $table->string('password');
+            $table->string('image')->nullable();
             $table->boolean('is_active')->default(true);
             $table->string('address')->nullable();
             $table->enum('status', ['available', 'busy', 'inactive'])->default('available');
