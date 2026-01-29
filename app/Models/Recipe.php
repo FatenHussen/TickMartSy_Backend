@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Http\Resources\Recipe\AllResource;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
+use App\Models\Favorite;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Recipe extends Model implements Sectionable
 {
@@ -78,18 +81,24 @@ class Recipe extends Model implements Sectionable
     {
         return $this->ratings()->avg('rating');
     }
-    public function toSectionArray(): array
+    public function toSectionArray()
     {
-        return [
-            'id'       => $this->id,
-            'title'     => $this->title,
-            'desc'     => $this->description,
-            'image'    => $this->image_url,
-            'price' => $this->getTotalItemsPrice(),
-            'price_after_discount' => $this->getTotalAfterDiscount(),
-            'discount' => $this->discount,
-            'top_badges' => [],
-            'bottom_badges' => [],
-        ];
+        // return [
+        //     'id'       => $this->id,
+        //     'title'     => $this->title,
+        //     'desc'     => $this->description,
+        //     'image'    => $this->image_url,
+        //     'price' => $this->getTotalItemsPrice(),
+        //     'price_after_discount' => $this->getTotalAfterDiscount(),
+        //     'discount' => $this->discount,
+        //     'top_badges' => [],
+        //     'bottom_badges' => [],
+        // ];
+        return AllResource::make($this);
+    }
+
+    public function favorites(): MorphMany
+    {
+        return $this->morphMany(Favorite::class, 'favoriteable');
     }
 }

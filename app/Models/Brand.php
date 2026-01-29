@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Http\Resources\Admin\Brand\AllResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
+use App\Models\Favorite;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Brand extends Model implements Sectionable
 {
@@ -17,19 +20,20 @@ class Brand extends Model implements Sectionable
     {
         return asset('storage/' . $this->image);
     }
-    public function toSectionArray(): array
+    public function toSectionArray()
     {
-        return [
-            'id'       => $this->id,
-            'title'     => $this->name,
-            'desc'     => null,
-            'image'    => $this->image_url,
-            'price' => null,
-            'price_after_discount' => null,
-            'discount' => null,
-            'top_badges' => [],
-            'bottom_badges' => [],
-        ];
+        // return [
+        //     'id'       => $this->id,
+        //     'title'     => $this->name,
+        //     'desc'     => null,
+        //     'image'    => $this->image_url,
+        //     'price' => null,
+        //     'price_after_discount' => null,
+        //     'discount' => null,
+        //     'top_badges' => [],
+        //     'bottom_badges' => [],
+        // ];
+        return AllResource::make($this);
     }
 
     public function products()
@@ -53,10 +57,15 @@ class Brand extends Model implements Sectionable
         return $this->hasManyThrough(
             Vendor::class,
             Product::class,
-            'brand_id',   
-            'id',         
-            'id',         
-            'vendor_id'   
+            'brand_id',
+            'id',
+            'id',
+            'vendor_id'
         );
+    }
+
+    public function favorites(): MorphMany
+    {
+        return $this->morphMany(Favorite::class, 'favoriteable');
     }
 }

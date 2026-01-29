@@ -72,8 +72,14 @@ class User extends Authenticatable
     {
         return $this->belongsTo(City::class);
     }
+
     public function addresses()
     {
         return $this->hasMany(UserAddress::class, 'user_id');
+    }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class, 'user_id');
     }
 }

@@ -26,7 +26,7 @@ class ProductService extends BaseService
     ];
     protected $searchableFields = ['name', 'description', 'country'];
     protected $sortableFields   = ['id', 'price', 'created_at', 'name'];
-    
+
     /**
      * Recursively collect all descendant category IDs
      */
@@ -65,14 +65,14 @@ class ProductService extends BaseService
         $query->whereHas('variants', function ($q) {
             $q->where('is_trend', true);
         })
-        ->withCount(['variants as sold_count' => function ($q) {
-            $q->join('shop_product_variants', 'product_variants.id', '=', 'shop_product_variants.product_variant_id')
-              ->join('order_items', 'shop_product_variants.id', '=', 'order_items.shop_product_variant_id')
-              ->join('orders', 'order_items.order_id', '=', 'orders.id')
-              ->where('orders.order_status', 'completed')
-              ->selectRaw('COALESCE(SUM(order_items.quantity), 0)');
-        }])
-        ->orderByDesc('sold_count');
+            ->withCount(['variants as sold_count' => function ($q) {
+                $q->join('shop_product_variants', 'product_variants.id', '=', 'shop_product_variants.product_variant_id')
+                    ->join('order_items', 'shop_product_variants.id', '=', 'order_items.shop_product_variant_id')
+                    ->join('orders', 'order_items.order_id', '=', 'orders.id')
+                    // ->where('orders.status', 'completed')
+                    ->selectRaw('COALESCE(SUM(order_items.quantity), 0)');
+            }])
+            ->orderByDesc('sold_count');
     }
     protected function filterTopRated($query)
     {
@@ -122,9 +122,9 @@ class ProductService extends BaseService
                 ->orWhere('country->' . app()->getLocale(), 'like', '%' . $filters['search'] . '%');
         });
     }
+
     public function queryBuilder($query, $filters = [], $config = [])
     {
-
         $query->with([
             'category',
             'variants',
@@ -141,10 +141,10 @@ class ProductService extends BaseService
                 // Get all descendant category IDs
                 $categoryIds = collect([$category->id]);
                 $descendants = $category->descendants()->get();
-                
+
                 // Recursively collect all descendant IDs
                 $this->collectDescendantIds($descendants, $categoryIds);
-                
+
                 $query->whereIn('category_id', $categoryIds->toArray());
             }
         }
@@ -185,6 +185,14 @@ class ProductService extends BaseService
             $this->applyTypeFilters($query, $filters['type'], $filters);
         }
 
+        return $query;
+    }
+
+
+    public function query(array $filters = [])
+    {
+        $query = Product::query();
+        $query =  $this->queryBuilder($query, $filters);
         return $query;
     }
 }
