@@ -238,6 +238,18 @@ abstract class BaseService
             $query->orderBy($config['sortField'], $order);
         }
 
+        /* ================= FAVORITES ================= */
+        if (
+            auth('user')->check() &&
+            method_exists($query->getModel(), 'favorites')
+        ) {
+            $query->withExists([
+                'favorites as is_favorite' => function ($q) {
+                    $q->where('user_id', auth('user')->id());
+                }
+            ]);
+        }
+
         return $query;
     }
 

@@ -10,10 +10,13 @@ use App\Models\Basket;
 use App\Models\Order;
 use App\Models\Recipe;
 use App\Models\ShopProductVariant;
+use App\Models\User;
+use App\Models\Coupon;
 use App\Services\BaseService;
+use App\Services\User\CalculateDeliveryPriceService;
 use Illuminate\Support\Facades\DB;
-use Exception;
 use Illuminate\Support\Facades\Log;
+use Exception;
 
 class OrderService extends BaseService
 {
@@ -23,161 +26,65 @@ class OrderService extends BaseService
         $this->model      = $model;
         $this->resource   = OneResource::class;
         $this->collection = AllResource::class;
+
         $this->searchableFields = ['total', 'total_quantity'];
         $this->sortableFields   = ['id', 'total', 'total_quantity'];
-        $this->relations = ['items'];
-
-        $this->pagination = true;
-    }
-    public function getAll($filters = [], $config = [])
-    {
-        $filters['user_id'] = 1; // أو auth('user')->id()
-        return parent::getAll($filters, $config);
+        $this->relations        = ['items'];
+        $this->pagination       = true;
     }
 
+    /** -----------------------------
+     * Create Order with Basket + Coupon
+     * ----------------------------- */
     public function create($data)
     {
         return DB::transaction(function () use ($data) {
 
-            $subtotalBeforeDiscount = 0;
-            $subtotalAfterProductDiscount = 0;
-            $totalQuantity = 0;
+            $user = auth('user')->user() ?? User::find(1);
 
-            Log::info("Data ", ['data' => $data]);
-
-            /** --------------------------------
-             * Create Order
-             * -------------------------------- */
             $order = Order::create([
-                'user_id'             => auth('user')->id() ?? 1,
+                'user_id'             => $user->id,
                 'user_address_id'     => $data['address_id'],
                 'cart_type'           => $data['cart_type'] ?? CartType::DEFAULT->value,
                 'is_instant_delivery' => $data['is_instant_delivery'] ?? false,
                 'order_status'        => OrderStatus::PENDING->value,
             ]);
 
-            Log::info("Order created", ['order_id' => $order->id]);
+            // 1️⃣ Resolve basket & delivery
+            [$basketDiscount, $deliveryPrice] = $this->resolveBasketAndDelivery($order, $data);
 
-            /** --------------------------------
-             * Determine Basket Discount
-             * -------------------------------- */
-            $basketDiscountPercentage = 0;
-            $discountSource = null;
+            // 2️⃣ Add items to order
+            [$subtotalBeforeDiscount, $subtotalAfterProductDiscount, $totalQuantity, $orderItems] =
+                $this->addItemsToOrder($order, $data);
 
-            if ($order->cart_type == CartType::RECIPE->value && !empty($data['recipe_id'])) {
-                $basketDiscountPercentage = Recipe::findOrFail($data['recipe_id'])->discount;
-                $discountSource = 'recipe';
+            // 3️⃣ Apply coupon if provided
+            [$couponCode, $couponDiscountAmount, $excludedItems] = $this->applyCoupon(
+                $order,
+                $orderItems,
+                $data['coupon'] ?? null,
+                $basketDiscount
+            );
+            // ❗ إذا تم تطبيق كوبون → نلغي خصم السلة
+            if ($couponCode !== null) {
+                $basketDiscount = 0;
             }
 
-            if ($order->cart_type == CartType::ADMIN_CART->value && !empty($data['admin_basket_id'])) {
-                $basketDiscountPercentage = Basket::findOrFail($data['admin_basket_id'])->discount;
-                $discountSource = 'admin_cart';
-            }
 
-            if ($order->cart_type == CartType::SCHEDULED_ADMIN_CART->value && !empty($data['admin_basket_id'])) {
-                $basketDiscountPercentage = Basket::findOrFail($data['admin_basket_id'])->discount;
-                $discountSource = 'scheduled_admin_cart';
-            }
+            // 4️⃣ Calculate totals
+            $basketDiscountAmount = $subtotalAfterProductDiscount * ($basketDiscount / 100);
 
-            Log::info("Basket discount determined", [
-                'discount_percentage' => $basketDiscountPercentage,
-                'source' => $discountSource
-            ]);
+            $finalTotal = $subtotalAfterProductDiscount
+                - ($basketDiscountAmount + $couponDiscountAmount);
 
-            /** --------------------------------
-             * Add Items
-             * -------------------------------- */
-            foreach ($data['items'] as $item) {
 
-                $shopVariant = ShopProductVariant::with('productVariant.product')
-                    ->lockForUpdate()
-                    ->findOrFail($item['shop_product_variant_id']);
-
-                if (!is_null($shopVariant->quantity) && $shopVariant->quantity < $item['quantity']) {
-                    Log::warning("Insufficient stock", [
-                        'shop_variant_id' => $shopVariant->id,
-                        'available' => $shopVariant->quantity,
-                        'requested' => $item['quantity']
-                    ]);
-                    throw new Exception('Insufficient stock');
-                }
-
-                $product  = $shopVariant->productVariant->product;
-                $price    = $shopVariant->price;
-                $quantity = $item['quantity'];
-
-                $productDiscountPercentage = 0;
-                $priceAfterProductDiscount = $price;
-
-                if ($order->cart_type === CartType::DEFAULT->value) {
-                    $productDiscountPercentage = $product->discount;
-                    $priceAfterProductDiscount = $price * (1 - ($productDiscountPercentage / 100));
-                }
-
-                $variantAttributes = $shopVariant->productVariant
-                    ->getAttributesValuesAttribute()
-                    ->map(fn($value) => [
-                        'attribute' => $value->categoryAttribute?->name ?? 'N/A',
-                        'value'     => $value->name ?? 'N/A',
-                    ]);
-
-                $order->items()->create([
-                    'shop_product_variant_id' => $shopVariant->id,
-                    'product_name'            => $product->name,
-                    'variant_attributes'      => $variantAttributes,
-                    'quantity'                => $quantity,
-                    'price'                   => $price,
-                    'discount'                => $productDiscountPercentage,
-                ]);
-
-                Log::info("Item added to order", [
-                    'shop_variant_id' => $shopVariant->id,
-                    'product_name' => $product->name,
-                    'quantity' => $quantity,
-                    'price' => $price,
-                    'discount' => $productDiscountPercentage,
-                ]);
-
-                if (!is_null($shopVariant->quantity)) {
-                    $shopVariant->decrement('quantity', $quantity);
-                    Log::info("Shop variant stock decremented", [
-                        'shop_variant_id' => $shopVariant->id,
-                        'new_quantity' => $shopVariant->quantity
-                    ]);
-                }
-
-                $subtotalBeforeDiscount += $price * $quantity;
-                $subtotalAfterProductDiscount += $priceAfterProductDiscount * $quantity;
-                $totalQuantity += $quantity;
-            }
-
-            /** --------------------------------
-             * Apply Basket Discount
-             * -------------------------------- */
-            $basketDiscountAmount = $subtotalAfterProductDiscount * ($basketDiscountPercentage / 100);
-            $finalTotal = $subtotalAfterProductDiscount - $basketDiscountAmount;
-
-            Log::info("Basket discount applied", [
-                'subtotal_after_product_discount' => $subtotalAfterProductDiscount,
-                'basket_discount_amount' => $basketDiscountAmount,
-                'final_total' => $finalTotal
-            ]);
-
-            /** --------------------------------
-             * Update Order Totals
-             * -------------------------------- */
             $order->update([
-                'subtotal'           => round($subtotalBeforeDiscount, 2),
-                'total_quantity'     => $totalQuantity,
-                'basket_discount'    => $basketDiscountPercentage,
-                'discount_source'    => $discountSource,
-                'total'              => round($finalTotal, 2),
-            ]);
-
-            Log::info("Order totals updated", [
-                'subtotal' => $subtotalBeforeDiscount,
-                'total_quantity' => $totalQuantity,
-                'total' => $finalTotal
+                'delivery_price'   => $deliveryPrice,
+                'subtotal'         => round($subtotalBeforeDiscount, 2),
+                'total_quantity'   => $totalQuantity,
+                'basket_discount'  => $basketDiscount,
+                'coupon_code'      => $couponCode,
+                'coupon_discount'  => round($couponDiscountAmount, 2),
+                'total'            => round($finalTotal, 2),
             ]);
 
             return new $this->resource($order->load('items'));
@@ -185,10 +92,355 @@ class OrderService extends BaseService
     }
 
 
-    // public function update(Order $order, array $data): Order
-    // {
-    //     $order->update($data);
+    public function preview(array $data)
+    {
+        return DB::transaction(function () use ($data) {
 
-    //     return $order->refresh()->load('items');
-    // }
+            // 1️⃣ Basket & delivery
+            [$basketDiscount, $deliveryPrice] = $this->resolveBasketAndDelivery(null, $data);
+
+            // 2️⃣ Items
+            [
+                $subtotalBeforeDiscount,
+                $subtotalAfterProductDiscount,
+                $totalQuantity,
+                $orderItems
+            ] = $this->addItemsToOrder(null, $data);
+
+            // 3️⃣ Coupon info (default response)
+            $couponInfo = [
+                'provided' => !empty($data['coupon']),
+                'valid' => false,
+                'applied' => false,
+                'code' => $data['coupon'] ?? null,
+                'discount' => 0,
+                'excluded_items' => [],
+                'fail_reasons' => [],
+            ];
+
+            $couponDiscountAmount = 0;
+
+            if (!empty($data['coupon'])) {
+
+                $coupon = Coupon::where('code', $data['coupon'])->first();
+
+                if (!$coupon) {
+                    $couponInfo['fail_reasons'][] = 'Coupon not found';
+                } elseif (!$coupon->isValid()) {
+                    if (!$coupon->is_active) {
+                        $couponInfo['fail_reasons'][] = 'Coupon is not active';
+                    }
+                    if ($coupon->isExpired()) {
+                        $couponInfo['fail_reasons'][] = 'Coupon has expired';
+                    }
+                    if ($coupon->used_count >= $coupon->max_uses) {
+                        $couponInfo['fail_reasons'][] = 'Coupon usage limit reached';
+                    }
+                } else {
+                    $couponInfo['valid'] = true;
+
+                    [
+                        $appliedCode,
+                        $couponDiscountAmount,
+                        $excludedItems
+                    ] = $this->applyCoupon(
+                        null,
+                        $orderItems,
+                        $data['coupon'],
+                        $basketDiscount
+                    );
+
+                    $couponInfo['excluded_items'] = $excludedItems;
+
+                    if ($appliedCode) {
+                        $couponInfo['applied'] = true;
+                        $couponInfo['discount'] = round($couponDiscountAmount, 2);
+                        $couponInfo['code'] = $appliedCode;
+
+                        // cancel basket discount if coupon applied
+                        $basketDiscount = 0;
+                    } else {
+                        $couponInfo['fail_reasons'][] = 'Coupon conditions not met';
+                    }
+                }
+            } else {
+                $couponInfo['fail_reasons'][] = 'No coupon provided';
+            }
+
+            // 4️⃣ Totals
+            $basketDiscountAmount = $subtotalAfterProductDiscount * ($basketDiscount / 100);
+
+            $finalSubtotal = $subtotalAfterProductDiscount
+                - ($basketDiscountAmount + $couponDiscountAmount);
+
+            $total = $finalSubtotal + $deliveryPrice;
+
+            return [
+                'subtotal_before_discount' => round($subtotalBeforeDiscount, 2),
+                'subtotal_after_product_discount' => round($subtotalAfterProductDiscount, 2),
+
+                'basket_discount_percent' => $basketDiscount,
+                'basket_discount_amount' => round($basketDiscountAmount, 2),
+
+                'coupon' => $couponInfo,
+
+                'delivery_price' => round($deliveryPrice, 2),
+
+                'total_quantity' => $totalQuantity,
+                'subtotal' => round($finalSubtotal, 2),
+                'total' => round($total, 2),
+
+                // 'items' => $orderItems,
+            ];
+        });
+    }
+
+    /** -----------------------------
+     * Coupon Preview (without creating order)
+     * ----------------------------- */
+    public function couponPreview(array $data)
+    {
+        $user = auth('user')->user() ?? User::find(1);
+
+        [$basketDiscount, $deliveryPrice] = $this->resolveBasketAndDelivery(null, $data);
+
+        // Build basket items collection
+        $basketItemsCollection = collect();
+        foreach ($data['items'] as $item) {
+            $shopVariant = ShopProductVariant::with('productVariant.product')->findOrFail($item['shop_product_variant_id']);
+            $product = $shopVariant->productVariant->product;
+            $price = $shopVariant->price;
+            $quantity = $item['quantity'];
+
+            $priceAfterDiscount = ($data['cart_type'] ?? 'default') === CartType::DEFAULT->value
+                ? $price * (1 - ($product->discount / 100))
+                : $price;
+
+            $basketItemsCollection->push([
+                'shop_product_variant_id' => $shopVariant->id,
+                'product' => $product,
+                'quantity' => $quantity,
+                'price' => $price,
+                'price_after_discount' => $priceAfterDiscount,
+            ]);
+        }
+
+        $subtotalAfterProductDiscount = $basketItemsCollection->sum(fn($i) => $i['price_after_discount'] * $i['quantity']);
+
+        $reason = []; // لسبب عدم تطبيق الكوبون
+        [$couponCode, $couponDiscountAmount, $excludedItems] = [null, 0, []];
+
+        if (!empty($data['coupon'])) {
+            $coupon = Coupon::where('code', $data['coupon'])->first();
+
+            if (!$coupon) {
+                $reason[] = 'Coupon not found';
+            } elseif (!$coupon->isValid()) {
+                if (!$coupon->is_active) $reason[] = 'Coupon is not active';
+                if ($coupon->isExpired()) $reason[] = 'Coupon has expired';
+                if ($coupon->used_count >= $coupon->max_uses) $reason[] = 'Coupon usage limit reached';
+            } else {
+                // تحقق من السلة
+                $cartType = $data['cart_type'] ?? 'default';
+                if ($cartType !== CartType::DEFAULT->value && !config('settings.allow_coupons_on_basket')) {
+                    $reason[] = 'Coupons not allowed on this basket type';
+                } else {
+                    $couponCode = $coupon->code;
+
+                    // تحقق من المنتجات والفئات والبائعين
+                    foreach ($basketItemsCollection as $item) {
+                        $product = $item['product'];
+                        $allowed = true;
+                        if ($coupon->products()->exists() && !$coupon->products->contains($product->id)) $allowed = false;
+                        if ($coupon->categories()->exists() && !$coupon->categories->contains($product->category_id)) $allowed = false;
+                        if ($coupon->vendors()->exists() && !$coupon->vendors->contains($product->vendor_id)) $allowed = false;
+
+                        if (!$allowed) $excludedItems[] = $product->id;
+                    }
+
+                    $eligibleSubtotal = $subtotalAfterProductDiscount;
+                    if (!empty($excludedItems)) {
+                        $eligibleSubtotal = $basketItemsCollection
+                            ->whereNotIn('shop_product_variant_id', $excludedItems)
+                            ->sum(fn($i) => $i['price_after_discount'] * $i['quantity']);
+                        $reason[] = 'Some items are excluded from coupon: ' . implode(',', $excludedItems);
+                    }
+
+                    if ($eligibleSubtotal > 0) {
+                        $couponDiscountAmount = $coupon->discount_type === 'percent'
+                            ? $eligibleSubtotal * ($coupon->discount_value / 100)
+                            : min($coupon->discount_value, $eligibleSubtotal);
+                    } else {
+                        $couponCode = null; // لا يوجد عناصر مؤهلة
+                        $reason[] = 'No eligible items for coupon';
+                    }
+                }
+            }
+        } else {
+            $reason[] = 'No coupon provided';
+        }
+
+        $basketDiscountAmount = $subtotalAfterProductDiscount * ($basketDiscount / 100);
+        $finalTotal = $subtotalAfterProductDiscount - ($basketDiscountAmount + $couponDiscountAmount);
+
+        return [
+            'subtotal_before_coupon' => round($subtotalAfterProductDiscount, 2),
+            'basket_discount' => $basketDiscount,
+            'coupon_applied' => !is_null($couponCode),
+            'coupon_discount' => round($couponDiscountAmount, 2),
+            'subtotal_after_coupon' => round($finalTotal, 2),
+            'excluded_items' => $excludedItems,
+            'delivery_price' => round($deliveryPrice, 2),
+            'total_estimate' => round($finalTotal + $deliveryPrice, 2),
+            'coupon_code' => $couponCode,
+            'coupon_fail_reasons' => $reason,
+        ];
+    }
+
+
+    /** -----------------------------
+     * Resolve basket discount & delivery price
+     * ----------------------------- */
+    protected function resolveBasketAndDelivery($orderOrNull, $data)
+    {
+        $cartType = $data['cart_type'] ?? CartType::DEFAULT->value;
+        $basketDiscount = 0;
+        $deliveryPrice = 0;
+
+        switch ($cartType) {
+            case CartType::RECIPE->value:
+                $basket = Recipe::findOrFail($data['recipe_id']);
+                $basketDiscount = $basket->discount;
+                $deliveryPrice  = $basket->delivery_price;
+                break;
+
+            case CartType::ADMIN_CART->value:
+                $basket = Basket::findOrFail($data['admin_basket_id']);
+                $basketDiscount = $basket->discount;
+                $deliveryPrice  = $basket->delivery_price;
+                break;
+
+            case CartType::SCHEDULE_ADMIN_CART->value:
+                $basket = Basket::findOrFail($data['admin_schedule_basket_id']);
+                $basketDiscount = $basket->discount;
+                $deliveryPrice  = $basket->delivery_price;
+                break;
+
+            case CartType::DEFAULT->value:
+            default:
+                $variantIds = collect($data['items'])->pluck('shop_product_variant_id')->values()->toArray();
+                $deliveryPrice = CalculateDeliveryPriceService::handle(
+                    user: auth('user')->user() ?? User::find(1),
+                    items: $variantIds,
+                    addressId: $data['address_id'] ?? null
+                );
+                break;
+        }
+
+        return [$basketDiscount, $deliveryPrice];
+    }
+
+    /** -----------------------------
+     * Add items to order
+     * ----------------------------- */
+    protected function addItemsToOrder($order, $data)
+    {
+        $subtotalBeforeDiscount = 0;
+        $subtotalAfterProductDiscount = 0;
+        $totalQuantity = 0;
+        $orderItems = collect();
+
+        foreach ($data['items'] as $item) {
+            $shopVariant = ShopProductVariant::with('productVariant.product')
+                ->lockForUpdate()
+                ->findOrFail($item['shop_product_variant_id']);
+
+            if (!is_null($shopVariant->quantity) && $shopVariant->quantity < $item['quantity']) {
+                throw new Exception('Insufficient stock for ' . $shopVariant->productVariant->product->name);
+            }
+
+            $product = $shopVariant->productVariant->product;
+            $price = $shopVariant->price;
+            $quantity = $item['quantity'];
+            $productDiscount = ($data['cart_type'] ?? 'default') === CartType::DEFAULT->value ? $product->discount : 0;
+            $priceAfterDiscount = $price * (1 - ($productDiscount / 100));
+
+            if ($order) {
+                $order->items()->create([
+                    'shop_product_variant_id' => $shopVariant->id,
+                    'product_name' => $product->name,
+                    'variant_attributes' => $shopVariant->productVariant->getAttributesValuesAttribute(),
+                    'quantity' => $quantity,
+                    'price' => $price,
+                    'discount' => $productDiscount,
+                ]);
+                if (!is_null($shopVariant->quantity)) {
+                    $shopVariant->decrement('quantity', $quantity);
+                }
+            }
+
+            $subtotalBeforeDiscount += $price * $quantity;
+            $subtotalAfterProductDiscount += $priceAfterDiscount * $quantity;
+            $totalQuantity += $quantity;
+
+            $orderItems->push([
+                'shop_product_variant_id' => $shopVariant->id,
+                'product' => $product,
+                'quantity' => $quantity,
+                'price_after_discount' => $priceAfterDiscount,
+            ]);
+        }
+
+        return [$subtotalBeforeDiscount, $subtotalAfterProductDiscount, $totalQuantity, $orderItems];
+    }
+
+    /** -----------------------------
+     * Apply Coupon Logic
+     * ----------------------------- */
+    protected function applyCoupon($orderOrNull, $basketItemsCollection, $couponCode, $basketDiscount)
+    {
+        $couponDiscountAmount = 0;
+        $couponApplied = null;
+        $excludedItems = [];
+
+        if (!$couponCode) return [null, 0, []];
+
+        $coupon = Coupon::where('code', $couponCode)->first();
+        if (!$coupon || !$coupon->isValid()) return [null, 0, []];
+
+        $cartType = $orderOrNull ? $orderOrNull->cart_type : 'default';
+        $canApplyCoupon = $cartType === CartType::DEFAULT->value
+            || config('settings.allow_coupons_on_basket');
+
+        if (!$canApplyCoupon) return [null, 0, []];
+
+        if ($cartType !== CartType::DEFAULT->value) {
+            $basketDiscount = 0; // cancel basket discount if coupon applied
+        }
+
+        // Check excluded items
+        foreach ($basketItemsCollection as $item) {
+            $product = $item['product'];
+            $allowed = true;
+
+            if ($coupon->products()->exists() && !$coupon->products->contains($product->id)) $allowed = false;
+            if ($coupon->categories()->exists() && !$coupon->categories->contains($product->category_id)) $allowed = false;
+            if ($coupon->vendors()->exists() && !$coupon->vendors->contains($product->vendor_id)) $allowed = false;
+
+            if (!$allowed) $excludedItems[] = $product->id;
+        }
+
+        // Eligible subtotal
+        $eligibleSubtotal = collect($basketItemsCollection)
+            ->whereNotIn('shop_product_variant_id', $excludedItems)
+            ->sum(fn($i) => $i['price_after_discount'] * $i['quantity']);
+
+        $couponDiscountAmount = $coupon->discount_type === 'percent'
+            ? $eligibleSubtotal * ($coupon->discount_value / 100)
+            : min($coupon->discount_value, $eligibleSubtotal);
+
+        $couponApplied = $coupon->code;
+
+        return [$couponApplied, $couponDiscountAmount, $excludedItems];
+    }
 }

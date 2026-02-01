@@ -34,7 +34,7 @@ class PageSectionSeeder extends Seeder
             'fields' => ['image', 'title', 'price', 'brand']
         ]);
 
-        $storeDisplayType = DisplayType::create([
+        $shopDisplayType = DisplayType::create([
             'manual_model' => 'shop',
             'image' => '/images/display/grid.png',
             'fields' => ['image', 'title', 'price', 'brand']
@@ -92,47 +92,21 @@ class PageSectionSeeder extends Seeder
         );
 
         $pages = [
-            ['title' => 'Store Details', 'slug' => 'store-details'],
-            ['title' => 'Category', 'slug' => 'category'],
-            ['title' => 'Brand Products', 'slug' => 'brand-products'],
-            ['title' => 'Cooking Recipes', 'slug' => 'cooking-recipes'],
-            ['title' => 'Subscription Packages', 'slug' => 'subscription-packages'],
-            ['title' => 'Search Results', 'slug' => 'search-results'],
-            ['title' => 'All Baskets', 'slug' => 'all-baskets'],
-            ['title' => 'Cart', 'slug' => 'cart'],
-            ['title' => 'Checkout', 'slug' => 'checkout'],
-            ['title' => 'Review Order', 'slug' => 'review-order'],
+            ['title' => 'Recipes', 'slug' => 'recipes'],
+            ['title' => 'recipe details', 'slug' => 'recipe_details'],
+            ['title' => 'brands', 'slug' => 'brands'],
+            ['title' => 'brands details', 'slug' => 'brand_details'],
+            ['title' => 'baskets', 'slug' => 'baskets'],
+            ['title' => 'basket details', 'slug' => 'basket_details'],
+            ['title' => 'products', 'slug' => 'products'],
+            ['title' => 'product details', 'slug' => 'product_details'],
+            ['title' => 'shops', 'slug' => 'shops'],
+            ['title' => 'shop_details', 'slug' => 'shop_details'],
+            ['title' => 'brands', 'slug' => 'brands'],
+            ['title' => 'brand_details', 'slug' => 'brand_details'],
         ];
 
-        /*
-        |--------------------------------------------------------------------------
-        | Trending Products Section
-        |--------------------------------------------------------------------------
-        */
-        $trendingProductsSection = Section::create([
-            'name' => ['en' => 'Trending Products', 'ar' => 'المنتجات الترند'],
-            'type' => 'api',
-            'api_method' => 'trending_products',
-            'filters' => [
-                'category_id' => ['type' => 'select', 'url' => 'admin/categories'],
-                'discount'   => ['type' => 'number'],
-            ],
-            'see_more' => true,
-            'see_more_slug' => 'products',
-            'details_slug'  => 'product_details',
-        ]);
 
-        PageSection::create([
-            'page_id' => $homePage->id,
-            'section_id' => $trendingProductsSection->id,
-            'display_type_id' => $productDisplayType->id,
-            'position' => 'before',
-            'order' => 1,
-            'filters' => [
-                'category_id' => ['value' => 1, 'operator' => '='],
-                'discount' => ['value' => 100, 'operator' => '<=']
-            ]
-        ]);
 
         /*
         |--------------------------------------------------------------------------
@@ -192,31 +166,31 @@ class PageSectionSeeder extends Seeder
         | Manual Products Section
         |--------------------------------------------------------------------------
         */
-        $manualProductsSection = Section::create([
-            'name' => ['en' => 'Manual Products', 'ar' => 'منتجات مختارة'],
-            'type' => 'manual',
-        ]);
+        // $manualProductsSection = Section::create([
+        //     'name' => ['en' => 'Manual Products', 'ar' => 'منتجات مختارة'],
+        //     'type' => 'manual',
+        // ]);
 
-        PageSection::create([
-            'page_id' => $homePage->id,
-            'section_id' => $manualProductsSection->id,
-            'display_type_id' => $productDisplayType->id,
-            'position' => 'after',
-            'order' => 2,
-            'filters' => [],
-        ]);
+        // PageSection::create([
+        //     'page_id' => $homePage->id,
+        //     'section_id' => $manualProductsSection->id,
+        //     'display_type_id' => $productDisplayType->id,
+        //     'position' => 'after',
+        //     'order' => 2,
+        //     'filters' => [],
+        // ]);
 
-        $products = Product::take(2)->get();
+        // $products = Product::take(2)->get();
 
-        foreach ($products as $index => $product) {
-            SectionItem::create([
-                'section_id' => $manualProductsSection->id,
-                'item_type' => Product::class,
-                'item_id' => $product->id,
-                'link' => '/product/' . $product->id,
-                'order' => $index + 1
-            ]);
-        }
+        // foreach ($products as $index => $product) {
+        //     SectionItem::create([
+        //         'section_id' => $manualProductsSection->id,
+        //         'item_type' => Product::class,
+        //         'item_id' => $product->id,
+        //         'link' => '/product/' . $product->id,
+        //         'order' => $index + 1
+        //     ]);
+        // }
 
         /*
         |--------------------------------------------------------------------------
@@ -255,9 +229,7 @@ class PageSectionSeeder extends Seeder
             'see_more' => true,
             'see_more_slug' => 'recipes',
             'details_slug' => 'recipe_details',
-            'filters' => [
-                'discount'   => ['type' => 'number'],
-            ],
+
         ]);
 
         PageSection::create([
@@ -315,6 +287,131 @@ class PageSectionSeeder extends Seeder
             'position' => 'after',
             'order' => 6,
             'filters' => []
+        ]);
+
+        $recipeSection = Section::create([
+            'name' => ['en' => 'recipe', 'ar' => 'قسم الطبخة'],
+            'type' => 'api',
+            'api_method' => 'products',
+            'filters' => [
+                'discount' => ['type' => 'number']
+            ],
+            'see_more' => true,
+            'see_more_slug' => 'recipes',
+            'details_slug' => 'recipe_details',
+        ]);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Trending Products Section
+        |--------------------------------------------------------------------------
+        */
+
+        $productsSection = Section::create([
+            'name' => ['en' => 'Products', 'ar' => 'المنتجات'],
+            'type' => 'api',
+            'api_method' => 'products',
+            'filters' => [
+                'category_id' => ['type' => 'select', 'url' => 'admin/categories'],
+                'price_max'   => ['type' => 'number'],
+                'price_max' =>  ['type' => 'number'],
+                'shop_id' => ['type' => 'select', 'url' => 'admin/shops'],
+                'brand_id' => ['type' => 'select', 'url' => 'admin/brands'],
+                'type' => [
+                    'type' => 'select',
+                    'items' => [
+                        'new',
+                        'trend',
+                        'top_rated',
+                        'offers',
+                        'recommended',
+                        'for_you',
+                        'search_based',
+                    ]
+                ],
+            ],
+            'see_more' => true,
+            'see_more_slug' => 'products',
+            'details_slug'  => 'product_details',
+        ]);
+
+        PageSection::create([
+            'name' => ['en' => 'Trend Products', 'ar' => 'المنتجات التريند'],
+            'page_id' => $homePage->id,
+            'section_id' => $productsSection->id,
+            'display_type_id' => $productDisplayType->id,
+            'position' => 'after',
+            'order' => 5,
+            'filters' => [
+                'type' => 'trend',
+            ]
+        ]);
+        PageSection::create([
+            'name' => ['en' => 'New arrival products', 'ar' => 'منتجات وصلت حديثا'],
+            'page_id' => $homePage->id,
+            'section_id' => $productsSection->id,
+            'display_type_id' => $productDisplayType->id,
+            'position' => 'after',
+            'order' => 6,
+            'filters' => [
+                'type' => 'new',
+            ]
+        ]);
+        PageSection::create([
+            'name' => ['en' => 'Top rated products', 'ar' => 'منتجات اعلى تقييما'],
+            'page_id' => $homePage->id,
+            'section_id' => $productsSection->id,
+            'display_type_id' => $productDisplayType->id,
+            'position' => 'after',
+            'order' => 7,
+            'filters' => [
+                'type' => 'top_rated',
+            ]
+        ]);
+
+        PageSection::create([
+            'name' => ['en' => 'Offers', 'ar' => 'العروض'],
+            'page_id' => $homePage->id,
+            'section_id' => $productsSection->id,
+            'display_type_id' => $productDisplayType->id,
+            'position' => 'after',
+            'order' => 8,
+            'filters' => [
+                'type' => 'offers',
+            ]
+        ]);
+
+        $shopSection = Section::create([
+            'name' => ['en' => 'Shops', 'ar' => 'المتاجر'],
+            'type' => 'api',
+            'api_method' => 'shops',
+            'filters' => [
+                'type' => [
+                    'type' => 'select',
+                    'items' => [
+                        'nearby',
+                        'offers',
+                        'active',
+                        'top_rated',
+                    ]
+                ],
+            ],
+            'see_more' => true,
+            'see_more_slug' => 'shops',
+            'details_slug'  => 'shop_details',
+        ]);
+
+        PageSection::create([
+            'name' => ['en' => 'Nearby Shops', 'ar' => 'المتاجر القريبة'],
+            'page_id' => $homePage->id,
+            'section_id' => $shopSection->id,
+            'display_type_id' => $shopDisplayType->id,
+            'position' => 'after',
+            'order' => 9,
+            'filters' => [
+                'type' => 'nearby',
+            ]
         ]);
     }
 }

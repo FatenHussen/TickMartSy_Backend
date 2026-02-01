@@ -96,15 +96,15 @@ class ShopService extends BaseService
             )) AS distance",
             [$filters['lat'], $filters['lng'], $filters['lat']]
         )
-        ->having('distance', '<=', $distance)
-        ->orderBy('distance');
+            ->having('distance', '<=', $distance)
+            ->orderBy('distance');
     }
 
     protected function filterOffers(Builder $query)
     {
         $query->whereHas('productVariants.productVariant.product', function ($q) {
             $q->whereNotNull('discount')
-              ->where('discount', '>', 0);
+                ->where('discount', '>', 0);
         });
     }
 
@@ -117,5 +117,12 @@ class ShopService extends BaseService
     protected function filterActive(Builder $query)
     {
         $query->where('is_active', true);
+    }
+
+    public function query(array $filters = [])
+    {
+        $query = Shop::query();
+        $query =  $this->queryBuilder($query, $filters);
+        return $query;
     }
 }

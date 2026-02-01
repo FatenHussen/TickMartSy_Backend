@@ -4,5 +4,5 @@ namespace App\Models;
 
 interface Sectionable
 {
-    public function toSectionArray(): array;
+    public function toSectionArray();
 }

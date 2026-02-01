@@ -65,4 +65,9 @@ class Admin extends Authenticatable
             $this->attributes['password'] = Hash::make($value);
         }
     }
+
+    public function fcmTokens(): MorphMany
+    {
+        return $this->morphMany(UserToken::class, 'tokenable');
+    }
 }

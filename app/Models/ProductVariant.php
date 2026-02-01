@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Resources\Product\VariantAttributeResource;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -52,16 +53,16 @@ class ProductVariant extends Model
             : $this->product->media;
     }
 
-
-
     public function getAttributesValuesAttribute()
     {
-        return AttributeValue::whereIn('id', $this->attributes_values_ids ?? [])->get();
+        return VariantAttributeResource::collection(AttributeValue::whereIn('id', $this->attributes_values_ids ?? [])->get());
     }
+
     public function ratings(): MorphMany
     {
         return $this->morphMany(Rating::class, 'rateable');
     }
+
     public function getAverageRatingAttribute(): float
     {
         return round((float) $this->ratings()->avg('rating'), 1);
