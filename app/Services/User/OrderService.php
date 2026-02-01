@@ -76,6 +76,7 @@ class OrderService extends BaseService
             $finalTotal = $subtotalAfterProductDiscount
                 - ($basketDiscountAmount + $couponDiscountAmount);
 
+
             $order->update([
                 'delivery_price'   => $deliveryPrice,
                 'subtotal'         => round($subtotalBeforeDiscount, 2),
@@ -87,6 +88,110 @@ class OrderService extends BaseService
             ]);
 
             return new $this->resource($order->load('items'));
+        });
+    }
+
+
+    public function preview(array $data)
+    {
+        return DB::transaction(function () use ($data) {
+
+            // 1️⃣ Basket & delivery
+            [$basketDiscount, $deliveryPrice] = $this->resolveBasketAndDelivery(null, $data);
+
+            // 2️⃣ Items
+            [
+                $subtotalBeforeDiscount,
+                $subtotalAfterProductDiscount,
+                $totalQuantity,
+                $orderItems
+            ] = $this->addItemsToOrder(null, $data);
+
+            // 3️⃣ Coupon info (default response)
+            $couponInfo = [
+                'provided' => !empty($data['coupon']),
+                'valid' => false,
+                'applied' => false,
+                'code' => $data['coupon'] ?? null,
+                'discount' => 0,
+                'excluded_items' => [],
+                'fail_reasons' => [],
+            ];
+
+            $couponDiscountAmount = 0;
+
+            if (!empty($data['coupon'])) {
+
+                $coupon = Coupon::where('code', $data['coupon'])->first();
+
+                if (!$coupon) {
+                    $couponInfo['fail_reasons'][] = 'Coupon not found';
+                } elseif (!$coupon->isValid()) {
+                    if (!$coupon->is_active) {
+                        $couponInfo['fail_reasons'][] = 'Coupon is not active';
+                    }
+                    if ($coupon->isExpired()) {
+                        $couponInfo['fail_reasons'][] = 'Coupon has expired';
+                    }
+                    if ($coupon->used_count >= $coupon->max_uses) {
+                        $couponInfo['fail_reasons'][] = 'Coupon usage limit reached';
+                    }
+                } else {
+                    $couponInfo['valid'] = true;
+
+                    [
+                        $appliedCode,
+                        $couponDiscountAmount,
+                        $excludedItems
+                    ] = $this->applyCoupon(
+                        null,
+                        $orderItems,
+                        $data['coupon'],
+                        $basketDiscount
+                    );
+
+                    $couponInfo['excluded_items'] = $excludedItems;
+
+                    if ($appliedCode) {
+                        $couponInfo['applied'] = true;
+                        $couponInfo['discount'] = round($couponDiscountAmount, 2);
+                        $couponInfo['code'] = $appliedCode;
+
+                        // cancel basket discount if coupon applied
+                        $basketDiscount = 0;
+                    } else {
+                        $couponInfo['fail_reasons'][] = 'Coupon conditions not met';
+                    }
+                }
+            } else {
+                $couponInfo['fail_reasons'][] = 'No coupon provided';
+            }
+
+            // 4️⃣ Totals
+            $basketDiscountAmount = $subtotalAfterProductDiscount * ($basketDiscount / 100);
+
+            $finalSubtotal = $subtotalAfterProductDiscount
+                - ($basketDiscountAmount + $couponDiscountAmount);
+
+            $total = $finalSubtotal + $deliveryPrice;
+
+            return [
+                'subtotal_before_discount' => round($subtotalBeforeDiscount, 2),
+                'subtotal_after_product_discount' => round($subtotalAfterProductDiscount, 2),
+
+                'basket_discount_percent' => $basketDiscount,
+                'basket_discount_amount' => round($basketDiscountAmount, 2),
+
+                'coupon' => $couponInfo,
+
+                'delivery_price' => round($deliveryPrice, 2),
+
+                'total_quantity' => $totalQuantity,
+                'subtotal' => round($finalSubtotal, 2),
+                'total' => round($total, 2),
+
+                // 'items' => $orderItems,
+            ];
         });
     }
 
@@ -188,7 +293,7 @@ class OrderService extends BaseService
             'delivery_price' => round($deliveryPrice, 2),
             'total_estimate' => round($finalTotal + $deliveryPrice, 2),
             'coupon_code' => $couponCode,
-            'coupon_fail_reasons' => $reason, // هنا أسباب عدم التطبيق
+            'coupon_fail_reasons' => $reason,
         ];
     }
 

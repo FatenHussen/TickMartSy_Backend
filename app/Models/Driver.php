@@ -28,10 +28,6 @@ class Driver extends Authenticatable
     protected $casts = [
         'password' => 'hashed',
     ];
-    public function areas()
-    {
-        return $this->belongsToMany(Area::class, 'area_driver');
-    }
 
     public function orders()
     {
@@ -40,7 +36,11 @@ class Driver extends Authenticatable
 
     public function completedOrders()
     {
-        return $this->hasMany(Order::class)->where('order_status', 'completed');
+        return $this->hasMany(Order::class)->where('status', 'completed');
+    }
+    public function fcmTokens()
+    {
+        return $this->morphMany(UserToken::class, 'tokenable');
     }
 
     public function ratings()
@@ -61,5 +61,9 @@ class Driver extends Authenticatable
     public function getTotalEarningsAttribute(): float
     {
         return (float) $this->completedOrders()->sum('delivery_price');
+    }
+    public function areas()
+    {
+        return $this->belongsToMany(Area::class, 'area_driver');
     }
 }

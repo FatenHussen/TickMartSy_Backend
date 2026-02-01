@@ -34,7 +34,7 @@ class PageSectionSeeder extends Seeder
             'fields' => ['image', 'title', 'price', 'brand']
         ]);
 
-        $storeDisplayType = DisplayType::create([
+        $shopDisplayType = DisplayType::create([
             'manual_model' => 'shop',
             'image' => '/images/display/grid.png',
             'fields' => ['image', 'title', 'price', 'brand']
@@ -92,16 +92,18 @@ class PageSectionSeeder extends Seeder
         );
 
         $pages = [
-            ['title' => 'Store Details', 'slug' => 'store-details'],
-            ['title' => 'Category', 'slug' => 'category'],
-            ['title' => 'Brand Products', 'slug' => 'brand-products'],
-            ['title' => 'Cooking Recipes', 'slug' => 'cooking-recipes'],
-            ['title' => 'Subscription Packages', 'slug' => 'subscription-packages'],
-            ['title' => 'Search Results', 'slug' => 'search-results'],
-            ['title' => 'All Baskets', 'slug' => 'all-baskets'],
-            ['title' => 'Cart', 'slug' => 'cart'],
-            ['title' => 'Checkout', 'slug' => 'checkout'],
-            ['title' => 'Review Order', 'slug' => 'review-order'],
+            ['title' => 'Recipes', 'slug' => 'recipes'],
+            ['title' => 'recipe details', 'slug' => 'recipe_details'],
+            ['title' => 'brands', 'slug' => 'brands'],
+            ['title' => 'brands details', 'slug' => 'brand_details'],
+            ['title' => 'baskets', 'slug' => 'baskets'],
+            ['title' => 'basket details', 'slug' => 'basket_details'],
+            ['title' => 'products', 'slug' => 'products'],
+            ['title' => 'product details', 'slug' => 'product_details'],
+            ['title' => 'shops', 'slug' => 'shops'],
+            ['title' => 'shop_details', 'slug' => 'shop_details'],
+            ['title' => 'brands', 'slug' => 'brands'],
+            ['title' => 'brand_details', 'slug' => 'brand_details'],
         ];
 
 
@@ -377,6 +379,38 @@ class PageSectionSeeder extends Seeder
             'order' => 8,
             'filters' => [
                 'type' => 'offers',
+            ]
+        ]);
+
+        $shopSection = Section::create([
+            'name' => ['en' => 'Shops', 'ar' => 'المتاجر'],
+            'type' => 'api',
+            'api_method' => 'shops',
+            'filters' => [
+                'type' => [
+                    'type' => 'select',
+                    'items' => [
+                        'nearby',
+                        'offers',
+                        'active',
+                        'top_rated',
+                    ]
+                ],
+            ],
+            'see_more' => true,
+            'see_more_slug' => 'shops',
+            'details_slug'  => 'shop_details',
+        ]);
+
+        PageSection::create([
+            'name' => ['en' => 'Nearby Shops', 'ar' => 'المتاجر القريبة'],
+            'page_id' => $homePage->id,
+            'section_id' => $shopSection->id,
+            'display_type_id' => $shopDisplayType->id,
+            'position' => 'after',
+            'order' => 9,
+            'filters' => [
+                'type' => 'nearby',
             ]
         ]);
     }

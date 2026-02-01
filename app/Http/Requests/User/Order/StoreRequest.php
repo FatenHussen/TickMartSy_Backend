@@ -23,8 +23,8 @@ class StoreRequest extends FormRequest
     {
         return [
             'address_id' => ['required', 'exists:user_addresses,id'],
-            'cart_type' => ['nullable', 'string', 'in:defaut,recipe,admin_cart,schedule_admin_cart'],
-            'is_instant_delivery' => ['boolean'],
+            'cart_type' => ['nullable', 'string', 'in:default,recipe,admin_cart,schedule_admin_cart'],
+            'is_instant_delivery' => ['required', 'boolean'],
 
             'items' => ['required', 'array', 'min:1'],
             'items.*.shop_product_variant_id' => [

@@ -6,6 +6,7 @@ use App\Models\Shop;
 use App\Services\BaseService;
 use App\Http\Resources\Shop\OneResource;
 use App\Http\Resources\Shop\AllResource;
+use Illuminate\Database\Eloquent\Builder;
 
 class ShopService extends BaseService
 {
@@ -14,121 +15,114 @@ class ShopService extends BaseService
     protected $collection = AllResource::class;
 
     protected $relations = [
-        'area',
+        'area.city',
         'vendor',
         'services',
-        'productVariants',
-        'productVariants.productVariant',
+        'productVariants.productVariant.product',
         'media',
     ];
-    
+
     protected $searchableFields = ['name', 'description', 'address'];
     protected $sortableFields   = ['id', 'name', 'created_at'];
 
-    public function getAll($filters = [], $config = [])
+    /* =========================
+     |  QUERY BUILDER
+     ========================= */
+    public function queryBuilder($query, $filters = [], $config = [])
     {
-        $specialFilters = ['type', 'lat', 'lng', 'max_distance', 'city_id', 'governorate_id'];
-        $specialValues = [];
-        
-        foreach ($specialFilters as $filter) {
-            if (isset($filters[$filter])) {
-                $specialValues[$filter] = $filters[$filter];
-                unset($filters[$filter]);
-            }
-        }
+        // $query = parent::queryBuilder($query, $filters, $config);
 
-        $this->specialValues = $specialValues;
+        $this->applyGeographicalFilters($query, $filters);
+        $this->applyTypeFilters($query, $filters);
 
-        return parent::getAll($filters, $config);
+        return $query;
     }
 
-    protected function applyGeographicalFilters($query)
+    /* =========================
+     |  GEO FILTERS
+     ========================= */
+    protected function applyGeographicalFilters(Builder $query, array $filters)
     {
-        if (!empty($this->specialValues['governorate_id'])) {
-            $query->whereHas('area.city', function ($cityQuery) {
-                $cityQuery->where('governorate_id', $this->specialValues['governorate_id']);
+        if (!empty($filters['governorate_id'])) {
+            $query->whereHas('area.city', function ($q) use ($filters) {
+                $q->where('governorate_id', $filters['governorate_id']);
             });
         }
 
-        if (!empty($this->specialValues['city_id'])) {
-            $query->whereHas('area', function ($areaQuery) {
-                $areaQuery->where('city_id', $this->specialValues['city_id']);
+        if (!empty($filters['city_id'])) {
+            $query->whereHas('area', function ($q) use ($filters) {
+                $q->where('city_id', $filters['city_id']);
             });
         }
     }
 
-    protected function applyTypeFilters($query, $type, $filters)
+    /* =========================
+     |  TYPE FILTERS
+     ========================= */
+    protected function applyTypeFilters(Builder $query, array $filters)
     {
-        match ($type) {
-            'nearby'       => $this->filterNearby($query, $filters),
-            'offers'       => $this->filterOffers($query),
-            'top_rated'    => $this->filterTopRated($query),
-            'active'       => $this->filterActive($query),
-            default        => null,
-        };
-    }
-
-    protected function filterNearby($query, $filters)
-    {
-        $userLat = $filters['lat'] ?? null;
-        $userLng = $filters['lng'] ?? null;
-        $maxDistance = $filters['max_distance'] ?? 20; 
-        
-        \Log::info('filterNearby called', [
-            'lat' => $userLat,
-            'lng' => $userLng,
-            'max_distance' => $maxDistance,
-            'filters' => $filters
-        ]);
-        
-        if (!$userLat || !$userLng) {
-            \Log::info('filterNearby: Missing lat/lng, returning without filter');
+        if (empty($filters['type'])) {
             return;
         }
 
-        $query->selectRaw("
-            shops.*,
-            (6371 * acos(cos(radians(?)) * cos(radians(lat)) * cos(radians(lng) - radians(?)) + sin(radians(?)) * sin(radians(lat)))) AS distance
-        ", [$userLat, $userLng, $userLat])
-        ->havingRaw('distance <= ?', [$maxDistance])
-        ->orderBy('distance', 'asc');
-        
-        \Log::info('filterNearby: Applied distance filter and ordering');
+        match ($filters['type']) {
+            'nearby'    => $this->filterNearby($query, $filters),
+            'offers'    => $this->filterOffers($query),
+            'top_rated' => $this->filterTopRated($query),
+            'active'    => $this->filterActive($query),
+            default     => null,
+        };
     }
 
-    protected function filterOffers($query)
+    /* =========================
+     |  TYPE IMPLEMENTATIONS
+     ========================= */
+    protected function filterNearby(Builder $query, array $filters)
     {
-        $query->whereHas('productVariants', function ($shopVariantQuery) {
-            $shopVariantQuery->whereHas('productVariant', function ($variantQuery) {
-                $variantQuery->whereHas('product', function ($productQuery) {
-                    $productQuery->whereNotNull('discount')
-                                 ->where('discount', '>', 0);
-                });
-            });
+        if (empty($filters['lat']) || empty($filters['lng'])) {
+            return;
+        }
+
+        $distance = $filters['max_distance'] ?? 20;
+
+        $query->selectRaw(
+            "shops.*,
+            (6371 * acos(
+                cos(radians(?)) *
+                cos(radians(lat)) *
+                cos(radians(lng) - radians(?)) +
+                sin(radians(?)) *
+                sin(radians(lat))
+            )) AS distance",
+            [$filters['lat'], $filters['lng'], $filters['lat']]
+        )
+            ->having('distance', '<=', $distance)
+            ->orderBy('distance');
+    }
+
+    protected function filterOffers(Builder $query)
+    {
+        $query->whereHas('productVariants.productVariant.product', function ($q) {
+            $q->whereNotNull('discount')
+                ->where('discount', '>', 0);
         });
     }
 
-    protected function filterTopRated($query)
+    protected function filterTopRated(Builder $query)
     {
         $query->withAvg('ratings', 'rating')
             ->orderByDesc('ratings_avg_rating');
     }
 
-    protected function filterActive($query)
+    protected function filterActive(Builder $query)
     {
         $query->where('is_active', true);
     }
 
-    public function queryBuilder($query, $filters = [], $config = [])
+    public function query(array $filters = [])
     {
-        $query = parent::queryBuilder($query, $filters, $config);
-
-        $this->applyGeographicalFilters($query);
-
-        if (!empty($this->specialValues['type'])) {
-            $this->applyTypeFilters($query, $this->specialValues['type'], $this->specialValues);
-        }
-
+        $query = Shop::query();
+        $query =  $this->queryBuilder($query, $filters);
         return $query;
     }
 }

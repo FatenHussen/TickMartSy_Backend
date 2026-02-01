@@ -8,6 +8,7 @@ use App\Services\User\BrandService;
 use App\Services\User\ProductService;
 use App\Services\User\RecipeService;
 use App\Services\User\ScheduleService;
+use App\Services\User\ShopService;
 
 // use App\Services\Base\Section\TrendingProductsHandler;
 
@@ -45,8 +46,8 @@ class SectionApiService
             'brands' => BrandService::class,
             'recipes' => RecipeService::class,
             'baskets' => BasketService::class,
-            'products' => ProductService::class
-
+            'products' => ProductService::class,
+            'shops' => ShopService::class
         ];
 
         return $map[$method] ?? null;

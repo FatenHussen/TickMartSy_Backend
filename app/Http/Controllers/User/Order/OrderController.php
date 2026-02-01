@@ -25,4 +25,9 @@ class OrderController extends BaseCRUDController
     {
         return   $this->service->couponPreview($request->all());
     }
+
+    public function preview(StoreRequest $request)
+    {
+        return   $this->service->preview($request->all());
+    }
 }

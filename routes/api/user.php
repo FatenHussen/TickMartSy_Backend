@@ -50,7 +50,7 @@ Route::prefix('user')->group(
                         Route::get('/', [ProfileController::class, 'get_profile']);
                         Route::post('/update', [ProfileController::class, 'update_profile']);
                         Route::post('/update_password', [ProfileController::class, 'update_password']);
-                        
+
                         Route::post('/update_email', [ProfileController::class, 'update_email']);
                         Route::post('/update_phone', [ProfileController::class, 'update_phone']);
                         Route::post('/verify', [ProfileController::class, 'verify_update']);
@@ -126,24 +126,25 @@ Route::prefix('user')->group(
         });
         // Route::apiResource('orders', OrderController::class)->middleware(['auth:user']);
 
-        Route::apiResource('orders', OrderController::class);
-        Route::post('/orders/coupon-preview', [OrderController::class, 'couponPreview']);
+        Route::apiResource('orders', OrderController::class)->middleware(['auth:user']);
+        Route::post('/orders/coupon-preview', [OrderController::class, 'couponPreview'])->middleware(['auth:user']);
+        Route::post('/orders/preview', [OrderController::class, 'preview'])->middleware(['auth:user']);
 
         Route::apiResource('scheduled-baskets', UserBasketScheduleController::class)->middleware(['auth:user']);
 
         Route::apiResource('addresses', AddressController::class)->middleware(['auth:user']);
 
-
         Route::prefix('cart')->group(function () {
-            // Public routes
-            Route::post('calculate-delivery-price', [CartController::class, 'calculateDeliveryPrice']);
+            Route::middleware(['auth:user'])->group(function () {
+                Route::post('calculate-delivery-price', [CartController::class, 'calculateDeliveryPrice']);
+            });
         });
 
-
         Route::prefix('favorites')->group(function () {
-            // Public routes
-            Route::get('/', [FavoriteController::class, 'index']);
-            Route::post('/toggle', [FavoriteController::class, 'toggle']);
+            Route::middleware(['auth:user'])->group(function () {
+                Route::get('/', [FavoriteController::class, 'index']);
+                Route::post('/toggle', [FavoriteController::class, 'toggle']);
+            });
         });
     }
 );

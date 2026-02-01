@@ -51,6 +51,7 @@ class DatabaseSeeder extends Seeder
             ScheduleSeeder::class,
             UserBasketScheduleSeeder::class,
             UserBasketScheduleItemSeeder::class,
+            CouponSeeder::class
         ]);
         User::create([
             'name' => 'User',

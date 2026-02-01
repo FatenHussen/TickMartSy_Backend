@@ -6,8 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use App\Http\Resources\Shop\AllResource;
 
-class Shop extends Model
+class Shop extends Model implements Sectionable
 {
     use HasTranslations;
 
@@ -147,5 +148,10 @@ class Shop extends Model
     public function getAverageRatingAttribute(): float
     {
         return round((float) $this->ratings()->avg('rating'), 1);
+    }
+
+    public function toSectionArray()
+    {
+        return AllResource::make($this);
     }
 }

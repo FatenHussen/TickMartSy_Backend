@@ -85,4 +85,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Favorite::class, 'user_id');
     }
+
+    public function fcmTokens()
+    {
+        return $this->morphMany(UserToken::class, 'tokenable');
+    }
 }
