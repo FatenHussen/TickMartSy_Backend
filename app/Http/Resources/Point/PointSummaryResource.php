@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Http\Resources\Point;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class PointSummaryResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        // Get point to currency conversion settings from database
+        $pointsSettings = \App\Helpers\SettingsHelper::getPointsSettings();
+        
+        return [
+            'balance' => $this->resource['balance'],
+            'balance_currency' => $pointsSettings['currency_symbol'] . number_format($this->resource['balance'] * $pointsSettings['currency_rate'], 2),
+            'expire_at' => $this->resource['expire_at'] ? $this->resource['expire_at']->format('d-m-Y') : null,
+            'last_earned_at' => $this->resource['last_earned_at'] ? $this->resource['last_earned_at']->format('d-m-Y') : null,
+        ];
+    }
+}

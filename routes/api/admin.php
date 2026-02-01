@@ -18,6 +18,8 @@ use App\Http\Controllers\Admin\PageSection\PageSectionCrudController;
 use App\Http\Controllers\Admin\Product\ProductController;
 use App\Http\Controllers\Admin\Section\SectionCrudController;
 use App\Http\Controllers\Admin\Section\SectionController;
+use App\Http\Controllers\Admin\PointController;
+use App\Http\Controllers\Admin\PointRuleController;
 
 use App\Http\Controllers\Admin\Service\ServiceCrudController;
 
@@ -101,6 +103,32 @@ Route::prefix('admin')->group(
         Route::apiResource('services', ServiceCrudController::class);
         Route::apiResource('sections', SectionCrudController::class);
         Route::apiResource('page-sections', PageSectionCrudController::class);
+
+        // // Points management routes
+        // Route::middleware('auth:admin')->group(function () {
+        //     Route::prefix('points')->group(function () {
+        //         Route::post('add', [PointController::class, 'addPoints']);
+        //         Route::post('deduct', [PointController::class, 'deductPoints']);
+        //         Route::get('user-summary', [PointController::class, 'getUserSummary']);
+        //         Route::get('user-transactions', [PointController::class, 'getUserTransactions']);
+        //     });
+            
+        //     Route::apiResource('point-rules', PointRuleController::class);
+        // });
+
+        // System Settings routes
+        // Route::middleware('auth:admin')->group(function () {
+        //     Route::prefix('settings')->group(function () {
+        //         Route::get('/', [\App\Http\Controllers\Admin\SystemSettingController::class, 'index']);
+        //         Route::get('/group/{group}', [\App\Http\Controllers\Admin\SystemSettingController::class, 'getByGroup']);
+        //         Route::post('/batch', [\App\Http\Controllers\Admin\SystemSettingController::class, 'updateBatch']);
+        //         Route::post('/clear-cache', [\App\Http\Controllers\Admin\SystemSettingController::class, 'clearCache']);
+        //         Route::get('/{key}', [\App\Http\Controllers\Admin\SystemSettingController::class, 'show']);
+        //         Route::put('/{key}', [\App\Http\Controllers\Admin\SystemSettingController::class, 'update']);
+        //         Route::post('/', [\App\Http\Controllers\Admin\SystemSettingController::class, 'store']);
+        //         Route::delete('/{key}', [\App\Http\Controllers\Admin\SystemSettingController::class, 'destroy']);
+        //     });
+        // });
 
 
 

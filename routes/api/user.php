@@ -5,6 +5,7 @@ use App\Http\Controllers\User\AddressController;
 use App\Http\Controllers\User\AreaController;
 use App\Http\Controllers\User\Product\ProductController;
 use App\Http\Controllers\User\Shop\ShopController;
+use App\Http\Controllers\User\PointController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\User\Auth\ProfileController;
@@ -133,6 +134,20 @@ Route::prefix('user')->group(
         Route::prefix('cart')->group(function () {
             // Public routes
             Route::post('calculate-delivery-price', [CartController::class, 'calculateDeliveryPrice']);
+        });
+
+        // Points routes
+        Route::middleware(['auth:user'])->group(function () {
+            Route::prefix('points')->group(function () {
+                Route::get('/summary', [PointController::class, 'summary']);
+                Route::get('/transactions', [PointController::class, 'transactions']);
+                Route::get('/statistics', [PointController::class, 'statistics']);
+                Route::post('/redeem', [PointController::class, 'redeem']);
+                
+                // CRUD operations via BaseCRUDController
+                Route::get('/', [PointController::class, 'index']); // List all transactions
+                Route::get('/{id}', [PointController::class, 'show']); // Show single transaction
+            });
         });
     }
 );

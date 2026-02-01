@@ -17,7 +17,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-
         $this->call([
             GovernorateSeeder::class,
             AdminRolePermissionSeeder::class,
@@ -51,12 +50,13 @@ class DatabaseSeeder extends Seeder
             ScheduleSeeder::class,
             UserBasketScheduleSeeder::class,
             UserBasketScheduleItemSeeder::class,
-        ]);
-        User::create([
-            'name' => 'User',
-            'email' => 'user@user.com',
-            'password' => Hash::make('password'),
-            'city_id' => 1
+            
+            // Point System Seeders
+            UserSeeder::class,
+            PointSystemSeeder::class,
+            
+            // System Settings
+            SystemSettingSeeder::class,
         ]);
     }
 }

@@ -76,6 +76,17 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserAddress::class, 'user_id');
     }
+
+    public function pointWallet()
+    {
+        return $this->hasOne(PointWallet::class);
+    }
+
+    public function pointTransactions()
+    {
+        return $this->hasMany(PointTransaction::class);
+    }
+
     public function  getImageUrlAttribute()
     {
         return asset('storage/' . $this->image);

@@ -12,7 +12,7 @@ class UserLoginRequest extends BaseRequest
         return [
             'phone' => 'nullable|string|exists:users,phone|required_without:email|regex:/^\\d+$/',
             'email' => 'nullable|string|exists:users,email|required_without:phone|regex:/@/',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string',
 
         ];
     }
