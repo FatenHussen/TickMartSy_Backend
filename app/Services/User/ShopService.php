@@ -111,7 +111,7 @@ class ShopService extends BaseService
     protected function filterTopRated(Builder $query)
     {
         $query->withAvg('ratings', 'rating')
-            ->orderByDesc('ratings_avg_rating');
+              ->orderByDesc('ratings_avg_rating');
     }
 
     protected function filterActive(Builder $query)

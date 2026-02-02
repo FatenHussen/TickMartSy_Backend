@@ -66,6 +66,30 @@ class Product extends Model implements Sectionable
     {
         return $this->ratings()->avg('rating');
     }
+
+    public function getRatingBreakdown(): array
+    {
+        $breakdown = [];
+        
+        // Initialize all star ratings with 0 count
+        for ($i = 1; $i <= 5; $i++) {
+            $breakdown[$i] = 0;
+        }
+        
+        // Get actual rating counts
+        $ratingCounts = $this->ratings()
+            ->selectRaw('rating, COUNT(*) as count')
+            ->groupBy('rating')
+            ->pluck('count', 'rating')
+            ->toArray();
+        
+        // Merge actual counts with initialized array
+        foreach ($ratingCounts as $rating => $count) {
+            $breakdown[(int)$rating] = (int)$count;
+        }
+        
+        return $breakdown;
+    }
     /*
     |--------------------------------------------------------------------------
     | Relationships
