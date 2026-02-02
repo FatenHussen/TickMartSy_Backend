@@ -46,6 +46,8 @@ Route::prefix('user')->group(
                 // protected routes 
                 Route::middleware(['auth:user'])->group(function () {
                     Route::get('/logout', [AuthController::class, 'logout']);
+                    Route::post('/store-token', [AuthController::class, 'storOrUpdateToken']);
+
                     Route::prefix('/profile')->group(function () {
                         Route::get('/', [ProfileController::class, 'get_profile']);
                         Route::post('/update', [ProfileController::class, 'update_profile']);
