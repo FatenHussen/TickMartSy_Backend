@@ -29,6 +29,7 @@ return new class extends Migration
             /** Quantities & Delivery */
             $table->unsignedInteger('total_quantity')->default(0);
             $table->unsignedInteger('delivery_price')->default(0);
+            $table->string('delivery_code')->default('XXXX');
 
             /** Pricing (Before Discount) */
             $table->unsignedBigInteger('subtotal')->default(0);

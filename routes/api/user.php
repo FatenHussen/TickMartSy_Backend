@@ -129,7 +129,7 @@ Route::prefix('user')->group(
         });
         // Route::apiResource('orders', OrderController::class)->middleware(['auth:user']);
 
-        Route::apiResource('orders', OrderController::class)->middleware(['auth:user']);
+        Route::apiResource('orders', OrderController::class);
         Route::post('/orders/coupon-preview', [OrderController::class, 'couponPreview'])->middleware(['auth:user']);
         Route::post('/orders/preview', [OrderController::class, 'preview'])->middleware(['auth:user']);
 
@@ -152,16 +152,16 @@ Route::prefix('user')->group(
 
         // Points routes
         Route::middleware(['auth:user'])->group(function () {
-            Route::prefix('points')->group(function () {
-                Route::get('/summary', [PointController::class, 'summary']);
-                Route::get('/transactions', [PointController::class, 'transactions']);
-                Route::get('/statistics', [PointController::class, 'statistics']);
-                Route::post('/redeem', [PointController::class, 'redeem']);
-                
-                // CRUD operations via BaseCRUDController
-                Route::get('/', [PointController::class, 'index']); // List all transactions
-                Route::get('/{id}', [PointController::class, 'show']); // Show single transaction
-            });
+            // Route::prefix('points')->group(function () {
+            //     Route::get('/summary', [PointController::class, 'summary']);
+            //     Route::get('/transactions', [PointController::class, 'transactions']);
+            //     Route::get('/statistics', [PointController::class, 'statistics']);
+            //     Route::post('/redeem', [PointController::class, 'redeem']);
+
+            //     // CRUD operations via BaseCRUDController
+            //     Route::get('/', [PointController::class, 'index']); // List all transactions
+            //     Route::get('/{id}', [PointController::class, 'show']); // Show single transaction
+            // });
         });
     }
 );

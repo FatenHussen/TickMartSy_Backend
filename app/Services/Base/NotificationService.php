@@ -2,40 +2,61 @@
 
 namespace App\Services\Base;
 
-use App\Helpers\SendFCMNotification;
 use App\Jobs\SendFcmNotificationJob;
 use App\Notifications\MessageNotification;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
-use Livewire\Attributes\Title;
-use tidy;
 
 class NotificationService
 {
-    /**
-     * Send an appointment-related notification
-     */
-    public static function
-    sendAppointmentNotification(Model $recipient, string $title, string $body, array $data = []): void
-    {
+    public function send(
+        Model $recipient,
+        string $title,
+        string $body,
+        array $data = []
+    ): void {
         try {
-            $tokens = $recipient->fcmTokens()->pluck('fcm_token')->toArray();
-
-            Log::info('Tokens');
-            Log::info($tokens);
-
-            if (count($tokens)) {
-                SendFcmNotificationJob::dispatch($tokens, $title, $body, $data);
-            }
-
-            $recipient->notify(new MessageNotification($title, $body));
-        } catch (\Exception $e) {
-            Log::error("Failed to send notification to {$recipient->id}: " . $e->getMessage());
+            $this->sendFcm($recipient, $title, $body, $data);
+            $this->sendDatabase($recipient, $title, $body);
+        } catch (\Throwable $e) {
+            Log::error(
+                'Notification failed',
+                [
+                    'recipient_id' => $recipient->id,
+                    'error' => $e->getMessage(),
+                ]
+            );
         }
     }
 
-    public  function get(Model $recipient)
+    private function sendFcm(
+        Model $recipient,
+        string $title,
+        string $body,
+        array $data
+    ): void {
+        $tokens = $recipient->fcmTokens()
+            ->pluck('fcm_token')
+            ->filter()
+            ->values()
+            ->toArray();
+
+        if (! empty($tokens)) {
+            SendFcmNotificationJob::dispatch($tokens, $title, $body, $data);
+        }
+    }
+
+    private function sendDatabase(
+        Model $recipient,
+        string $title,
+        string $body
+    ): void {
+        $recipient->notify(
+            new MessageNotification($title, $body)
+        );
+    }
+
+    public function get(Model $recipient)
     {
         return $recipient->notifications;
     }
