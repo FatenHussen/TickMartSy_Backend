@@ -34,8 +34,7 @@ return new class extends Migration
             $table->foreignId('city_id')->nullable()->constrained();
 
             // المسوق (optional)
-            $table->foreignId('user_id')->nullable()->constrained();
-
+            $table->unsignedBigInteger('affiliate_id')->nullable();
             // Status
             $table->boolean('is_active')->default(true);
             $table->timestamps();

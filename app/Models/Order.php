@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Order extends Model
 {
@@ -23,12 +24,30 @@ class Order extends Model
         'basket_discount',
         'cart_type',
         'coupon_discount',
-        'delivery_code'
+        'delivery_code',
+        //markter
+        'affiliate_id',
+        'affiliate_rate',
+        'affiliate_source'
+
     ];
 
     protected $casts = [
         'is_instant_delivery' => 'boolean',
     ];
+
+    protected $appends = ['affiliate_commission'];
+
+    //affiliate_commission
+    protected function affiliateCommission(): Attribute
+    {
+        return Attribute::make(
+            get: fn() =>
+            $this->affiliate_id && $this->affiliate_rate
+                ? round($this->total * ($this->affiliate_rate / 100), 2)
+                : 0
+        );
+    }
     protected static function booted()
     {
         static::creating(function ($order) {

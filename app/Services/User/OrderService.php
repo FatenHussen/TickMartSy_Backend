@@ -48,7 +48,7 @@ class OrderService extends BaseService
                 'user_address_id'     => $data['address_id'],
                 'cart_type'           => $data['cart_type'] ?? CartType::DEFAULT->value,
                 'is_instant_delivery' => $data['is_instant_delivery'] ?? false,
-                'order_status'        => OrderStatus::PENDING->value,
+                'status'        => OrderStatus::PENDING->value,
             ]);
 
             // 1️⃣ Resolve basket & delivery
@@ -59,12 +59,15 @@ class OrderService extends BaseService
                 $this->addItemsToOrder($order, $data);
 
             // 3️⃣ Apply coupon if provided
-            [$couponCode, $couponDiscountAmount, $excludedItems] = $this->applyCoupon(
-                $order,
-                $orderItems,
-                $data['coupon'] ?? null,
-                $basketDiscount
-            );
+            [$couponCode, $couponDiscountAmount, $excludedItems, $coupon] =
+                $this->applyCoupon(
+                    $order,
+                    $orderItems,
+                    $data['coupon'] ?? null,
+                    $basketDiscount
+                );
+
+
             // ❗ إذا تم تطبيق كوبون → نلغي خصم السلة
             if ($couponCode !== null) {
                 $basketDiscount = 0;
@@ -78,6 +81,32 @@ class OrderService extends BaseService
                 - ($basketDiscountAmount + $couponDiscountAmount);
 
 
+            // =======================
+            // Affiliate / Marketer
+            // =======================
+
+            // الافتراضي: من رابط
+            $affiliateId = $data['affiliate_id'] ?? null;
+            $affiliateSource = $affiliateId ? 'link' : null;
+
+            // إذا الكوبون تابع لمسوق → هو الأقوى
+            if ($coupon && $coupon->affiliate_id) {
+                $affiliateId = $coupon->affiliate_id;
+                $affiliateSource = 'coupon';
+            }
+
+            // نجيب نسبة العمولة
+            $affiliateRate = null;
+
+            if ($affiliateId) {
+                $affiliate = User::where('affiliate_id', $affiliateId)->first();
+                $affiliateRate = $affiliate?->affiliate_rate;
+            }
+
+            // =======================
+            // Update Order
+            // =======================
+
             $order->update([
                 'delivery_price'   => $deliveryPrice,
                 'subtotal'         => round($subtotalBeforeDiscount, 2),
@@ -86,9 +115,13 @@ class OrderService extends BaseService
                 'coupon_code'      => $couponCode,
                 'coupon_discount'  => round($couponDiscountAmount, 2),
                 'total'            => round($finalTotal, 2),
+
+                // Affiliate data
+                'affiliate_id'     => $affiliateId,
+                'affiliate_rate'   => $affiliateRate,
+                'affiliate_source' => $affiliateSource, // link | coupon | null
             ]);
             OrderCreated::dispatch($order);
-
 
             return new $this->resource($order->load('items'));
         });
@@ -444,6 +477,11 @@ class OrderService extends BaseService
 
         $couponApplied = $coupon->code;
 
-        return [$couponApplied, $couponDiscountAmount, $excludedItems];
+        return [
+            $coupon->code,
+            $couponDiscountAmount,
+            $excludedItems,
+            $coupon
+        ];
     }
 }

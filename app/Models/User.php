@@ -25,7 +25,15 @@ class User extends Authenticatable
         'email_verified_at',
         'phone_verified_at',
         'city_id',
-        'image'
+        'image',
+
+        //markter
+        'is_affiliate',
+        'affiliate_approved',
+        'affiliate_id',
+        'coupon_id',
+        'affiliate_rate',
+
     ];
 
     /**
@@ -45,11 +53,11 @@ class User extends Authenticatable
      * @return array<string, string>
      */
     protected $casts = [
+        'is_affiliate' => 'boolean',
+        'affiliate_approved' => 'boolean',
         'email_verified_at' => 'datetime',
         'phone_verified_at' => 'datetime',
-        'password' => 'hashed',
     ];
-
 
     // public function images()
     // {

@@ -24,7 +24,14 @@ return new class extends Migration
 
             $table->string('status')->default(OrderStatus::PENDING->value);
             $table->string('cart_type')->default(CartType::DEFAULT->value);
-             // default | recipe | admin_cart | scheduled_admin_cart
+            // default | recipe | admin_cart | scheduled_admin_cart
+
+
+            //markter 
+            $table->string('affiliate_id')->nullable();
+            $table->decimal('affiliate_rate', 5, 2)
+                ->nullable();
+            $table->enum('affiliate_source', ['link', 'coupon'])->nullable();
 
             /** Quantities & Delivery */
             $table->unsignedInteger('total_quantity')->default(0);

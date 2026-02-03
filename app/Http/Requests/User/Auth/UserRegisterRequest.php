@@ -27,6 +27,7 @@ class UserRegisterRequest extends BaseRequest
 
             'city_id' => 'required|exists:cities,id',
             'governorate_id' => 'required|exists:governorates,id',
+
         ];
     }
 }

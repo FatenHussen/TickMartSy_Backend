@@ -34,7 +34,8 @@ class StoreRequest extends FormRequest
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'recipe_id' => 'nullable|exists:recipes,id',
             'admin_basket_id' => 'nullable|exists:baskets,id',
-            'coupon' => 'nullable|string'
+            'coupon' => 'nullable|string',
+            'affiliate_id' => 'nullable|string',
         ];
     }
 }
