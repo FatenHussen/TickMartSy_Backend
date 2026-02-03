@@ -35,7 +35,8 @@ class PointController extends BaseCRUDController
     }
 
     /**
-     * Redeem points for rewards
+     * استبدال النقاط مقابل مكافآت
+     * Exchange points for rewards
      */
     public function redeem(RedeemPointsRequest $request)
     {
@@ -51,13 +52,13 @@ class PointController extends BaseCRUDController
 
         if (!$transaction) {
             return $this->sendError(
-                message: 'Insufficient points balance',
+                message: 'رصيد النقاط غير كافي / Insufficient points balance',
                 code: 400
             );
         }
 
         return $this->sendResponse(
-            message: 'Points redeemed successfully',
+            message: 'تم استبدال النقاط بنجاح / Points exchanged successfully',
             data: $transaction
         );
     }

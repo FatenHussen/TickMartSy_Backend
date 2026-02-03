@@ -335,7 +335,6 @@ class PointService extends BaseService
 
         foreach ($walletsToExpire as $wallet) {
             DB::transaction(function () use ($wallet, &$expiredCount) {
-                // Create expiration transaction
                 PointTransaction::create([
                     'user_id' => $wallet->user_id,
                     'wallet_id' => $wallet->id,
@@ -383,17 +382,17 @@ class PointService extends BaseService
         
         $updateData = ['balance' => $newBalance];
 
-        // If earning points, update expiry and last earned date
+        
         if ($points > 0) {
             $updateData['last_earned_at'] = now();
-            $updateData['expire_at'] = now()->addYear(); // Extend expiry by 1 year
+            $updateData['expire_at'] = now()->addYear();
         }
 
         $wallet->update($updateData);
     }
 
     /**
-     * Redeem points for rewards/discounts
+     * Exchange points for rewards/discounts
      */
     public function redeemPoints(
         int $userId,
@@ -406,25 +405,23 @@ class PointService extends BaseService
         $transaction = DB::transaction(function () use ($userId, $points, $reason, $referenceType, $referenceId, $adminId) {
             $wallet = $this->getOrCreateWallet($userId);
 
-            // Check if user has enough points
+           
             if ($wallet->balance < $points) {
-                return null; // Insufficient balance
+                return null;
             }
 
-            // Create redemption transaction
             $transaction = PointTransaction::create([
                 'user_id' => $userId,
                 'wallet_id' => $wallet->id,
                 'created_by_admin_id' => $adminId,
-                'source' => 'redemption',
-                'points' => -$points, // Negative because points are being spent
+                'source' => 'exchange',
+                'points' => -$points,
                 'status' => 'redeemed',
                 'reference_type' => $referenceType,
                 'reference_id' => $referenceId,
                 'reason' => $reason,
             ]);
 
-            // Update wallet balance
             $this->updateWalletBalance($wallet, -$points);
 
             return $transaction;
@@ -434,7 +431,7 @@ class PointService extends BaseService
     }
 
     /**
-     * Get user redeemed points total
+     * Get user exchanged points total
      */
     public function getUserRedeemedPoints(int $userId): int
     {

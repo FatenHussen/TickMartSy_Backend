@@ -17,7 +17,7 @@ class BasketItemResource extends JsonResource
             'min_quantity' => (int) $this->min_quantity,
             'max_quantity' => (int) $this->max_quantity,
             'can_adjust' => $this->canAdjustQuantity(),
-
+            'shop_product_variant_id' => $this->shop_product_variant_id,
             'product' =>new BasketItemProductResource($this->whenLoaded('product')) ?? null,
 
             'variant' => new BasketItemVariantResource($this->whenLoaded('variant')) ?? null,

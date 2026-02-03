@@ -5,7 +5,7 @@ use App\Http\Controllers\User\AddressController;
 use App\Http\Controllers\User\AreaController;
 use App\Http\Controllers\User\Product\ProductController;
 use App\Http\Controllers\User\Shop\ShopController;
-use App\Http\Controllers\User\PointController;
+use App\Http\Controllers\User\Point\PointController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\User\Auth\ProfileController;
@@ -161,6 +161,23 @@ Route::prefix('user')->group(
                 // CRUD operations via BaseCRUDController
                 Route::get('/', [PointController::class, 'index']); // List all transactions
                 Route::get('/{id}', [PointController::class, 'show']); // Show single transaction
+                
+                // Exchange routes (النظام الجديد)
+                Route::prefix('exchange')->group(function () {
+                    Route::get('/options', [\App\Http\Controllers\User\Point\ExchangeController::class, 'options']);
+                    Route::post('/coupon', [\App\Http\Controllers\User\Point\ExchangeController::class, 'exchangeForCoupon']);
+                    Route::post('/free-delivery', [\App\Http\Controllers\User\Point\ExchangeController::class, 'exchangeForFreeDelivery']);
+                    Route::post('/gift', [\App\Http\Controllers\User\Point\ExchangeController::class, 'exchangeForGift']);
+                    Route::get('/history', [\App\Http\Controllers\User\Point\ExchangeController::class, 'history']);
+                    Route::get('/free-delivery-status', [\App\Http\Controllers\User\Point\ExchangeController::class, 'freeDeliveryStatus']);
+                });
+                
+                // Coupon routes (النظام القديم - للتوافق)
+                Route::prefix('coupons')->group(function () {
+                    Route::post('/exchange', [\App\Http\Controllers\User\Point\CouponController::class, 'exchangeForCoupon']);
+                    Route::get('/my-coupons', [\App\Http\Controllers\User\Point\CouponController::class, 'myCoupons']);
+                    Route::post('/validate', [\App\Http\Controllers\User\Point\CouponController::class, 'validateCoupon']);
+                });
             });
         });
     }

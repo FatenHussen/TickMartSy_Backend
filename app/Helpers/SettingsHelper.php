@@ -32,6 +32,27 @@ class SettingsHelper
             'currency_rate' => self::get('point_to_currency_rate', 0.01),
             'currency_symbol' => self::get('currency_symbol', '$'),
             'currency_code' => self::get('currency_code', 'USD'),
+            // إعدادات الاستبدال
+            'min_exchange_points' => self::get('min_exchange_points', 100),
+            'max_exchange_points' => self::get('max_exchange_points', 10000),
+            'points_expiry_months' => self::get('points_expiry_months', 12),
+            'exchange_enabled' => self::get('points_exchange_enabled', true),
+        ];
+    }
+
+    /**
+     * Get exchange settings
+     */
+    public static function getExchangeSettings(): array
+    {
+        return [
+            'min_points' => self::get('min_exchange_points', 100),
+            'max_points' => self::get('max_exchange_points', 10000),
+            'coupon_enabled' => self::get('exchange_coupon_enabled', true),
+            'free_delivery_enabled' => self::get('exchange_free_delivery_enabled', true),
+            'gifts_enabled' => self::get('exchange_gifts_enabled', true),
+            'free_delivery_points' => self::get('free_delivery_points_cost', 200),
+            'coupon_discount_rate' => self::get('coupon_discount_rate', 0.01), // 1 point = 0.01$ discount
         ];
     }
 
