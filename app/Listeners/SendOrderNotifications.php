@@ -7,11 +7,17 @@ use App\Models\Admin;
 use App\Models\Driver;
 use App\Services\Base\NotificationService;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Log;
 
 class SendOrderNotifications implements ShouldQueue
 {
+    public function __construct(
+        private readonly NotificationService $notificationService
+    ) {}
+
     public function handle(OrderCreated $event): void
     {
+        Log::info("SendOrderNotifications Listeners");
         $order = $event->order;
 
         $this->notifyAdmins($order);
@@ -21,44 +27,49 @@ class SendOrderNotifications implements ShouldQueue
         }
     }
 
-    protected function notifyAdmins($order): void
+    private function notifyAdmins($order): void
     {
-        $title = $order->is_instant_delivery
-            ? 'طلب فوري جديد'
-            : 'طلب توصيل جديد';
+        [$title, $body, $type] = $this->orderMessage($order);
 
-        $body = $order->is_instant_delivery
-            ? 'تم إنشاء طلب توصيل فوري'
-            : 'تم إنشاء طلب توصيل غير فوري';
-
-        Admin::query()->each(
-            fn($admin) =>
-            NotificationService::sendAppointmentNotification(
-                $admin,
-                $title,
-                $body,
-                [
-                    'order_id' => $order->id,
-                    'type' => $order->is_instant_delivery ? 'instant' : 'scheduled'
-                ]
-            )
-        );
-    }
-
-    protected function notifyDrivers($order): void
-    {
-        Driver::where('is_active', true)
-            ->each(
-                fn($driver) =>
-                NotificationService::sendAppointmentNotification(
-                    $driver,
-                    'طلب توصيل فوري',
-                    'يوجد طلب فوري جديد بحاجة لتوصيل',
+        Admin::query()->chunk(100, function ($admins) use ($order, $title, $body, $type) {
+            foreach ($admins as $admin) {
+                $this->notificationService->send(
+                    $admin,
+                    $title,
+                    $body,
                     [
                         'order_id' => $order->id,
-                        'type' => 'instant'
+                        'type' => $type,
                     ]
-                )
-            );
+                );
+            }
+        });
+    }
+
+    private function notifyDrivers($order): void
+    {
+        Driver::where('is_active', true)
+            ->chunk(100, function ($drivers) use ($order) {
+                foreach ($drivers as $driver) {
+                    $this->notificationService->send(
+                        $driver,
+                        'طلب توصيل فوري',
+                        'يوجد طلب فوري جديد بحاجة لتوصيل',
+                        [
+                            'order_id' => $order->id,
+                            'type' => 'instant',
+                        ]
+                    );
+                }
+            });
+    }
+
+    private function orderMessage($order): array
+    {
+        if ($order->is_instant_delivery) {
+            return ['طلب فوري جديد', 'تم إنشاء طلب توصيل فوري', 'instant'];
+        }
+
+        return ['طلب توصيل جديد', 'تم إنشاء طلب توصيل غير فوري', 'scheduled'];
     }
 }

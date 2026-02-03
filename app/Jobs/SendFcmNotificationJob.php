@@ -23,6 +23,6 @@ class SendFcmNotificationJob implements ShouldQueue
      */
     public function handle(): void
     {
-        (new SendFCMNotification($this->tokens, $this->title, $this->body, $this->data))->sendNotification();
+        // (new SendFCMNotification($this->tokens, $this->title, $this->body, $this->data))->sendNotification();
     }
 }
