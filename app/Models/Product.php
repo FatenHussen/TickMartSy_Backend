@@ -176,6 +176,19 @@ class Product extends Model implements Sectionable
             ->sum('order_items.quantity');
     }
 
+    /**
+     * Get shops that have this product (simple version - ID and name only)
+     */
+    public function getAvailableShops()
+    {
+        return Shop::whereHas('productVariants.productVariant', function ($query) {
+            $query->where('product_id', $this->id);
+        })
+        ->where('is_active', true)
+        ->select('id', 'name')
+        ->get();
+    }
+
     public function favorites(): MorphMany
     {
         return $this->morphMany(Favorite::class, 'favoriteable');

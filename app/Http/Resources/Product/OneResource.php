@@ -55,6 +55,13 @@ class OneResource extends JsonResource
             'images' => MediaResource::collection(
                 $this->media
             ),
+
+            'available_shops' => $this->getAvailableShops()->map(function ($shop) {
+                return [
+                    'id' => $shop->id,
+                    'name' => $shop->name,
+                ];
+            }),
             
         ];
     }
