@@ -33,16 +33,16 @@ class RedeemPointsRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'points.required' => 'Points amount is required',
-            'points.integer' => 'Points must be a valid number',
-            'points.min' => 'Points must be at least 1',
-            'points.max' => 'Points cannot exceed 10,000',
-            'reason.required' => 'Reason for redemption is required',
-            'reason.min' => 'Reason must be at least 3 characters',
-            'reason.max' => 'Reason cannot exceed 255 characters',
-            'reference_type.max' => 'Reference type cannot exceed 50 characters',
-            'reference_id.integer' => 'Reference ID must be a valid number',
-            'reference_id.min' => 'Reference ID must be at least 1',
+            'points.required' => 'عدد النقاط مطلوب / Points amount is required',
+            'points.integer' => 'النقاط يجب أن تكون رقم صحيح / Points must be a valid number',
+            'points.min' => 'النقاط يجب أن تكون على الأقل 1 / Points must be at least 1',
+            'points.max' => 'النقاط لا يمكن أن تتجاوز 10,000 / Points cannot exceed 10,000',
+            'reason.required' => 'سبب الاستبدال مطلوب / Reason for exchange is required',
+            'reason.min' => 'السبب يجب أن يكون على الأقل 3 أحرف / Reason must be at least 3 characters',
+            'reason.max' => 'السبب لا يمكن أن يتجاوز 255 حرف / Reason cannot exceed 255 characters',
+            'reference_type.max' => 'نوع المرجع لا يمكن أن يتجاوز 50 حرف / Reference type cannot exceed 50 characters',
+            'reference_id.integer' => 'معرف المرجع يجب أن يكون رقم صحيح / Reference ID must be a valid number',
+            'reference_id.min' => 'معرف المرجع يجب أن يكون على الأقل 1 / Reference ID must be at least 1',
         ];
     }
 
@@ -52,10 +52,10 @@ class RedeemPointsRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'points' => 'points amount',
-            'reason' => 'redemption reason',
-            'reference_type' => 'reference type',
-            'reference_id' => 'reference ID',
+            'points' => 'عدد النقاط / points amount',
+            'reason' => 'سبب الاستبدال / exchange reason',
+            'reference_type' => 'نوع المرجع / reference type',
+            'reference_id' => 'معرف المرجع / reference ID',
         ];
     }
 

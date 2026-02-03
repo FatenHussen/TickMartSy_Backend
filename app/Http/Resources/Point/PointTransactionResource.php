@@ -15,7 +15,7 @@ class PointTransactionResource extends JsonResource
         return [
             'id' => $this->id,
             'points' => $this->points,
-            'points_currency' => $pointsSettings['currency_symbol'] . number_format($this->points * $pointsSettings['currency_rate'], 2),
+            'points_currency' => $pointsSettings['currency_symbol'] . number_format(abs($this->points) * $pointsSettings['currency_rate'], 2),
             'source' => $this->source,
             'status' => $this->status,
             'type' => $this->getTransactionType(),
@@ -24,12 +24,18 @@ class PointTransactionResource extends JsonResource
                 'title' => $this->rule?->title,
                 'code' => $this->rule?->code,
             ]),
+            'admin' => $this->when($this->admin, [
+                'name' => $this->admin?->name,
+                'id' => $this->admin?->id,
+            ]),
             'reference' => $this->when($this->reference_type, [
                 'type' => $this->reference_type,
                 'id' => $this->reference_id,
             ]),
-            'expires_at' => $this->expires_at?->format('Y-m-d'),
-            'created_at' => $this->created_at->format('Y-m-d'),
+            'expires_at' => $this->expires_at?->format('Y-m-d H:i:s'),
+            'expires_at_formatted' => $this->expires_at?->format('d/m/Y'),
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'created_at_formatted' => $this->created_at->format('d/m/Y'),
         ];
     }
 
@@ -39,11 +45,11 @@ class PointTransactionResource extends JsonResource
     private function getTransactionType(): string
     {
         return match ($this->status) {
-            'pending' => 'pending_earning',
-            'earned' => $this->points > 0 ? 'points_earned' : 'points_deducted',
-            'expired' => 'points_expired',
-            'redeemed' => 'points_redeemed',
-            default => 'unknown',
+            'pending' => 'نقاط معلقة / Pending Points',
+            'earned' => $this->points > 0 ? 'نقاط مكتسبة / Points Earned' : 'خصم نقاط / Points Deducted',
+            'expired' => 'نقاط منتهية / Points Expired',
+            'redeemed' => 'نقاط مستبدلة / Points Exchanged',
+            default => 'غير معروف / Unknown',
         };
     }
 }
