@@ -9,13 +9,22 @@ abstract class BaseIndexController extends Controller
     protected $service;
     protected $filterRequest;
 
-    public function index(
-        Request $request
-    ) {
+    public function index(Request $request)
+    {
         $filters = $this->filterRequest ? app($this->filterRequest)->validated() : [];
-        $res = $this->service->getAll($filters);
-        return $this->sendResponse($res);
+
+        $config = [
+            'search'     => $request->input('search'),
+            'sortField'  => $request->input('sort_field') ?? 'id',
+            'sortOrder'  => $request->input('sort_order') ?? 'desc',
+            'page'       => (int) $request->input('page', 1),
+            'per_page'    => (int) $request->input('per_page', 10),
+        ];
+
+        $res = $this->service->getAll($filters, $config);
+        return $this->sendResponse(data: $res);
     }
+
 
     public function get_one($id)
     {

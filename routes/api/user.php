@@ -10,14 +10,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\User\Auth\ProfileController;
 use App\Http\Controllers\User\Basket\BasketController;
-use App\Http\Controllers\User\Basket\BasketScheduleController;
 use App\Http\Controllers\User\Basket\UserBasketScheduleController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\Category\CategoryController;
 use App\Http\Controllers\User\SectionController;
 use App\Http\Controllers\User\CityController;
+use App\Http\Controllers\User\ComplaintController;
 use App\Http\Controllers\User\FavoriteController;
 use App\Http\Controllers\User\GovernorateController;
+use App\Http\Controllers\User\MarketController;
 use App\Http\Controllers\User\Order\OrderController;
 use App\Http\Controllers\User\Rating\RatingController;
 use App\Http\Controllers\User\RecipeController;
@@ -172,6 +173,9 @@ Route::prefix('user')->group(
                     Route::get('/free-delivery-status', [\App\Http\Controllers\User\Point\ExchangeController::class, 'freeDeliveryStatus']);
                 });
 
+
+
+
                 // Coupon routes (النظام القديم - للتوافق)
                 // Route::prefix('coupons')->group(function () {
                 //     Route::post('/exchange', [\App\Http\Controllers\User\Point\CouponController::class, 'exchangeForCoupon']);
@@ -179,6 +183,8 @@ Route::prefix('user')->group(
                 //     Route::post('/validate', [\App\Http\Controllers\User\Point\CouponController::class, 'validateCoupon']);
                 // });
             });
+
+
             // Route::prefix('points')->group(function () {
             //     Route::get('/summary', [PointController::class, 'summary']);
             //     Route::get('/transactions', [PointController::class, 'transactions']);
@@ -189,6 +195,31 @@ Route::prefix('user')->group(
             //     Route::get('/', [PointController::class, 'index']); // List all transactions
             //     Route::get('/{id}', [PointController::class, 'show']); // Show single transaction
             // });
+        });
+
+
+        Route::prefix('markter')->middleware(['auth:user'])->group(function () {
+            // إحصائيات المسوق
+            Route::get('/statistics', [MarketController::class, 'statistics']);
+
+            // الطلبات
+            Route::get('/orders', [MarketController::class, 'orders']);
+
+            // العمليات المالية (المحفظة)
+            Route::get('/transactions', [MarketController::class, 'transactions']);
+
+            // طلب سحب
+            Route::post('/withdraw-request', [MarketController::class, 'requestWithdraw']);
+
+            // طلبات السحب السابقة
+            Route::get('/withdraw-requests', [MarketController::class, 'withdrawRequests']);
+        });
+
+
+
+        Route::prefix('complaints')->middleware('auth:user')->group(function () {
+            Route::get('/', [ComplaintController::class, 'index']);
+            Route::post('/store', [ComplaintController::class, 'store']);
         });
     }
 );
