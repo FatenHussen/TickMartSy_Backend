@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\Auth\ResetPasswordRequest;
 use App\Http\Requests\User\Auth\SendOtpRequest;
 use App\Http\Requests\User\Auth\SendPasswordRequest;
+use App\Http\Requests\User\Auth\StoreTokenRequest;
 use App\Http\Requests\User\Auth\UserLoginRequest;
 use App\Http\Requests\User\Auth\UserRegisterRequest;
 use App\Http\Requests\User\Auth\VerifyOtpRequest;
@@ -98,6 +99,16 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $this->service->logout();
+
+        return $this->sendResponse();
+    }
+
+    public function storOrUpdateToken(StoreTokenRequest $request)
+    {
+        /** @var User */
+        $user = auth('user')->user();
+
+        $this->service->storeOrUpdateToken($user, $request->all());
 
         return $this->sendResponse();
     }

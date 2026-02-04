@@ -16,10 +16,6 @@ class AllResource extends JsonResource
             'address' => $this->address,
             'status' => $this->status,
             'is_active' => $this->is_active,
-            'rate_per_order' => $this->rate_per_order,
-
-            'created_at' => $this->created_at?->format('Y-m-d H:i'),
-
         ];
     }
 }

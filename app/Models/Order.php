@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Order extends Model
 {
@@ -22,7 +23,18 @@ class Order extends Model
         'basket_discount',
         'cart_type',
         'coupon_discount',
+        'delivery_code'
     ];
+
+    protected $casts = [
+        'is_instant_delivery' => 'boolean',
+    ];
+    protected static function booted()
+    {
+        static::creating(function ($order) {
+            $order->delivery_code = strtoupper(Str::random(6)); // 6 أحرف كبيرة عشوائية
+        });
+    }
 
     public function items()
     {

@@ -4,6 +4,7 @@ namespace App\Services\User;
 
 use App\Enums\CartType;
 use App\Enums\OrderStatus;
+use App\Events\OrderCreated;
 use App\Http\Resources\Order\OneResource;
 use App\Http\Resources\Order\AllResource;
 use App\Models\Basket;
@@ -86,6 +87,8 @@ class OrderService extends BaseService
                 'coupon_discount'  => round($couponDiscountAmount, 2),
                 'total'            => round($finalTotal, 2),
             ]);
+            OrderCreated::dispatch($order);
+
 
             return new $this->resource($order->load('items'));
         });

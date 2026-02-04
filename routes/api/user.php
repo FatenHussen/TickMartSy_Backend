@@ -47,6 +47,8 @@ Route::prefix('user')->group(
                 // protected routes 
                 Route::middleware(['auth:user'])->group(function () {
                     Route::get('/logout', [AuthController::class, 'logout']);
+                    Route::post('/store-token', [AuthController::class, 'storOrUpdateToken']);
+
                     Route::prefix('/profile')->group(function () {
                         Route::get('/', [ProfileController::class, 'get_profile']);
                         Route::post('/update', [ProfileController::class, 'update_profile']);
@@ -127,7 +129,7 @@ Route::prefix('user')->group(
         });
         // Route::apiResource('orders', OrderController::class)->middleware(['auth:user']);
 
-        Route::apiResource('orders', OrderController::class)->middleware(['auth:user']);
+        Route::apiResource('orders', OrderController::class);
         Route::post('/orders/coupon-preview', [OrderController::class, 'couponPreview'])->middleware(['auth:user']);
         Route::post('/orders/preview', [OrderController::class, 'preview'])->middleware(['auth:user']);
 
@@ -155,12 +157,11 @@ Route::prefix('user')->group(
                 Route::get('/transactions', [PointController::class, 'transactions']);
                 Route::get('/statistics', [PointController::class, 'statistics']);
                 Route::post('/redeem', [PointController::class, 'redeem']);
-                
+
                 // CRUD operations via BaseCRUDController
                 Route::get('/', [PointController::class, 'index']); // List all transactions
                 Route::get('/{id}', [PointController::class, 'show']); // Show single transaction
-                
-                // Exchange routes (النظام الجديد)
+
                 Route::prefix('exchange')->group(function () {
                     Route::get('/options', [\App\Http\Controllers\User\Point\ExchangeController::class, 'options']);
                     Route::post('/coupon', [\App\Http\Controllers\User\Point\ExchangeController::class, 'exchangeForCoupon']);
@@ -169,6 +170,7 @@ Route::prefix('user')->group(
                     Route::get('/history', [\App\Http\Controllers\User\Point\ExchangeController::class, 'history']);
                     Route::get('/free-delivery-status', [\App\Http\Controllers\User\Point\ExchangeController::class, 'freeDeliveryStatus']);
                 });
+
             });
         });
     }
