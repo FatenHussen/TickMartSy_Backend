@@ -1,0 +1,694 @@
+{
+	"info": {
+		"_postman_id": "points-system-collection",
+		"name": "Points System - Complete Flow",
+		"description": "مجموعة شاملة لاختبار نظام النقاط والجوائز",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000/api",
+			"type": "string"
+		},
+		{
+			"key": "user_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1️⃣ Authentication & Registration",
+			"item": [
+				{
+					"name": "Register New User (Get Points)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    console.log('✅ Registration successful - User should get 100 points');",
+									"} else {",
+									"    console.log('❌ Registration failed');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test User Points\",\n    \"email\": \"testpoints@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\",\n    \"city_id\": 1,\n    \"governorate_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/user/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["user", "auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Send OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"testpoints@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/user/auth/send-otp",
+							"host": ["{{base_url}}"],
+							"path": ["user", "auth", "send-otp"]
+						}
+					}
+				},
+				{
+					"name": "Verify OTP (Get Additional Points)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.token) {",
+									"        pm.collectionVariables.set('user_token', response.data.token);",
+									"        pm.collectionVariables.set('user_id', response.data.user.id);",
+									"        console.log('✅ OTP verified - User should get verification points');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"testpoints@example.com\",\n    \"code\": \"12345\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/user/auth/verify-otp",
+							"host": ["{{base_url}}"],
+							"path": ["user", "auth", "verify-otp"]
+						}
+					}
+				},
+				{
+					"name": "Login Existing User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.token) {",
+									"        pm.collectionVariables.set('user_token', response.data.token);",
+									"        pm.collectionVariables.set('user_id', response.data.user.id);",
+									"        console.log('✅ Login successful');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"user@user.com\",\n    \"password\": \"password\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/user/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["user", "auth", "login"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2️⃣ Points Overview",
+			"item": [
+				{
+					"name": "Get Points Summary",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    console.log('💰 Current Balance:', response.data.balance);",
+									"    console.log('⏳ Pending Points:', response.data.pending_points);",
+									"    console.log('💸 Redeemed Points:', response.data.redeemed_points);",
+									"    console.log('⏰ Expires At:', response.data.expire_at_formatted);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/points/summary",
+							"host": ["{{base_url}}"],
+							"path": ["user", "points", "summary"]
+						}
+					}
+				},
+				{
+					"name": "Get All Transactions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/points/transactions",
+							"host": ["{{base_url}}"],
+							"path": ["user", "points", "transactions"]
+						}
+					}
+				},
+				{
+					"name": "Get Earned Points Only",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/points/transactions?status=earned",
+							"host": ["{{base_url}}"],
+							"path": ["user", "points", "transactions"],
+							"query": [
+								{
+									"key": "status",
+									"value": "earned"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Transactions Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/points/statistics",
+							"host": ["{{base_url}}"],
+							"path": ["user", "points", "statistics"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3️⃣ Earn Points Activities",
+			"item": [
+				{
+					"name": "Create Product Rating (Get 10 Points)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    console.log('⭐ Rating created - User should get 10 points');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"rateable_id\": 1,\n    \"type\": \"product\",\n    \"rating\": 5,\n    \"comment\": \"منتج ممتاز! أنصح بشرائه\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/user/ratings",
+							"host": ["{{base_url}}"],
+							"path": ["user", "ratings"]
+						}
+					}
+				},
+				{
+					"name": "Create Order (Get First Order + Completion Points)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('order_id', response.data.id);",
+									"    console.log('🛒 Order created - Will get points when completed');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"address_id\": 1,\n    \"cart_type\": \"default\",\n    \"is_instant_delivery\": false,\n    \"items\": [\n        {\n            \"shop_product_variant_id\": 1,\n            \"quantity\": 2\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/user/orders",
+							"host": ["{{base_url}}"],
+							"path": ["user", "orders"]
+						}
+					}
+				},
+				{
+					"name": "Complete Order (Trigger Points)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    console.log('✅ Order completed - User should get first order (50) + completion (5%) points');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"order_status\": \"completed\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/user/orders/{{order_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["user", "orders", "{{order_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4️⃣ Exchange Options",
+			"item": [
+				{
+					"name": "Get Available Exchange Options",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    console.log('💰 Current Balance:', response.data.current_balance);",
+									"    console.log('🎁 Available Options:', Object.keys(response.data.options));",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/points/exchange/options",
+							"host": ["{{base_url}}"],
+							"path": ["user", "points", "exchange", "options"]
+						}
+					}
+				},
+				{
+					"name": "Check Free Delivery Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/points/exchange/free-delivery-status",
+							"host": ["{{base_url}}"],
+							"path": ["user", "points", "exchange", "free-delivery-status"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "5️⃣ Exchange Points",
+			"item": [
+				{
+					"name": "Exchange for Coupon Discount",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    console.log('🎟️ Coupon created with discount:', response.data.discount_amount);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"points\": 500,\n    \"coupon_id\": null\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/user/points/exchange/coupon",
+							"host": ["{{base_url}}"],
+							"path": ["user", "points", "exchange", "coupon"]
+						}
+					}
+				},
+				{
+					"name": "Exchange for Free Delivery",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    console.log('🚚 Free delivery activated');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"delivery_zones\": [\"all\"]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/user/points/exchange/free-delivery",
+							"host": ["{{base_url}}"],
+							"path": ["user", "points", "exchange", "free-delivery"]
+						}
+					}
+				},
+				{
+					"name": "Exchange for Gift",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    console.log('🎁 Gift requested:', response.data.gift_name);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"gift_id\": 1,\n    \"delivery_address\": {\n        \"name\": \"أحمد محمد\",\n        \"phone\": \"123456789\",\n        \"address\": \"شارع الملك فهد، الرياض\",\n        \"city\": \"الرياض\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/user/points/exchange/gift",
+							"host": ["{{base_url}}"],
+							"path": ["user", "points", "exchange", "gift"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "6️⃣ Exchange History",
+			"item": [
+				{
+					"name": "Get Exchange History",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    console.log('📋 Total exchanges:', response.data.pagination.total);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/points/exchange/history",
+							"host": ["{{base_url}}"],
+							"path": ["user", "points", "exchange", "history"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "7️⃣ Manual Points (Old System)",
+			"item": [
+				{
+					"name": "Manual Redeem Points",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"points\": 100,\n    \"reason\": \"استرداد يدوي للاختبار\",\n    \"reference_type\": \"manual_test\",\n    \"reference_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/user/points/redeem",
+							"host": ["{{base_url}}"],
+							"path": ["user", "points", "redeem"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "8️⃣ Test Order with Free Delivery",
+			"item": [
+				{
+					"name": "Create Order with Free Delivery",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    console.log('🚚 Delivery Price:', response.data.delivery_price);",
+									"    if (response.data.delivery_price === 0) {",
+									"        console.log('✅ Free delivery applied successfully!');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"address_id\": 1,\n    \"cart_type\": \"default\",\n    \"is_instant_delivery\": false,\n    \"items\": [\n        {\n            \"shop_product_variant_id\": 2,\n            \"quantity\": 1\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/user/orders",
+							"host": ["{{base_url}}"],
+							"path": ["user", "orders"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Auto-set base URL if not set",
+					"if (!pm.collectionVariables.get('base_url')) {",
+					"    pm.collectionVariables.set('base_url', 'http://localhost:8000/api');",
+					"}"
+				]
+			}
+		}
+	]
+}

@@ -15,7 +15,6 @@ class PointTransactionResource extends JsonResource
         return [
             'id' => $this->id,
             'points' => $this->points,
-            'points_currency' => $pointsSettings['currency_symbol'] . number_format(abs($this->points) * $pointsSettings['currency_rate'], 2),
             'source' => $this->source,
             'status' => $this->status,
             'type' => $this->getTransactionType(),
@@ -32,10 +31,8 @@ class PointTransactionResource extends JsonResource
                 'type' => $this->reference_type,
                 'id' => $this->reference_id,
             ]),
-            'expires_at' => $this->expires_at?->format('Y-m-d H:i:s'),
-            'expires_at_formatted' => $this->expires_at?->format('d/m/Y'),
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-            'created_at_formatted' => $this->created_at->format('d/m/Y'),
+            'expires_at' => $this->expires_at?->format('Y-m-d'),
+            'created_at' => $this->created_at->format('Y-m-d'),
         ];
     }
 

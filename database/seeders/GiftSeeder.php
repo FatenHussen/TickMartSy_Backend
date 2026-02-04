@@ -16,7 +16,7 @@ class GiftSeeder extends Seeder
                 'image' => 'gifts/coffee-mug.jpg',
                 'points_required' => 500,
                 'stock_quantity' => 50,
-                'category' => 'accessories',
+                'category_id' => null,
                 'terms_conditions' => 'يتم التسليم خلال 7-10 أيام عمل',
             ],
             [
@@ -25,7 +25,7 @@ class GiftSeeder extends Seeder
                 'image' => 'gifts/t-shirt.jpg',
                 'points_required' => 800,
                 'stock_quantity' => 30,
-                'category' => 'clothing',
+                'category_id' => 1,
                 'terms_conditions' => 'متوفر بجميع المقاسات. يتم التسليم خلال 5-7 أيام عمل',
             ],
             [
@@ -34,7 +34,7 @@ class GiftSeeder extends Seeder
                 'image' => 'gifts/bluetooth-headphones.jpg',
                 'points_required' => 1500,
                 'stock_quantity' => 20,
-                'category' => 'electronics',
+                'category_id' => 3,
                 'terms_conditions' => 'ضمان سنة واحدة. يتم التسليم خلال 3-5 أيام عمل',
             ],
             [
@@ -43,7 +43,7 @@ class GiftSeeder extends Seeder
                 'image' => 'gifts/cookbook.jpg',
                 'points_required' => 600,
                 'stock_quantity' => 25,
-                'category' => 'books',
+                'category_id' => 1,
                 'terms_conditions' => 'كتاب مطبوع بجودة عالية. يتم التسليم خلال 2-3 أيام عمل',
             ],
             [
@@ -52,7 +52,7 @@ class GiftSeeder extends Seeder
                 'image' => 'gifts/power-bank.jpg',
                 'points_required' => 1200,
                 'stock_quantity' => 15,
-                'category' => 'electronics',
+                'category_id' => 1,
                 'terms_conditions' => 'ضمان 6 أشهر. يتم التسليم خلال 3-5 أيام عمل',
             ],
             [
@@ -61,7 +61,7 @@ class GiftSeeder extends Seeder
                 'image' => 'gifts/voucher-50.jpg',
                 'points_required' => 2000,
                 'stock_quantity' => null, // Unlimited
-                'category' => 'vouchers',
+                'category_id' => 1,
                 'terms_conditions' => 'صالحة لمدة 6 أشهر من تاريخ الإصدار',
             ],
             [
@@ -70,7 +70,7 @@ class GiftSeeder extends Seeder
                 'image' => 'gifts/voucher-100.jpg',
                 'points_required' => 3500,
                 'stock_quantity' => null, // Unlimited
-                'category' => 'vouchers',
+                'category_id' => 1,
                 'terms_conditions' => 'صالحة لمدة 6 أشهر من تاريخ الإصدار',
             ],
         ];

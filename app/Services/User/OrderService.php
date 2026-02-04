@@ -306,6 +306,7 @@ class OrderService extends BaseService
         $cartType = $data['cart_type'] ?? CartType::DEFAULT->value;
         $basketDiscount = 0;
         $deliveryPrice = 0;
+        $user = auth('user')->user() ?? User::find(1);
 
         switch ($cartType) {
             case CartType::RECIPE->value:
@@ -330,10 +331,20 @@ class OrderService extends BaseService
             default:
                 $variantIds = collect($data['items'])->pluck('shop_product_variant_id')->values()->toArray();
                 $deliveryPrice = CalculateDeliveryPriceService::handle(
-                    user: auth('user')->user() ?? User::find(1),
+                    user: $user,
                     items: $variantIds,
                     addressId: $data['address_id'] ?? null
                 );
+
+                // التحقق من التوصيل المجاني من النقاط
+                try {
+                    $exchangeService = app(\App\Services\PointExchangeService::class);
+                    if ($exchangeService->hasActiveFreeDelivery($user->id)) {
+                        $deliveryPrice = 0;
+                    }
+                } catch (\Throwable $e) {
+                    // تجاهل أخطاء النقاط
+                }
                 break;
         }
 
@@ -444,3 +455,66 @@ class OrderService extends BaseService
         return [$couponApplied, $couponDiscountAmount, $excludedItems];
     }
 }
+    /**
+     * Update order status and award points if completed
+     */
+    // public function updateOrderStatus(int $orderId, string $status): bool
+    // {
+    //     return DB::transaction(function () use ($orderId, $status) {
+    //         $order = Order::findOrFail($orderId);
+    //         $oldStatus = $order->order_status;
+            
+    //         $order->update(['order_status' => $status]);
+
+    //         // منح النقاط عند إتمام الطلب
+    //         if ($status === OrderStatus::COMPLETED->value && $oldStatus !== OrderStatus::COMPLETED->value) {
+    //             try {
+    //                 $pointService = app(\App\Services\PointService::class);
+                    
+    //                 // نقاط أول طلب
+    //                 if (!$pointService->isEventCompleted($order->user_id, 'first_order')) {
+    //                     $pointService->awardPoints(
+    //                         $order->user_id,
+    //                         'first_order',
+    //                         $order->total,
+    //                         'order',
+    //                         $order->id
+    //                     );
+    //                     $pointService->markEventCompleted($order->user_id, 'first_order');
+    //                 }
+                    
+    //                 // نقاط إتمام الطلب (لكل طلب)
+    //                 $pointService->awardPoints(
+    //                     $order->user_id,
+    //                     'order_completion',
+    //                     $order->total,
+    //                     'order',
+    //                     $order->id
+    //                 );
+                    
+    //             } catch (\Throwable $e) {
+    //                 // تجاهل أخطاء النقاط لعدم تعطيل تحديث الطلب
+    //                 Log::error('Points award failed for order: ' . $orderId, ['error' => $e->getMessage()]);
+    //             }
+    //         }
+
+    //         return true;
+    //     });
+    // }
+
+    // /**
+    //  * Override update method to handle status changes
+    //  */
+    // public function update(int $id, array $data)
+    // {
+    //     if (isset($data['order_status'])) {
+    //         $this->updateOrderStatus($id, $data['order_status']);
+    //         unset($data['order_status']);
+    //     }
+
+    //     if (!empty($data)) {
+    //         return parent::update($id, $data);
+    //     }
+
+    //     return $this->show($id);
+    // }

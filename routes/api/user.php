@@ -169,13 +169,6 @@ Route::prefix('user')->group(
                     Route::get('/history', [\App\Http\Controllers\User\Point\ExchangeController::class, 'history']);
                     Route::get('/free-delivery-status', [\App\Http\Controllers\User\Point\ExchangeController::class, 'freeDeliveryStatus']);
                 });
-                
-                // Coupon routes (النظام القديم - للتوافق)
-                Route::prefix('coupons')->group(function () {
-                    Route::post('/exchange', [\App\Http\Controllers\User\Point\CouponController::class, 'exchangeForCoupon']);
-                    Route::get('/my-coupons', [\App\Http\Controllers\User\Point\CouponController::class, 'myCoupons']);
-                    Route::post('/validate', [\App\Http\Controllers\User\Point\CouponController::class, 'validateCoupon']);
-                });
             });
         });
     }

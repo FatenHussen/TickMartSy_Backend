@@ -259,7 +259,10 @@ class PointExchangeService
         return PointExchange::where('user_id', $userId)
             ->where('exchange_type', 'free_delivery')
             ->where('status', 'completed')
-            ->whereJsonContains('exchange_data->expires_at', '>=', now()->toDateString())
+            ->where(function ($query) {
+                $query->whereNull('exchange_data->expires_at')
+                    ->orWhere('exchange_data->expires_at', '>=', now()->toDateString());
+            })
             ->exists();
     }
 }

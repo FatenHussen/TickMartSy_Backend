@@ -17,7 +17,7 @@ class Gift extends Model
         'points_required',
         'stock_quantity',
         'is_active',
-        'category',
+        'category_id',
         'terms_conditions',
     ];
 
