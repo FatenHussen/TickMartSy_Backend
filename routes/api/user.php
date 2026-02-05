@@ -19,6 +19,7 @@ use App\Http\Controllers\User\CityController;
 use App\Http\Controllers\User\FavoriteController;
 use App\Http\Controllers\User\GovernorateController;
 use App\Http\Controllers\User\Order\OrderController;
+use App\Http\Controllers\User\Package\SubscriptionController;
 use App\Http\Controllers\User\Rating\RatingController;
 use App\Http\Controllers\User\RecipeController;
 use App\Http\Controllers\User\Schedule\ScheduleController;
@@ -172,6 +173,12 @@ Route::prefix('user')->group(
                 });
 
             });
+        });
+        Route::get('/packages', [SubscriptionController::class, 'packages']);
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::post('/subscribe', [SubscriptionController::class, 'subscribe']);
+            Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
+            Route::post('/renew', [SubscriptionController::class, 'renew']);
         });
     }
 );

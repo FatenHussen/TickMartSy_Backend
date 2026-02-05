@@ -54,11 +54,11 @@ class ExchangeController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'تم استبدال النقاط بكوبون خصم بنجاح',
-            'data' => [
-                'exchange_id' => $result['exchange']->id,
-                'discount_amount' => $result['discount_amount'],
-                'expires_at' => $result['exchange']->exchange_data['expires_at'],
-            ],
+            // 'data' => [
+            //     'exchange_id' => $result['exchange']->id,
+            //     'discount_amount' => $result['discount_amount'],
+            //     'expires_at' => $result['exchange']->exchange_data['expires_at'],
+            // ],
         ]);
     }
 
@@ -89,10 +89,6 @@ class ExchangeController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'تم استبدال النقاط بتوصيل مجاني بنجاح',
-            'data' => [
-                'exchange_id' => $result['exchange']->id,
-                'expires_at' => $result['exchange']->exchange_data['expires_at'],
-            ],
         ]);
     }
 
@@ -128,11 +124,7 @@ class ExchangeController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'تم طلب الهدية بنجاح. سيتم التواصل معك لترتيب التسليم.',
-            'data' => [
-                'exchange_id' => $result['exchange']->id,
-                'gift_name' => $result['gift']->name,
-                'status' => $result['exchange']->status,
-            ],
+
         ]);
     }
 

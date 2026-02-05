@@ -101,4 +101,9 @@ class User extends Authenticatable
     {
         return $this->morphMany(UserToken::class, 'tokenable');
     }
+    public function subscription()
+    {
+        return $this->hasOne(Subscription::class)
+            ->where('status', 'active');
+    }
 }
