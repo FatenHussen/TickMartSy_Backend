@@ -20,6 +20,7 @@ use App\Http\Controllers\User\FavoriteController;
 use App\Http\Controllers\User\GovernorateController;
 use App\Http\Controllers\User\Order\OrderController;
 use App\Http\Controllers\User\Package\SubscriptionController;
+use App\Http\Controllers\User\PaymentMethodController;
 use App\Http\Controllers\User\Rating\RatingController;
 use App\Http\Controllers\User\RecipeController;
 use App\Http\Controllers\User\Schedule\ScheduleController;
@@ -97,7 +98,10 @@ Route::prefix('user')->group(
             // Public routes
             Route::get('/', [CategoryController::class, 'index']);
         });
-
+        Route::prefix('payment-methods')->group(function () {
+            // Public routes
+            Route::get('/', [PaymentMethodController::class, 'index']);
+        });
         // Brand routes
         Route::prefix('brands')->group(function () {
             // Public routes
