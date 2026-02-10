@@ -44,7 +44,7 @@ class DatabaseSeeder extends Seeder
             RecipeSeeder::class,
             BasketSeeder::class,
             BasketItemSeeder::class,
-            // UserSeeder::class,
+            UserSeeder::class,
             // BasketItemCompanySeeder::class,
             BasketScheduleSeeder::class,
             ScheduleSeeder::class,
@@ -59,9 +59,9 @@ class DatabaseSeeder extends Seeder
             PaymentMethodSeeder::class,
             DriverSeeder::class,
             RatingSeeder::class,
-            UserSeeder::class,
+            // UserSeeder::class,
             UserAddressSeeder::class,
-            // DriverSeeder::class,
+            DriverSeeder::class,
             OrderWithItemsSeeder::class,
         ]);
         User::create([
