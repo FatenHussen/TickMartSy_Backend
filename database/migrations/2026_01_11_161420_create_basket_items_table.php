@@ -18,16 +18,18 @@ return new class extends Migration
             $table->foreignId('variant_id')->constrained('product_variants');
 
             $table->foreignId('shop_product_variant_id')->nullable()->constrained('shop_product_variants');
+            $table->json('shop_product_variant_ids')->nullable();
 
             $table->integer('quantity')->unsigned()->default(1);
-           $table->boolean('is_required')->default(false);
+            $table->boolean('is_required')->default(false);
+            $table->boolean('is_extra')->default(false);
+
             $table->integer('min_quantity')->default(1);
             $table->integer('max_quantity')->default(10);
 
-            $table->decimal('price', 10, 2);  
+            $table->decimal('price', 10, 2);
 
             $table->timestamps();
-
         });
     }
 

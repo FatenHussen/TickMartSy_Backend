@@ -36,10 +36,13 @@ class OneResource extends JsonResource
             'is_on_offer' => $this->offer_ends_at && $this->offer_ends_at->isFuture(),
 
             'items' => $this->whenLoaded('items', function () {
-                return BasketItemResource::collection($this->items);
+                return BasketItemResource::collection($this->items->where('is_extra', 0));
             }),
 
-
+            'extras' => $this->whenLoaded('items', function () {
+                return BasketItemResource::collection($this->items->where('is_extra', 1));
+            }) ?? [],
+            
             'schedules' => $this->is_schedule
                 ? BasketScheduleAllResource::collection($this->schedules)
                 : [],

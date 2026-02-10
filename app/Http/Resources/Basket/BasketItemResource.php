@@ -14,6 +14,7 @@ class BasketItemResource extends JsonResource
             'unit_price' => round($this->price, 2),
             'subtotal' => $this->subtotal,
             'is_required' => $this->is_required,
+            'is_extra' => $this->is_extra,
             'min_quantity' => (int) $this->min_quantity,
             'max_quantity' => (int) $this->max_quantity,
             'can_adjust' => $this->canAdjustQuantity(),

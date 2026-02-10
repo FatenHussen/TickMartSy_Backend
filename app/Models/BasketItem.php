@@ -21,13 +21,18 @@ class BasketItem extends Model
         'min_quantity',
         'max_quantity',
         'price',
-        'shop_product_variant_id'
+        'shop_product_variant_id',
+        'is_extra',
+        'shop_product_variant_ids'
 
     ];
 
     protected $casts = [
         'is_required' => 'boolean',
+        'is_extra' => 'boolean',
         'price'       => 'decimal:2',
+        'shop_product_variant_ids' => 'array',
+
     ];
 
 

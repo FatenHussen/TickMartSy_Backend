@@ -47,6 +47,7 @@ class BasketItemSeeder extends Seeder
                         'basket_id'     => $basketId,
                         'min_quantity'  => 1,
                         'max_quantity'  => 10,
+                        'is_extra'      => $itemData['is_required'] ? 0 : 1,
                     ]
                 ));
 
@@ -54,7 +55,7 @@ class BasketItemSeeder extends Seeder
                     BasketItemCompany::create([
                         'basket_item_id' => $basketItem->id,
                         'brand_id'       => $brand->id,
-                        'is_default'     => $index === 0, // أول براند default
+                        'is_default'     => $index === 0, 
                         'company_specific_price' => null,
                     ]);
                 }
