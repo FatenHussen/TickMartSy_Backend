@@ -7,6 +7,7 @@ use App\Enums\OrderStatus;
 use App\Events\OrderCreated;
 use App\Http\Resources\Order\OneResource;
 use App\Http\Resources\Order\AllResource;
+use App\Models\AffiliateWalletTransaction;
 use App\Models\Basket;
 use App\Models\Order;
 use App\Models\Recipe;
@@ -121,6 +122,23 @@ class OrderService extends BaseService
                 'affiliate_rate'   => $affiliateRate,
                 'affiliate_source' => $affiliateSource, // link | coupon | null
             ]);
+
+
+            // =======================
+            // تسجيل العمولة في المحفظة
+            // =======================
+            if ($affiliateId && $affiliateRate) {
+                $commissionAmount = round($finalTotal * ($affiliateRate / 100), 2);
+
+                AffiliateWalletTransaction::create([
+                    'affiliate_id' => $affiliateId,
+                    'type' => 'commission',
+                    'amount' => $commissionAmount,
+                    'order_id' => $order->id,
+                    'status' => 'completed',
+                ]);
+            }
+
             OrderCreated::dispatch($order);
 
             return new $this->resource($order->load('items'));

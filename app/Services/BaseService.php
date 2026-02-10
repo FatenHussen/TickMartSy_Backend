@@ -73,6 +73,10 @@ abstract class BaseService
 
     protected function handleRelations($object, array &$data)
     {
+        Log::info("handleRelations", [
+            'object' => $object,
+            'data' => $data
+        ]);
         if (!property_exists($this, 'syncRelations')) {
             return;
         }
@@ -110,8 +114,6 @@ abstract class BaseService
             }
         }
     }
-
-
 
     protected function handleMedia($model, array $data)
     {

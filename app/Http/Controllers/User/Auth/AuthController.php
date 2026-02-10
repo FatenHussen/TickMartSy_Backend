@@ -33,6 +33,7 @@ class AuthController extends Controller
         Login
     ========================= */
 
+
     public function login(UserLoginRequest $request)
     {
         $user = $this->service->login($request->validated());

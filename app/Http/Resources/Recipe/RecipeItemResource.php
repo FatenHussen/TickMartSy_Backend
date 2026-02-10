@@ -19,9 +19,9 @@ class RecipeItemResource extends JsonResource
         $same_shop = [];
         $other_shops = [];
 
-        if ($this->switchable_category_level) {
+        if ($this->switchable_category_id) {
 
-            $parentCategory = Category::find($this->switchable_category_level);
+            $parentCategory = Category::find($this->switchable_category_id);
 
             if ($parentCategory) {
 
@@ -58,6 +58,7 @@ class RecipeItemResource extends JsonResource
         return [
             'terms' => [
                 'is_required' => $this->is_required,
+                'switchable_category_id' => $this->switchable_category_id,
                 'default_quantity' => $this->quantity,
                 'min_quantity' => $this->min_quantity ?? $this->quantity,
                 'max_quantity' => $this->max_quantity ?? $this->quantity,

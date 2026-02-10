@@ -58,6 +58,7 @@ Route::prefix('driver')->group(
         Route::prefix('orders')->group(function () {
             Route::middleware(['auth:driver'])->group(function () {
                 Route::get('/', [OrderController::class, 'orders']);
+                Route::get('/to-assigned', [OrderController::class, 'ordersToAssigned']);
                 Route::get('statistics', [OrderController::class, 'statistics']);
                 Route::post('accept/{orderId}', [OrderController::class, 'accept']);
                 Route::post('item-out-delivery/{itemId}', [OrderController::class, 'itemOutDelivery']);

@@ -19,6 +19,12 @@ class AllResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'phone' => $this->phone,
+            // Affiliate / Marketer info
+            'affiliate' => [
+                'is_affiliate' => (bool) $this->is_affiliate,
+                'affiliate_approved'     => (bool) $this->affiliate_approved,
+                'affiliate_id' => $this->affiliate_approved ? $this->affiliate_id : null,
+            ],
             'created_at' => $this->created_at?->format('Y-m-d H:i'),
 
         ];

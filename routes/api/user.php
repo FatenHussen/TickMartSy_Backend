@@ -10,14 +10,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\User\Auth\ProfileController;
 use App\Http\Controllers\User\Basket\BasketController;
-use App\Http\Controllers\User\Basket\BasketScheduleController;
 use App\Http\Controllers\User\Basket\UserBasketScheduleController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\Category\CategoryController;
 use App\Http\Controllers\User\SectionController;
 use App\Http\Controllers\User\CityController;
+use App\Http\Controllers\User\ComplaintController;
 use App\Http\Controllers\User\FavoriteController;
 use App\Http\Controllers\User\GovernorateController;
+use App\Http\Controllers\User\MarketController;
 use App\Http\Controllers\User\Order\OrderController;
 use App\Http\Controllers\User\Package\SubscriptionController;
 use App\Http\Controllers\User\PaymentMethodController;
@@ -132,9 +133,9 @@ Route::prefix('user')->group(
                 Route::delete('/{id}', [RatingController::class, 'destroy']);
             });
         });
-        // Route::apiResource('orders', OrderController::class)->middleware(['auth:user']);
+        Route::apiResource('orders', OrderController::class)->middleware(['auth:user']);
 
-        Route::apiResource('orders', OrderController::class);
+        // Route::apiResource('orders', OrderController::class);
         Route::post('/orders/coupon-preview', [OrderController::class, 'couponPreview'])->middleware(['auth:user']);
         Route::post('/orders/preview', [OrderController::class, 'preview'])->middleware(['auth:user']);
 
@@ -175,7 +176,6 @@ Route::prefix('user')->group(
                     Route::get('/history', [\App\Http\Controllers\User\Point\ExchangeController::class, 'history']);
                     Route::get('/free-delivery-status', [\App\Http\Controllers\User\Point\ExchangeController::class, 'freeDeliveryStatus']);
                 });
-
             });
         });
         Route::get('/packages', [SubscriptionController::class, 'packages']);
@@ -183,6 +183,41 @@ Route::prefix('user')->group(
             Route::post('/subscribe', [SubscriptionController::class, 'subscribe']);
             Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
             Route::post('/renew', [SubscriptionController::class, 'renew']);
+
+
+
+            // Coupon routes (النظام القديم - للتوافق)
+            // Route::prefix('coupons')->group(function () {
+            //     Route::post('/exchange', [\App\Http\Controllers\User\Point\CouponController::class, 'exchangeForCoupon']);
+            //     Route::get('/my-coupons', [\App\Http\Controllers\User\Point\CouponController::class, 'myCoupons']);
+            //     Route::post('/validate', [\App\Http\Controllers\User\Point\CouponController::class, 'validateCoupon']);
+            // });
+        });
+
+
+        // Route::prefix('points')->group(function () {
+        //     Route::get('/summary', [PointController::class, 'summary']);
+        //     Route::get('/transactions', [PointController::class, 'transactions']);
+        //     Route::get('/statistics', [PointController::class, 'statistics']);
+        //     Route::post('/redeem', [PointController::class, 'redeem']);
+
+        //     // CRUD operations via BaseCRUDController
+        //     Route::get('/', [PointController::class, 'index']); // List all transactions
+        //     Route::get('/{id}', [PointController::class, 'show']); // Show single transaction
+        // });
+
+
+        Route::prefix('markter')->middleware(['auth:user'])->group(function () {
+            Route::get('/statistics', [MarketController::class, 'statistics']);
+            Route::get('/orders', [MarketController::class, 'orders']);
+            Route::get('/transactions', [MarketController::class, 'transactions']);
+            Route::post('/withdraw-request', [MarketController::class, 'requestWithdraw']);
+            Route::get('/withdraw-requests', [MarketController::class, 'withdrawRequests']);
+        });
+
+        Route::prefix('complaints')->middleware(['auth:user'])->group(function () {
+            Route::get('/', [ComplaintController::class, 'index']);
+            Route::post('/store', [ComplaintController::class, 'store']);
         });
     }
 );

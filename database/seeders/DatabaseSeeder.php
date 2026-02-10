@@ -62,7 +62,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'User',
             'email' => 'user@user.com',
             'password' => Hash::make('password'),
-            'city_id' => 1
+            'area_id' => 1
         ]);
     }
 }

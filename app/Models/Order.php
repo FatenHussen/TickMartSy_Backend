@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
@@ -28,7 +29,12 @@ class Order extends Model
         //markter
         'affiliate_id',
         'affiliate_rate',
-        'affiliate_source'
+        'affiliate_source',
+        'pending_at',
+        'preparing_at',
+        'out_delivery_at',
+        'delivered_at',
+        'driver_id',
 
     ];
 
@@ -47,12 +53,6 @@ class Order extends Model
                 ? round($this->total * ($this->affiliate_rate / 100), 2)
                 : 0
         );
-    }
-    protected static function booted()
-    {
-        static::creating(function ($order) {
-            $order->delivery_code = strtoupper(Str::random(6)); // 6 أحرف كبيرة عشوائية
-        });
     }
 
     public function items()
@@ -73,5 +73,29 @@ class Order extends Model
     public function address()
     {
         return $this->belongsTo(UserAddress::class);
+    }
+
+    protected static function booted()
+    {
+        static::creating(function ($order) {
+            $order->delivery_code = strtoupper(Str::random(6));
+        });
+
+        static::updating(function ($order) {
+            if ($order->isDirty('status')) {
+                $timestampsMap = [
+                    OrderStatus::PENDING->value      => 'pending_at',
+                    OrderStatus::PREPARING->value    => 'preparing_at',
+                    OrderStatus::OUT_DELIVERY->value => 'out_delivery_at',
+                    OrderStatus::DELIVERED->value    => 'delivered_at',
+                ];
+
+                $field = $timestampsMap[$order->status] ?? null;
+
+                if ($field && is_null($order->$field)) {
+                    $order->$field = now();
+                }
+            }
+        });
     }
 }

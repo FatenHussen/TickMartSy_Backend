@@ -23,9 +23,8 @@ class Recipe extends Model implements Sectionable
         'discount',
         'rating',
         'orders_count',
-        'top_badge_id',
-        'bottom_badge_id',
-        'is_active'
+        'is_active',
+        'delivery_price'
     ];
 
     protected $casts = [

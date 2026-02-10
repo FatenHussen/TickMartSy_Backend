@@ -28,6 +28,9 @@ class UpdateRequest extends FormRequest
             'name.en'              => 'nullable|string|max:255',
             'city_id' => 'nullable|exists:cities,id',
             'is_active'            => 'nullable|boolean',
+            'base_fee' => 'nullable|numeric',
+            'lat' => 'nullable',
+            'lng' => 'nullable'
         ];
     }
 }

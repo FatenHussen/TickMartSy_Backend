@@ -27,8 +27,7 @@ class OneResource extends JsonResource
             'lng' => $this->lng,
             'is_default' => $this->is_default,
             'area' => AreaOneResource::make($this->area),
-            'created_at' => $this->created_at->toDateTimeString(),
-            'updated_at' => $this->updated_at->toDateTimeString(),
+            'created_at' => $this->created_at?->toDateTimeString(),
         ];
     }
 }

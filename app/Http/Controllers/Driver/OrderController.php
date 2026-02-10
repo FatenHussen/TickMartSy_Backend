@@ -29,6 +29,22 @@ class OrderController extends Controller
     }
 
     /* =======================
+       📦 GET ORDERS
+    ======================= */
+    public function ordersToAssigned(Request $request)
+    {
+        $data = $request->validate([
+            'status' => 'nullable|in:pending,preparing'
+        ]);
+
+        $res = $this->service->ordersToAssigned($data);
+
+        return $this->sendResponse(
+            data: AllResource::collection($res)
+        );
+    }
+
+    /* =======================
        ✅ ACCEPT ORDER
     ======================= */
     public function accept(int $orderId)

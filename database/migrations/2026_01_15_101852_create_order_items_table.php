@@ -31,6 +31,12 @@ return new class extends Migration
             /** Product discount percentage (ONLY for default cart) */
             $table->unsignedBigInteger('discount')->default(0);
 
+
+            $table->timestamp('pending_at')->nullable();
+            $table->timestamp('preparing_at')->nullable();
+            $table->timestamp('out_delivery_at')->nullable();
+            $table->timestamp('delivered_at')->nullable();
+
             $table->timestamps();
         });
     }

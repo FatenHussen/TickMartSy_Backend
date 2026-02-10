@@ -30,6 +30,9 @@ class OneResource extends JsonResource
             'basket_discount' => $this->basket_discount,
             'coupon_discount' => $this->coupon_discount,
             'created_at' => $this->created_at?->toDateTimeString(),
+            'affiliate_rate' => $this->affiliate_rate,
+            'affiliate_source' => $this->affiliate_source,
+            'affiliate_commission' => $this->affiliate_commission,
             'user' => AllResource::make($this->user),
             'driver' => DriverAllResource::make($this->driver),
 

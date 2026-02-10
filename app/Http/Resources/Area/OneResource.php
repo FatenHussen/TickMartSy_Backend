@@ -19,8 +19,10 @@ class OneResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'city' => CityOneResource::make($this->city),
+            'base_fee' => $this->base_fee,
+            'lat' => $this->lat,
+            'lng' => $this->lng,
             'created_at' => $this->created_at?->format('Y-m-d H:i'),
-
         ];
     }
 }
