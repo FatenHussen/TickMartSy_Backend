@@ -59,6 +59,10 @@ class DatabaseSeeder extends Seeder
             PaymentMethodSeeder::class,
             DriverSeeder::class,
             RatingSeeder::class,
+            UserSeeder::class,
+            UserAddressSeeder::class,
+            // DriverSeeder::class,
+            OrderWithItemsSeeder::class,
         ]);
         User::create([
             'name' => 'User',

@@ -16,8 +16,8 @@ class DriverSeeder extends Seeder
     {
         $drivers = [
             [
-                'name' => 'أحمد محمد',
-                'phone' => '0123456789',
+                'name' => 'حمزة فواز',
+                'phone' => '0993359825',
                 'password' => Hash::make('123456'),
                 'address' => 'شارع الملك فيصل، وسط البلد',
                 'status' => 'available',
@@ -74,7 +74,7 @@ class DriverSeeder extends Seeder
 
         foreach ($drivers as $driverData) {
             $driver = Driver::create($driverData);
-            
+
             // Assign random areas to each driver (1-3 areas)
             $areas = Area::inRandomOrder()->take(rand(1, 3))->pluck('id');
             if ($areas->isNotEmpty()) {

@@ -18,7 +18,9 @@ class OrderController extends Controller
     public function orders(Request $request)
     {
         $data = $request->validate([
-            'status' => 'required|in:pending,preparing,out_delivery,delivered'
+            'status' => 'required|in:pending,preparing,out_delivery,delivered',
+            'assigned_by' => 'nullable|in:admin,driver',
+
         ]);
 
         $res = $this->service->orders($data);
@@ -34,7 +36,8 @@ class OrderController extends Controller
     public function ordersToAssigned(Request $request)
     {
         $data = $request->validate([
-            'status' => 'nullable|in:pending,preparing'
+            'status' => 'nullable|in:pending,preparing',
+
         ]);
 
         $res = $this->service->ordersToAssigned($data);
@@ -86,12 +89,12 @@ class OrderController extends Controller
        ✅ DELIVER ORDER (final)
     ======================= */
 
-    public function deliver(Request $request, int $orderId)
+    public function deliver(int $orderId)
     {
-        $data = $request->validate([
-            'code' => 'required|string'
-        ]);
-        $this->service->deliver($orderId, $data['code']);
+        // $data = $request->validate([
+        //     'code' => 'nullable|string'
+        // ]);
+        $this->service->deliver($orderId);
 
 
         return $this->sendResponse(

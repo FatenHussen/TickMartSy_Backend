@@ -55,6 +55,8 @@ return new class extends Migration
             $table->timestamp('out_delivery_at')->nullable();
             $table->timestamp('delivered_at')->nullable();
 
+            $table->enum('assigned_by', ['admin', 'driver'])->nullable();
+
             $table->timestamps();
         });
     }
