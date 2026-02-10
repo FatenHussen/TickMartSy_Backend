@@ -44,7 +44,7 @@ class DatabaseSeeder extends Seeder
             RecipeSeeder::class,
             BasketSeeder::class,
             BasketItemSeeder::class,
-            UserSeeder::class,
+            // UserSeeder::class,
             // BasketItemCompanySeeder::class,
             BasketScheduleSeeder::class,
             ScheduleSeeder::class,
