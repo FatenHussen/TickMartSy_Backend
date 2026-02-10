@@ -22,10 +22,9 @@ class StoreRequest extends FormRequest
 
             'address' => 'nullable|string|max:500',
             'commercial_register_number' => 'nullable|string|max:255',
-            'commercial_register_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
-            'gender' => 'nullable|in:male,female',
+            'commercial_register_date' => 'nullable|date',
             'country' => 'nullable|string|max:100',
-
+            'city' => 'nullable|string|max:100',
             'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ];
     }

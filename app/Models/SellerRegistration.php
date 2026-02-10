@@ -19,9 +19,9 @@ class SellerRegistration extends Model
         'registered_at',
         'address',
         'commercial_register_number',
-        'commercial_register_image',
-        'gender',
+        'commercial_register_date',
         'country',
+        'city',
         'logo',
         'status',
     ];

@@ -17,9 +17,9 @@ return new class extends Migration {
             $table->timestamp('registered_at')->nullable();
             $table->string('address')->nullable();
             $table->string('commercial_register_number')->nullable();
-            $table->string('commercial_register_image')->nullable();
-            $table->enum('gender', ['male', 'female'])->nullable();
+            $table->date('commercial_register_date')->nullable();
             $table->string('country')->nullable();
+            $table->string('city')->nullable();
             $table->string('logo')->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamps();

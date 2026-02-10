@@ -51,11 +51,6 @@ class BasketItem extends Model
         return $this->belongsTo(ProductVariant::class, 'variant_id');
     }
 
-    public function companies(): HasMany
-    {
-        return $this->hasMany(BasketItemCompany::class, 'basket_item_id');
-    }
-
     public function canAdjustQuantity(): bool
     {
         if (!$this->is_required) {

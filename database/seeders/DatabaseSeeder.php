@@ -56,7 +56,8 @@ class DatabaseSeeder extends Seeder
             PointRuleSeeder::class,
             ExchangeSettingsSeeder::class,
             GiftSeeder::class,
-            PaymentMethodSeeder::class
+            PaymentMethodSeeder::class,
+            DriverSeeder::class
         ]);
         User::create([
             'name' => 'User',
@@ -66,3 +67,4 @@ class DatabaseSeeder extends Seeder
         ]);
     }
 }
+      
