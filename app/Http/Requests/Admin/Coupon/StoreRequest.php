@@ -1,0 +1,88 @@
+<?php
+
+namespace App\Http\Requests\Admin\Coupon;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class StoreRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'name' => ['required', 'array'],
+            'name.*' => ['required', 'string', 'max:255'],
+
+            'code' => [
+                'required',
+                'string',
+                'max:50',
+                'unique:coupons,code',
+            ],
+
+            'discount_type' => [
+                'required',
+                Rule::in(['percentage', 'fixed']),
+            ],
+
+            'discount_value' => [
+                'required',
+                'numeric',
+                'min:0',
+            ],
+
+            'start_at' => [
+                'required',
+                'date',
+            ],
+
+            'end_at' => [
+                'required',
+                'date',
+                'after:start_at',
+            ],
+
+            'max_uses' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
+
+            'city_id' => [
+                'nullable',
+                'exists:cities,id',
+            ],
+
+            'user_id' => [
+                'nullable',
+                'exists:users,id',
+            ],
+
+            'is_active' => [
+                'boolean',
+            ],
+
+            // Relations (اختياري)
+            'products' => ['sometimes', 'array'],
+            'products.*.id' => ['exists:products,id'],
+
+            'categories' => ['sometimes', 'array'],
+            'categories.*.id' => ['exists:categories,id'],
+
+            'vendors' => ['sometimes', 'array'],
+            'vendors.*.id' => ['exists:vendors,id'],
+        ];
+    }
+    public function messages(): array
+    {
+        return [
+            'end_at.after' => 'تاريخ الانتهاء يجب أن يكون بعد تاريخ البداية',
+            'code.unique' => 'كود الكوبون مستخدم من قبل',
+        ];
+    }
+}

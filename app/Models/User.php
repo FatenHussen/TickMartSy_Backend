@@ -24,7 +24,7 @@ class User extends Authenticatable
         'password',
         'email_verified_at',
         'phone_verified_at',
-        'city_id',
+        'area_id',
         'image',
 
         //markter
@@ -76,9 +76,9 @@ class User extends Authenticatable
     //     return $this->mainImage?->path;
     // }
 
-    public function city()
+    public function area()
     {
-        return $this->belongsTo(City::class);
+        return $this->belongsTo(Area::class);
     }
 
     public function coupon()

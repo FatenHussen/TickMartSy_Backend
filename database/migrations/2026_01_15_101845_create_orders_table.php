@@ -49,6 +49,12 @@ return new class extends Migration
             /** Final */
             $table->unsignedBigInteger('total')->default(0);
 
+
+            $table->timestamp('pending_at')->nullable();
+            $table->timestamp('preparing_at')->nullable();
+            $table->timestamp('out_delivery_at')->nullable();
+            $table->timestamp('delivered_at')->nullable();
+
             $table->timestamps();
         });
     }

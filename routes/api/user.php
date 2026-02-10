@@ -197,27 +197,15 @@ Route::prefix('user')->group(
             // });
         });
 
-
         Route::prefix('markter')->middleware(['auth:user'])->group(function () {
-            // إحصائيات المسوق
             Route::get('/statistics', [MarketController::class, 'statistics']);
-
-            // الطلبات
             Route::get('/orders', [MarketController::class, 'orders']);
-
-            // العمليات المالية (المحفظة)
             Route::get('/transactions', [MarketController::class, 'transactions']);
-
-            // طلب سحب
             Route::post('/withdraw-request', [MarketController::class, 'requestWithdraw']);
-
-            // طلبات السحب السابقة
             Route::get('/withdraw-requests', [MarketController::class, 'withdrawRequests']);
         });
 
-
-
-        Route::prefix('complaints')->middleware('auth:user')->group(function () {
+        Route::prefix('complaints')->group(function () {
             Route::get('/', [ComplaintController::class, 'index']);
             Route::post('/store', [ComplaintController::class, 'store']);
         });

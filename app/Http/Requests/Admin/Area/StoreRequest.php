@@ -18,6 +18,9 @@ class StoreRequest extends FormRequest
             'name.en'              => 'required|string|max:255',
             'city_id' => 'required|exists:cities,id',
             'is_active'            => 'nullable|boolean',
+            'base_fee' => 'required|numeric',
+            'lat' => 'required',
+            'lng' => 'required'
         ];
     }
 }

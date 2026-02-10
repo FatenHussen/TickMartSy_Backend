@@ -19,7 +19,7 @@ class ComplaintService
         }
 
         return Complaint::create([
-            'user_id'  => auth('user')->id(),
+            'user_id'  => auth('user')->id() ?? 1,
             'order_id' => $data['order_id'],
             'message'  => $data['message'],
             'type'  => $data['type'],

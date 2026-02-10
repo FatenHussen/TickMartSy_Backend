@@ -18,13 +18,11 @@ return new class extends Migration
             $table->json('description')->nullable();
             $table->string('image')->nullable();
             $table->string('video_url')->nullable();
-
-
             $table->decimal('discount', 5, 2)->default(0);
+            $table->enum('discount_type', ['fixed', 'percentage'])->default('percentage');
             $table->unsignedInteger('delivery_price')->default(0);
             $table->float('rating')->default(0);
             $table->integer('orders_count')->default(0);
-
             $table->timestamps();
         });
     }

@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Admin\Area;
+namespace App\Http\Requests\Admin\Complaint;
 
+use App\Enums\ComplaintStatus;
+use App\Enums\ComplaintType;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Log;
 
 class UpdateRequest extends FormRequest
 {
@@ -22,15 +23,13 @@ class UpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $adminId = $this->route('admin');
         return [
-            'name.ar'              => 'nullable|string|max:255',
-            'name.en'              => 'nullable|string|max:255',
-            'city_id' => 'nullable|exists:cities,id',
-            'is_active'            => 'nullable|boolean',
-            'base_fee' => 'nullable|numeric',
-            'lat' => 'nullable',
-            'lng' => 'nullable'
+            'status'   => [
+                'required',
+                'in:resolved,rejected',
+            ],
+            'admin_response' => ['required', 'string'],
+
         ];
     }
 }

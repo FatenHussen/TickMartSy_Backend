@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources\Complaint;
 
+use App\Http\Resources\EndUser\AllResource as EndUserAllResource;
+use App\Http\Resources\Order\AllResource as OrderAllResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -22,6 +24,7 @@ class AllResource extends JsonResource
             'type'       => $this->type->value,
             'admin_response' => $this->admin_response,
             'images'       => $this->images,
+            'user' => EndUserAllResource::make($this->user),
             'created_at'   => $this->created_at?->toDateTimeString(),
         ];
     }

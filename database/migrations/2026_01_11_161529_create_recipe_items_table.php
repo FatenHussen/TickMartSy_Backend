@@ -22,7 +22,7 @@ return new class extends Migration
                 ->constrained('shop_product_variants')
                 ->cascadeOnDelete();
 
-            $table->unsignedTinyInteger('switchable_category_level')->nullable();
+            $table->foreignId('switchable_category_id')->nullable()->constrained('categories');
 
             $table->unsignedInteger('quantity')->default(1);
             $table->boolean('is_required')->default(false);

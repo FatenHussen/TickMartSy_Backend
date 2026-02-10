@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -19,6 +20,11 @@ class OrderItem extends Model
         'price',
         'discount',
         'item_status',
+        'pending_at',
+        'preparing_at',
+        'out_delivery_at',
+        'delivered_at',
+        'driver_id',
     ];
 
     // العلاقة مع الـ order
@@ -37,4 +43,24 @@ class OrderItem extends Model
     protected $casts = [
         'variant_attributes' => 'array',
     ];
+
+    protected static function booted()
+    {
+        static::updating(function ($item) {
+            if ($item->isDirty('item_status')) {
+                $timestampsMap = [
+                    OrderStatus::PENDING->value      => 'pending_at',
+                    OrderStatus::PREPARING->value    => 'preparing_at',
+                    OrderStatus::OUT_DELIVERY->value => 'out_delivery_at',
+                    OrderStatus::DELIVERED->value    => 'delivered_at',
+                ];
+
+                $field = $timestampsMap[$item->item_status] ?? null;
+
+                if ($field && is_null($item->$field)) {
+                    $item->$field = now();
+                }
+            }
+        });
+    }
 }

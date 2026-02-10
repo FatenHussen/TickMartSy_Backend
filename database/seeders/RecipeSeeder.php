@@ -144,7 +144,7 @@ class RecipeSeeder extends Seeder
             'recipe_id' => $recipe->id,
             'shop_product_variant_id' => $shortShopVariant->id,
             'quantity' => 1,
-            'switchable_category_level' => $riceBulgur->id,
+            'switchable_category_id' => $riceBulgur->id,
             'is_required' => true,
             'min_quantity' => 1,
             'max_quantity' => 5,
