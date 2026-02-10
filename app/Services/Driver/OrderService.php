@@ -17,22 +17,21 @@ class OrderService
     {
         $driverId = auth('driver')->id();
 
-        $query = Order::query();
+        return $query = Order::query()
+            ->where('status', $data['status'])
+            ->where('driver_id', $driverId)
+            ->latest()
+            ->get();
+    }
 
-        return match ($data['status']) {
-            'pending' => $query
-                ->where('status', OrderStatus::PENDING->value)
-                ->where('is_instant_delivery', true)
-                ->whereNull('driver_id')
-                ->latest()
-                ->get(),
-
-            default => $query
-                ->where('status', $data['status'])
-                ->where('driver_id', $driverId)
-                ->latest()
-                ->get(),
-        };
+    public function ordersToAssigned(array $data)
+    {
+        return $query = Order::query()
+            ->whereIn('status', [OrderStatus::PENDING->value, OrderStatus::PREPARING->value])
+            ->where('is_instant_delivery', true)
+            ->whereNull('driver_id')
+            ->latest()
+            ->get();
     }
 
     /* =======================

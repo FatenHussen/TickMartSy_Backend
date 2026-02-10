@@ -128,9 +128,9 @@ Route::prefix('user')->group(
                 Route::delete('/{id}', [RatingController::class, 'destroy']);
             });
         });
-        // Route::apiResource('orders', OrderController::class)->middleware(['auth:user']);
+        Route::apiResource('orders', OrderController::class)->middleware(['auth:user']);
 
-        Route::apiResource('orders', OrderController::class);
+        // Route::apiResource('orders', OrderController::class);
         Route::post('/orders/coupon-preview', [OrderController::class, 'couponPreview'])->middleware(['auth:user']);
         Route::post('/orders/preview', [OrderController::class, 'preview'])->middleware(['auth:user']);
 
@@ -205,7 +205,7 @@ Route::prefix('user')->group(
             Route::get('/withdraw-requests', [MarketController::class, 'withdrawRequests']);
         });
 
-        Route::prefix('complaints')->group(function () {
+        Route::prefix('complaints')->middleware(['auth:user'])->group(function () {
             Route::get('/', [ComplaintController::class, 'index']);
             Route::post('/store', [ComplaintController::class, 'store']);
         });
