@@ -10,7 +10,7 @@ class BasketScheduleSeeder extends Seeder
 {
     public function run(): void
     {
-        $baskets = Basket::all();
+        $baskets = Basket::where('is_schedule', 1)->get();
 
         if ($baskets->isEmpty()) {
             $this->command->warn('No baskets found, skipping BasketScheduleSeeder.');

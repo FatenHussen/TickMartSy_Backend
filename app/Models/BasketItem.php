@@ -67,4 +67,27 @@ class BasketItem extends Model
     {
         return $this->belongsTo(ShopProductVariant::class);
     }
+    public function shopVariants()
+    {
+        if (!$this->shop_product_variant_ids) {
+            return collect();
+        }
+
+        return \App\Models\ShopProductVariant::query()
+            ->whereIn('id', $this->shop_product_variant_ids)
+            ->with([
+                'product.brand',  
+                'product.media',   
+            ])
+            ->get();
+    }
+    public function canDelete()
+    {
+        return $this->basket->is_scheduled;
+    }
+
+    public function canHaveExtras()
+    {
+        return $this->basket->is_scheduled;
+    }
 }

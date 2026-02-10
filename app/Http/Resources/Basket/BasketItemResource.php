@@ -22,8 +22,44 @@ class BasketItemResource extends JsonResource
             'product' =>new BasketItemProductResource($this->whenLoaded('product')) ?? null,
 
             'variant' => new BasketItemVariantResource($this->whenLoaded('variant')) ?? null,
+            'alternatives' => $this->getAlternatives(),
 
-            'companies' => BasketItemCompanyResource::collection($this->whenLoaded('companies')) ??  [],
+            // 'companies' => BasketItemCompanyResource::collection($this->whenLoaded('companies')) ??  [],
         ];
     }
+    private function getAlternatives()
+    {
+        if (empty($this->shop_product_variant_ids)) {
+            return [];
+        }
+
+        $variants = \App\Models\ShopProductVariant::query()
+            ->whereIn('id', $this->shop_product_variant_ids)
+            ->with([
+                'productVariant.product.brand',
+                'productVariant.product.media'
+            ])
+            ->get();
+
+        return $variants->map(function ($variant) {
+
+            $product = optional($variant->productVariant)->product;
+            $brand   = optional($product)->brand;
+
+            return [
+                'product_id' => $product->id ?? null,
+                'shop_product_variant_id' => $variant->id,
+
+                // اسم المنتج + الشركة
+                'name' => trim(
+                    ($product->name ?? '') . ' ' . ($brand->name ?? '')
+                ),
+
+                'image_url' => optional($product->media->first())->url,
+
+                'price' => (float) $variant->price,
+            ];
+        })->values();
+    }
+
 }

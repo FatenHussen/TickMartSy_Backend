@@ -44,20 +44,21 @@ class DatabaseSeeder extends Seeder
             RecipeSeeder::class,
             BasketSeeder::class,
             BasketItemSeeder::class,
-
+            UserSeeder::class,
             // BasketItemCompanySeeder::class,
             BasketScheduleSeeder::class,
             ScheduleSeeder::class,
             UserBasketScheduleSeeder::class,
             UserBasketScheduleItemSeeder::class,
             CouponSeeder::class,
-            
+
             // Point System Seeders
             PointRuleSeeder::class,
             ExchangeSettingsSeeder::class,
             GiftSeeder::class,
             PaymentMethodSeeder::class,
-            DriverSeeder::class
+            DriverSeeder::class,
+            RatingSeeder::class,
         ]);
         User::create([
             'name' => 'User',
@@ -67,4 +68,3 @@ class DatabaseSeeder extends Seeder
         ]);
     }
 }
-      

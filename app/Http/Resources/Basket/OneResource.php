@@ -25,7 +25,7 @@ class OneResource extends JsonResource
                 'name' => $this->category?->name,
             ]),
             'num_varieties'   => (int) $this->num_varieties,
-            'offer_ends_at'   => $this->offer_ends_at?->format('Y-m-d'),
+            'offer_ends_at'   => $this->offer_ends_at?->format('Y-m-d') ??null ,
             'original_price'    => round($this->calculated_price, 2),
             'discount_value'    => $this->discount,
             'discount_type'     => $this->discount_type,

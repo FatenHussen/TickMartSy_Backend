@@ -17,14 +17,15 @@ class BasketSeeder extends Seeder
                 'en' => 'Family Weekly Essentials Basket',
             ],
             'num_varieties'    => 6,
-            'offer_ends_at'    => '2026-02-28',
+            'offer_ends_at'    => null,
             'price'            => 0,
             'discount'         => 20,
             'discount_type'    => 'percentage',
             'rating'           => 4.8,
             'num_sold'         => 1247,
             'image'            => 'baskets/image.png',
-            'delivery_price' => 20
+            'delivery_price' => 20,
+            'is_schedule' => 1
 
         ]);
 
@@ -36,14 +37,16 @@ class BasketSeeder extends Seeder
                 'en' => 'Family Weekly Essentials Basket',
             ],
             'num_varieties'    => 9,
-            'offer_ends_at'    => '2026-01-31',
+            'offer_ends_at'    => null,
             'price'            => 0,
             'discount'         => 12.50,
             'discount_type'    => 'fixed',
             'rating'           => 4.5,
             'num_sold'         => 683,
             'image'            => 'baskets/image1.png',
-            'delivery_price' => 20
+            'delivery_price' => 20,
+            'is_schedule' => 1
+
 
         ]);
 
@@ -61,7 +64,9 @@ class BasketSeeder extends Seeder
             'rating'           => 4.9,
             'num_sold'         => 2156,
             'image'            => 'baskets/image2.png',
-            'delivery_price' => 20
+            'delivery_price' => 20,
+            'is_schedule' => 0
+
 
         ]);
 
@@ -79,7 +84,9 @@ class BasketSeeder extends Seeder
             'rating'           => 4.6,
             'num_sold'         => 892,
             'image'            => 'baskets/image1.png',
-            'delivery_price' => 20
+            'delivery_price' => 20,
+            'is_schedule' => 0
+
         ]);
 
     }

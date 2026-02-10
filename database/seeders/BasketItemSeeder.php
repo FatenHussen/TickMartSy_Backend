@@ -39,17 +39,29 @@ class BasketItemSeeder extends Seeder
         ];
 
         foreach ($itemsData as $basketId => $items) {
+
+            $isScheduled = in_array($basketId, [1, 2]); // السلات المجدولة
+
             foreach ($items as $itemData) {
 
-                $basketItem = BasketItem::create(array_merge(
-                    $itemData,
-                    [
-                        'basket_id'     => $basketId,
-                        'min_quantity'  => 1,
-                        'max_quantity'  => 10,
-                        'is_extra'      => $itemData['is_required'] ? 0 : 1,
-                    ]
-                ));
+                $basketItem = BasketItem::create([
+                    'basket_id'  => $basketId,
+                    'product_id' => $itemData['product_id'],
+                    'variant_id' => $itemData['variant_id'],
+                    'quantity'   => $itemData['quantity'],
+                    'price'      => $itemData['price'],
+
+                    'is_required' => true,
+
+                    'is_extra' => $isScheduled ? ($itemData['is_required'] ? 0 : 1) : 0,
+
+                    'shop_product_variant_ids' => $isScheduled
+                        ? ($itemData['shop_product_variant_ids'] ?? [])
+                        : null,
+                    'shop_product_variant_id' => $itemData['shop_product_variant_id'],
+                    'min_quantity' => 1,
+                    'max_quantity' => 10,
+                ]);
             }
         }
     }
