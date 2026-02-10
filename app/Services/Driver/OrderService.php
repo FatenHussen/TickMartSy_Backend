@@ -17,15 +17,21 @@ class OrderService
     {
         $driverId = auth('driver')->id();
 
-        return $query = Order::query()
+        return Order::query()
             ->where('status', $data['status'])
             ->where('driver_id', $driverId)
+            ->when(
+                isset($data['assigned_by']),
+                fn($q) => $q->where('assigned_by', $data['assigned_by'])
+            )
             ->latest()
             ->get();
     }
 
+
     public function ordersToAssigned(array $data)
     {
+
         return $query = Order::query()
             ->whereIn('status', [OrderStatus::PENDING->value, OrderStatus::PREPARING->value])
             ->where('is_instant_delivery', true)
@@ -61,8 +67,10 @@ class OrderService
             }
 
             $order->update([
-                'driver_id' => $driverId
+                'driver_id' => $driverId,
+                'assigned_by' => 'driver',
             ]);
+
 
             // 🔔 notify driver accepted
 
@@ -163,8 +171,9 @@ class OrderService
     /* =======================
        ✅ DELIVER ORDER (final)
     ======================= */
-    public function deliver(int $orderId, string $code)
+    public function deliver(int $orderId)
     {
+        $code = "";
         $driverId = auth('driver')->id();
 
         return DB::transaction(function () use ($orderId, $driverId, $code) {
@@ -183,10 +192,10 @@ class OrderService
                 throw new CustomExceptionWithMessage('Order not out delivery');
             }
 
-            // تحقق من كود التسليم
-            if ($order->delivery_code !== $code) {
-                throw new CustomExceptionWithMessage('Invalid delivery code');
-            }
+            // // تحقق من كود التسليم
+            // if ($order->delivery_code !== $code) {
+            //     throw new CustomExceptionWithMessage('Invalid delivery code');
+            // }
 
             // تحديث حالة الطلب والعناصر
             $order->update([

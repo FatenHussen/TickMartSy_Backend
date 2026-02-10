@@ -30,12 +30,14 @@ class Order extends Model
         'affiliate_id',
         'affiliate_rate',
         'affiliate_source',
+        //timestamps
         'pending_at',
         'preparing_at',
         'out_delivery_at',
         'delivered_at',
+        //driver
         'driver_id',
-
+        'assigned_by'
     ];
 
     protected $casts = [
