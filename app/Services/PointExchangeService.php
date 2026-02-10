@@ -87,7 +87,7 @@ class PointExchangeService
     /**
      * Exchange points for coupon
      */
-    public function exchangeForCoupon(int $userId, int $points, ?int $couponId = null): ?array
+    public function exchangeForCoupon(int $userId, int $points, ?int $couponId = null): ?bool
     {
         $settings = SettingsHelper::getExchangeSettings();
         
@@ -125,12 +125,12 @@ class PointExchangeService
                 ],
                 'status' => 'completed',
             ]);
-
-            return [
-                'exchange' => $exchange,
-                'transaction' => $transaction,
-                'discount_amount' => $discountAmount,
-            ];
+            return true;
+            // return [
+            //     'exchange' => $exchange,
+            //     'transaction' => $transaction,
+            //     'discount_amount' => $discountAmount,
+            // ];
         });
     }
 
@@ -259,7 +259,10 @@ class PointExchangeService
         return PointExchange::where('user_id', $userId)
             ->where('exchange_type', 'free_delivery')
             ->where('status', 'completed')
-            ->whereJsonContains('exchange_data->expires_at', '>=', now()->toDateString())
+            ->where(function ($query) {
+                $query->whereNull('exchange_data->expires_at')
+                    ->orWhere('exchange_data->expires_at', '>=', now()->toDateString());
+            })
             ->exists();
     }
 }

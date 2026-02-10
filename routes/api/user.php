@@ -19,6 +19,8 @@ use App\Http\Controllers\User\CityController;
 use App\Http\Controllers\User\FavoriteController;
 use App\Http\Controllers\User\GovernorateController;
 use App\Http\Controllers\User\Order\OrderController;
+use App\Http\Controllers\User\Package\SubscriptionController;
+use App\Http\Controllers\User\PaymentMethodController;
 use App\Http\Controllers\User\Rating\RatingController;
 use App\Http\Controllers\User\RecipeController;
 use App\Http\Controllers\User\Schedule\ScheduleController;
@@ -96,7 +98,10 @@ Route::prefix('user')->group(
             // Public routes
             Route::get('/', [CategoryController::class, 'index']);
         });
-
+        Route::prefix('payment-methods')->group(function () {
+            // Public routes
+            Route::get('/', [PaymentMethodController::class, 'index']);
+        });
         // Brand routes
         Route::prefix('brands')->group(function () {
             // Public routes
@@ -162,7 +167,6 @@ Route::prefix('user')->group(
                 Route::get('/', [PointController::class, 'index']); // List all transactions
                 Route::get('/{id}', [PointController::class, 'show']); // Show single transaction
 
-                // Exchange routes (النظام الجديد)
                 Route::prefix('exchange')->group(function () {
                     Route::get('/options', [\App\Http\Controllers\User\Point\ExchangeController::class, 'options']);
                     Route::post('/coupon', [\App\Http\Controllers\User\Point\ExchangeController::class, 'exchangeForCoupon']);
@@ -172,23 +176,13 @@ Route::prefix('user')->group(
                     Route::get('/free-delivery-status', [\App\Http\Controllers\User\Point\ExchangeController::class, 'freeDeliveryStatus']);
                 });
 
-                // Coupon routes (النظام القديم - للتوافق)
-                // Route::prefix('coupons')->group(function () {
-                //     Route::post('/exchange', [\App\Http\Controllers\User\Point\CouponController::class, 'exchangeForCoupon']);
-                //     Route::get('/my-coupons', [\App\Http\Controllers\User\Point\CouponController::class, 'myCoupons']);
-                //     Route::post('/validate', [\App\Http\Controllers\User\Point\CouponController::class, 'validateCoupon']);
-                // });
             });
-            // Route::prefix('points')->group(function () {
-            //     Route::get('/summary', [PointController::class, 'summary']);
-            //     Route::get('/transactions', [PointController::class, 'transactions']);
-            //     Route::get('/statistics', [PointController::class, 'statistics']);
-            //     Route::post('/redeem', [PointController::class, 'redeem']);
-
-            //     // CRUD operations via BaseCRUDController
-            //     Route::get('/', [PointController::class, 'index']); // List all transactions
-            //     Route::get('/{id}', [PointController::class, 'show']); // Show single transaction
-            // });
+        });
+        Route::get('/packages', [SubscriptionController::class, 'packages']);
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::post('/subscribe', [SubscriptionController::class, 'subscribe']);
+            Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
+            Route::post('/renew', [SubscriptionController::class, 'renew']);
         });
     }
 );

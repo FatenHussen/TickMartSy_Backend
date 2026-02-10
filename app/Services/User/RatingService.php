@@ -62,7 +62,21 @@ class RatingService extends BaseService
 
         $data['rateable_type'] = $this->resolveRateableType($data['type']);
         unset($data['type']);
-        parent::create($data);
+        
+        $rating = parent::create($data);
+
+        try {
+            $pointService = app(\App\Services\PointService::class);
+            $pointService->awardPoints(
+                $data['user_id'],
+                'product_review',
+                null,
+                'rating',
+                $rating->id
+            );
+        } catch (\Throwable $e) {
+        }
+
         return true;
     }
 

@@ -109,6 +109,15 @@ class UserService
         } catch (\Throwable $e) {
         }
 
+        // try {
+        //     $pointService = app(\App\Services\PointService::class);
+        //     $pointService->awardPoints(
+        //         $user->id,
+        //         'user_registration'
+        //     );
+        // } catch (\Throwable $e) {
+        // }
+
         return true;
     }
 
@@ -162,6 +171,18 @@ class UserService
 
         $user->update([$field . '_verified_at' => now()]);
         $verification->update(['verified_at' => now()]);
+
+        try {
+            $pointService = app(\App\Services\PointService::class);
+            if (!$pointService->isEventCompleted($user->id, 'account_verification')) {
+                $pointService->awardPoints(
+                    $user->id,
+                    'user_registration' // نفس القاعدة أو قاعدة منفصلة
+                );
+                $pointService->markEventCompleted($user->id, 'account_verification');
+            }
+        } catch (\Throwable $e) {
+        }
 
         return new UserResource($user);
     }

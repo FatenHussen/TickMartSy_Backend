@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('points_required');
             $table->integer('stock_quantity')->nullable(); // null = unlimited
             $table->boolean('is_active')->default(true);
-            $table->string('category_id')->nullable()->constrained(); // electronics, books, vouchers, etc.
+            $table->string('category_id')->nullable(); // electronics, books, vouchers, etc.
             $table->text('terms_conditions')->nullable();
             $table->timestamps();
             $table->softDeletes();
