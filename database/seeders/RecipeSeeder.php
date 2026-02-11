@@ -134,7 +134,7 @@ class RecipeSeeder extends Seeder
         $recipe = Recipe::create([
             'name' => ['ar' => 'كبسة رز', 'en' => 'Kabsa Rice'],
             'description' => ['ar' => 'كبسة رز بالدجاج', 'en' => 'Rice Kabsa with Chicken'],
-            'image' => 'recipes/image1.jpg',
+            'image' => 'recipies/image.jpg',
             'rating' => 4.5,
             'discount' => 20,
 

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\Admin\AdminCrudController;
 use App\Http\Controllers\Admin\Auth\AuthController;
 use App\Http\Controllers\Admin\Banner\BannerCrudController;
+use App\Http\Controllers\Admin\Basket\BasketController;
 use App\Http\Controllers\Admin\Role_Permission\PermissionIndexController;
 use App\Http\Controllers\Admin\Role_Permission\RoleCrudController;
 use App\Http\Controllers\Admin\Brand\BrandController;
@@ -99,6 +100,9 @@ Route::prefix('admin')->group(
                 Route::apiResource('complaints', ComplaintController::class);
                 Route::apiResource('recipes', RecipeCrudController::class);
                 Route::apiResource('users', UserCrudController::class);
+
+                // Basket management routes
+                Route::apiResource('baskets', BasketController::class);
 
                 // // Points management routes
                 // Route::middleware('auth:admin')->group(function () {

@@ -18,7 +18,7 @@ class ProductMediaSeeder extends Seeder
                 'mediable_id' => $product->id,
                 'mediable_type' => Product::class,
                 'collection' => 'product',
-                'path' => 'products/image1.jpg',
+                'path' => 'product/image1.jpg',
                 'order' => 1,
             ]);
         }
