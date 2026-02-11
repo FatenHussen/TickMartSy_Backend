@@ -29,28 +29,28 @@ class BrandSeeder extends Seeder
                     'ar' => 'آبل',
                     'en' => 'Apple',
                 ],
-                'image' => 'brands/image4.jpg',
+                'image' => 'brands/image4.png',
             ],
             [
                 'name' => [
                     'ar' => 'سامسونغ',
                     'en' => 'Samsung',
                 ],
-                'image' => 'brands/image5.jpg',
+                'image' => 'brands/image5.png',
             ],
             [
                 'name' => [
                     'ar' => 'لوريال',
                     'en' => "L'Oréal",
                 ],
-                'image' => 'brands/image7.jpg',
+                'image' => 'brands/image7.png',
             ],
             [
                 'name' => [
                     'ar' => 'زارا',
                     'en' => 'Zara',
                 ],
-                'image' => 'brands/image6.jpg',
+                'image' => 'brands/image6.png',
             ],
             [
                 'name' => [
