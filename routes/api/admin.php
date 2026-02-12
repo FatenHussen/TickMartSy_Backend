@@ -59,6 +59,17 @@ Route::prefix('admin')->group(
             // Protected routes
             Route::middleware('auth:admin')->group(function () {});
         });
+                Route::apiResource('baskets', BasketController::class);
+                Route::apiResource('scheduled-baskets', \App\Http\Controllers\Admin\Basket\ScheduledBasketController::class);
+
+                // User Basket Schedules (Read-Only)
+                Route::prefix('user-basket-schedules')->group(function () {
+                    Route::get('/', [\App\Http\Controllers\Admin\UserBasketSchedule\UserBasketScheduleController::class, 'index']);
+                    Route::get('/statistics', [\App\Http\Controllers\Admin\UserBasketSchedule\UserBasketScheduleController::class, 'statistics']);
+                    Route::get('/by-user/{userId}', [\App\Http\Controllers\Admin\UserBasketSchedule\UserBasketScheduleController::class, 'byUser']);
+                    Route::get('/by-schedule/{scheduleId}', [\App\Http\Controllers\Admin\UserBasketSchedule\UserBasketScheduleController::class, 'bySchedule']);
+                    Route::get('/{id}', [\App\Http\Controllers\Admin\UserBasketSchedule\UserBasketScheduleController::class, 'show']);
+                });
 
         Route::middleware('auth:admin')->group(
             function () {
@@ -102,7 +113,6 @@ Route::prefix('admin')->group(
                 Route::apiResource('users', UserCrudController::class);
 
                 // Basket management routes
-                Route::apiResource('baskets', BasketController::class);
 
                 // // Points management routes
                 // Route::middleware('auth:admin')->group(function () {

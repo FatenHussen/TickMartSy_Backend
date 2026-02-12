@@ -80,6 +80,9 @@ class Basket extends Model implements Sectionable
     }
     public function  getImageUrlAttribute()
     {
+        if (!$this->image) {
+            return null;
+        }
         return asset('storage/' . $this->image);
     }
     public function schedules()

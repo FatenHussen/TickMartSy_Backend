@@ -1,0 +1,322 @@
+<?php
+
+namespace App\Services\Admin;
+
+use App\Models\Basket;
+use App\Services\BaseService;
+use App\Http\Resources\Admin\Basket\OneResource;
+use App\Http\Resources\Admin\Basket\AllResource;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
+class ScheduledBasketService extends BaseService
+{
+    protected $model = Basket::class;
+    protected $resource = OneResource::class;
+    protected $collection = AllResource::class;
+
+    protected $relations = [
+        'category',
+        'items.product',
+        'items.variant',
+        'items.shopProductVariant',
+        'schedules',
+    ];
+
+    protected $searchableFields = [
+        'name',
+        'category_id',
+        'price',
+        'discount',
+        'num_sold',
+        'is_schedule',
+    ];
+
+    protected $sortableFields = [
+        'id',
+        'name',
+        'price',
+        'discount',
+        'rating',
+        'num_sold',
+        'created_at',
+        'offer_ends_at',
+    ];
+
+    /**
+     * Override queryBuilder to filter only scheduled baskets
+     */
+    public function queryBuilder($query, $filters = [], $config = [])
+    {
+        // Filter only scheduled baskets (is_schedule = 1)
+        $query->where('is_schedule', true);
+
+        return parent::queryBuilder($query, $filters, $config);
+    }
+
+    /**
+     * Override create to handle items and schedule
+     */
+    public function create($data)
+    {
+        DB::beginTransaction();
+        try {
+            // Store items and schedule temporarily
+            $items = $data['items'] ?? [];
+            $scheduleData = $data['schedule'] ?? null;
+
+            // Remove items and schedule from data
+            unset($data['items'], $data['schedule']);
+
+            // Set defaults
+            $data['num_varieties'] = 0;
+            $data['rating'] = 0;
+            $data['num_sold'] = 0;
+            $data['is_schedule'] = true;
+
+            // Create basket first
+            $basket = $this->model::create($data);
+
+            // Handle single images (for basket image)
+            $this->handleSingleImages($basket, $data);
+
+            // Sync items if they exist
+            if (!empty($items)) {
+                $this->syncScheduledBasketItems($basket, $items);
+            }
+
+            // Create default schedule if provided
+            if ($scheduleData) {
+                $basket->schedules()->create([
+                    'title' => $scheduleData['title'] ?? ['en' => 'Default Schedule', 'ar' => 'جدولة افتراضية'],
+                    'number_of_days' => $scheduleData['number_of_days'],
+                    'discount_type' => $scheduleData['discount_type'] ?? null,
+                    'discount_value' => $scheduleData['discount_value'] ?? null,
+                    'is_active' => $scheduleData['is_active'] ?? true,
+                ]);
+            }
+
+            DB::commit();
+
+            // Return fresh resource with relations
+            $basket = $this->model::with($this->relations)->findOrFail($basket->id);
+            return new $this->resource($basket);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error creating scheduled basket', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Override update to handle items and schedule
+     */
+    public function update($id, array $data)
+    {
+        DB::beginTransaction();
+        try {
+            Log::info('ScheduledBasketService::update called', [
+                'id' => $id,
+                'data_keys' => array_keys($data),
+                'has_items' => isset($data['items']),
+                'items_count' => isset($data['items']) ? count($data['items']) : 0,
+            ]);
+
+            // Store items and schedule temporarily
+            $items = $data['items'] ?? [];
+            $scheduleData = $data['schedule'] ?? null;
+
+            // Remove items and schedule from data
+            unset($data['items'], $data['schedule']);
+
+            // Find basket
+            $basket = $this->model::findOrFail($id);
+
+            // Handle translations if exists
+            if (property_exists($basket, 'translatable')) {
+                foreach ($basket->translatable as $field) {
+                    if (isset($data[$field])) {
+                        $basket->setTranslations($field, $data[$field]);
+                        unset($data[$field]);
+                    }
+                }
+            }
+
+            // Update basket
+            $basket->update($data);
+
+            // Handle single images (for basket image)
+            $this->handleSingleImages($basket, $data);
+
+            // Sync items if they exist
+            if (!empty($items)) {
+                $this->syncScheduledBasketItems($basket, $items);
+            }
+
+            // Update schedule if provided
+            if ($scheduleData) {
+                // Delete old schedules
+                $basket->schedules()->delete();
+
+                // Create new schedule
+                $basket->schedules()->create([
+                    'title' => $scheduleData['title'] ?? ['en' => 'Default Schedule', 'ar' => 'جدولة افتراضية'],
+                    'number_of_days' => $scheduleData['number_of_days'],
+                    'discount_type' => $scheduleData['discount_type'] ?? null,
+                    'discount_value' => $scheduleData['discount_value'] ?? null,
+                    'is_active' => $scheduleData['is_active'] ?? true,
+                ]);
+            }
+
+            DB::commit();
+
+            // Return fresh resource with relations
+            $basket = $this->model::with($this->relations)->findOrFail($basket->id);
+            return new $this->resource($basket);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error updating scheduled basket', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Sync scheduled basket items - handles multiple shop_product_variant_ids
+     */
+    protected function syncScheduledBasketItems(Basket $basket, array $items)
+    {
+        Log::info('syncScheduledBasketItems called', [
+            'basket_id' => $basket->id,
+            'items_count' => count($items),
+            'items' => $items,
+        ]);
+
+        // Delete existing items
+        $deletedCount = $basket->items()->delete();
+        Log::info('Deleted existing items', ['count' => $deletedCount]);
+
+        // Create new items
+        foreach ($items as $index => $item) {
+            Log::info("Processing scheduled item {$index}", ['item' => $item]);
+
+            try {
+                $shopVariantIds = $item['shop_product_variant_ids'] ?? [];
+
+                if (empty($shopVariantIds)) {
+                    Log::warning("Item {$index} has no shop_product_variant_ids, skipping");
+                    continue;
+                }
+
+                // Get all shop product variants to calculate total price
+                $shopVariants = \App\Models\ShopProductVariant::with('productVariant.product')
+                    ->whereIn('id', $shopVariantIds)
+                    ->get();
+
+                if ($shopVariants->isEmpty()) {
+                    Log::warning("No shop variants found for IDs", ['ids' => $shopVariantIds]);
+                    continue;
+                }
+
+                // Calculate total price from all variants
+                $totalPrice = $shopVariants->sum('price');
+
+                // Use the first variant to get product_id and variant_id
+                $firstVariant = $shopVariants->first();
+
+                Log::info("Creating scheduled basket item", [
+                    'product_id' => $firstVariant->productVariant->product_id,
+                    'variant_id' => $firstVariant->product_variant_id,
+                    'shop_variant_ids' => $shopVariantIds,
+                    'total_price' => $totalPrice,
+                ]);
+
+                $createdItem = $basket->items()->create([
+                    'product_id' => $firstVariant->productVariant->product_id,
+                    'variant_id' => $firstVariant->product_variant_id,
+                    'shop_product_variant_id' => null, // Not used for scheduled baskets
+                    'shop_product_variant_ids' => $shopVariantIds, // Array of IDs
+                    'quantity' => $item['quantity'] ?? 1,
+                    'is_required' => $item['is_required'] ?? false,
+                    'is_extra' => $item['is_extra'] ?? false,
+                    'min_quantity' => $item['min_quantity'] ?? 1,
+                    'max_quantity' => $item['max_quantity'] ?? 10,
+                    'price' => $totalPrice, // Sum of all variant prices
+                ]);
+
+                Log::info("Created scheduled basket item", ['item_id' => $createdItem->id]);
+            } catch (\Exception $e) {
+                Log::error("Error creating scheduled basket item", [
+                    'item' => $item,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+                throw $e;
+            }
+        }
+
+        // Refresh basket to get updated items
+        $basket->refresh();
+
+        Log::info('Basket refreshed', [
+            'items_count' => $basket->items()->count(),
+            'calculated_price' => $basket->calculated_price,
+        ]);
+
+        // Update num_varieties and price
+        $basket->update([
+            'num_varieties' => $basket->items()->where('is_extra', false)->count(),
+            'price' => $basket->calculated_price,
+        ]);
+
+        Log::info('Scheduled basket updated', [
+            'num_varieties' => $basket->num_varieties,
+            'price' => $basket->price,
+        ]);
+    }
+
+    /**
+     * Delete basket
+     */
+    public function delete($id): bool
+    {
+        $basket = Basket::findOrFail($id);
+
+        // Delete image if exists
+        if ($basket->image && Storage::disk('public')->exists($basket->image)) {
+            Storage::disk('public')->delete($basket->image);
+        }
+
+        // Delete basket (items and schedules will be deleted automatically due to cascade)
+        $basket->delete();
+
+        return true;
+    }
+
+    /**
+     * Override handleSingleImages to handle basket image
+     */
+    protected function handleSingleImages($object, array &$data): array
+    {
+        if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
+            // Delete old image if exists
+            if ($object->image && Storage::disk('public')->exists($object->image)) {
+                Storage::disk('public')->delete($object->image);
+            }
+
+            // Upload new image
+            $imagePath = $data['image']->store('baskets', 'public');
+            $object->update(['image' => $imagePath]);
+            unset($data['image']);
+        }
+
+        return [];
+    }
+}
+
