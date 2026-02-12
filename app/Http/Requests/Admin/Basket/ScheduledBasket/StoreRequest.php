@@ -34,7 +34,8 @@ class StoreRequest extends FormRequest
 
             // Basket items - for scheduled baskets
             'items' => 'required|array|min:1',
-            'items.*.shop_product_variant_ids' => 'required|array|min:1',
+            'items.*.shop_product_variant_id' => 'required|integer|exists:shop_product_variants,id', // Primary variant
+            'items.*.shop_product_variant_ids' => 'nullable|array', // Alternative variants (optional)
             'items.*.shop_product_variant_ids.*' => 'required|integer|exists:shop_product_variants,id',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.is_required' => 'required|boolean',
@@ -58,8 +59,9 @@ class StoreRequest extends FormRequest
 
             'items.required' => 'يجب إضافة منتج واحد على الأقل للسلة',
             'items.min' => 'يجب إضافة منتج واحد على الأقل للسلة',
-            'items.*.shop_product_variant_ids.required' => 'معرفات المنتجات في المتجر مطلوبة',
-            'items.*.shop_product_variant_ids.*.exists' => 'أحد المنتجات المحددة غير موجود',
+            'items.*.shop_product_variant_id.required' => 'المنتج الأساسي مطلوب',
+            'items.*.shop_product_variant_id.exists' => 'المنتج الأساسي المحدد غير موجود',
+            'items.*.shop_product_variant_ids.*.exists' => 'أحد المنتجات البديلة غير موجود',
             'items.*.quantity.required' => 'الكمية مطلوبة',
             'items.*.is_required.required' => 'حقل "مطلوب" مطلوب',
             'items.*.is_extra.required' => 'حقل "إضافي" مطلوب',

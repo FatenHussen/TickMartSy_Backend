@@ -8,14 +8,12 @@ class AllResource extends JsonResource
 {
     public function toArray($request)
     {
-        // Calculate total price
-        $totalPrice = $this->items->sum(function ($item) {
-            return $item->price * $item->quantity;
-        });
+        // Calculate pricing (same logic as user resource)
+        $totalPrice = $this->items?->sum(fn($item) => $item->price * $item->quantity) ?? 0;
 
-        // Calculate discount
         $discountValue = $this->schedule?->discount_value ?? 0;
         $discountType = $this->schedule?->discount_type ?? null;
+
         $discountAmount = 0;
 
         if ($discountValue > 0) {
@@ -26,12 +24,10 @@ class AllResource extends JsonResource
             }
         }
 
-        $finalPrice = round($totalPrice - $discountAmount, 2);
-
         return [
             'id' => $this->id,
 
-            // User info
+            // User info (additional for admin)
             'user' => [
                 'id' => $this->user?->id,
                 'name' => $this->user?->name,
@@ -39,12 +35,16 @@ class AllResource extends JsonResource
                 'phone' => $this->user?->phone,
             ],
 
-            // Basket info
+            // Basket info (same as user resource)
             'name' => $this->name,
-            'category' => [
-                'id' => $this->category?->id,
-                'name' => $this->category?->name,
-            ],
+            'category' => $this->category?->name,
+            'image' => $this->category?->image_url ?? null,
+            'num_varieties' => $this->items?->count() ?? 0,
+            'original_price' => round($totalPrice, 2),
+            'discount_value' => $discountValue,
+            'discount_type' => $discountType,
+            'discount_amount' => $discountAmount,
+            'final_price' => round($totalPrice - $discountAmount, 2),
 
             // Schedule info
             'schedule' => [
@@ -57,12 +57,6 @@ class AllResource extends JsonResource
             'is_active' => (bool) $this->is_active,
             'start_date' => $this->start_date?->format('Y-m-d'),
             'next_run_date' => $this->next_run_date?->format('Y-m-d'),
-
-            // Pricing
-            'items_count' => $this->items->count(),
-            'total_price' => round($totalPrice, 2),
-            'discount_amount' => $discountAmount,
-            'final_price' => $finalPrice,
 
             // Timestamps
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),

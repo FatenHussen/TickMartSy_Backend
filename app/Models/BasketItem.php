@@ -23,8 +23,7 @@ class BasketItem extends Model
         'price',
         'shop_product_variant_id',
         'is_extra',
-        'sho p_product_variant_ids'
-
+        'shop_product_variant_ids'
     ];
 
     protected $casts = [

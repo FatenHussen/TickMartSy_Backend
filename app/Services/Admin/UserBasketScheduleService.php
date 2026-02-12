@@ -74,43 +74,7 @@ class UserBasketScheduleService extends BaseService
         return parent::queryBuilder($query, $filters, $config);
     }
 
-    /**
-     * Get statistics for user basket schedules
-     */
-    public function getStatistics(): array
-    {
-        $total = UserBasketSchedule::count();
-        $active = UserBasketSchedule::where('is_active', true)->count();
-        $inactive = UserBasketSchedule::where('is_active', false)->count();
 
-        return [
-            'total' => $total,
-            'active' => $active,
-            'inactive' => $inactive,
-        ];
-    }
 
-    /**
-     * Get user basket schedules grouped by user
-     */
-    public function getByUser($userId)
-    {
-        $baskets = UserBasketSchedule::with($this->relations)
-            ->where('user_id', $userId)
-            ->get();
-
-        return ($this->collection)::collection($baskets);
-    }
-
-    /**
-     * Get user basket schedules grouped by schedule
-     */
-    public function getBySchedule($scheduleId)
-    {
-        $baskets = UserBasketSchedule::with($this->relations)
-            ->where('schedule_id', $scheduleId)
-            ->get();
-
-        return ($this->collection)::collection($baskets);
-    }
+   
 }

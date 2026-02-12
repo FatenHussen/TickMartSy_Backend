@@ -4,8 +4,8 @@ namespace App\Services\Admin;
 
 use App\Models\Basket;
 use App\Services\BaseService;
-use App\Http\Resources\Admin\Basket\OneResource;
-use App\Http\Resources\Admin\Basket\AllResource;
+use App\Http\Resources\Admin\ScheduledBasket\OneResource;
+use App\Http\Resources\Admin\ScheduledBasket\AllResource;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -188,7 +188,7 @@ class ScheduledBasketService extends BaseService
     }
 
     /**
-     * Sync scheduled basket items - handles multiple shop_product_variant_ids
+     * Sync scheduled basket items - handles primary variant + alternatives
      */
     protected function syncScheduledBasketItems(Basket $basket, array $items)
     {
@@ -207,47 +207,45 @@ class ScheduledBasketService extends BaseService
             Log::info("Processing scheduled item {$index}", ['item' => $item]);
 
             try {
-                $shopVariantIds = $item['shop_product_variant_ids'] ?? [];
+                // Get primary variant (required)
+                $primaryVariantId = $item['shop_product_variant_id'] ?? null;
 
-                if (empty($shopVariantIds)) {
-                    Log::warning("Item {$index} has no shop_product_variant_ids, skipping");
+                if (!$primaryVariantId) {
+                    Log::warning("Item {$index} has no shop_product_variant_id (primary), skipping");
                     continue;
                 }
 
-                // Get all shop product variants to calculate total price
-                $shopVariants = \App\Models\ShopProductVariant::with('productVariant.product')
-                    ->whereIn('id', $shopVariantIds)
-                    ->get();
+                // Get primary shop product variant
+                $primaryVariant = \App\Models\ShopProductVariant::with('productVariant.product')
+                    ->find($primaryVariantId);
 
-                if ($shopVariants->isEmpty()) {
-                    Log::warning("No shop variants found for IDs", ['ids' => $shopVariantIds]);
+                if (!$primaryVariant) {
+                    Log::warning("Primary variant not found", ['id' => $primaryVariantId]);
                     continue;
                 }
 
-                // Calculate total price from all variants
-                $totalPrice = $shopVariants->sum('price');
-
-                // Use the first variant to get product_id and variant_id
-                $firstVariant = $shopVariants->first();
+                // Get alternatives (optional)
+                $alternativeIds = $item['shop_product_variant_ids'] ?? [];
 
                 Log::info("Creating scheduled basket item", [
-                    'product_id' => $firstVariant->productVariant->product_id,
-                    'variant_id' => $firstVariant->product_variant_id,
-                    'shop_variant_ids' => $shopVariantIds,
-                    'total_price' => $totalPrice,
+                    'product_id' => $primaryVariant->productVariant->product_id,
+                    'variant_id' => $primaryVariant->product_variant_id,
+                    'primary_variant_id' => $primaryVariantId,
+                    'alternative_ids' => $alternativeIds,
+                    'price' => $primaryVariant->price,
                 ]);
 
                 $createdItem = $basket->items()->create([
-                    'product_id' => $firstVariant->productVariant->product_id,
-                    'variant_id' => $firstVariant->product_variant_id,
-                    'shop_product_variant_id' => null, // Not used for scheduled baskets
-                    'shop_product_variant_ids' => $shopVariantIds, // Array of IDs
+                    'product_id' => $primaryVariant->productVariant->product_id,
+                    'variant_id' => $primaryVariant->product_variant_id,
+                    'shop_product_variant_id' => $primaryVariantId, // Primary variant
+                    'shop_product_variant_ids' => $alternativeIds, // Alternative variants (optional)
                     'quantity' => $item['quantity'] ?? 1,
                     'is_required' => $item['is_required'] ?? false,
                     'is_extra' => $item['is_extra'] ?? false,
                     'min_quantity' => $item['min_quantity'] ?? 1,
                     'max_quantity' => $item['max_quantity'] ?? 10,
-                    'price' => $totalPrice, // Sum of all variant prices
+                    'price' => $primaryVariant->price, // Price from primary variant only
                 ]);
 
                 Log::info("Created scheduled basket item", ['item_id' => $createdItem->id]);

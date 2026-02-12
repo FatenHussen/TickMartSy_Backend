@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\Admin\AdminCrudController;
 use App\Http\Controllers\Admin\Auth\AuthController;
 use App\Http\Controllers\Admin\Banner\BannerCrudController;
 use App\Http\Controllers\Admin\Basket\BasketController;
+use App\Http\Controllers\Admin\Basket\ScheduledBasketController;
 use App\Http\Controllers\Admin\Role_Permission\PermissionIndexController;
 use App\Http\Controllers\Admin\Role_Permission\RoleCrudController;
 use App\Http\Controllers\Admin\Brand\BrandController;
@@ -30,6 +31,7 @@ use App\Http\Controllers\Admin\Shop\ShopCrudController;
 use App\Http\Controllers\Admin\Coupon\CouponCrudController;
 use App\Http\Controllers\Admin\User\UserCrudController;
 use App\Http\Controllers\Admin\Recipe\RecipeCrudController;
+use App\Http\Controllers\Admin\UserBasketSchedule\UserBasketScheduleController;
 use App\Http\Controllers\Admin\Vendor\VendorCrudController;
 use Illuminate\Support\Facades\Route;
 
@@ -59,17 +61,14 @@ Route::prefix('admin')->group(
             // Protected routes
             Route::middleware('auth:admin')->group(function () {});
         });
-                Route::apiResource('baskets', BasketController::class);
-                Route::apiResource('scheduled-baskets', \App\Http\Controllers\Admin\Basket\ScheduledBasketController::class);
+        Route::apiResource('baskets', BasketController::class);
+        Route::apiResource('scheduled-baskets', ScheduledBasketController::class);
 
-                // User Basket Schedules (Read-Only)
-                Route::prefix('user-basket-schedules')->group(function () {
-                    Route::get('/', [\App\Http\Controllers\Admin\UserBasketSchedule\UserBasketScheduleController::class, 'index']);
-                    Route::get('/statistics', [\App\Http\Controllers\Admin\UserBasketSchedule\UserBasketScheduleController::class, 'statistics']);
-                    Route::get('/by-user/{userId}', [\App\Http\Controllers\Admin\UserBasketSchedule\UserBasketScheduleController::class, 'byUser']);
-                    Route::get('/by-schedule/{scheduleId}', [\App\Http\Controllers\Admin\UserBasketSchedule\UserBasketScheduleController::class, 'bySchedule']);
-                    Route::get('/{id}', [\App\Http\Controllers\Admin\UserBasketSchedule\UserBasketScheduleController::class, 'show']);
-                });
+        // User Basket Schedules (Read-Only)
+        Route::prefix('user-basket-schedules')->group(function () {
+            Route::get('/', [UserBasketScheduleController::class, 'index']);
+            Route::get('/{id}', [UserBasketScheduleController::class, 'get_one']);
+        });
 
         Route::middleware('auth:admin')->group(
             function () {

@@ -14,7 +14,7 @@ class BasketItemResource extends JsonResource
             'id' => $this->id,
             'quantity' => (int) $this->quantity,
             'price' => $this->price,
-            'shop_product_variant_id' =>                                                                  $this->shop_product_variant_id,
+            'shop_product_variant_id' => $this->shop_product_variant_id,
 
             'product' => new BasketItemProductResource($this->whenLoaded('product')),
 

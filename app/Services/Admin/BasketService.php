@@ -149,7 +149,7 @@ class BasketService extends BaseService
      */
     protected function syncBasketItems(Basket $basket, array $items)
     {
-        \Log::info('syncBasketItems called', [
+        Log::info('syncBasketItems called', [
             'basket_id' => $basket->id,
             'items_count' => count($items),
             'items' => $items,
@@ -157,18 +157,18 @@ class BasketService extends BaseService
 
         // Delete existing items
         $deletedCount = $basket->items()->delete();
-        \Log::info('Deleted existing items', ['count' => $deletedCount]);
+        Log::info('Deleted existing items', ['count' => $deletedCount]);
 
         // Create new items
         foreach ($items as $index => $item) {
-            \Log::info("Processing item {$index}", ['item' => $item]);
+            Log::info("Processing item {$index}", ['item' => $item]);
 
             try {
                 // Get shop product variant to extract data
                 $shopVariant = \App\Models\ShopProductVariant::with('productVariant.product')
                     ->findOrFail($item['shop_product_variant_id']);
 
-                \Log::info("Found shop variant", [
+                Log::info("Found shop variant", [
                     'shop_variant_id' => $shopVariant->id,
                     'product_id' => $shopVariant->productVariant->product_id,
                     'variant_id' => $shopVariant->product_variant_id,
@@ -188,9 +188,9 @@ class BasketService extends BaseService
                     'price' => $shopVariant->price, // Get price from shop variant
                 ]);
 
-                \Log::info("Created basket item", ['item_id' => $createdItem->id]);
+                Log::info("Created basket item", ['item_id' => $createdItem->id]);
             } catch (\Exception $e) {
-                \Log::error("Error creating basket item", [
+                Log::error("Error creating basket item", [
                     'item' => $item,
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString(),
@@ -202,7 +202,7 @@ class BasketService extends BaseService
         // Refresh basket to get updated items
         $basket->refresh();
 
-        \Log::info('Basket refreshed', [
+        Log::info('Basket refreshed', [
             'items_count' => $basket->items()->count(),
             'calculated_price' => $basket->calculated_price,
         ]);
@@ -213,7 +213,7 @@ class BasketService extends BaseService
             'price' => $basket->calculated_price,
         ]);
 
-        \Log::info('Basket updated', [
+        Log::info('Basket updated', [
             'num_varieties' => $basket->num_varieties,
             'price' => $basket->price,
         ]);
