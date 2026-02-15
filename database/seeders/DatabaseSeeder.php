@@ -27,6 +27,9 @@ class DatabaseSeeder extends Seeder
             BrandSeeder::class,
             VendorSeeder::class,
             ShopSeeder::class,
+            VendorUserSeeder::class,
+            VendorRolePermissionSeeder::class,
+
             ShopUserSeeder::class,
             CategoryAttributeSeeder::class,
             AttributeValueSeeder::class,
