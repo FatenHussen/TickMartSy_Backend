@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\Service\ServiceCrudController;
 use App\Http\Controllers\Admin\Store\StoreCrudController;
 use App\Http\Controllers\Admin\Shop\ShopCrudController;
 use App\Http\Controllers\Admin\Coupon\CouponCrudController;
+use App\Http\Controllers\Admin\Order\OrderController;
 use App\Http\Controllers\Admin\User\UserCrudController;
 use App\Http\Controllers\Admin\Recipe\RecipeCrudController;
 use App\Http\Controllers\Admin\Vendor\VendorCrudController;
@@ -100,6 +101,8 @@ Route::prefix('admin')->group(
                 Route::apiResource('recipes', RecipeCrudController::class);
                 Route::apiResource('users', UserCrudController::class);
 
+
+
                 // // Points management routes
                 // Route::middleware('auth:admin')->group(function () {
                 //     Route::prefix('points')->group(function () {
@@ -128,6 +131,23 @@ Route::prefix('admin')->group(
 
 
             }
+
+
         );
+
+        Route::prefix('orders')->group(function () {
+
+            // 👀 Get all orders
+            Route::get('/', [OrderController::class, 'index']);
+
+            // 🔄 Change order status
+            Route::patch('{orderId}/change-status', [OrderController::class, 'changeStatus']);
+
+            // 🚚 Assign driver to order
+            Route::post('{orderId}/assign-driver', [OrderController::class, 'assignDriver']);
+
+            // 🧩 Change item status
+            Route::patch('items/{itemId}/change-status', [OrderController::class, 'changeItemStatus']);
+        });
     }
 );
