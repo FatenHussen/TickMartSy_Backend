@@ -36,4 +36,12 @@ class AuthService
             'token' => $token,
         ];
     }
+
+    public function storeOrUpdateToken(Admin $user, array $data): void
+    {
+        $user->fcmTokens()->updateOrCreate(
+            ['device_id' => $data['deviceId']],
+            ['fcm_token' => $data['fcmToken']]
+        );
+    }
 }

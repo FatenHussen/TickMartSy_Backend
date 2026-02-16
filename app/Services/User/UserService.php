@@ -17,6 +17,7 @@ use App\Services\BaseService;
 use App\Traits\FileTrait;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class UserService
@@ -120,6 +121,8 @@ class UserService
 
         return true;
     }
+
+
 
 
     public function login(array $data)
@@ -448,5 +451,23 @@ class UserService
             ['device_id' => $data['deviceId']],
             ['fcm_token' => $data['fcmToken']]
         );
+    }
+
+    public function markterRequest(User $user, $data)
+    {
+        Log::info($user->is_affiliate && !$user->affiliate_approved);
+        Log::info($user->is_affiliate && $user->affiliate_approved);
+
+        if ($user->is_affiliate && !$user->affiliate_approved) {
+            Log::info("Hello");
+            throw new CustomExceptionWithMessage('You have submitted a marketing request, just wait for a response from the admin.');
+        }
+        if ($user->is_affiliate && $user->affiliate_approved) {
+            throw new CustomExceptionWithMessage('You are a marketer, you dont need to submit an application.');
+        }
+        $user->update([
+            'is_affiliate' => true,
+        ]);
+        //notification
     }
 }

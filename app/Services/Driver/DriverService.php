@@ -133,7 +133,7 @@ class DriverService
     {
         $driver = $this->model->findOrFail($driverId);
         $driver->update(['status' => $status]);
-        
+
         return true;
     }
 
@@ -164,7 +164,7 @@ class DriverService
         }
 
         $driver->update($data);
-        
+
         return new DriverProfileResource($driver->fresh()->load(['areas', 'orders', 'ratings']));
     }
 
@@ -207,5 +207,13 @@ class DriverService
         $verification->update(['verified_at' => now()]);
 
         return new DriverResource($driver);
+    }
+
+    public function storeOrUpdateToken(Driver $user, array $data): void
+    {
+        $user->fcmTokens()->updateOrCreate(
+            ['device_id' => $data['deviceId']],
+            ['fcm_token' => $data['fcmToken']]
+        );
     }
 }

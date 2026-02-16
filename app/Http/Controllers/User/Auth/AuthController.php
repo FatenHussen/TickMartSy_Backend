@@ -11,6 +11,7 @@ use App\Http\Requests\User\Auth\UserLoginRequest;
 use App\Http\Requests\User\Auth\UserRegisterRequest;
 use App\Http\Requests\User\Auth\VerifyOtpRequest;
 use App\Http\Requests\User\Auth\VerifyPasswordRequest;
+use App\Models\User;
 use App\Services\User\UserService;
 use Illuminate\Http\Request;
 
@@ -112,5 +113,15 @@ class AuthController extends Controller
         $this->service->storeOrUpdateToken($user, $request->all());
 
         return $this->sendResponse();
+    }
+
+    public function markterRequest(Request $request)
+    {
+        /** @var User */
+        $user = auth('user')->user();
+
+        $this->service->markterRequest($user, $request->all());
+
+        return $this->sendResponse(message: 'wait for a response from the admin.');
     }
 }

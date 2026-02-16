@@ -5,6 +5,7 @@ namespace App\Services\User;
 use App\Enums\CartType;
 use App\Enums\OrderStatus;
 use App\Events\OrderCreated;
+use App\Events\OrderStatusChanged;
 use App\Http\Resources\Order\OneResource;
 use App\Http\Resources\Order\AllResource;
 use App\Models\AffiliateWalletTransaction;
@@ -139,7 +140,14 @@ class OrderService extends BaseService
                 ]);
             }
 
-            OrderCreated::dispatch($order);
+            // OrderCreated::dispatch($order);
+
+            OrderStatusChanged::dispatch(
+                $order->fresh('items'),
+                null, // null يعني طلب جديد
+                OrderStatus::PENDING->value,
+                'system'
+            );
 
             return new $this->resource($order->load('items'));
         });
@@ -514,9 +522,9 @@ class OrderService extends BaseService
         ];
     }
 }
-    /**
-     * Update order status and award points if completed
-     */
+/**
+ * Update order status and award points if completed
+ */
     // public function updateOrderStatus(int $orderId, string $status): bool
     // {
     //     return DB::transaction(function () use ($orderId, $status) {

@@ -7,6 +7,8 @@ use App\Http\Requests\Driver\Auth\ResetPasswordRequest;
 use App\Http\Requests\Driver\Auth\SendPasswordRequest;
 use App\Http\Requests\Driver\Auth\DriverLoginRequest;
 use App\Http\Requests\Driver\Auth\VerifyPasswordRequest;
+use App\Http\Requests\User\Auth\StoreTokenRequest;
+use App\Models\Driver;
 use App\Services\Driver\DriverService;
 use Illuminate\Http\Request;
 
@@ -64,6 +66,17 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $this->service->logout();
+
+        return $this->sendResponse();
+    }
+
+    public function storOrUpdateToken(StoreTokenRequest $request)
+    {
+
+        /** @var Driver */
+        $user = auth('driver')->user();
+
+        $this->service->storeOrUpdateToken($user, $request->all());
 
         return $this->sendResponse();
     }

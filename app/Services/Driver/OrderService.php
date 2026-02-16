@@ -3,6 +3,9 @@
 namespace App\Services\Driver;
 
 use App\Enums\OrderStatus;
+use App\Events\DriverAcceptedOrder;
+use App\Events\OrderItemStatusChanged;
+use App\Events\OrderStatusChanged;
 use App\Exceptions\CustomExceptionWithMessage;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -72,6 +75,8 @@ class OrderService
             ]);
 
 
+            DriverAcceptedOrder::dispatch($order);
+
             // 🔔 notify driver accepted
 
             return $order;
@@ -108,12 +113,19 @@ class OrderService
                 throw new CustomExceptionWithMessage('Item not ready');
             }
 
-            // ✅ تحديث حالة العنصر
+            $oldStatus = $item->item_status;
+
             $item->update([
                 'item_status' => OrderStatus::OUT_DELIVERY->value
             ]);
 
-            // 🔔 notify admin (item picked)
+            OrderItemStatusChanged::dispatch(
+                $item->fresh(),
+                $oldStatus,
+                OrderStatus::OUT_DELIVERY->value,
+                'driver'
+            );
+
 
             return $item;
         });
@@ -153,7 +165,8 @@ class OrderService
                 throw new CustomExceptionWithMessage('Order status not valid for out delivery');
             }
 
-            // ✅ تحديث حالة الطلب وكل العناصر
+            $oldStatus = $order->status;
+
             $order->update([
                 'status' => OrderStatus::OUT_DELIVERY->value
             ]);
@@ -162,7 +175,12 @@ class OrderService
                 'item_status' => OrderStatus::OUT_DELIVERY->value
             ]);
 
-            // 🔔 notify admin + user
+            OrderStatusChanged::dispatch(
+                $order->fresh('items'),
+                $oldStatus,
+                OrderStatus::OUT_DELIVERY->value,
+                'driver'
+            );
 
             return $order->fresh('items');
         });
@@ -197,7 +215,8 @@ class OrderService
             //     throw new CustomExceptionWithMessage('Invalid delivery code');
             // }
 
-            // تحديث حالة الطلب والعناصر
+            $oldStatus = $order->status;
+
             $order->update([
                 'status' => OrderStatus::DELIVERED->value
             ]);
@@ -206,8 +225,12 @@ class OrderService
                 'item_status' => OrderStatus::DELIVERED->value
             ]);
 
-            // 🔔 notify admin + user
-
+            OrderStatusChanged::dispatch(
+                $order->fresh('items'),
+                $oldStatus,
+                OrderStatus::DELIVERED->value,
+                'driver'
+            );
             return $order->fresh('items');
         });
     }
