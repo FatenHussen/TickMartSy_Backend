@@ -40,7 +40,7 @@ class BasketItemSeeder extends Seeder
 
         foreach ($itemsData as $basketId => $items) {
 
-            $isScheduled = in_array($basketId, [1, 2]); // السلات المجدولة
+            $isScheduled = in_array($basketId, [1, 2]); 
 
             foreach ($items as $itemData) {
 

@@ -8,6 +8,7 @@ use App\Http\Resources\UserBasketSchedule\AllResource;
 use App\Http\Resources\UserBasketSchedule\OneResource;
 use Illuminate\Support\Facades\DB;
 use App\Services\BaseService;
+use Illuminate\Support\Facades\Log;
 
 class UserBasketScheduleService extends BaseService
 {
@@ -40,11 +41,24 @@ class UserBasketScheduleService extends BaseService
 
     public function getOne($id)
     {
+        Log::info('UserBasketScheduleService::getOne', [
+            'id' => $id,
+            'user_id' => auth('user')->id(),
+        ]);
+
         $basket = $this->model::with($this->relations)
-            ->where('user_id', auth('user')->id())
+            //->where('user_id', auth('user')->id())
             ->find($id);
 
+        Log::info('Basket found', [
+            'basket' => $basket ? $basket->id : null,
+        ]);
+
         if (!$basket) {
+            Log::warning('Basket not found', [
+                'id' => $id,
+                'user_id' => auth('user')->id(),
+            ]);
             throw new NotFoundException();
         }
 

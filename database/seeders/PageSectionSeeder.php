@@ -24,43 +24,43 @@ class PageSectionSeeder extends Seeder
         */
         $bannerDisplayType = DisplayType::create([
             'manual_model' => 'brand',
-            'image' => '/images/display/slider.png',
+            'image' => 'images/display/slider.png',
             'fields' => ['image', 'title', 'price']
         ]);
 
         $productDisplayType = DisplayType::create([
             'manual_model' => 'product',
-            'image' => '/images/display/grid.png',
+            'image' => 'images/display/grid.png',
             'fields' => ['image', 'title', 'price', 'brand']
         ]);
 
         $shopDisplayType = DisplayType::create([
             'manual_model' => 'shop',
-            'image' => '/images/display/grid.png',
+            'image' => 'images/display/grid.png',
             'fields' => ['image', 'title', 'price', 'brand']
         ]);
 
         $basketsDisplayType = DisplayType::create([
             'manual_model' => 'basket',
-            'image' => '/images/display/grid.png',
+            'image' => 'images/display/grid.png',
             'fields' => ['image', 'title', 'price', 'brand']
         ]);
 
         $suggestedBasketsDisplayType = DisplayType::create([
             'manual_model' => 'suggested-basket',
-            'image' => '/images/display/grid.png',
+            'image' => 'images/display/grid.png',
             'fields' => ['image', 'title', 'price', 'brand']
         ]);
 
         $brandsDisplayType = DisplayType::create([
             'manual_model' => 'brand',
-            'image' => '/images/display/grid.png',
+            'image' => 'images/display/grid.png',
             'fields' => ['image', 'title', 'price', 'brand']
         ]);
 
         $recipeDisplayType = DisplayType::create([
             'manual_model' => 'recipe',
-            'image' => '/images/display/recipe.png',
+            'image' => 'images/display/recipe.png',
             'fields' => ['image', 'title', 'decription', 'price', 'brand']
         ]);
 
@@ -71,13 +71,13 @@ class PageSectionSeeder extends Seeder
         */
         $banner1 = Banner::create([
             'title' => ['en' => 'Dis 50%', 'ar' => 'خصم حتى 50%'],
-            'image' => '/images/banners/banner1.jpg',
+            'image' => 'banner/image.png',
             'link'  => '/sale',
         ]);
 
         $banner2 = Banner::create([
             'title' => ['en' => 'New Arrivals', 'ar' => 'وصل حديثا'],
-            'image' => '/images/banners/banner2.jpg',
+            'image' => 'banner/image.png',
             'link'  => '/new-arrivals',
         ]);
 
@@ -166,31 +166,7 @@ class PageSectionSeeder extends Seeder
         | Manual Products Section
         |--------------------------------------------------------------------------
         */
-        // $manualProductsSection = Section::create([
-        //     'name' => ['en' => 'Manual Products', 'ar' => 'منتجات مختارة'],
-        //     'type' => 'manual',
-        // ]);
-
-        // PageSection::create([
-        //     'page_id' => $homePage->id,
-        //     'section_id' => $manualProductsSection->id,
-        //     'display_type_id' => $productDisplayType->id,
-        //     'position' => 'after',
-        //     'order' => 2,
-        //     'filters' => [],
-        // ]);
-
-        // $products = Product::take(2)->get();
-
-        // foreach ($products as $index => $product) {
-        //     SectionItem::create([
-        //         'section_id' => $manualProductsSection->id,
-        //         'item_type' => Product::class,
-        //         'item_id' => $product->id,
-        //         'link' => '/product/' . $product->id,
-        //         'order' => $index + 1
-        //     ]);
-        // }
+        
 
         /*
         |--------------------------------------------------------------------------

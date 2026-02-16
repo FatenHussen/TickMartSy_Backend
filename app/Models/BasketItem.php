@@ -24,7 +24,6 @@ class BasketItem extends Model
         'shop_product_variant_id',
         'is_extra',
         'shop_product_variant_ids'
-
     ];
 
     protected $casts = [
@@ -76,8 +75,8 @@ class BasketItem extends Model
         return \App\Models\ShopProductVariant::query()
             ->whereIn('id', $this->shop_product_variant_ids)
             ->with([
-                'product.brand',  
-                'product.media',   
+                'product.brand',
+                'product.media',
             ])
             ->get();
     }

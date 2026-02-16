@@ -50,7 +50,6 @@ class BasketItemResource extends JsonResource
                 'product_id' => $product->id ?? null,
                 'shop_product_variant_id' => $variant->id,
 
-                // اسم المنتج + الشركة
                 'name' => trim(
                     ($product->name ?? '') . ' ' . ($brand->name ?? '')
                 ),

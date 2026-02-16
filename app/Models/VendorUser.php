@@ -10,7 +10,7 @@ use Spatie\Permission\Traits\HasRoles;
 class VendorUser extends Authenticatable
 {
     use HasApiTokens, HasRoles;
-
+    public $table = "vendor_users";
     protected $guard_name = 'vendor-user';
     protected $fillable = [
         'name',

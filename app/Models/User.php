@@ -57,6 +57,7 @@ class User extends Authenticatable
         'affiliate_approved' => 'boolean',
         'email_verified_at' => 'datetime',
         'phone_verified_at' => 'datetime',
+        'password' => 'hashed'
     ];
 
     // public function images()

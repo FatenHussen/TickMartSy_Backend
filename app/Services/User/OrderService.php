@@ -468,16 +468,16 @@ class OrderService extends BaseService
         $couponApplied = null;
         $excludedItems = [];
 
-        if (!$couponCode) return [null, 0, []];
+        if (!$couponCode) return [null, 0, [], null];
 
         $coupon = Coupon::where('code', $couponCode)->first();
-        if (!$coupon || !$coupon->isValid()) return [null, 0, []];
+        if (!$coupon || !$coupon->isValid()) return [null, 0, [], null];
 
         $cartType = $orderOrNull ? $orderOrNull->cart_type : 'default';
         $canApplyCoupon = $cartType === CartType::DEFAULT->value
             || config('settings.allow_coupons_on_basket');
 
-        if (!$canApplyCoupon) return [null, 0, []];
+        if (!$canApplyCoupon) return [null, 0, [], null];
 
         if ($cartType !== CartType::DEFAULT->value) {
             $basketDiscount = 0; // cancel basket discount if coupon applied
@@ -522,14 +522,14 @@ class OrderService extends BaseService
     //     return DB::transaction(function () use ($orderId, $status) {
     //         $order = Order::findOrFail($orderId);
     //         $oldStatus = $order->order_status;
-            
+
     //         $order->update(['order_status' => $status]);
 
     //         // منح النقاط عند إتمام الطلب
     //         if ($status === OrderStatus::COMPLETED->value && $oldStatus !== OrderStatus::COMPLETED->value) {
     //             try {
     //                 $pointService = app(\App\Services\PointService::class);
-                    
+
     //                 // نقاط أول طلب
     //                 if (!$pointService->isEventCompleted($order->user_id, 'first_order')) {
     //                     $pointService->awardPoints(
@@ -541,7 +541,7 @@ class OrderService extends BaseService
     //                     );
     //                     $pointService->markEventCompleted($order->user_id, 'first_order');
     //                 }
-                    
+
     //                 // نقاط إتمام الطلب (لكل طلب)
     //                 $pointService->awardPoints(
     //                     $order->user_id,
@@ -550,7 +550,7 @@ class OrderService extends BaseService
     //                     'order',
     //                     $order->id
     //                 );
-                    
+
     //             } catch (\Throwable $e) {
     //                 // تجاهل أخطاء النقاط لعدم تعطيل تحديث الطلب
     //                 Log::error('Points award failed for order: ' . $orderId, ['error' => $e->getMessage()]);

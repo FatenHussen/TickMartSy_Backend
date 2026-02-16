@@ -40,6 +40,10 @@ class Category extends Model implements Sectionable
     {
         return $this->children()->with('descendants');
     }
+    public function  getImageUrlAttribute()
+    {
+        return asset('storage/' . $this->icon);
+    }
     public function leafDescendants()
     {
         $leaves = collect();

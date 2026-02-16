@@ -27,6 +27,9 @@ class DatabaseSeeder extends Seeder
             BrandSeeder::class,
             VendorSeeder::class,
             ShopSeeder::class,
+            VendorUserSeeder::class,
+            VendorRolePermissionSeeder::class,
+
             ShopUserSeeder::class,
             CategoryAttributeSeeder::class,
             AttributeValueSeeder::class,
@@ -57,7 +60,7 @@ class DatabaseSeeder extends Seeder
             ExchangeSettingsSeeder::class,
             GiftSeeder::class,
             PaymentMethodSeeder::class,
-            DriverSeeder::class,
+            // DriverSeeder::class,
             RatingSeeder::class,
             // UserSeeder::class,
             UserAddressSeeder::class,

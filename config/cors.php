@@ -24,13 +24,15 @@ return [
     | Allowed Origins
     |--------------------------------------------------------------------------
     |
-    
+
     */
     'allowed_origins' => [
         'https://tikmool-dashboard.octopus-software.online',
         'http://localhost:8081',
-        'http://localhost:5173'
-        
+        'http://localhost:5173',
+        'https://tikmool-website.octopus-software.online',
+
+
     ],
 
     /*
