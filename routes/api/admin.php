@@ -48,6 +48,7 @@ Route::prefix('admin')->group(
             Route::middleware('auth:admin')->group(function () {
                 Route::post('logout', [AuthController::class, 'logout']);
                 Route::get('profile', [AuthController::class, 'profile']);
+                Route::post('/store-token', [AuthController::class, 'storOrUpdateToken']);
             });
         });
 

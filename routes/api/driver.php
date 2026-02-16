@@ -19,6 +19,8 @@ Route::prefix('driver')->group(
                 // protected routes 
                 Route::middleware(['auth:driver'])->group(function () {
                     Route::get('/logout', [AuthController::class, 'logout']);
+                    Route::post('/store-token', [AuthController::class, 'storOrUpdateToken']);
+
                     Route::middleware(['auth:driver', 'abilities:reset-password'])->group(function () {
                         Route::post('/reset-password', [AuthController::class, 'resetPassword']);
                     });

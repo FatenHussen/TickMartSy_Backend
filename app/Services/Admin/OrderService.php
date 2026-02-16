@@ -3,12 +3,15 @@
 namespace App\Services\Admin;
 
 use App\Enums\OrderStatus;
+use App\Events\OrderItemStatusChanged;
 use App\Exceptions\CustomExceptionWithMessage;
 use App\Http\Resources\Order\OneResource;
 use App\Http\Resources\Order\AllResource;
+use App\Events\OrderStatusChanged;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Services\Base\NotificationService;
 use App\Services\BaseService;
 use Illuminate\Support\Facades\DB;
 
@@ -102,8 +105,36 @@ class OrderService extends BaseService
             $order->items()->update([
                 'item_status' => $newStatus,
             ]);
+            // $statusLabel = OrderStatus::from($newStatus)->labelAr();
 
-            return $order->fresh('items');
+            // $title = 'تغيير حالة طلبك ' . $order->id;
+
+            // $body = "تم تحديث حالة طلبك رقم {$order->id} إلى {$statusLabel}";
+
+            // (new NotificationService)->send($order->user, $title, $body, [
+            //     'order_id' => $order->id,
+            //     'type' => 'order'
+            // ]);
+
+            $oldStatus = $order->status;
+
+            $order->update([
+                'status' => $newStatus,
+            ]);
+
+            $order->items()->update([
+                'item_status' => $newStatus,
+            ]);
+            $order = $order->fresh('items');
+
+            OrderStatusChanged::dispatch(
+                $order,
+                $oldStatus,
+                $newStatus,
+                'admin'
+            );
+
+            return $order;
         });
     }
 
@@ -131,9 +162,18 @@ class OrderService extends BaseService
                 $newStatus
             );
 
+            $oldStatus = $item->item_status;
+
             $item->update([
                 'item_status' => $newStatus,
             ]);
+
+            OrderItemStatusChanged::dispatch(
+                $item->fresh(),
+                $oldStatus,
+                $newStatus,
+                'admin'
+            );
 
             // لو كل العناصر صاروا بنفس الحالة → حدّث الطلب
             if (
@@ -141,9 +181,18 @@ class OrderService extends BaseService
                 ->where('item_status', '!=', $newStatus)
                 ->doesntExist()
             ) {
+                $oldOrderStatus = $order->status;
+
                 $order->update([
                     'status' => $newStatus
                 ]);
+
+                OrderStatusChanged::dispatch(
+                    $order->fresh(),
+                    $oldOrderStatus,
+                    $newStatus,
+                    'admin'
+                );
             }
 
             return $item->fresh();
@@ -170,6 +219,12 @@ class OrderService extends BaseService
                 'assigned_by' => 'admin',
             ]);
 
+            OrderStatusChanged::dispatch(
+                $order->fresh(),
+                $order->status,
+                $order->status,
+                'admin'
+            );
             return $order;
         });
     }
