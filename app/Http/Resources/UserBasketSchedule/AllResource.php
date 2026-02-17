@@ -27,7 +27,6 @@ class AllResource extends JsonResource
         return [
             'id'              => $this->id,
             'name'            => $this->name,
-            'category'        => $this->category?->name ?? '',
             'image'           => $this->category?->image_url ?? null,
             'num_varieties'   => $this->items?->count() ?? 0,
             'original_price'  => round($totalPrice, 2),
