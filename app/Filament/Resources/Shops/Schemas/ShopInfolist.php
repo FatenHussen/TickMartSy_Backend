@@ -22,7 +22,7 @@ class ShopInfolist
                             ->label(__('custom.shops.description'))
                             ->columnSpanFull(),
 
-                        Infolists\Components\ImageEntry::make('logo')
+                        Infolists\Components\ImageEntry::make('logo')->disk('public')
                             ->label(__('custom.shops.logo')),
                     ])
                     ->columns(2),

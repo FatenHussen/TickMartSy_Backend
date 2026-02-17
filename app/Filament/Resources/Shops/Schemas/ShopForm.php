@@ -27,7 +27,7 @@ class ShopForm
 
                         Forms\Components\FileUpload::make('logo')
                             ->label(__('custom.shops.logo'))
-                            ->image()
+                            ->image()->disk('public')
                             ->directory('shops/logos')
                             ->imageEditor()
                             ->columnSpanFull(),

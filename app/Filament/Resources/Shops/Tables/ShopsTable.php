@@ -16,7 +16,7 @@ class ShopsTable
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('logo')
-                    ->label(__('custom.shops.logo'))
+                    ->label(__('custom.shops.logo'))->disk('public')
                     ->circular(),
 
                 Tables\Columns\TextColumn::make('name')
