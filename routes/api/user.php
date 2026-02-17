@@ -18,6 +18,7 @@ use App\Http\Controllers\User\CityController;
 use App\Http\Controllers\User\ComplaintController;
 use App\Http\Controllers\User\FavoriteController;
 use App\Http\Controllers\User\GovernorateController;
+use App\Http\Controllers\User\HelpCenterController;
 use App\Http\Controllers\User\LegalDocumentController;
 use App\Http\Controllers\User\MarketController;
 use App\Http\Controllers\User\Order\OrderController;
@@ -205,5 +206,10 @@ Route::prefix('user')->group(
         Route::prefix('legal-documents')->group(function () {
             Route::get('/{key}', [LegalDocumentController::class, 'show']);
         });
+
+        //  Website public routes
+        Route::get('faqs', [HelpCenterController::class, 'faqs']);
+        Route::get('settings', [HelpCenterController::class, 'settings']);
+        Route::post('contactus', [HelpCenterController::class, 'contactus']);
     }
 );
