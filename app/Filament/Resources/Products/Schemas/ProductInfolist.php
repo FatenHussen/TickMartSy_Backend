@@ -119,7 +119,7 @@ class ProductInfolist
 Section::make(__('custom.products.sections.images'))
                     ->schema([
                         Infolists\Components\ImageEntry::make('media')
-                            ->label('')
+                            ->label('')->disk('public')
                             ->getStateUsing(fn($record) => $record->media->pluck('path')->toArray())
                             ->columnSpanFull()
                             ->height(120)
@@ -188,7 +188,7 @@ Section::make(__('custom.products.sections.images'))
                                 Infolists\Components\ImageEntry::make('media')
                                     ->label(__('custom.products.sections.images'))
                                     ->getStateUsing(fn($record) => $record->media->pluck('path')->toArray())
-                                    ->columnSpanFull()
+                                    ->columnSpanFull()->disk('public')
                                     ->height(90),
 
                                 Section::make(__('custom.products.sections.shop_availability'))

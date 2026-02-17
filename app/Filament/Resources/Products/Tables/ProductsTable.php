@@ -17,7 +17,7 @@ class ProductsTable
             ->columns([
                 Tables\Columns\ImageColumn::make('media')
                     ->label(__('custom.products.image'))
-                    ->getStateUsing(fn($record) => $record->media->first()?->path)
+                    ->getStateUsing(fn($record) => $record->media->first()?->path)->disk('public')
                     ->circular(),
 
                 Tables\Columns\TextColumn::make('name')

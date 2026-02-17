@@ -127,7 +127,7 @@ class ProductForm
                 ->schema([
                     Forms\Components\FileUpload::make('media')
                         ->label(__('custom.products.media'))
-                        ->image()
+                        ->image()->disk('public')->directory('product')
                         ->multiple()
                         ->maxFiles(10)
                         ->reorderable()
@@ -254,7 +254,7 @@ class ProductForm
                             Forms\Components\FileUpload::make('variant_media')
                                 ->label(__('custom.products.variants.variant_media'))
                                 ->image()
-                                ->multiple()
+                                ->multiple()->disk('public')->directory('product-variant')
                                 ->maxFiles(5)
                                 ->columnSpanFull(),
 

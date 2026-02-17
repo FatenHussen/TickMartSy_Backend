@@ -10,6 +10,8 @@ class CreateProduct extends CreateRecord
 {
     protected static string $resource = ProductResource::class;
 
+    protected $variantMediaMap = [];
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         /** @var \App\Models\VendorUser|null $user */
@@ -19,40 +21,63 @@ class CreateProduct extends CreateRecord
             $data['vendor_id'] = $user->shops()->first()?->vendor_id;
         }
 
+        // Extract and store variant_media before Filament processes the data
+        if (isset($data['variants']) && is_array($data['variants'])) {
+            foreach ($data['variants'] as $key => $variantData) {
+                if (isset($variantData['variant_media'])) {
+                    $this->variantMediaMap[$key] = $variantData['variant_media'];
+                }
+            }
+        }
+
+        \Log::info('variantMediaMap in mutate:', $this->variantMediaMap);
+
         return $data;
     }
 
     protected function afterCreate(): void
     {
+        \Log::info('=== afterCreate START ===');
+        
         $product = $this->record;
-        $data = $this->form->getState();
+        $formData = $this->form->getState();
 
         // Handle product media
-        if (isset($data['media']) && is_array($data['media'])) {
-            foreach ($data['media'] as $index => $mediaPath) {
+        if (isset($formData['media']) && is_array($formData['media'])) {
+            foreach ($formData['media'] as $index => $filePath) {
                 $product->media()->create([
-                    'path' => $mediaPath,
+                    'path' => $filePath,
                     'collection' => 'product',
-                    'order' => $index + 1,
+                    'order' => $index,
                 ]);
             }
         }
 
-        // Handle variant media - need to reload variants after creation
-        if (isset($data['variants']) && is_array($data['variants'])) {
+        // Handle variant media using the stored map
+        if (!empty($this->variantMediaMap)) {
             $product->load('variants');
-
-            foreach ($product->variants as $variantIndex => $variant) {
-                if (isset($data['variants'][$variantIndex]['variant_media']) && is_array($data['variants'][$variantIndex]['variant_media'])) {
-                    foreach ($data['variants'][$variantIndex]['variant_media'] as $index => $mediaPath) {
+            \Log::info('Variants in DB:', $product->variants->count());
+            \Log::info('variantMediaMap:', $this->variantMediaMap);
+            
+            $variantIndex = 0;
+            foreach ($product->variants as $variant) {
+                // Try to find media for this variant by index
+                if (isset($this->variantMediaMap[$variantIndex])) {
+                    $mediaPaths = $this->variantMediaMap[$variantIndex];
+                    \Log::info("Saving media for variant {$variant->id} (index $variantIndex)");
+                    
+                    foreach ($mediaPaths as $index => $filePath) {
                         $variant->media()->create([
-                            'path' => $mediaPath,
+                            'path' => $filePath,
                             'collection' => 'product-variant',
-                            'order' => $index + 1,
+                            'order' => $index,
                         ]);
                     }
                 }
+                $variantIndex++;
             }
         }
+        
+        \Log::info('=== afterCreate END ===');
     }
 }
