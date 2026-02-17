@@ -74,7 +74,10 @@ class Shop extends Model implements Sectionable
     {
         return $this->media()->where('collection', 'logo')->first();
     }
-
+ public function  getLogoUrlAttribute()
+    {
+        return asset('storage/' . $this->logo);
+    }
     public function isOpenNow(): bool
     {
         $day = strtolower(now()->englishDayOfWeek); // monday, tuesday, ...

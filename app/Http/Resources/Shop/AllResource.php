@@ -20,7 +20,7 @@ class AllResource extends JsonResource
            'id'                    => $this->id,
             'name'                  => $this->name,
             'description'            => $this->description,
-            'logo_url'                => $this->getLogoUrl(),
+            'logo_url'                => $this->logo_url,
             'is_active'             => $this->is_active,
             'average_rating'        => $this->average_rating,
             'ratings_count'         => $this->ratings_count,
