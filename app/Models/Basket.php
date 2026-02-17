@@ -139,8 +139,8 @@ class Basket extends Model implements Sectionable
             'next_delivery_date' => $nextDelivery,
 
             // section ui
-            'top_badges' => [],
-            'bottom_badges' => [],
+            // 'top_badges' => [],
+            // 'bottom_badges' => [],
             'items_count' => $itemsCount,
             'delivery_price' => $this->delivery_price
 

@@ -68,6 +68,8 @@ class RecipeItemResource extends JsonResource
                 'shop_product_variant_id' => $this->shop_product_variant_id,
                 'image_url' => $this->shopProductVariant->productVariant->product->image_url,
                 'name' => $this->shopProductVariant->productVariant->product->name,
+                'variant' =>  $this->shopProductVariant->productVariant->attributes_values->pluck('name')->toArray(),
+
                 'price' => $this->shopProductVariant->price,
             ],
             'alternatives' => $same_shop,

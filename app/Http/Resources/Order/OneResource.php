@@ -19,6 +19,7 @@ class OneResource extends JsonResource
 
         return [
             'id' => $this->id,
+            'order_code' => $this->order_code,
             'status' => $this->status,
             'cart_type' => $this->cart_type,
             'is_instant_delivery' => $this->is_instant_delivery,

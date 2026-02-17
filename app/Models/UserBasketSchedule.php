@@ -115,9 +115,8 @@ class UserBasketSchedule extends Model implements Sectionable
             'price_after_discount' => $finalPrice,
             'discount' => $discountValue,
 
-            'top_badges' => [],
-
-            'bottom_badges' => [],
+            // 'top_badges' => [],
+            // 'bottom_badges' => [],
             'items_count' => $itemsCount,
 
         ];

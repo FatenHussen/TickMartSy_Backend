@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\Favorite\FilterRequest;
 use App\Http\Requests\User\Favorite\StoreRequest;
 use Illuminate\Http\Request;
 use App\Services\User\FavoriteService;
@@ -15,6 +16,7 @@ class FavoriteController extends Controller
     {
         $this->service = $service;
     }
+
 
     public function toggle(StoreRequest $request)
     {
@@ -29,11 +31,8 @@ class FavoriteController extends Controller
         ]);
     }
 
-    public function index(Request $request)
+    public function index(FilterRequest $request)
     {
-        $request->validate([
-            'type' => ['required', 'string', 'in:product,recipe,brand,store'],
-        ]);
 
         $userId = auth('user')->id() ?? 1;
 

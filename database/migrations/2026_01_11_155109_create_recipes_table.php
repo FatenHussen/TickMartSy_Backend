@@ -23,6 +23,8 @@ return new class extends Migration
             $table->unsignedInteger('delivery_price')->default(0);
             $table->float('rating')->default(0);
             $table->integer('orders_count')->default(0);
+            $table->string('serves')->nullable();
+            $table->string('prepare_time')->nullable();
             $table->timestamps();
         });
     }

@@ -29,6 +29,7 @@ use App\Http\Controllers\Admin\Service\ServiceCrudController;
 use App\Http\Controllers\Admin\Store\StoreCrudController;
 use App\Http\Controllers\Admin\Shop\ShopCrudController;
 use App\Http\Controllers\Admin\Coupon\CouponCrudController;
+use App\Http\Controllers\Admin\Order\OrderController;
 use App\Http\Controllers\Admin\User\UserCrudController;
 use App\Http\Controllers\Admin\Recipe\RecipeCrudController;
 use App\Http\Controllers\Admin\UserBasketSchedule\UserBasketScheduleController;
@@ -47,6 +48,7 @@ Route::prefix('admin')->group(
             Route::middleware('auth:admin')->group(function () {
                 Route::post('logout', [AuthController::class, 'logout']);
                 Route::get('profile', [AuthController::class, 'profile']);
+                Route::post('/store-token', [AuthController::class, 'storOrUpdateToken']);
             });
         });
 
@@ -111,6 +113,7 @@ Route::prefix('admin')->group(
                 Route::apiResource('recipes', RecipeCrudController::class);
                 Route::apiResource('users', UserCrudController::class);
 
+
                 // Basket management routes
 
                 // // Points management routes
@@ -139,8 +142,18 @@ Route::prefix('admin')->group(
                 //     });
                 // });
 
-
             }
         );
+
+        Route::prefix('orders')->group(function () {
+
+            Route::get('/', [OrderController::class, 'index']);
+
+            Route::patch('{orderId}/change-status', [OrderController::class, 'changeStatus']);
+
+            Route::post('{orderId}/assign-driver', [OrderController::class, 'assignDriver']);
+
+            Route::patch('items/{itemId}/change-status', [OrderController::class, 'changeItemStatus']);
+        });
     }
 );

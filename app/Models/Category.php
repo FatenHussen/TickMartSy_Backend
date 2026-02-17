@@ -79,8 +79,8 @@ class Category extends Model implements Sectionable
             'image'    => $this->icon,
             'price' => null,
             'discount' => null,
-            'top_badges' => [],
-            'bottom_badges' => [],
+            // 'top_badges' => [],
+            // 'bottom_badges' => [],
         ];
     }
 }

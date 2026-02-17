@@ -65,7 +65,11 @@ class DatabaseSeeder extends Seeder
             // UserSeeder::class,
             UserAddressSeeder::class,
             DriverSeeder::class,
-            OrderWithItemsSeeder::class,PackageSeeder::class,
+            OrderWithItemsSeeder::class,
+            // LegalDocumentSeeder::class
+            LegalDocumentSeeder::class,
+            FaqSeeder::class,
+            SettingSeeder::class,
         ]);
         User::create([
             'name' => 'User',

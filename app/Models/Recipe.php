@@ -24,7 +24,9 @@ class Recipe extends Model implements Sectionable
         'rating',
         'orders_count',
         'is_active',
-        'delivery_price'
+        'delivery_price',
+        'serves',
+        'prepare_time'
     ];
 
     protected $casts = [
@@ -66,7 +68,7 @@ class Recipe extends Model implements Sectionable
 
     public function badges()
     {
-        return $this->morphToMany(Badge::class, 'badgeable');
+        return $this->morphToMany(Badge::class, 'badgeable')->withPivot('position');
     }
     public function ratings()
     {

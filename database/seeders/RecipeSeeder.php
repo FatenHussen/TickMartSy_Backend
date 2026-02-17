@@ -96,7 +96,7 @@ class RecipeSeeder extends Seeder
 
         $shortVariant = ProductVariant::create([
             'product_id' => $shortRiceProduct->id,
-            'attributes_values_ids' => [],
+            'attributes_values_ids' => [6],
         ]);
 
         $shortShopVariant = ShopProductVariant::create([
@@ -118,7 +118,7 @@ class RecipeSeeder extends Seeder
 
         $longVariant = ProductVariant::create([
             'product_id' => $longRiceProduct->id,
-            'attributes_values_ids' => [],
+            'attributes_values_ids' => [6],
         ]);
 
         ShopProductVariant::create([
@@ -134,10 +134,13 @@ class RecipeSeeder extends Seeder
         $recipe = Recipe::create([
             'name' => ['ar' => 'كبسة رز', 'en' => 'Kabsa Rice'],
             'description' => ['ar' => 'كبسة رز بالدجاج', 'en' => 'Rice Kabsa with Chicken'],
-            'image' => 'recipies/image.jpg',
+            'image' => 'recipies/image3.jpg',
             'rating' => 4.5,
             'discount' => 20,
-
+            'serves' => '2-4',
+            'prepare_time' => '25',
+            'video_url' => 'https://youtu.be/WJibKMiLXw8?si=C1ww1ht45Ct8w0YA',
+            'delivery_price' => '500'
         ]);
 
         RecipeItem::create([
@@ -163,13 +166,12 @@ class RecipeSeeder extends Seeder
             'vendor_id' => $vendor->id,
             'name' => ['ar' => 'سمنة', 'en' => 'Ghee'],
             'description' => ['ar' => 'سمنة', 'en' => 'Ghee'],
-
             'price' => 500,
         ]);
 
         $gheeVariant = ProductVariant::create([
             'product_id' => $gheeProduct->id,
-            'attributes_values_ids' => [],
+            'attributes_values_ids' => [6],
         ]);
 
         $gheeShopVariant = ShopProductVariant::create([

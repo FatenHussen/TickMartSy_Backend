@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Recipe;
 
+use App\Http\Resources\Badge\OneResource as BadgeOneResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -27,25 +28,10 @@ class OneResource extends JsonResource
             'orders_count' => $this->orders_count,
 
             'discount' => $this->discount,
+            'serves' => $this->serves,
+            'prepare_time' => $this->prepare_time,
+            'budges'                => BadgeOneResource::collection($this->badges),
 
-            'badges' => [
-                'top' => $this->whenLoaded('topBadge', function () {
-                    return [
-                        'id' => $this->topBadge->id,
-                        'name' => $this->topBadge->name,
-                        'color' => $this->topBadge->color,
-                        'icon' => $this->topBadge->icon,
-                    ];
-                }),
-                'bottom' => $this->whenLoaded('bottomBadge', function () {
-                    return [
-                        'id' => $this->bottomBadge->id,
-                        'name' => $this->bottomBadge->name,
-                        'color' => $this->bottomBadge->color,
-                        'icon' => $this->bottomBadge->icon,
-                    ];
-                }),
-            ],
             'totals' => $this->whenLoaded('items', function () {
                 $total_before_discount = $this->items->sum(function ($item) {
                     return $item->shopProductVariant->price * $item->quantity;

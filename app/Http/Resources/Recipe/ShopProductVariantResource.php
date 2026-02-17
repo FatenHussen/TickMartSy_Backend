@@ -17,6 +17,8 @@ class ShopProductVariantResource extends JsonResource
             'name' => $this->productVariant->product->name,
             'image_url' => $this->productVariant->product->image_url,
             'price' => $this->price,
+            'variant' =>  $this->productVariant->attributes_values->pluck('name')->toArray(),
+
         ];
     }
 }

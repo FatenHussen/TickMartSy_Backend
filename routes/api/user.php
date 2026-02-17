@@ -18,6 +18,8 @@ use App\Http\Controllers\User\CityController;
 use App\Http\Controllers\User\ComplaintController;
 use App\Http\Controllers\User\FavoriteController;
 use App\Http\Controllers\User\GovernorateController;
+use App\Http\Controllers\User\HelpCenterController;
+use App\Http\Controllers\User\LegalDocumentController;
 use App\Http\Controllers\User\MarketController;
 use App\Http\Controllers\User\Order\OrderController;
 use App\Http\Controllers\User\Package\SubscriptionController;
@@ -51,6 +53,7 @@ Route::prefix('user')->group(
                 Route::middleware(['auth:user'])->group(function () {
                     Route::get('/logout', [AuthController::class, 'logout']);
                     Route::post('/store-token', [AuthController::class, 'storOrUpdateToken']);
+                    Route::post('/markter-request', [AuthController::class, 'markterRequest']);
 
                     Route::prefix('/profile')->group(function () {
                         Route::get('/', [ProfileController::class, 'get_profile']);
@@ -200,5 +203,13 @@ Route::prefix('user')->group(
             Route::get('/', [ComplaintController::class, 'index']);
             Route::post('/store', [ComplaintController::class, 'store']);
         });
+        Route::prefix('legal-documents')->group(function () {
+            Route::get('/{key}', [LegalDocumentController::class, 'show']);
+        });
+
+        //  Website public routes
+        Route::get('faqs', [HelpCenterController::class, 'faqs']);
+        Route::get('settings', [HelpCenterController::class, 'settings']);
+        Route::post('contactus', [HelpCenterController::class, 'contactus']);
     }
 );
