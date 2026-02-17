@@ -138,12 +138,13 @@ class Store extends Authenticatable
             ->where('collection', 'cover')
             ->orderBy('order')
             ->get()
-            ->map(fn($media) => $media->path)
+            ->map(fn($media) => asset('storage/' . $media->path))
             ->toArray();
 
         // If no media images, use cover_images field
         if (empty($mediaImages) && !empty($this->cover_images)) {
-            return is_array($this->cover_images) ? $this->cover_images : [];
+            $images = is_array($this->cover_images) ? $this->cover_images : [];
+            return array_map(fn($path) => asset('storage/' . $path), $images);
         }
 
         return $mediaImages;
