@@ -35,7 +35,7 @@ class Store extends Authenticatable
         'ratings_sum',
     ];
 
-  
+
     protected $casts = [
         'working_hours'     => 'array',
         'cover_images'      => 'array',
@@ -99,7 +99,7 @@ class Store extends Authenticatable
         return $this->belongsToMany(Service::class, 'store_service');
     }
 
-  
+
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, 'store_category');
@@ -122,21 +122,31 @@ class Store extends Authenticatable
         return $query->where('is_active', true);
     }
 
-  
+
     public function getLogoUrl(): ?string
     {
-        return $this->media()->where('collection', 'logo')->first()?->url;
+        // Try media relationship first, fallback to logo field
+        $mediaLogo = $this->media()->where('collection', 'logo')->first()?->path;
+        return $mediaLogo ?? $this->logo;
     }
 
-   
+
     public function getCoverImagesUrls(): array
     {
-        return $this->media()
+        // Try media relationship first
+        $mediaImages = $this->media()
             ->where('collection', 'cover')
             ->orderBy('order')
             ->get()
-            ->map(fn($media) => $media->url)
+            ->map(fn($media) => $media->path)
             ->toArray();
+
+        // If no media images, use cover_images field
+        if (empty($mediaImages) && !empty($this->cover_images)) {
+            return is_array($this->cover_images) ? $this->cover_images : [];
+        }
+
+        return $mediaImages;
     }
 
     public function getMediaUrls(string $collection): array
@@ -145,7 +155,7 @@ class Store extends Authenticatable
             ->where('collection', $collection)
             ->orderBy('order')
             ->get()
-            ->map(fn($media) => $media->url)
+            ->map(fn($media) => $media->path)
             ->toArray();
     }
 

@@ -24,7 +24,7 @@ class OneResource extends JsonResource
             'mobile'                => $this->mobile,
             'email'                 => $this->email,
             'working_hours'         => $this->working_hours,
-            'logo_url'              => $this->getLogoUrl(),
+            'logo_url'              => $this->logo_url,
             'cover_images_urls'      => $this->getCoverImagesUrls(),
             'is_active'             => $this->is_active,
             'average_rating'        => $this->average_rating,

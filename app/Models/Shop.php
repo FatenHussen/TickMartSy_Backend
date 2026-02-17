@@ -112,18 +112,28 @@ class Shop extends Model implements Sectionable
 
     public function getLogoUrl(): ?string
     {
-        return $this->media()->where('collection', 'logo')->first()?->url;
+        // Try media relationship first, fallback to logo field
+        $mediaLogo = $this->media()->where('collection', 'logo')->first()?->path;
+        return $mediaLogo ?? $this->logo;
     }
 
 
     public function getCoverImagesUrls(): array
     {
-        return $this->media()
+        // Try media relationship first
+        $mediaImages = $this->media()
             ->where('collection', 'cover')
             ->orderBy('order')
             ->get()
-            ->map(fn($media) => $media->url)
+            ->map(fn($media) => $media->path)
             ->toArray();
+
+        // If no media images, use cover_images field
+        if (empty($mediaImages) && !empty($this->cover_images)) {
+            return is_array($this->cover_images) ? $this->cover_images : [];
+        }
+
+        return $mediaImages;
     }
 
     public function getMediaUrls(string $collection): array
@@ -132,7 +142,7 @@ class Shop extends Model implements Sectionable
             ->where('collection', $collection)
             ->orderBy('order')
             ->get()
-            ->map(fn($media) => $media->url)
+            ->map(fn($media) => $media->path)
             ->toArray();
     }
 
