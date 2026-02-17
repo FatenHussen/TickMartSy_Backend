@@ -37,8 +37,8 @@ class Banner extends Model
             'image'    => $this->image_url,
             'price' => null,
             'discount' => null,
-            'top_badges' => [],
-            'bottom_badges' => [],
+            // 'top_badges' => [],
+            // 'bottom_badges' => [],
         ];
     }
 }
