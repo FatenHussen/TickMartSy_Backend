@@ -27,7 +27,7 @@ class CategoryService extends BaseService
 
         // Apply parent_id filter
         if (array_key_exists('parent_id', $filters)) {
-            if ($filters['parent_id'] === null) {
+            if ($filters['parent_id'] === null || !$filters['parent_id']) {
                 $query->whereNull('parent_id');
             } else {
                 $query->where('parent_id', $filters['parent_id']);
