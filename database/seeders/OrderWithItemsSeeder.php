@@ -17,6 +17,7 @@ class OrderWithItemsSeeder extends Seeder
         $orders = [
             // 1️⃣ PENDING – instant
             [
+                'order_code' => 1,
                 'user_id' => 1,
                 'user_address_id' => 1,
                 'status' => OrderStatus::PENDING->value,
@@ -27,6 +28,7 @@ class OrderWithItemsSeeder extends Seeder
                 ],
             ],
             [
+                'order_code' => 2,
                 'user_id' => 2,
                 'user_address_id' => 2,
                 'status' => OrderStatus::PENDING->value,
@@ -37,6 +39,7 @@ class OrderWithItemsSeeder extends Seeder
                 ],
             ],
             [
+                'order_code' => 3,
                 'user_id' => 1,
                 'user_address_id' => 1,
                 'status' => OrderStatus::PENDING->value,
@@ -47,6 +50,8 @@ class OrderWithItemsSeeder extends Seeder
                 ],
             ],
             [
+                'order_code' => 4,
+
                 'user_id' => 2,
                 'user_address_id' => 2,
                 'status' => OrderStatus::PENDING->value,
@@ -59,6 +64,8 @@ class OrderWithItemsSeeder extends Seeder
 
             // 2️⃣ PREPARING – non instant
             [
+                'order_code' => 5,
+
                 'user_id' => 2,
                 'user_address_id' => 2,
                 'status' => OrderStatus::PREPARING->value,
@@ -72,6 +79,8 @@ class OrderWithItemsSeeder extends Seeder
 
             // 3️⃣ PREPARING – instant + driver
             [
+                'order_code' => 6,
+
                 'user_id' => 2,
                 'user_address_id' => 2,
                 'status' => OrderStatus::PREPARING->value,
@@ -86,6 +95,8 @@ class OrderWithItemsSeeder extends Seeder
 
             // 4️⃣ OUT DELIVERY
             [
+                'order_code' => 7,
+
                 'user_id' => 2,
                 'user_address_id' => 2,
                 'status' => OrderStatus::OUT_DELIVERY->value,
@@ -101,6 +112,8 @@ class OrderWithItemsSeeder extends Seeder
 
             // 5️⃣ DELIVERED
             [
+                'order_code' => 8,
+
                 'user_id' => 2,
                 'user_address_id' => 2,
                 'status' => OrderStatus::DELIVERED->value,
@@ -118,10 +131,11 @@ class OrderWithItemsSeeder extends Seeder
 
         foreach ($orders as $index => $data) {
             $order = Order::create(array_merge([
+
                 'user_id' => $data['user_id'],
+                'order_code' => $data['order_code'],
                 'user_address_id' => $data['user_address_id'],
                 'cart_type' => CartType::DEFAULT->value,
-
                 'total_quantity' => 2,
                 'delivery_price' => 5000,
                 'subtotal' => 30000,

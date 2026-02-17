@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Facades\Log;
 
 class Order extends Model
 {
@@ -25,7 +26,7 @@ class Order extends Model
         'basket_discount',
         'cart_type',
         'coupon_discount',
-        'delivery_code',
+        'order_code',
         //markter
         'affiliate_id',
         'affiliate_rate',
@@ -77,10 +78,19 @@ class Order extends Model
         return $this->belongsTo(UserAddress::class);
     }
 
+
     protected static function booted()
     {
-        static::creating(function ($order) {
-            $order->delivery_code = strtoupper(Str::random(6));
+        static::created(function ($order) {
+
+            $order->updateQuietly([
+                'order_code' => 'ORD-' .
+                    now()->format('ymd') . '-' .
+                    strtoupper(Str::random(4)) .
+                    $order->id
+            ]);
+
+            Log::info("Helllllo");
         });
 
         static::updating(function ($order) {
