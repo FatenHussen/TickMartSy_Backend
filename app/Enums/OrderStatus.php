@@ -8,6 +8,7 @@ enum OrderStatus: string
     case PREPARING = 'preparing';
     case OUT_DELIVERY = 'out_delivery';
     case DELIVERED = 'delivered';
+    case CANCELLED = 'cancelled';
 
     public function labelAr(): string
     {
@@ -16,6 +17,7 @@ enum OrderStatus: string
             self::PREPARING => 'قيد التحضير',
             self::OUT_DELIVERY => 'خرج للتوصيل',
             self::DELIVERED => 'تم التوصيل',
+            self::CANCELLED => 'ملغي',
         };
     }
 
@@ -26,6 +28,7 @@ enum OrderStatus: string
             self::PREPARING => 'Preparing',
             self::OUT_DELIVERY => 'Out for delivery',
             self::DELIVERED => 'Delivered',
+            self::CANCELLED => 'Cancelled',
         };
     }
 }

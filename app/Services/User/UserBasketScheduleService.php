@@ -18,7 +18,7 @@ class UserBasketScheduleService extends BaseService
 
     protected $relations = [
         'schedule',
-        'category',
+        // 'category',
         'items.product',
         'items.variant',
     ];

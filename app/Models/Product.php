@@ -32,8 +32,8 @@ class Product extends Model implements Sectionable
         'vendor_id',
         'discount',
         'brand_id',
-
-
+        'approval_status',
+        'rejection_reason',
     ];
 
     public array $translatable = [
@@ -46,6 +46,7 @@ class Product extends Model implements Sectionable
     protected $casts = [
         'bought_with' => 'array',
         'time_prepare' => 'datetime:H:i',
+        'approval_status' => \App\Enums\ProductApprovalStatus::class,
     ];
     public function getPriceAfterDiscountAttribute()
     {
@@ -70,24 +71,24 @@ class Product extends Model implements Sectionable
     public function getRatingBreakdown(): array
     {
         $breakdown = [];
-        
+
         // Initialize all star ratings with 0 count
         for ($i = 1; $i <= 5; $i++) {
             $breakdown[$i] = 0;
         }
-        
+
         // Get actual rating counts
         $ratingCounts = $this->ratings()
             ->selectRaw('rating, COUNT(*) as count')
             ->groupBy('rating')
             ->pluck('count', 'rating')
             ->toArray();
-        
+
         // Merge actual counts with initialized array
         foreach ($ratingCounts as $rating => $count) {
             $breakdown[(int)$rating] = (int)$count;
         }
-        
+
         return $breakdown;
     }
     /*
@@ -118,24 +119,25 @@ class Product extends Model implements Sectionable
     {
         return $this->hasMany(ProductCategoryDetail::class);
     }
-    public function boughtWithProducts()
+
+    public function getBoughtWithProductsListAttribute()
     {
-        return $this->belongsToMany(Product::class, 'bought_with', 'product_id', 'bought_with_id');
+        if (!$this->bought_with || !is_array($this->bought_with)) {
+            return collect([]);
+        }
+        return Product::whereIn('id', $this->bought_with)->get();
     }
 
     public function extraDetails()
     {
         return $this->hasMany(ProductExtraDetail::class);
     }
+
     public function media()
     {
         return $this->morphMany(ProductMedia::class, 'mediable')
             ->where('collection', 'product')
             ->orderBy('order');
-    }
-    public function boughtWithProduct()
-    {
-        return Product::whereIn('id', $this->bought_with ?? [])->get();
     }
 
     public function badges()

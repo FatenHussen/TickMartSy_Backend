@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('user_basket_schedules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('category_id')->nullable()->constrained()->cascadeOnDelete();
+            // $table->foreignId('category_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('schedule_id')->constrained('schedules');
             $table->string('name')->nullable();
             $table->boolean('is_active')->default(true);

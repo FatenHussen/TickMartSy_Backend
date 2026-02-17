@@ -10,178 +10,208 @@ class ProductInfolist
 {
     public static function configure(Schema $infolist): Schema
     {
-        return $infolist
+        return $infolist->columns(1)
             ->schema([
-                Section::make('الصور')
-                    ->schema([
-                        Infolists\Components\ImageEntry::make('media')
-                            ->label('')
-                            ->getStateUsing(fn($record) => $record->media->pluck('url')->toArray())
-                            ->columnSpanFull(),
-                    ]),
 
-                Section::make('المعلومات الأساسية')
+                Section::make(__('custom.products.sections.basic_info'))
                     ->schema([
                         Infolists\Components\TextEntry::make('name')
-                            ->label('اسم المنتج'),
+                            ->label(__('custom.products.name'))
+                            ->weight('bold')
+                            ->size('lg'),
 
                         Infolists\Components\TextEntry::make('sku')
-                            ->label('رمز المنتج'),
+                            ->label(__('custom.products.sku'))
+                            ->badge(),
 
                         Infolists\Components\TextEntry::make('barcode')
-                            ->label('الباركود'),
+                            ->label(__('custom.products.barcode'))
+                            ->badge(),
 
                         Infolists\Components\TextEntry::make('model')
-                            ->label('الموديل'),
+                            ->label(__('custom.products.model'))
+                            ->badge(),
 
                         Infolists\Components\TextEntry::make('category.name')
-                            ->label('الفئة'),
+                            ->label(__('custom.products.category'))
+                            ->badge()
+                            ->color('info'),
 
                         Infolists\Components\TextEntry::make('brand.name')
-                            ->label('العلامة التجارية'),
+                            ->label(__('custom.products.brand'))
+                            ->badge()
+                            ->color('gray'),
 
                         Infolists\Components\TextEntry::make('vendor.name')
-                            ->label('المورد'),
+                            ->label(__('custom.products.vendor'))
+                            ->badge()
+                            ->color('warning'),
 
                         Infolists\Components\TextEntry::make('country')
-                            ->label('بلد المنشأ'),
-                    ])
-                    ->columns(4),
+                            ->label(__('custom.products.country'))
+                            ->badge(),
 
-                Section::make('الوصف')
+                        Infolists\Components\TextEntry::make('approval_status')
+                            ->label(__('custom.products.approval_status'))
+                            ->badge()
+                            ->color(fn(\App\Enums\ProductApprovalStatus $state): string => match ($state) {
+                                \App\Enums\ProductApprovalStatus::PENDING => 'warning',
+                                \App\Enums\ProductApprovalStatus::APPROVED => 'success',
+                                \App\Enums\ProductApprovalStatus::REJECTED => 'danger',
+                            })
+                            ->formatStateUsing(fn(\App\Enums\ProductApprovalStatus $state): string => __('custom.products.approval_statuses.' . $state->value)),
+
+                        Infolists\Components\TextEntry::make('rejection_reason')
+                            ->label(__('custom.products.rejection_reason'))
+                            ->columnSpanFull()
+                            ->visible(fn($record) => $record->approval_status === \App\Enums\ProductApprovalStatus::REJECTED),
+                    ])
+                    ->columns([
+                        'sm' => 2,
+                        'xl' => 4,
+                    ])
+                    ->collapsible(),
+
+                Section::make(__('custom.products.sections.description'))
                     ->schema([
                         Infolists\Components\TextEntry::make('description')
-                            ->label('الوصف المختصر')
-                            ->columnSpanFull(),
+                            ->label(__('custom.products.description'))
+                            ->columnSpanFull()
+                            ->markdown(),
 
                         Infolists\Components\TextEntry::make('full_description')
                             ->label('الوصف الكامل')
                             ->columnSpanFull()
                             ->html(),
-                    ]),
+                    ])
+                    ->collapsible(),
 
-                Section::make('الأسعار والكميات')
+                Section::make(__('custom.products.sections.pricing'))
                     ->schema([
                         Infolists\Components\TextEntry::make('price')
-                            ->label('السعر')
-                            ->money('USD'),
+                            ->label(__('custom.products.price'))
+                            ->money('USD')
+                            ->weight('bold')
+                            ->size('lg')
+                            ->color('success'),
 
                         Infolists\Components\TextEntry::make('discount')
-                            ->label('نسبة الخصم')
+                            ->label(__('custom.products.discount'))
                             ->suffix('%')
+                            ->badge()
+                            ->color('danger')
                             ->default('-'),
 
                         Infolists\Components\TextEntry::make('price_after_discount')
-                            ->label('السعر بعد الخصم')
-                            ->money('USD'),
+                            ->label(__('custom.products.price_after_discount'))
+                            ->money('USD')
+                            ->color('primary')
+                            ->weight('bold'),
 
                         Infolists\Components\TextEntry::make('quantity')
-                            ->label('الكمية المتاحة')
+                            ->label(__('custom.products.quantity_available'))
+                            ->badge()
+                            ->color(fn($state) => $state > 10 ? 'success' : ($state > 0 ? 'warning' : 'danger'))
                             ->default('-'),
                     ])
-                    ->columns(4),
-
-                Section::make('إعدادات التوصيل')
+                    ->columns(4)
+                    ->collapsible(),
+Section::make(__('custom.products.sections.images'))
+                    ->schema([
+                        Infolists\Components\ImageEntry::make('media')
+                            ->label('')
+                            ->getStateUsing(fn($record) => $record->media->pluck('path')->toArray())
+                            ->columnSpanFull()
+                            ->height(120)
+                            ->extraAttributes(['class' => 'rounded-xl']),
+                    ])
+                    ->collapsible(false),
+                Section::make(__('custom.products.sections.delivery_settings'))
                     ->schema([
                         Infolists\Components\IconEntry::make('is_instant_delivery')
-                            ->label('توصيل فوري')
+                            ->label(__('custom.products.is_instant_delivery'))
                             ->boolean(),
 
                         Infolists\Components\TextEntry::make('time_prepare')
-                            ->label('وقت التحضير')
-                            ->time('H:i')
-                            ->default('-'),
+                            ->label(__('custom.products.time_prepare'))
+                            ->formatStateUsing(fn($state) => $state ? $state->format('H:i') : '-')
+                            ->badge(),
                     ])
-                    ->columns(2),
+                    ->columns(2)
+                    ->collapsible(),
 
-                Section::make('الإحصائيات')
+                Section::make(__('custom.products.statistics'))
                     ->schema([
                         Infolists\Components\TextEntry::make('average_rating')
-                            ->label('التقييم')
+                            ->label(__('custom.products.rating'))
                             ->badge()
                             ->color('success')
+                            ->size('lg')
                             ->default('0'),
 
                         Infolists\Components\TextEntry::make('sold_quantity')
-                            ->label('الكمية المباعة')
+                            ->label(__('custom.products.sold_quantity'))
                             ->badge()
+                            ->color('primary')
                             ->default('0'),
 
                         Infolists\Components\TextEntry::make('created_at')
-                            ->label('تاريخ الإضافة')
-                            ->dateTime(),
+                            ->label(__('custom.products.date_added'))
+                            ->dateTime()
+                            ->since(),
                     ])
-                    ->columns(3),
-
-                Section::make('المنتجات المشتراة معاً')
-                    ->schema([
-                        Infolists\Components\RepeatableEntry::make('boughtWithProduct')
-                            ->label('')
-                            ->schema([
-                                Infolists\Components\TextEntry::make('name')
-                                    ->label('اسم المنتج'),
-
-                                Infolists\Components\TextEntry::make('price')
-                                    ->label('السعر')
-                                    ->money('USD'),
-                            ])
-                            ->columns(2),
-                    ])
-                    ->visible(fn($record) => $record->bought_with && count($record->bought_with) > 0)
+                    ->columns(3)
                     ->collapsible(),
 
-                Section::make('متغيرات المنتج (Variants)')
+
+                Section::make(__('custom.products.sections.variants'))
                     ->schema([
                         Infolists\Components\RepeatableEntry::make('variants')
                             ->label('')
                             ->schema([
-                                Infolists\Components\TextEntry::make('id')
-                                    ->label('رقم المتغير'),
 
-                                Infolists\Components\TextEntry::make('attributes_values')
-                                    ->label('الخصائص')
-                                    ->listWithLineBreaks()
-                                    ->getStateUsing(function ($record) {
-                                        $attributeValues = \App\Models\AttributeValue::whereIn('id', $record->attributes_values_ids ?? [])
-                                            ->get();
-                                        return $attributeValues->pluck('name')->toArray();
-                                    })
+
+                                Infolists\Components\ViewEntry::make('attributes_display')
+                                    ->label(__('custom.products.sections.attributes'))
+                                    ->view('filament.infolists.variant-attributes')
                                     ->columnSpanFull(),
 
                                 Infolists\Components\IconEntry::make('is_trend')
-                                    ->label('رائج')
+                                    ->label(__('custom.products.trending'))
                                     ->boolean(),
 
                                 Infolists\Components\TextEntry::make('average_rating')
-                                    ->label('التقييم')
+                                    ->label(__('custom.products.rating'))
                                     ->badge()
                                     ->color('success'),
 
                                 Infolists\Components\ImageEntry::make('media')
-                                    ->label('الصور')
-                                    ->getStateUsing(fn($record) => $record->media->pluck('url')->toArray())
-                                    ->columnSpanFull(),
+                                    ->label(__('custom.products.sections.images'))
+                                    ->getStateUsing(fn($record) => $record->media->pluck('path')->toArray())
+                                    ->columnSpanFull()
+                                    ->height(90),
 
-                                Infolists\Components\Section::make('توفر المتغير في المتاجر')
+                                Section::make(__('custom.products.sections.shop_availability'))
                                     ->schema([
                                         Infolists\Components\RepeatableEntry::make('shopVariants')
                                             ->label('')
                                             ->schema([
                                                 Infolists\Components\TextEntry::make('shop.name')
-                                                    ->label('المتجر'),
+                                                    ->label(__('custom.products.shop'))
+                                                    ->weight('bold'),
 
                                                 Infolists\Components\TextEntry::make('quantity')
-                                                    ->label('الكمية')
+                                                    ->label(__('custom.products.quantity'))
                                                     ->badge()
                                                     ->color(fn($state) => $state > 10 ? 'success' : ($state > 0 ? 'warning' : 'danger')),
 
                                                 Infolists\Components\TextEntry::make('price')
-                                                    ->label('السعر')
-                                                    ->money('USD'),
+                                                    ->label(__('custom.products.price'))
+                                                    ->money('USD')
+                                                    ->color('success'),
 
                                                 Infolists\Components\TextEntry::make('created_at')
-                                                    ->label('تاريخ الإضافة')
-                                                    ->dateTime()
+                                                    ->label(__('custom.products.date_added'))
                                                     ->since(),
                                             ])
                                             ->columns(4),
@@ -189,40 +219,63 @@ class ProductInfolist
                                     ->columnSpanFull()
                                     ->collapsible(),
                             ])
-                            ->columns(3),
-                    ])
+                            ->columns([
+                                'sm' => 1,
+                                'xl' => 3,
+                            ]),
+                    ])->columnSpanFull()
                     ->collapsible(),
 
-                Section::make('تفاصيل الفئة')
+
+                Section::make(__('custom.products.category_details'))
                     ->schema([
                         Infolists\Components\RepeatableEntry::make('categoryDetails')
                             ->label('')
                             ->schema([
                                 Infolists\Components\TextEntry::make('categoryDetail.detail_key')
-                                    ->label('المفتاح'),
+                                    ->label(__('custom.products.detail_key'))
+                                    ->weight('bold'),
 
                                 Infolists\Components\TextEntry::make('detail_value')
-                                    ->label('القيمة'),
+                                    ->label(__('custom.products.detail_value')),
                             ])
                             ->columns(2),
                     ])
                     ->visible(fn($record) => $record->categoryDetails->count() > 0)
                     ->collapsible(),
 
-                Section::make('تفاصيل إضافية')
+                Section::make(__('custom.products.extra_details'))
                     ->schema([
                         Infolists\Components\RepeatableEntry::make('extraDetails')
                             ->label('')
                             ->schema([
                                 Infolists\Components\TextEntry::make('detail_key')
-                                    ->label('المفتاح'),
+                                    ->label(__('custom.products.detail_key'))
+                                    ->weight('bold'),
 
                                 Infolists\Components\TextEntry::make('detail_value')
-                                    ->label('القيمة'),
+                                    ->label(__('custom.products.detail_value')),
                             ])
                             ->columns(2),
                     ])
                     ->visible(fn($record) => $record->extraDetails->count() > 0)
+                    ->collapsible(),Section::make(__('custom.products.sections.bought_with'))
+                    ->schema([
+                        Infolists\Components\RepeatableEntry::make('bought_with_products_list')
+                            ->label('')
+                            ->schema([
+                                Infolists\Components\TextEntry::make('name')
+                                    ->label(__('custom.products.name'))
+                                    ->weight('bold'),
+
+                                Infolists\Components\TextEntry::make('price')
+                                    ->label(__('custom.products.price'))
+                                    ->money('USD')
+                                    ->color('success'),
+                            ])
+                            ->columns(2),
+                    ])
+                    ->visible(fn($record) => $record->bought_with && count($record->bought_with) > 0)
                     ->collapsible(),
             ]);
     }

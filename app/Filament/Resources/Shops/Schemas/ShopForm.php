@@ -13,20 +13,20 @@ class ShopForm
     {
         return $form
             ->schema([
-                Section::make('معلومات المتجر')
+                Section::make(__('custom.shops.sections.basic_info'))
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                            ->label('اسم المتجر')
+                            ->label(__('custom.shops.name'))
                             ->required()
                             ->maxLength(255),
 
                         Forms\Components\Textarea::make('description')
-                            ->label('الوصف')
+                            ->label(__('custom.shops.description'))
                             ->rows(3)
                             ->columnSpanFull(),
 
                         Forms\Components\FileUpload::make('logo')
-                            ->label('الشعار')
+                            ->label(__('custom.shops.logo'))
                             ->image()
                             ->directory('shops/logos')
                             ->imageEditor()
@@ -34,76 +34,76 @@ class ShopForm
                     ])
                     ->columns(2),
 
-                Section::make('معلومات التواصل')
+                Section::make(__('custom.shops.sections.contact_info'))
                     ->schema([
                         Forms\Components\TextInput::make('phone')
-                            ->label('الهاتف')
+                            ->label(__('custom.shops.phone'))
                             ->tel()
                             ->maxLength(20),
 
                         Forms\Components\TextInput::make('mobile')
-                            ->label('الموبايل')
+                            ->label(__('custom.shops.mobile'))
                             ->tel()
                             ->maxLength(20),
 
                         Forms\Components\TextInput::make('email')
-                            ->label('البريد الإلكتروني')
+                            ->label(__('custom.shops.email'))
                             ->email()
                             ->maxLength(255),
                     ])
                     ->columns(3),
 
-                Section::make('العنوان والموقع')
+                Section::make(__('custom.shops.sections.location_info'))
                     ->schema([
                         Forms\Components\Textarea::make('address')
-                            ->label('العنوان')
+                            ->label(__('custom.shops.address'))
                             ->rows(2)
                             ->columnSpanFull(),
 
                         Forms\Components\TextInput::make('lat')
-                            ->label('خط العرض')
+                            ->label(__('custom.shops.lat'))
                             ->numeric(),
 
                         Forms\Components\TextInput::make('lng')
-                            ->label('خط الطول')
+                            ->label(__('custom.shops.lng'))
                             ->numeric(),
 
                         Forms\Components\Select::make('area_id')
-                            ->label('المنطقة')
+                            ->label(__('custom.shops.area'))
                             ->relationship('area', 'name')
                             ->searchable()
                             ->preload(),
                     ])
                     ->columns(3),
 
-                Section::make('أوقات العمل')
+                Section::make(__('custom.shops.sections.working_hours'))
                     ->schema([
                         Forms\Components\Repeater::make('working_hours')
-                            ->label('أوقات العمل')
+                            ->label(__('custom.shops.working_hours'))
                             ->schema([
                                 Forms\Components\Select::make('day')
-                                    ->label('اليوم')
+                                    ->label(__('custom.shops.day'))
                                     ->options([
-                                        'monday' => 'الإثنين',
-                                        'tuesday' => 'الثلاثاء',
-                                        'wednesday' => 'الأربعاء',
-                                        'thursday' => 'الخميس',
-                                        'friday' => 'الجمعة',
-                                        'saturday' => 'السبت',
-                                        'sunday' => 'الأحد',
+                                        'monday' => __('custom.shops.days.monday'),
+                                        'tuesday' => __('custom.shops.days.tuesday'),
+                                        'wednesday' => __('custom.shops.days.wednesday'),
+                                        'thursday' => __('custom.shops.days.thursday'),
+                                        'friday' => __('custom.shops.days.friday'),
+                                        'saturday' => __('custom.shops.days.saturday'),
+                                        'sunday' => __('custom.shops.days.sunday'),
                                     ])
                                     ->required(),
 
                                 Forms\Components\TimePicker::make('open')
-                                    ->label('وقت الفتح')
+                                    ->label(__('custom.shops.open'))
                                     ->required(),
 
                                 Forms\Components\TimePicker::make('close')
-                                    ->label('وقت الإغلاق')
+                                    ->label(__('custom.shops.close'))
                                     ->required(),
 
                                 Forms\Components\Toggle::make('closed')
-                                    ->label('مغلق')
+                                    ->label(__('custom.shops.closed'))
                                     ->default(false),
                             ])
                             ->columns(4)
@@ -111,14 +111,14 @@ class ShopForm
                             ->defaultItems(0),
                     ]),
 
-                Section::make('الإعدادات')
+                Section::make(__('custom.shops.sections.settings'))
                     ->schema([
                         Forms\Components\Toggle::make('is_active')
-                            ->label('نشط')
+                            ->label(__('custom.shops.is_active'))
                             ->default(true),
 
                         Forms\Components\Toggle::make('is_free_delivery')
-                            ->label('توصيل مجاني')
+                            ->label(__('custom.shops.is_free_delivery'))
                             ->default(false),
                     ])
                     ->columns(2),

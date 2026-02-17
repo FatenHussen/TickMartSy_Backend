@@ -16,45 +16,45 @@ class ShopsTable
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('logo')
-                    ->label('الشعار')
+                    ->label(__('custom.shops.logo'))
                     ->circular(),
 
                 Tables\Columns\TextColumn::make('name')
-                    ->label('اسم المتجر')
+                    ->label(__('custom.shops.name'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('phone')
-                    ->label('الهاتف')
+                    ->label(__('custom.shops.phone'))
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('area.name')
-                    ->label('المنطقة')
+                    ->label(__('custom.shops.area'))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('average_rating')
-                    ->label('التقييم')
+                    ->label(__('custom.shops.rating'))
                     ->badge()
                     ->color('success')
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_active')
-                    ->label('نشط')
+                    ->label(__('custom.shops.is_active'))
                     ->boolean()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('تاريخ الإنشاء')
+                    ->label(__('custom.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('نشط')
-                    ->placeholder('الكل')
-                    ->trueLabel('نشط')
-                    ->falseLabel('غير نشط'),
+                    ->label(__('custom.shops.is_active'))
+                    ->placeholder(__('custom.all'))
+                    ->trueLabel(__('custom.active'))
+                    ->falseLabel(__('custom.inactive')),
             ])
             ->actions([
                 ViewAction::make(),

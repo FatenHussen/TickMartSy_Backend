@@ -20,11 +20,12 @@ class StoreRequest extends FormRequest
             'seller_name' => 'required|string|max:255',
             'store_name'  => 'required|string|max:255',
 
-            'address' => 'nullable|string|max:500',
+            'address' => 'required|string|max:500',
             'commercial_register_number' => 'nullable|string|max:255',
             'commercial_register_date' => 'nullable|date',
             'country' => 'nullable|string|max:100',
-            'city' => 'nullable|string|max:100',
+            'city_id' => 'required|exists:cities,id',
+            'governorate_id' => 'required|exists:governorates,id',
             'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ];
     }

@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Filament\Widgets\ShopSwitcher;
+use BezhanSalleh\LanguageSwitch\LanguageSwitch;
 use Filament\Facades\Filament;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,6 +21,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-       
+        LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
+            $switch
+                ->locales(['ar','en']); // also accepts a closure
+        });
     }
 }

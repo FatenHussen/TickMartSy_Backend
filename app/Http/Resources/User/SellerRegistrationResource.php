@@ -24,6 +24,9 @@ class SellerRegistrationResource extends JsonResource
             'commercial_register_image' => $this->commercial_register_image,
             'gender' => $this->gender,
             'country' => $this->country,
+            'city_id' => $this->city_id,
+            'governorate_id' => $this->governorate_id,
+
             'logo' => $this->logo,
             'status' => $this->status ?? 'pending',
             'registered_at' => $this->registered_at,

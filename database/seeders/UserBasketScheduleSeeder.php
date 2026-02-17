@@ -14,16 +14,16 @@ class UserBasketScheduleSeeder extends Seeder
     public function run(): void
     {
         $user = User::first();
-        $category = Category::first();
+        // $category = Category::first();
         $schedule = Schedule::first();
 
-        if (!$user || !$category || !$schedule) {
+        if (!$user || !$schedule) {
             return;
         }
 
         UserBasketSchedule::create([
             'user_id' => $user->id,
-            'category_id' => $category->id,
+            // 'category_id' => $category->id,
             'schedule_id' => $schedule->id,
             'name' => 'سلة الفطور',
             'is_active' => true,

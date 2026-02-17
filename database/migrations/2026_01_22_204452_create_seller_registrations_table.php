@@ -19,7 +19,8 @@ return new class extends Migration {
             $table->string('commercial_register_number')->nullable();
             $table->date('commercial_register_date')->nullable();
             $table->string('country')->nullable();
-            $table->string('city')->nullable();
+            $table->foreignId('governorate_id')->constrained('governorates');
+            $table->foreignId('city_id')->constrained('cities');
             $table->string('logo')->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamps();

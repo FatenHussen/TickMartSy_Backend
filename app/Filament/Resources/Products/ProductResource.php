@@ -22,11 +22,26 @@ class ProductResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::ShoppingBag;
 
-    protected static ?string $navigationLabel = 'المنتجات';
+    protected static ?string $navigationLabel = null;
 
-    protected static ?string $modelLabel = 'منتج';
+    protected static ?string $modelLabel = null;
 
-    protected static ?string $pluralModelLabel = 'المنتجات';
+    protected static ?string $pluralModelLabel = null;
+
+    public static function getNavigationLabel(): string
+    {
+        return __('custom.navigation.products');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('custom.products.singular');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('custom.products.title');
+    }
 
     protected static ?int $navigationSort = 2;
 
@@ -54,36 +69,37 @@ class ProductResource extends Resource
             return parent::getEloquentQuery()->whereRaw('1 = 0');
         }
 
-        // Get shop IDs from the user
-        $shopIds = $user->shops()->pluck('shops.id');
+        // Get vendor_id from the user
+        $vendorId = $user->vendor_id;
 
-        // Get products that have variants in these shops
+        // Get all products for this vendor
+        // Vendors can see all their products regardless of approval status
         return parent::getEloquentQuery()
-            ->whereHas('variants.shopVariants', function ($query) use ($shopIds) {
-                $query->whereIn('shop_id', $shopIds);
-            });
+            ->where('vendor_id', $vendorId);
     }
 
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListProducts::route('/'),
+            'create' => Pages\CreateProduct::route('/create'),
+            'edit' => Pages\EditProduct::route( '/edit/{record}'),
             'view' => Pages\ViewProduct::route('/{record}'),
         ];
     }
 
     public static function canCreate(): bool
     {
-        return false;
+        return true;
     }
 
     public static function canEdit($record): bool
     {
-        return false;
+        return true;
     }
 
     public static function canDelete($record): bool
     {
-        return false;
+        return true;
     }
 }

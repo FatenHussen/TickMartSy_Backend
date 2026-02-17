@@ -13,7 +13,7 @@ class ListShops extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            // Actions\CreateAction::make(), // Disabled - vendors can't create shops
+             Actions\CreateAction::make(), // Disabled - vendors can't create shops
         ];
     }
 }
