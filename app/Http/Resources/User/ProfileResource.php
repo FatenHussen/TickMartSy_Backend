@@ -19,8 +19,10 @@ class ProfileResource extends JsonResource
             'name' => $this->name ?? 'User',
             'phone' => $this->phone ?? 'Phone',
             'email' => $this->email ?? 'Email',
-            'city' => $this->city?->name ?? null,
             'image' => $this->image_url,
+            'orders_count' => $this->orders_count ?? $this->orders()->count(),
+            'baskets_count' => $this->baskets_count ?? $this->userBasketSchedules()->count(),
+            'points' => $this->pointWallet?->balance ?? 0,
         ];
     }
 }

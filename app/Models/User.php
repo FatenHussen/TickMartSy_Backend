@@ -120,4 +120,14 @@ class User extends Authenticatable
         return $this->hasOne(Subscription::class)
             ->where('status', 'active');
     }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function userBasketSchedules()
+    {
+        return $this->hasMany(UserBasketSchedule::class);
+    }
 }

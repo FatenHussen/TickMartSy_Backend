@@ -307,7 +307,9 @@ class UserService
     }
     public function get_profile()
     {
-        $data =  auth('user')->user();
+        $data = auth('user')->user()
+            ->loadCount(['orders', 'userBasketSchedules'])
+            ->load('pointWallet');
 
         return new ProfileResource($data);
     }
