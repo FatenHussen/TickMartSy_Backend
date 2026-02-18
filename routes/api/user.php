@@ -32,12 +32,12 @@ use App\Http\Controllers\User\SellerRegistrationController;
 Route::prefix('user')->group(
     function () {
 
-        // public routes 
+        // public routes
         Route::get('/governorates', [GovernorateController::class, 'index']);
         Route::get('/cities', [CityController::class, 'index']);
         Route::get('/areas', [AreaController::class, 'index']);
 
-        //authetication routes user 
+        //authetication routes user
         Route::prefix('auth')->group(
             function () {
                 //public routes
@@ -49,7 +49,7 @@ Route::prefix('user')->group(
                 Route::post('/verify-password', [AuthController::class, 'verifyPassword']);
                 Route::post('/seller-register', [SellerRegistrationController::class, 'store']);
 
-                // protected routes 
+                // protected routes
                 Route::middleware(['auth:user'])->group(function () {
                     Route::get('/logout', [AuthController::class, 'logout']);
                     Route::post('/store-token', [AuthController::class, 'storOrUpdateToken']);
@@ -63,6 +63,7 @@ Route::prefix('user')->group(
                         Route::post('/update_email', [ProfileController::class, 'update_email']);
                         Route::post('/update_phone', [ProfileController::class, 'update_phone']);
                         Route::post('/verify', [ProfileController::class, 'verify_update']);
+                        Route::post('/update-payment-gateway', [ProfileController::class, 'update_payment_gateway']);
                     });
                     Route::middleware(['auth:user', 'abilities:reset-password'])->group(function () {
                         Route::post('/reset-password', [AuthController::class, 'resetPassword']);
@@ -190,7 +191,7 @@ Route::prefix('user')->group(
         });
 
 
-        
+
         Route::prefix('markter')->middleware(['auth:user'])->group(function () {
             Route::get('/statistics', [MarketController::class, 'statistics']);
             Route::get('/orders', [MarketController::class, 'orders']);

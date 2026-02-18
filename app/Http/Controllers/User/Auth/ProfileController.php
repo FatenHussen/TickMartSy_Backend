@@ -59,4 +59,11 @@ class ProfileController extends Controller
         $res = $this->service->verify_update($request);
         return $this->sendResponse(data: $res);
     }
+
+    public function update_payment_gateway(\App\Http\Requests\User\UpdatePaymentGatewayRequest $request)
+    {
+        $userId = auth('user')->id();
+        $data = $this->service->updatePaymentGateway($userId, $request->validated()['preferred_payment_method_id']);
+        return $this->sendResponse(data: $data);
+    }
 }
