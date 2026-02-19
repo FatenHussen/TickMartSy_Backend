@@ -13,19 +13,19 @@ class OrderInfolist
     {
         return $infolist
             ->schema([
-                Section::make('معلومات الطلب')
+                Section::make(__('custom.orders.sections.order_info'))
                     ->schema([
                         Infolists\Components\TextEntry::make('id')
-                            ->label('رقم الطلب'),
+                            ->label(__('custom.orders.order_number')),
 
                         Infolists\Components\TextEntry::make('delivery_code')
-                            ->label('كود التوصيل')
+                            ->label(__('custom.orders.delivery_code'))
                             ->copyable()
                             ->badge()
                             ->color('primary'),
 
                         Infolists\Components\TextEntry::make('status')
-                            ->label('الحالة')
+                            ->label(__('custom.orders.status'))
                             ->badge()
                             ->color(fn(string $state): string => match ($state) {
                                 OrderStatus::PENDING->value => 'warning',
@@ -36,127 +36,127 @@ class OrderInfolist
                                 default => 'gray',
                             })
                             ->formatStateUsing(fn(string $state): string => match ($state) {
-                                OrderStatus::PENDING->value => 'قيد الانتظار',
-                                OrderStatus::PREPARING->value => 'قيد التحضير',
-                                OrderStatus::OUT_DELIVERY->value => 'في التوصيل',
-                                OrderStatus::DELIVERED->value => 'تم التوصيل',
-                                // OrderStatus::CANCELLED->value => 'ملغي',
+                                OrderStatus::PENDING->value => __('custom.orders.statuses.pending'),
+                                OrderStatus::PREPARING->value => __('custom.orders.statuses.preparing'),
+                                OrderStatus::OUT_DELIVERY->value => __('custom.orders.statuses.out_delivery'),
+                                OrderStatus::DELIVERED->value => __('custom.orders.statuses.delivered'),
+                                // OrderStatus::CANCELLED->value => __('custom.orders.statuses.cancelled'),
                                 default => $state,
                             }),
 
                         Infolists\Components\IconEntry::make('is_instant_delivery')
-                            ->label('توصيل فوري')
+                            ->label(__('custom.orders.is_instant_delivery'))
                             ->boolean(),
 
                         Infolists\Components\TextEntry::make('created_at')
-                            ->label('تاريخ الطلب')
+                            ->label(__('custom.orders.order_date'))
                             ->dateTime(),
                     ])
                     ->columns(3),
 
-                Section::make('معلومات العميل')
+                Section::make(__('custom.orders.sections.customer_info'))
                     ->schema([
                         Infolists\Components\TextEntry::make('user.name')
-                            ->label('اسم العميل'),
+                            ->label(__('custom.orders.customer_name')),
 
                         Infolists\Components\TextEntry::make('user.phone')
-                            ->label('هاتف العميل'),
+                            ->label(__('custom.orders.customer_phone')),
 
                         Infolists\Components\TextEntry::make('user.email')
-                            ->label('بريد العميل'),
+                            ->label(__('custom.orders.customer_email')),
                     ])
                     ->columns(3),
 
-                Section::make('عنوان التوصيل')
+                Section::make(__('custom.orders.sections.address_info'))
                     ->schema([
                         Infolists\Components\TextEntry::make('address.address')
-                            ->label('العنوان')
+                            ->label(__('custom.orders.address'))
                             ->columnSpanFull(),
 
                         Infolists\Components\TextEntry::make('address.area.name')
-                            ->label('المنطقة'),
+                            ->label(__('custom.orders.area')),
 
                         Infolists\Components\TextEntry::make('address.city.name')
-                            ->label('المدينة'),
+                            ->label(__('custom.orders.city')),
                     ])
                     ->columns(2),
 
-                Section::make('معلومات السائق')
+                Section::make(__('custom.orders.sections.driver_info'))
                     ->schema([
                         Infolists\Components\TextEntry::make('driver.name')
-                            ->label('اسم السائق'),
+                            ->label(__('custom.orders.driver_name')),
 
                         Infolists\Components\TextEntry::make('driver.phone')
-                            ->label('هاتف السائق'),
+                            ->label(__('custom.orders.driver_phone')),
                     ])
                     ->columns(2)
                     ->visible(fn($record) => $record->driver_id !== null),
 
-                Section::make('المبالغ المالية')
+                Section::make(__('custom.orders.sections.pricing'))
                     ->schema([
                         Infolists\Components\TextEntry::make('subtotal')
-                            ->label('المجموع الفرعي')
+                            ->label(__('custom.orders.subtotal'))
                             ->money('USD'),
 
                         Infolists\Components\TextEntry::make('basket_discount')
-                            ->label('خصم السلة')
+                            ->label(__('custom.orders.basket_discount'))
                             ->money('USD'),
 
                         Infolists\Components\TextEntry::make('coupon_discount')
-                            ->label('خصم الكوبون')
+                            ->label(__('custom.orders.coupon_discount'))
                             ->money('USD'),
 
                         Infolists\Components\TextEntry::make('delivery_price')
-                            ->label('سعر التوصيل')
+                            ->label(__('custom.orders.delivery_price'))
                             ->money('USD'),
 
                         Infolists\Components\TextEntry::make('total')
-                            ->label('المجموع الكلي')
+                            ->label(__('custom.orders.total'))
                             ->money('USD')
                             ->size('lg')
                             ->weight('bold'),
                     ])
                     ->columns(5),
 
-                Section::make('منتجات الطلب')
+                Section::make(__('custom.orders.sections.items'))
                     ->schema([
                         Infolists\Components\RepeatableEntry::make('items')
                             ->label('')
                             ->schema([
                                 Infolists\Components\TextEntry::make('shopProductVariant.productVariant.product.name')
-                                    ->label('المنتج'),
+                                    ->label(__('custom.orders.product')),
 
                                 Infolists\Components\TextEntry::make('quantity')
-                                    ->label('الكمية'),
+                                    ->label(__('custom.orders.quantity')),
 
                                 Infolists\Components\TextEntry::make('price')
-                                    ->label('السعر')
+                                    ->label(__('custom.orders.price'))
                                     ->money('USD'),
 
                                 Infolists\Components\TextEntry::make('total')
-                                    ->label('المجموع')
+                                    ->label(__('custom.orders.total'))
                                     ->money('USD')
                                     ->getStateUsing(fn($record) => $record->price * $record->quantity),
                             ])
                             ->columns(4),
                     ]),
 
-                Section::make('التواريخ')
+                Section::make(__('custom.orders.sections.timeline'))
                     ->schema([
                         Infolists\Components\TextEntry::make('pending_at')
-                            ->label('وقت الانتظار')
+                            ->label(__('custom.orders.pending_at'))
                             ->dateTime(),
 
                         Infolists\Components\TextEntry::make('preparing_at')
-                            ->label('وقت التحضير')
+                            ->label(__('custom.orders.preparing_at'))
                             ->dateTime(),
 
                         Infolists\Components\TextEntry::make('out_delivery_at')
-                            ->label('وقت الخروج للتوصيل')
+                            ->label(__('custom.orders.out_delivery_at'))
                             ->dateTime(),
 
                         Infolists\Components\TextEntry::make('delivered_at')
-                            ->label('وقت التوصيل')
+                            ->label(__('custom.orders.delivered_at'))
                             ->dateTime(),
                     ])
                     ->columns(4)

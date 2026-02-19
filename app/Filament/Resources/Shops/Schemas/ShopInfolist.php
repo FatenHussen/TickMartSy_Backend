@@ -13,67 +13,67 @@ class ShopInfolist
     {
         return $infolist
             ->schema([
-                Section::make('معلومات المتجر')
+                Section::make(__('custom.shops.sections.basic_info'))
                     ->schema([
                         Infolists\Components\TextEntry::make('name')
-                            ->label('اسم المتجر'),
+                            ->label(__('custom.shops.name')),
 
                         Infolists\Components\TextEntry::make('description')
-                            ->label('الوصف')
+                            ->label(__('custom.shops.description'))
                             ->columnSpanFull(),
 
-                        Infolists\Components\ImageEntry::make('logo')
-                            ->label('الشعار'),
+                        Infolists\Components\ImageEntry::make('logo')->disk('public')
+                            ->label(__('custom.shops.logo')),
                     ])
                     ->columns(2),
 
-                Section::make('معلومات التواصل')
+                Section::make(__('custom.shops.sections.contact_info'))
                     ->schema([
                         Infolists\Components\TextEntry::make('phone')
-                            ->label('الهاتف'),
+                            ->label(__('custom.shops.phone')),
 
                         Infolists\Components\TextEntry::make('mobile')
-                            ->label('الموبايل'),
+                            ->label(__('custom.shops.mobile')),
 
                         Infolists\Components\TextEntry::make('email')
-                            ->label('البريد الإلكتروني'),
+                            ->label(__('custom.shops.email')),
                     ])
                     ->columns(3),
 
-                Section::make('العنوان والموقع')
+                Section::make(__('custom.shops.sections.location_info'))
                     ->schema([
                         Infolists\Components\TextEntry::make('address')
-                            ->label('العنوان')
+                            ->label(__('custom.shops.address'))
                             ->columnSpanFull(),
 
                         Infolists\Components\TextEntry::make('area.name')
-                            ->label('المنطقة'),
+                            ->label(__('custom.shops.area')),
 
                         Infolists\Components\TextEntry::make('lat')
-                            ->label('خط العرض'),
+                            ->label(__('custom.shops.lat')),
 
                         Infolists\Components\TextEntry::make('lng')
-                            ->label('خط الطول'),
+                            ->label(__('custom.shops.lng')),
                     ])
                     ->columns(3),
 
-                Section::make('الإحصائيات')
+                Section::make(__('custom.shops.sections.ratings_info'))
                     ->schema([
                         Infolists\Components\TextEntry::make('average_rating')
-                            ->label('التقييم')
+                            ->label(__('custom.shops.rating'))
                             ->badge()
                             ->color('success'),
 
                         Infolists\Components\TextEntry::make('ratings_count')
-                            ->label('عدد التقييمات')
+                            ->label(__('custom.shops.ratings_count'))
                             ->badge(),
 
                         Infolists\Components\IconEntry::make('is_active')
-                            ->label('نشط')
+                            ->label(__('custom.shops.is_active'))
                             ->boolean(),
 
                         Infolists\Components\IconEntry::make('is_free_delivery')
-                            ->label('توصيل مجاني')
+                            ->label(__('custom.shops.is_free_delivery'))
                             ->boolean(),
                     ])
                     ->columns(4),

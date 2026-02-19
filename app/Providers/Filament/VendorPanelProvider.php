@@ -29,7 +29,7 @@ class VendorPanelProvider extends PanelProvider
             ->path('vendor')
             ->login() // Temporarily disabled for testing
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::hex("#00aed1"),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
@@ -52,6 +52,7 @@ class VendorPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                \App\Http\Middleware\FilamentAutoLogout::class,
             ])
             ->authMiddleware([
                 Authenticate::class,

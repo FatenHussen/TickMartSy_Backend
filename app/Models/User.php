@@ -26,6 +26,7 @@ class User extends Authenticatable
         'phone_verified_at',
         'area_id',
         'image',
+        'preferred_payment_method_id',
 
         //markter
         'is_affiliate',
@@ -124,5 +125,20 @@ class User extends Authenticatable
     {
         return $this->hasOne(Subscription::class)
             ->where('status', 'active');
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function userBasketSchedules()
+    {
+        return $this->hasMany(UserBasketSchedule::class);
+    }
+
+    public function preferredPaymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class, 'preferred_payment_method_id');
     }
 }

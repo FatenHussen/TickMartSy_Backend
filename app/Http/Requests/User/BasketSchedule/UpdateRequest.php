@@ -19,7 +19,7 @@ class UpdateRequest extends FormRequest
         return [
             'name' => ['nullable', 'string', 'max:255'],
 
-            'category_id' => ['nullable', 'exists:categories,id'],
+            // 'category_id' => ['nullable', 'exists:categories,id'],
 
             'schedule_id' => ['nullable', 'exists:schedules,id'],
 

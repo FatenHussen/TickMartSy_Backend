@@ -14,7 +14,7 @@ class UserBasketSchedule extends Model implements Sectionable
 
     protected $fillable = [
         'user_id',
-        'category_id',
+        // 'category_id',
         'schedule_id',
         'name',
         'is_active',
@@ -35,10 +35,10 @@ class UserBasketSchedule extends Model implements Sectionable
         return $this->belongsTo(User::class);
     }
 
-    public function category(): BelongsTo
-    {
-        return $this->belongsTo(Category::class);
-    }
+    // public function category(): BelongsTo
+    // {
+    //     return $this->belongsTo(Category::class);
+    // }
 
     public function schedule(): BelongsTo
     {

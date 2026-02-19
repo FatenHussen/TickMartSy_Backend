@@ -21,7 +21,8 @@ class SellerRegistration extends Model
         'commercial_register_number',
         'commercial_register_date',
         'country',
-        'city',
+        'city_id',
+        'governorate_id',
         'logo',
         'status',
     ];
@@ -34,4 +35,12 @@ class SellerRegistration extends Model
     protected $casts = [
         'registered_at' => 'datetime',
     ];
+    public function governorate()
+    {
+        return $this->belongsTo(Governorate::class);
+    }
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
 }

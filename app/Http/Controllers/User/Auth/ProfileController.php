@@ -70,4 +70,10 @@ class ProfileController extends Controller
 
         return $this->sendResponse(message: __('custom.Success'), data: NotificationResource::collection($user->notifications));
     }
+    public function update_payment_gateway(\App\Http\Requests\User\UpdatePaymentGatewayRequest $request)
+    {
+        $userId = auth('user')->id();
+        $data = $this->service->updatePaymentGateway($userId, $request->validated()['preferred_payment_method_id']);
+        return $this->sendResponse(data: $data);
+    }
 }

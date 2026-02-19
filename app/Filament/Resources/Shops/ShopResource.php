@@ -24,11 +24,26 @@ class ShopResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::UserGroup;
 
-    protected static ?string $navigationLabel = 'المتاجر';
+    protected static ?string $navigationLabel = null;
 
-    protected static ?string $modelLabel = 'متجر';
+    protected static ?string $modelLabel = null;
 
-    protected static ?string $pluralModelLabel = 'المتاجر';
+    protected static ?string $pluralModelLabel = null;
+
+    public static function getNavigationLabel(): string
+    {
+        return __('custom.navigation.shops');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('custom.shops.singular');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('custom.shops.title');
+    }
 
     protected static ?int $navigationSort = 1;
 

@@ -63,7 +63,7 @@ class BasketSeeder extends Seeder
             'discount_type'    => 'percentage',
             'rating'           => 4.9,
             'num_sold'         => 2156,
-            'image'            => 'baskets/image2.jpg',
+            'image'            => 'baskets/image3.jpg',
             'delivery_price' => 20,
             'is_schedule' => 0
 

@@ -307,7 +307,9 @@ class UserService
     }
     public function get_profile()
     {
-        $data =  auth('user')->user();
+        $data = auth('user')->user()
+            ->loadCount(['orders', 'userBasketSchedules'])
+            ->load(['pointWallet', 'preferredPaymentMethod']);
 
         return new ProfileResource($data);
     }
@@ -469,5 +471,18 @@ class UserService
             'is_affiliate' => true,
         ]);
         //notification
+    }
+
+    public function updatePaymentGateway(int $userId, int $paymentMethodId): ProfileResource
+    {
+        $user = $this->model->findOrFail($userId);
+
+        $user->update([
+            'preferred_payment_method_id' => $paymentMethodId
+        ]);
+
+        return new ProfileResource($user->fresh()
+            ->loadCount(['orders', 'userBasketSchedules'])
+            ->load(['pointWallet', 'preferredPaymentMethod']));
     }
 }

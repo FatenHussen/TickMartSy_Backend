@@ -64,6 +64,7 @@ class OneResource extends JsonResource
                 ];
             }),
 
+<<<<<<< HEAD
             'top_badges' => BadgeOneResource::collection(
                 $this->badges->where('pivot.position', 'top')->values()
             ),
@@ -73,6 +74,8 @@ class OneResource extends JsonResource
             ),
 
 
+=======
+>>>>>>> 9d9c72c32712b9e9e930b4f47ebae83008d1970f
         ];
     }
 }
