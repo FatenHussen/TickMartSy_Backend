@@ -372,6 +372,8 @@ class OrderService extends BaseService
      * ----------------------------- */
     protected function resolveBasketAndDelivery($orderOrNull, $data)
     {
+        //admin basket id 
+        //scedule id
         $cartType = $data['cart_type'] ?? CartType::DEFAULT->value;
         $basketDiscount = 0;
         $deliveryPrice = 0;
@@ -392,7 +394,8 @@ class OrderService extends BaseService
 
             case CartType::SCHEDULE_ADMIN_CART->value:
                 $basket = Basket::findOrFail($data['admin_schedule_basket_id']);
-                $basketDiscount = $basket->discount;
+                //schedule
+                $basketDiscount = $basket->discount; //change
                 $deliveryPrice  = $basket->delivery_price;
                 break;
 

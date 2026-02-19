@@ -17,7 +17,25 @@ class RolePermissionSeeder extends Seeder
             'User',
             'City',
             'Governorate',
-            'Vendor'
+            'Area',
+            'Vendor',
+            'Shop',
+            'Coupon',
+            'Complaint',
+            'Order',
+            'Product',
+            'Banner',
+            'Category',
+            'Service',
+            'Section',
+            'PageSection',
+            'Brand',
+            'Driver',
+            'Language',
+            'Recipe',
+            'Basket',
+            'ScheduleBasket',
+            'UserBasketSchedule'
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];
@@ -30,12 +48,12 @@ class RolePermissionSeeder extends Seeder
             }
         }
 
-      foreach ($permissions as $permission) {
-        Permission::firstOrCreate([
-            'name' => $permission,
-            'guard_name' => 'admin',
-        ]);
-      }
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate([
+                'name' => $permission,
+                'guard_name' => 'admin',
+            ]);
+        }
         $superAdmin = Role::firstOrCreate([
             'name' => 'admin',
             'guard_name' => 'admin',
