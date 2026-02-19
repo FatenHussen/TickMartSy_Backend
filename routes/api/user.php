@@ -144,7 +144,7 @@ Route::prefix('user')->group(
         Route::post('/orders/coupon-preview', [OrderController::class, 'couponPreview'])->middleware(['auth:user']);
         Route::post('/orders/preview', [OrderController::class, 'preview'])->middleware(['auth:user']);
 
-        Route::apiResource('scheduled-baskets', UserBasketScheduleController::class)->middleware(['auth:user']);
+        // Route::apiResource('scheduled-baskets', UserBasketScheduleController::class)->middleware(['auth:user']);
 
         Route::get('/my-baskets', [MyBasketController::class, 'index'])->middleware(['auth:user']);
 
@@ -190,7 +190,6 @@ Route::prefix('user')->group(
             Route::post('/subscribe', [SubscriptionController::class, 'subscribe']);
             Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
             Route::post('/renew', [SubscriptionController::class, 'renew']);
-
         });
 
 
@@ -205,6 +204,7 @@ Route::prefix('user')->group(
 
         Route::prefix('complaints')->middleware(['auth:user'])->group(function () {
             Route::get('/', [ComplaintController::class, 'index']);
+            Route::get('/orders', [ComplaintController::class, 'orders']);
             Route::post('/store', [ComplaintController::class, 'store']);
         });
         Route::prefix('legal-documents')->group(function () {

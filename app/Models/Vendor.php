@@ -34,7 +34,10 @@ class Vendor extends Model
         'ratings_sum'       => 'integer',
     ];
 
-
+    public function badges()
+    {
+        return $this->morphToMany(Badge::class, 'badgeable')->withPivot('position');
+    }
     public function shops()
     {
         return $this->hasMany(Shop::class);

@@ -9,6 +9,8 @@ use App\Http\Requests\User\Auth\UpdatePaswordRequest;
 use App\Http\Requests\User\Auth\UpdatePhoneRequest;
 use App\Http\Requests\User\Auth\VerifyUpdateRequest;
 use App\Http\Requests\User\Auth\UpdateProfileRequest;
+use App\Http\Resources\NotificationResource;
+use App\Models\User;
 use App\Services\User\UserService;
 use Illuminate\Http\Request;
 
@@ -60,6 +62,14 @@ class ProfileController extends Controller
         return $this->sendResponse(data: $res);
     }
 
+    public function notifications()
+    {
+
+        /** @var User */
+        $user = auth('user')->user();
+
+        return $this->sendResponse(message: __('custom.Success'), data: NotificationResource::collection($user->notifications));
+    }
     public function update_payment_gateway(\App\Http\Requests\User\UpdatePaymentGatewayRequest $request)
     {
         $userId = auth('user')->id();

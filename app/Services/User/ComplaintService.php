@@ -5,6 +5,7 @@ namespace App\Services\User;
 
 use App\Models\Complaint;
 use App\Enums\ComplaintStatus;
+use App\Enums\OrderStatus;
 
 class ComplaintService
 {
@@ -45,5 +46,12 @@ class ComplaintService
             })
             ->latest()
             ->get();
+    }
+
+    public function orders()
+    {
+        $user = auth('user')->user();
+        // return $user->orders->where('status', OrderStatus::DELIVERED->value)->pluck('order_code');
+        return $user->orders->pluck('order_code');
     }
 }

@@ -30,7 +30,14 @@ class OneResource extends JsonResource
             'discount' => $this->discount,
             'serves' => $this->serves,
             'prepare_time' => $this->prepare_time,
-            'budges'                => BadgeOneResource::collection($this->badges),
+            // 'budges'                => BadgeOneResource::collection($this->badges),
+            'top_badges' => BadgeOneResource::collection(
+                $this->badges->where('pivot.position', 'top')->values()
+            ),
+
+            'bottom_badges' => BadgeOneResource::collection(
+                $this->badges->where('pivot.position', 'bottom')->values()
+            ),
 
             'totals' => $this->whenLoaded('items', function () {
                 $total_before_discount = $this->items->sum(function ($item) {

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Driver\Auth\AuthController;
 use App\Http\Controllers\Driver\DriverController;
+use App\Http\Controllers\Driver\DriverTrackingController;
 use App\Http\Controllers\Driver\ProfileController;
 use App\Http\Controllers\Driver\OrderController;
 
@@ -56,6 +57,10 @@ Route::prefix('driver')->group(
         // });
 
 
+        Route::middleware('auth:driver')->post(
+            '/driver/update-location',
+            [DriverTrackingController::class, 'update']
+        );
 
         Route::prefix('orders')->group(function () {
             Route::middleware(['auth:driver'])->group(function () {
@@ -66,6 +71,7 @@ Route::prefix('driver')->group(
                 Route::post('item-out-delivery/{itemId}', [OrderController::class, 'itemOutDelivery']);
                 Route::post('order-out-delivery/{orderId}', [OrderController::class, 'orderOutDelivery']);
                 Route::post('deliver/{orderId}', [OrderController::class, 'deliver']);
+                Route::post('/update-location', [DriverTrackingController::class, 'update']);
             });
         });
     }

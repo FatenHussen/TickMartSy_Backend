@@ -186,9 +186,9 @@ class Product extends Model implements Sectionable
         return Shop::whereHas('productVariants.productVariant', function ($query) {
             $query->where('product_id', $this->id);
         })
-        ->where('is_active', true)
-        ->select('id', 'name')
-        ->get();
+            ->where('is_active', true)
+            ->select('id', 'name')
+            ->get();
     }
 
     public function favorites(): MorphMany

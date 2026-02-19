@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Services\Base\LocationService;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Collection;
+use App\Http\Resources\Badge\OneResource as BadgeOneResource;
 
 class OneResource extends JsonResource
 {
@@ -26,7 +27,7 @@ class OneResource extends JsonResource
             'model' => $this->model,
             'barcode' => $this->barcode,
             'time_prepare' => optional($this->time_prepare)->format('H:i'),
-            'bought_with'=>  AllResource::collection($this->bought_with_products_list),
+            'bought_with' =>  AllResource::collection($this->boughtWithProduct()),
             'is_instant_delivery' => $this->is_instant_delivery,
             'rating' => $this->average_rating ?? 0,
             'rating_breakdown' => $this->getRatingBreakdown() ?? [],
@@ -63,7 +64,15 @@ class OneResource extends JsonResource
                 ];
             }),
 
+            'top_badges' => BadgeOneResource::collection(
+                $this->badges->where('pivot.position', 'top')->values()
+            ),
+
+            'bottom_badges' => BadgeOneResource::collection(
+                $this->badges->where('pivot.position', 'bottom')->values()
+            ),
+
+
         ];
     }
-
 }

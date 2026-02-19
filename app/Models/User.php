@@ -93,6 +93,11 @@ class User extends Authenticatable
         return $this->hasMany(UserAddress::class, 'user_id');
     }
 
+    // public function orders()
+    // {
+    //     return $this->hasMany(Order::class, 'user_id');
+    // }
+
     public function pointWallet()
     {
         return $this->hasOne(PointWallet::class);

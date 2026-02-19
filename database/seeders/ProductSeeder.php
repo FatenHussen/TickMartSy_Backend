@@ -13,7 +13,7 @@ class ProductSeeder extends Seeder
         $categories = Category::all();
 
         foreach ($categories as $category) {
-            Product::create([
+            $product = Product::create([
                 'category_id' => $category->id,
                 'name' => ['en' => 'Sample Product', 'ar' => 'منتج تجريبي'],
                 'description' => ['en' => 'Short description', 'ar' => 'وصف قصير'],
@@ -29,6 +29,12 @@ class ProductSeeder extends Seeder
                 'bought_with' => ['Accessory 1', 'Accessory 2'],
                 'is_instant_delivery' => true,
                 'brand_id' => 1
+            ]);
+
+            $product->badges()->attach([
+                1 => ['position' => 'top'],
+                2 => ['position' => 'bottom'],
+                3 => ['position' => 'bottom'],
             ]);
         }
     }

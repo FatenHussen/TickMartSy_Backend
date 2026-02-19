@@ -36,6 +36,10 @@ class Shop extends Model implements Sectionable
     {
         return $this->belongsTo(Area::class);
     }
+    public function badges()
+    {
+        return $this->morphToMany(Badge::class, 'badgeable')->withPivot('position');
+    }
 
 
     protected $casts = [

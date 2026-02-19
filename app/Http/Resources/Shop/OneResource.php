@@ -5,6 +5,7 @@ namespace App\Http\Resources\Shop;
 use App\Http\Resources\Area\OneResource as AreaOneResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\Badge\OneResource as BadgeOneResource;
 
 class OneResource extends JsonResource
 {
@@ -15,8 +16,8 @@ class OneResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return[
-           'id'                    => $this->id,
+        return [
+            'id'                    => $this->id,
             'name'                  => $this->name,
             'description'           => $this->description,
             'address'               => $this->address,

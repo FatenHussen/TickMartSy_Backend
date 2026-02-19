@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Recipe;
 
-use App\Http\Resources\Badge\OneResource;
+use App\Http\Resources\Badge\OneResource as BadgeOneResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -26,7 +26,13 @@ class AllResource extends JsonResource
             'discount' => $this->discount,
             'orders_count' => $this->orders_count,
             'created_at' => $this->created_at,
-            'budges'                => OneResource::collection($this->badges),
+            // 'budges'                => OneResource::collection($this->badges),
+            'top_badges' => BadgeOneResource::collection(
+                $this->badges->where('pivot.position', 'top')->values()
+            ),
+            'bottom_badges' => BadgeOneResource::collection(
+                $this->badges->where('pivot.position', 'bottom')->values()
+            ),
         ];
     }
 }

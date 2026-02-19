@@ -6,6 +6,7 @@ use App\Http\Resources\Area\OneResource as AreaOneResource;
 use App\Http\Resources\Vendor\AllResource as VendorAllResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\Badge\OneResource as BadgeOneResource;
 
 class AllResource extends JsonResource
 {
@@ -16,8 +17,8 @@ class AllResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return[
-           'id'                    => $this->id,
+        return [
+            'id'                    => $this->id,
             'name'                  => $this->name,
             'description'            => $this->description,
             'logo_url'                => $this->logo_url,

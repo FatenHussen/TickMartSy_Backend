@@ -25,7 +25,7 @@ class ShopSeeder extends Seeder
         ];
 
         foreach ($shops as $index => $shopName) {
-            Shop::create([
+            $shop =  Shop::create([
                 'name' => [
                     'ar' => 'تيكمول - فرع ' . ($index + 1),
                     'en' => $shopName,
@@ -72,6 +72,13 @@ class ShopSeeder extends Seeder
                 'ratings_sum'   => rand(0, 500),
 
                 'vendor_id' => $vendor->id,
+            ]);
+
+
+            $shop->badges()->attach([
+                1 => ['position' => 'top'],
+                2 => ['position' => 'bottom'],
+                3 => ['position' => 'bottom'],
             ]);
         }
     }

@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            BadgeSeeder::class,
+
             GovernorateSeeder::class,
             AdminRolePermissionSeeder::class,
             LanguageSeeder::class,
@@ -43,7 +45,6 @@ class DatabaseSeeder extends Seeder
             PageSectionSeeder::class,
             ServiceSeeder::class,
             VendorRolePermissionSeeder::class,
-            BadgeSeeder::class,
             RecipeSeeder::class,
             BasketSeeder::class,
             BasketItemSeeder::class,
