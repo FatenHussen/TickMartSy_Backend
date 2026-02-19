@@ -28,10 +28,17 @@ class ComplaintController extends Controller
     }
 
 
+
     public function store(StoreRequest $request)
     {
         $complaint = $this->complaintService->store($request->validated());
-
         return  $this->sendResponse();
+    }
+
+
+    public function orders()
+    {
+        $orders = $this->complaintService->orders();
+        return   $this->sendResponse(data: $orders);
     }
 }

@@ -36,6 +36,13 @@ class OrderService extends BaseService
         $this->pagination       = true;
     }
 
+
+    public function getAll($filters = [], $config = [])
+    {
+        $filters['user_id'] =  auth('user')->id() ?? 1;
+        return parent::getAll($filters, $config);
+    }
+
     /** -----------------------------
      * Create Order with Basket + Coupon
      * ----------------------------- */

@@ -9,7 +9,7 @@ class VendorSeeder extends Seeder
 {
     public function run(): void
     {
-        Vendor::create([
+        $vendor =   Vendor::create([
             'name' => [
                 'ar' => 'تيكمول',
                 'en' => 'Tikmool',
@@ -24,6 +24,12 @@ class VendorSeeder extends Seeder
             'is_active' => true,
             'ratings_count' => 0,
             'ratings_sum' => 0,
+        ]);
+
+        $vendor->badges()->attach([
+            1 => ['position' => 'top'],
+            2 => ['position' => 'bottom'],
+            3 => ['position' => 'bottom'],
         ]);
     }
 }

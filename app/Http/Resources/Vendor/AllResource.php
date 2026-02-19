@@ -5,6 +5,7 @@ namespace App\Http\Resources\Vendor;
 use App\Http\Resources\Area\OneResource as AreaOneResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\Badge\OneResource as BadgeOneResource;
 
 class AllResource extends JsonResource
 {
@@ -24,6 +25,14 @@ class AllResource extends JsonResource
             'average_rating'        => $this->average_rating,
             'ratings_count'         => $this->ratings_count,
             'created_at'            => $this->created_at?->format('Y-m-d H:i'),
+            'top_badges' => BadgeOneResource::collection(
+                $this->badges->where('pivot.position', 'top')->values()
+            ),
+
+            'bottom_badges' => BadgeOneResource::collection(
+                $this->badges->where('pivot.position', 'bottom')->values()
+            ),
+
         ];
     }
 }

@@ -15,10 +15,10 @@ class OneResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            // 'id' => $this->id,
             'name' => $this->name,
             'color' => $this->color,
-            'postion' => $this->pivot?->position
+            // 'postion' => $this->pivot?->position
         ];
     }
 }

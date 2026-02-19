@@ -5,6 +5,7 @@ namespace App\Http\Resources\Product;
 use App\Http\Resources\Badge\OneResource;
 use App\Models\Badge;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\Badge\OneResource as BadgeOneResource;
 
 class AllResource extends JsonResource
 {
@@ -22,10 +23,17 @@ class AllResource extends JsonResource
             'quantity'              => $this->quantity,
             'image'                 => $this->media->first()?->url,
             'discount'              => '',
-            'budges'                => OneResource::collection($this->badges),
             'created_at'            => $this->created_at,
             'sold_number'           => $this->sold_quantity ?? 0,
-            'rating' => $this->average_rating ?? 0
+            'rating' => $this->average_rating ?? 0,
+            'top_badges' => BadgeOneResource::collection(
+                $this->badges->where('pivot.position', 'top')->values()
+            ),
+
+            'bottom_badges' => BadgeOneResource::collection(
+                $this->badges->where('pivot.position', 'bottom')->values()
+            ),
+
         ];
     }
 }

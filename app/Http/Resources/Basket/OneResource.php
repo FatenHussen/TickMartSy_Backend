@@ -6,6 +6,7 @@ use App\Http\Resources\BasketSchedule\AllResource as BasketScheduleAllResource;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\Badge\OneResource as BadgeOneResource;
 
 class OneResource extends JsonResource
 {
@@ -25,7 +26,7 @@ class OneResource extends JsonResource
                 'name' => $this->category?->name,
             ]),
             'num_varieties'   => (int) $this->num_varieties,
-            'offer_ends_at'   => $this->offer_ends_at?->format('Y-m-d') ??null ,
+            'offer_ends_at'   => $this->offer_ends_at?->format('Y-m-d') ?? null,
             'original_price'    => round($this->calculated_price, 2),
             'discount_value'    => $this->discount,
             'discount_type'     => $this->discount_type,
@@ -42,10 +43,19 @@ class OneResource extends JsonResource
             'extras' => $this->whenLoaded('items', function () {
                 return BasketItemResource::collection($this->items->where('is_extra', 1));
             }) ?? [],
-            
+
             'schedules' => $this->is_schedule
                 ? BasketScheduleAllResource::collection($this->schedules)
                 : [],
+
+            'top_badges' => BadgeOneResource::collection(
+                $this->badges->where('pivot.position', 'top')->values()
+            ),
+
+            'bottom_badges' => BadgeOneResource::collection(
+                $this->badges->where('pivot.position', 'bottom')->values()
+            ),
+
 
         ];
     }

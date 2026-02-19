@@ -4,6 +4,7 @@ namespace App\Http\Resources\Basket;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\Badge\OneResource as BadgeOneResource;
 
 class AllResource extends JsonResource
 {
@@ -33,11 +34,19 @@ class AllResource extends JsonResource
             'discount_amount' => round($this->discount_amount, 2),
             'final_price'     => round($this->final_price, 2),
             'rating'          => $this->average_rating,
-            'saving' => round($this->discount_amount,2),
+            'saving' => round($this->discount_amount, 2),
             'num_sold'        => (int) $this->num_sold,
             'is_on_offer'     => $this->offer_ends_at && $this->offer_ends_at->isFuture(),
             'next_delivery_date' => $nextDelivery,
-            'delivery_price' => $this->delivery_price ?? 0
+            'delivery_price' => $this->delivery_price ?? 0,
+            'top_badges' => BadgeOneResource::collection(
+                $this->badges->where('pivot.position', 'top')->values()
+            ),
+
+            'bottom_badges' => BadgeOneResource::collection(
+                $this->badges->where('pivot.position', 'bottom')->values()
+            ),
+
         ];
     }
 }

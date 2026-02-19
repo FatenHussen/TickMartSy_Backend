@@ -36,6 +36,7 @@ class Brand extends Model implements Sectionable
         return AllResource::make($this);
     }
 
+
     public function products()
     {
         return $this->hasMany(Product::class);

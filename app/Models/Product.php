@@ -32,8 +32,6 @@ class Product extends Model implements Sectionable
         'vendor_id',
         'discount',
         'brand_id',
-
-
     ];
 
     public array $translatable = [
@@ -70,24 +68,24 @@ class Product extends Model implements Sectionable
     public function getRatingBreakdown(): array
     {
         $breakdown = [];
-        
+
         // Initialize all star ratings with 0 count
         for ($i = 1; $i <= 5; $i++) {
             $breakdown[$i] = 0;
         }
-        
+
         // Get actual rating counts
         $ratingCounts = $this->ratings()
             ->selectRaw('rating, COUNT(*) as count')
             ->groupBy('rating')
             ->pluck('count', 'rating')
             ->toArray();
-        
+
         // Merge actual counts with initialized array
         foreach ($ratingCounts as $rating => $count) {
             $breakdown[(int)$rating] = (int)$count;
         }
-        
+
         return $breakdown;
     }
     /*
@@ -184,9 +182,9 @@ class Product extends Model implements Sectionable
         return Shop::whereHas('productVariants.productVariant', function ($query) {
             $query->where('product_id', $this->id);
         })
-        ->where('is_active', true)
-        ->select('id', 'name')
-        ->get();
+            ->where('is_active', true)
+            ->select('id', 'name')
+            ->get();
     }
 
     public function favorites(): MorphMany

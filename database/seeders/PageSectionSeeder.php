@@ -106,8 +106,6 @@ class PageSectionSeeder extends Seeder
             ['title' => 'brand_details', 'slug' => 'brand_details'],
         ];
 
-
-
         /*
         |--------------------------------------------------------------------------
         | Manual Banners Section
@@ -166,7 +164,7 @@ class PageSectionSeeder extends Seeder
         | Manual Products Section
         |--------------------------------------------------------------------------
         */
-        
+
 
         /*
         |--------------------------------------------------------------------------
