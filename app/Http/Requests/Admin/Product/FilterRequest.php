@@ -22,7 +22,7 @@ class FilterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'shop_id' => 'nullable|integer'
         ];
     }
 }
