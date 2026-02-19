@@ -11,6 +11,7 @@ use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\User\Auth\ProfileController;
 use App\Http\Controllers\User\Basket\BasketController;
 use App\Http\Controllers\User\Basket\UserBasketScheduleController;
+use App\Http\Controllers\User\MyBasket\MyBasketController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\Category\CategoryController;
 use App\Http\Controllers\User\SectionController;
@@ -144,6 +145,8 @@ Route::prefix('user')->group(
         Route::post('/orders/preview', [OrderController::class, 'preview'])->middleware(['auth:user']);
 
         Route::apiResource('scheduled-baskets', UserBasketScheduleController::class)->middleware(['auth:user']);
+
+        Route::get('/my-baskets', [MyBasketController::class, 'index'])->middleware(['auth:user']);
 
         Route::apiResource('addresses', AddressController::class)->middleware(['auth:user']);
 

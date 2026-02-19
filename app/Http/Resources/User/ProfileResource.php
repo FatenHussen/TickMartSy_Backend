@@ -18,8 +18,8 @@ class ProfileResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name ?? 'User',
-            'phone' => $this->phone ?? 'Phone',
-            'email' => $this->email ?? 'Email',
+            'phone' => $this->phone ?? null,
+            'email' => $this->email ?? null,
             'image' => $this->image_url,
             'preferred_payment_method' => $this->whenLoaded('preferredPaymentMethod', function () {
                 return new PaymentMethodResource($this->preferredPaymentMethod);

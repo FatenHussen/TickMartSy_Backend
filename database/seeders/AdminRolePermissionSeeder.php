@@ -35,7 +35,8 @@ class AdminRolePermissionSeeder extends Seeder
             'CategoryDetail',
             'Language',
             'Section',
-            'PageSection'
+            'PageSection',
+            'Coupon'
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];

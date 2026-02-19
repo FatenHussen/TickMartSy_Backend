@@ -48,7 +48,6 @@ class DatabaseSeeder extends Seeder
             BasketSeeder::class,
             BasketItemSeeder::class,
             UserSeeder::class,
-            // BasketItemCompanySeeder::class,
             BasketScheduleSeeder::class,
             ScheduleSeeder::class,
             UserBasketScheduleSeeder::class,
@@ -66,6 +65,7 @@ class DatabaseSeeder extends Seeder
             UserAddressSeeder::class,
             DriverSeeder::class,
             OrderWithItemsSeeder::class,
+            UserBasketsAndOrdersSeeder::class, // Add user baskets and orders
             // LegalDocumentSeeder::class
             LegalDocumentSeeder::class,
             FaqSeeder::class,

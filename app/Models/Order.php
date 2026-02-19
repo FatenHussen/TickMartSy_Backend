@@ -16,6 +16,8 @@ class Order extends Model
         'user_id',
         'driver_id',
         'user_address_id',
+        'basket_id',
+        'basket_schedule_id',
         'is_instant_delivery',
         'status',
         'cart_type',
@@ -76,6 +78,16 @@ class Order extends Model
     public function address()
     {
         return $this->belongsTo(UserAddress::class);
+    }
+
+    public function basket()
+    {
+        return $this->belongsTo(Basket::class);
+    }
+
+    public function basketSchedule()
+    {
+        return $this->belongsTo(BasketSchedule::class);
     }
 
 
