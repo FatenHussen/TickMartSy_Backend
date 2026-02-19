@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Brand;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -18,60 +17,89 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            // Basic Setup
             BadgeSeeder::class,
-
             GovernorateSeeder::class,
+            CitySeeder::class,
+            AreaSeeder::class,
+
+            // Admin & Permissions
+            AdminSeeder::class,
             AdminRolePermissionSeeder::class,
-            LanguageSeeder::class,
             RolePermissionSeeder::class,
-            // RolePermissionSeeder::class,
+
+            // Languages & Settings
+            LanguageSeeder::class,
+            SettingSeeder::class,
+            SystemSettingSeeder::class,
+
+            // Categories & Brands
             CategorySeeder::class,
             BrandSeeder::class,
+            CategoryAttributeSeeder::class,
+            AttributeValueSeeder::class,
+            CategoryDetailSeeder::class,
+
+            // Vendors & Shops
             VendorSeeder::class,
             ShopSeeder::class,
             VendorUserSeeder::class,
             VendorRolePermissionSeeder::class,
-
             ShopUserSeeder::class,
-            CategoryAttributeSeeder::class,
-            AttributeValueSeeder::class,
-            CategoryDetailSeeder::class,
+
+            // Products
             ProductSeeder::class,
             ProductCategoryDetailSeeder::class,
             ProductExtraDetailSeeder::class,
             ProductVariantSeeder::class,
             ProductMediaSeeder::class,
             ShopProductVariantSeeder::class,
+
+            // Pages & Services
             PageSectionSeeder::class,
             ServiceSeeder::class,
-            VendorRolePermissionSeeder::class,
+
+            // Recipes & Baskets
             RecipeSeeder::class,
             BasketSeeder::class,
             BasketItemSeeder::class,
-            UserSeeder::class,
             BasketScheduleSeeder::class,
+
+            // Users
+            UserSeeder::class,
+            UserAddressSeeder::class,
+
+            // Schedules
             ScheduleSeeder::class,
             UserBasketScheduleSeeder::class,
             UserBasketScheduleItemSeeder::class,
-            CouponSeeder::class,
 
-            // Point System Seeders
+            // Coupons & Packages
+            CouponSeeder::class,
+            PackageSeeder::class,
+
+            // Point System
             PointRuleSeeder::class,
             ExchangeSettingsSeeder::class,
             GiftSeeder::class,
+
+            // Payment & Orders
             PaymentMethodSeeder::class,
-            // DriverSeeder::class,
-            RatingSeeder::class,
-            // UserSeeder::class,
-            UserAddressSeeder::class,
             DriverSeeder::class,
             OrderWithItemsSeeder::class,
-            UserBasketsAndOrdersSeeder::class, // Add user baskets and orders
-            // LegalDocumentSeeder::class
+            UserBasketsAndOrdersSeeder::class,
+
+            // Ratings & Reviews
+            RatingSeeder::class,
+
+            // Complaints
+            ComplaintSeeder::class,
+
+            // Legal & FAQ
             LegalDocumentSeeder::class,
             FaqSeeder::class,
-            SettingSeeder::class,
         ]);
+
         User::create([
             'name' => 'User',
             'email' => 'user@user.com',

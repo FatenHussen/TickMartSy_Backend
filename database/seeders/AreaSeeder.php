@@ -14,13 +14,29 @@ class AreaSeeder extends Seeder
                 'name' => ['en' => 'Downtown', 'ar' => 'وسط المدينة'],
                 'lat' => 40.712776,
                 'lng' => -74.005974,
-                'city_id' => 1
+                'city_id' => 1,
+                'base_fee' => 5.00
             ],
             [
                 'name' => ['en' => 'Uptown', 'ar' => 'المدينة العليا'],
                 'lat' => 40.787011,
                 'lng' => -73.975368,
-                'city_id' => 1
+                'city_id' => 1,
+                'base_fee' => 6.00
+            ],
+            [
+                'name' => ['en' => 'Brooklyn', 'ar' => 'بروكلين'],
+                'lat' => 40.650002,
+                'lng' => -73.949997,
+                'city_id' => 1,
+                'base_fee' => 7.50
+            ],
+            [
+                'name' => ['en' => 'Queens', 'ar' => 'كوينز'],
+                'lat' => 40.728224,
+                'lng' => -73.794852,
+                'city_id' => 1,
+                'base_fee' => 8.00
             ],
         ];
 

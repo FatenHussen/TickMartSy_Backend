@@ -11,7 +11,7 @@ class PackageSeeder extends Seeder
     {
         $packages = [
             [
-                'name' => json_encode(['ar' => 'Basic', 'en' => 'Basic']),
+                'name' => ['ar' => 'باقة أساسية', 'en' => 'Basic'],
                 'price' => 29.99,
                 'duration_days' => 30,
                 'monthly_orders_limit' => 50,
@@ -21,7 +21,7 @@ class PackageSeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'name' => json_encode(['ar' => 'Standard', 'en' => 'Standard']),
+                'name' => ['ar' => 'باقة قياسية', 'en' => 'Standard'],
                 'price' => 59.99,
                 'duration_days' => 30,
                 'monthly_orders_limit' => 150,
@@ -31,7 +31,7 @@ class PackageSeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'name' => json_encode(['ar' => 'Premium', 'en' => 'Premium']),
+                'name' => ['ar' => 'باقة مميزة', 'en' => 'Premium'],
                 'price' => 99.99,
                 'duration_days' => 30,
                 'monthly_orders_limit' => 500,
@@ -41,7 +41,7 @@ class PackageSeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'name' => json_encode(['ar' => 'Inactive Package', 'en' => 'Inactive Package']),
+                'name' => ['ar' => 'باقة غير فعالة', 'en' => 'Inactive Package'],
                 'price' => 19.99,
                 'duration_days' => 15,
                 'monthly_orders_limit' => 20,

@@ -26,7 +26,7 @@ class ProductService extends BaseService
         'variants'         => 'variants',
         'categoryDetails'  => 'category_details',
         'extraDetails'     => 'extra_details',
-        'variants.shopVariants'     => 'shop_variants', 
+        'variants.shopVariants'     => 'shop_variants',
     ];
 
     protected $mediaCollections = [
@@ -82,7 +82,41 @@ class ProductService extends BaseService
         return $resource;
     }
 
-    
+    public function queryBuilder($query, $filters = [], $config = [])
+    {
+        // Filter by shop_id if provided
+        if (!empty($filters['shop_id'])) {
+            $query->whereHas('variants.shopVariants', function ($q) use ($filters) {
+                $q->where('shop_id', $filters['shop_id']);
+            });
+            unset($filters['shop_id']);
+        }
+
+        // Apply other filters
+        foreach ($filters as $key => $value) {
+            if ($value === null) continue;
+            $query->where($key, $value);
+        }
+
+        // Search functionality
+        if (!empty($config['search'])) {
+            $search = $config['search'];
+            $query->where(function ($q) use ($search) {
+                foreach ($this->searchableFields as $field) {
+                    $q->orWhere($field, 'LIKE', "%$search%");
+                }
+            });
+        }
+
+        // Sorting
+        if (!empty($config['sortField']) && in_array($config['sortField'], $this->sortableFields ?? [])) {
+            $order = strtolower($config['sortOrder'] ?? 'asc') === 'desc' ? 'desc' : 'asc';
+            $query->orderBy($config['sortField'], $order);
+        }
+
+        return $query;
+    }
+
     protected function handleRelations($object, array &$data)
     {
         foreach ($this->syncRelations as $relation => $requestKey) {
