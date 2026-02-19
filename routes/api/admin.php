@@ -35,6 +35,7 @@ use App\Http\Controllers\Admin\Recipe\RecipeCrudController;
 use App\Http\Controllers\Admin\UserBasketSchedule\UserBasketScheduleController;
 use App\Http\Controllers\Admin\Vendor\VendorCrudController;
 use App\Http\Controllers\Admin\Package\PackageController;
+use App\Http\Controllers\Admin\Subscription\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(
@@ -67,6 +68,7 @@ Route::prefix('admin')->group(
         Route::apiResource('baskets', BasketController::class);
         Route::apiResource('scheduled-baskets', ScheduledBasketController::class);
         Route::apiResource('packages', PackageController::class);
+        Route::apiResource('subscriptions', SubscriptionController::class);
 
         // User Basket Schedules (Read-Only)
         Route::prefix('user-basket-schedules')->group(function () {

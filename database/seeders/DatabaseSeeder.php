@@ -77,6 +77,7 @@ class DatabaseSeeder extends Seeder
             // Coupons & Packages
             CouponSeeder::class,
             PackageSeeder::class,
+            SubscriptionSeeder::class,
 
             // Point System
             PointRuleSeeder::class,
