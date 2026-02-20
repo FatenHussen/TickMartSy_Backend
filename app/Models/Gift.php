@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Gift extends Model
@@ -27,9 +26,25 @@ class Gift extends Model
         'stock_quantity' => 'integer',
     ];
 
-    public function exchanges(): HasMany
+    /**
+     * Get exchanges for this gift
+     * Note: gift_id is stored in JSON exchange_data, so we can't use standard relationship
+     */
+    public function getExchangesAttribute()
     {
-        return $this->hasMany(PointExchange::class);
+        return PointExchange::where('exchange_type', 'gift')
+            ->whereRaw("JSON_EXTRACT(exchange_data, '$.gift_id') = ?", [$this->id])
+            ->get();
+    }
+
+    /**
+     * Get exchanges count for this gift
+     */
+    public function getExchangesCountAttribute(): int
+    {
+        return PointExchange::where('exchange_type', 'gift')
+            ->whereRaw("JSON_EXTRACT(exchange_data, '$.gift_id') = ?", [$this->id])
+            ->count();
     }
 
     /**
@@ -37,7 +52,7 @@ class Gift extends Model
      */
     public function isAvailable(): bool
     {
-        return $this->is_active 
+        return $this->is_active
             && ($this->stock_quantity === null || $this->stock_quantity > 0);
     }
 

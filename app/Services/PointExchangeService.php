@@ -21,7 +21,7 @@ class PointExchangeService
     {
         $userWallet = $this->pointService->getOrCreateWallet($userId);
         $settings = SettingsHelper::getExchangeSettings();
-        
+
         $options = [];
 
         // Check if user has minimum points
@@ -90,7 +90,7 @@ class PointExchangeService
     public function exchangeForCoupon(int $userId, int $points, ?int $couponId = null): ?bool
     {
         $settings = SettingsHelper::getExchangeSettings();
-        
+
         // Validate points
         if ($points < $settings['min_points'] || $points > $settings['max_points']) {
             return null;
@@ -182,7 +182,7 @@ class PointExchangeService
     public function exchangeForGift(int $userId, int $giftId, ?array $deliveryAddress = null): ?array
     {
         $gift = Gift::find($giftId);
-        
+
         if (!$gift || !$gift->isAvailable()) {
             return null;
         }

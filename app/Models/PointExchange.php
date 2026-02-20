@@ -32,9 +32,15 @@ class PointExchange extends Model
         return $this->belongsTo(PointTransaction::class);
     }
 
-    public function gift(): BelongsTo
+    /**
+     * Get the gift for gift-type exchanges
+     */
+    public function getGiftAttribute()
     {
-        return $this->belongsTo(Gift::class, 'exchange_data->gift_id');
+        if ($this->exchange_type === 'gift' && isset($this->exchange_data['gift_id'])) {
+            return Gift::find($this->exchange_data['gift_id']);
+        }
+        return null;
     }
 
     /**

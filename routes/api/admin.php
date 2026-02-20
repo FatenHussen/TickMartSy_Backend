@@ -21,9 +21,6 @@ use App\Http\Controllers\Admin\PageSection\PageSectionCrudController;
 use App\Http\Controllers\Admin\Product\ProductController;
 use App\Http\Controllers\Admin\Section\SectionCrudController;
 use App\Http\Controllers\Admin\Section\SectionController;
-use App\Http\Controllers\Admin\PointController;
-use App\Http\Controllers\Admin\PointRuleController;
-
 use App\Http\Controllers\Admin\Service\ServiceCrudController;
 
 use App\Http\Controllers\Admin\Store\StoreCrudController;
@@ -36,6 +33,9 @@ use App\Http\Controllers\Admin\UserBasketSchedule\UserBasketScheduleController;
 use App\Http\Controllers\Admin\Vendor\VendorCrudController;
 use App\Http\Controllers\Admin\Package\PackageController;
 use App\Http\Controllers\Admin\Subscription\SubscriptionController;
+use App\Http\Controllers\Admin\Gift\GiftController;
+use App\Http\Controllers\Admin\PointExchange\PointExchangeController;
+use App\Http\Controllers\Admin\UserPoint\UserPointController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(
@@ -53,69 +53,86 @@ Route::prefix('admin')->group(
                 Route::post('/store-token', [AuthController::class, 'storOrUpdateToken']);
             });
         });
+        Route::middleware('auth:admin')->group(function () {
+            Route::apiResource('baskets', BasketController::class);
+            Route::apiResource('scheduled-baskets', ScheduledBasketController::class);
+            Route::apiResource('packages', PackageController::class);
+            Route::apiResource('subscriptions', SubscriptionController::class);
+            Route::apiResource('gifts', GiftController::class);
+            Route::apiResource('point-exchanges', PointExchangeController::class)->only(['index', 'show', 'update']);
+
+            // User Points Management
+            Route::prefix('user-points')->group(function () {
+                Route::get('/', [UserPointController::class, 'index']);
+                Route::get('/statistics', [UserPointController::class, 'statistics']);
+                Route::get('/{userId}', [UserPointController::class, 'show']);
+                Route::get('/{userId}/transactions', [UserPointController::class, 'transactions']);
+                Route::post('/{userId}/add', [UserPointController::class, 'addPoints']);
+                Route::post('/{userId}/deduct', [UserPointController::class, 'deductPoints']);
+            });
+
+            // User Basket Schedules (Read-Only)
+            Route::prefix('user-basket-schedules')->group(function () {
+                Route::get('/', [UserBasketScheduleController::class, 'index']);
+                Route::get('/{id}', [UserBasketScheduleController::class, 'get_one']);
+            });
+        });
 
         //  Auth routes
-        Route::prefix('sections')->group(function () {
-            // Public routes
-            Route::get('pages', [SectionController::class, 'pages']);
-            Route::get('item-types', [SectionController::class, 'sectionItemTypes']);
-            Route::get('display-types', [SectionController::class, 'displayTypes']);
-
-
-            // Protected routes
-            Route::middleware('auth:admin')->group(function () {});
-        });
-        Route::apiResource('baskets', BasketController::class);
-        Route::apiResource('scheduled-baskets', ScheduledBasketController::class);
-        Route::apiResource('packages', PackageController::class);
-        Route::apiResource('subscriptions', SubscriptionController::class);
-
-        // User Basket Schedules (Read-Only)
-        Route::prefix('user-basket-schedules')->group(function () {
-            Route::get('/', [UserBasketScheduleController::class, 'index']);
-            Route::get('/{id}', [UserBasketScheduleController::class, 'get_one']);
-        });
-
-        Route::middleware('auth:admin')->group(
+        Route::prefix('sections')->group(
             function () {
-                Route::resources([
-                    'stores'         => StoreCrudController::class,
-                    // 'shops'          => ShopCrudController::class,
-                    // 'vendors'        => VendorCrudController::class,
-                    'languages'      => LanguageController::class,
-                    'categories' => CategoryController::class,
-                    'brands' => BrandController::class,
-                    'category-attributes' => CategoryAttributeController::class,
-                    'category-details' => CategoryDetailController::class,
-                    'products' => ProductController::class
-                ]);
-                //     }
-                // );
-                //  });
-                Route::apiResource('shops', ShopCrudController::class);
-                // ->middleware('crud.permission:shops');
+                // Public routes
+                Route::get('pages', [SectionController::class, 'pages']);
+                Route::get('item-types', [SectionController::class, 'sectionItemTypes']);
+                Route::get('display-types', [SectionController::class, 'displayTypes']);
 
-                Route::apiResource('stores', StoreCrudController::class);
-                // ->middleware('crud.permission:stores');
 
-                Route::apiResource('vendors', VendorCrudController::class);
+                // Protected routes
 
-                Route::apiResource('roles', RoleCrudController::class);
-                Route::get('permissions', [PermissionIndexController::class, 'index']);
 
-                Route::apiResource('banners', BannerCrudController::class);
-                Route::apiResource('admins', AdminCrudController::class);
-                Route::apiResource('drivers', DriverCrudController::class);
-                Route::apiResource('governorates', GovernorateCrudController::class);
-                Route::apiResource('cities', CityCrudController::class);
-                Route::apiResource('areas', AreaCrudController::class);
-                Route::apiResource('services', ServiceCrudController::class);
-                Route::apiResource('sections', SectionCrudController::class);
-                Route::apiResource('page-sections', PageSectionCrudController::class);
-                Route::apiResource('coupons', CouponCrudController::class);
-                Route::apiResource('complaints', ComplaintController::class);
-                Route::apiResource('recipes', RecipeCrudController::class);
-                Route::apiResource('users', UserCrudController::class);
+                Route::middleware('auth:admin')->group(
+                    function () {
+                        Route::resources([
+                            'stores'         => StoreCrudController::class,
+                            // 'shops'          => ShopCrudController::class,
+                            // 'vendors'        => VendorCrudController::class,
+                            'languages'      => LanguageController::class,
+                            'categories' => CategoryController::class,
+                            'brands' => BrandController::class,
+                            'category-attributes' => CategoryAttributeController::class,
+                            'category-details' => CategoryDetailController::class,
+                            'products' => ProductController::class
+                        ]);
+                        //     }
+                        // );
+                        //  });
+                        Route::apiResource('shops', ShopCrudController::class);
+                        // ->middleware('crud.permission:shops');
+
+                        Route::apiResource('stores', StoreCrudController::class);
+                        // ->middleware('crud.permission:stores');
+
+                        Route::apiResource('vendors', VendorCrudController::class);
+
+                        Route::apiResource('roles', RoleCrudController::class);
+                        Route::get('permissions', [PermissionIndexController::class, 'index']);
+
+                        Route::apiResource('banners', BannerCrudController::class);
+                        Route::apiResource('admins', AdminCrudController::class);
+                        Route::apiResource('drivers', DriverCrudController::class);
+                        Route::apiResource('governorates', GovernorateCrudController::class);
+                        Route::apiResource('cities', CityCrudController::class);
+                        Route::apiResource('areas', AreaCrudController::class);
+                        Route::apiResource('services', ServiceCrudController::class);
+                        Route::apiResource('sections', SectionCrudController::class);
+                        Route::apiResource('page-sections', PageSectionCrudController::class);
+                        Route::apiResource('coupons', CouponCrudController::class);
+                        Route::apiResource('complaints', ComplaintController::class);
+                        Route::apiResource('recipes', RecipeCrudController::class);
+                        Route::apiResource('users', UserCrudController::class);
+                    }
+
+                );
 
 
                 // Basket management routes

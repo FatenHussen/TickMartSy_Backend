@@ -16,20 +16,20 @@ class SystemSettingSeeder extends Seeder
             // Points System Settings
             [
                 'key' => 'point_to_currency_rate',
-                'value' => '0.01',
+                'value' => '10',
                 'type' => 'number',
                 'group' => 'points',
                 'title' => 'Point to Currency Rate',
-                'description' => 'How much currency value each point represents (e.g., 0.01 means 1 point = 0.01 currency unit)',
+                'description' => 'How much currency value each point represents (e.g., 10 means 1 point = 10 SYP)',
                 'is_active' => true,
             ],
             [
                 'key' => 'currency_symbol',
-                'value' => '$',
+                'value' => 'SYP',
                 'type' => 'string',
                 'group' => 'points',
                 'title' => 'Currency Symbol',
-                'description' => 'The symbol to display for currency (e.g., $, €, ل.س)',
+                'description' => 'The symbol to display for currency (e.g., $, €, SYP)',
                 'is_active' => true,
             ],
             [
@@ -50,7 +50,7 @@ class SystemSettingSeeder extends Seeder
                 'description' => 'Enable or disable the entire points system',
                 'is_active' => true,
             ],
-            
+
             // General App Settings
             [
                 'key' => 'app_name',
@@ -79,7 +79,7 @@ class SystemSettingSeeder extends Seeder
                 'description' => 'Put the application in maintenance mode',
                 'is_active' => true,
             ],
-            
+
             // Delivery Settings
             [
                 'key' => 'default_delivery_fee',
