@@ -22,7 +22,6 @@ class DatabaseSeeder extends Seeder
             GovernorateSeeder::class,
             CitySeeder::class,
             AreaSeeder::class,
-
             // Admin & Permissions
             AdminSeeder::class,
             AdminRolePermissionSeeder::class,
@@ -32,6 +31,7 @@ class DatabaseSeeder extends Seeder
             LanguageSeeder::class,
             SettingSeeder::class,
             SystemSettingSeeder::class,
+            CurrencySeeder::class,
 
             // Categories & Brands
             CategorySeeder::class,
@@ -80,7 +80,7 @@ class DatabaseSeeder extends Seeder
             SubscriptionSeeder::class,
 
             // Point System
-            PointRuleSeeder::class,
+            PointSystemSeeder::class,
             ExchangeSettingsSeeder::class,
             GiftSeeder::class,
 

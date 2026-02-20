@@ -27,6 +27,11 @@ class ProfileResource extends JsonResource
             'orders_count' => $this->orders_count ?? $this->orders()->count(),
             'baskets_count' => $this->baskets_count ?? $this->userBasketSchedules()->count(),
             'points' => $this->pointWallet?->balance ?? 0,
+            'currency' => $this->currency ? [
+                'id' => $this->currency->id,
+                'code' => $this->currency->code,
+                'symbol' => $this->currency->symbol,
+            ] : null,
         ];
     }
 }

@@ -29,6 +29,7 @@ use App\Http\Controllers\User\Rating\RatingController;
 use App\Http\Controllers\User\RecipeController;
 use App\Http\Controllers\User\Schedule\ScheduleController;
 use App\Http\Controllers\User\SellerRegistrationController;
+use App\Http\Controllers\User\Currency\CurrencyController;
 
 Route::prefix('user')->group(
     function () {
@@ -77,6 +78,16 @@ Route::prefix('user')->group(
         Route::prefix('sections')->group(function () {
             // Public routes
             Route::get('/', [SectionController::class, 'index']);
+        });
+
+        // Currency routes
+        Route::prefix('currencies')->group(function () {
+            Route::get('/', [CurrencyController::class, 'index']);
+
+            Route::middleware('auth:user')->group(function () {
+                Route::get('/my-currency', [CurrencyController::class, 'getUserCurrency']);
+                Route::post('/update-currency', [CurrencyController::class, 'updateUserCurrency']);
+            });
         });
 
         Route::prefix('schedules')->group(function () {

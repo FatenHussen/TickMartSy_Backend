@@ -48,6 +48,16 @@ return [
     'save' => 'Save',
     'cancel' => 'Cancel',
     'search' => 'Search',
+
+    // Currency
+    'currencies_retrieved_successfully' => 'Currencies retrieved successfully.',
+    'currency_created_successfully' => 'Currency created successfully.',
+    'currency_updated_successfully' => 'Currency updated successfully.',
+    'currency_deleted_successfully' => 'Currency deleted successfully.',
+    'currency_status_updated_successfully' => 'Currency status updated successfully.',
+    'user_currency_retrieved_successfully' => 'User currency retrieved successfully.',
+    'user_currency_updated_successfully' => 'User currency updated successfully.',
+    'cannot_deactivate_default_currency' => 'Cannot deactivate the default currency.',
     'filter' => 'Filter',
     'all' => 'All',
     'active' => 'Active',

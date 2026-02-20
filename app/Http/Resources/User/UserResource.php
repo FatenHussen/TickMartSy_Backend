@@ -28,6 +28,11 @@ class UserResource extends JsonResource
                     'coupon_id'    => $this->affiliate_approved ? $this->coupon_id : null,
                     'rate'         => $this->affiliate_approved ? $this->affiliate_rate : null,
                 ],
+                'currency' => $this->currency ? [
+                    'id' => $this->currency->id,
+                    'code' => $this->currency->code,
+                    'symbol' => $this->currency->symbol,
+                ] : null,
             ],
         ];
 

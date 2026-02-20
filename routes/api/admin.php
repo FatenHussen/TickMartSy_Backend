@@ -36,6 +36,7 @@ use App\Http\Controllers\Admin\Subscription\SubscriptionController;
 use App\Http\Controllers\Admin\Gift\GiftController;
 use App\Http\Controllers\Admin\PointExchange\PointExchangeController;
 use App\Http\Controllers\Admin\UserPoint\UserPointController;
+use App\Http\Controllers\Admin\Currency\CurrencyController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(
@@ -60,6 +61,10 @@ Route::prefix('admin')->group(
             Route::apiResource('subscriptions', SubscriptionController::class);
             Route::apiResource('gifts', GiftController::class);
             Route::apiResource('point-exchanges', PointExchangeController::class)->only(['index', 'show', 'update']);
+
+            // Currency Management
+            Route::apiResource('currencies', CurrencyController::class);
+            Route::patch('currencies/{currency}/toggle-status', [CurrencyController::class, 'toggleStatus']);
 
             // User Points Management
             Route::prefix('user-points')->group(function () {

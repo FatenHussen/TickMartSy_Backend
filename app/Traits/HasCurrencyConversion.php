@@ -1,0 +1,71 @@
+<?php
+
+namespace App\Traits;
+
+use App\Models\Currency;
+
+trait HasCurrencyConversion
+{
+    /**
+     * تحويل السعر من دولار للعملة المطلوبة
+     */
+    public function convertPrice($priceInUSD, $currencyId = null)
+    {
+        if (!$currencyId) {
+            $user = auth()->user();
+            $currencyId = $user?->currency_id;
+        }
+
+        if (!$currencyId) {
+            $currency = Currency::default()->first() ?? Currency::where('code', 'USD')->first();
+        } else {
+            $currency = Currency::find($currencyId);
+        }
+
+        if (!$currency || $currency->code === 'USD') {
+            return [
+                'amount' => round($priceInUSD, 2),
+                'currency' => 'USD',
+                'symbol' => '$',
+                'formatted' => '$' . number_format($priceInUSD, 2)
+            ];
+        }
+
+        $convertedAmount = $currency->convertFromUSD($priceInUSD);
+
+        return [
+            'amount' => $convertedAmount,
+            'currency' => $currency->code,
+            'symbol' => $currency->symbol,
+            'formatted' => $currency->symbol . ' ' . number_format($convertedAmount, 2)
+        ];
+    }
+
+    /**
+     * تحويل مصفوفة أسعار
+     */
+    public function convertPrices(array $prices, $currencyId = null)
+    {
+        $converted = [];
+        foreach ($prices as $key => $price) {
+            $converted[$key] = $this->convertPrice($price, $currencyId);
+        }
+        return $converted;
+    }
+
+    /**
+     * إضافة معلومات العملة للـ Resource
+     */
+    protected function withCurrency($priceInUSD, $key = 'price')
+    {
+        $converted = $this->convertPrice($priceInUSD);
+
+        return [
+            $key . '_usd' => round($priceInUSD, 2),
+            $key => $converted['amount'],
+            'currency' => $converted['currency'],
+            'currency_symbol' => $converted['symbol'],
+            $key . '_formatted' => $converted['formatted'],
+        ];
+    }
+}

@@ -48,6 +48,16 @@ return [
     'create' => 'إنشاء',
     'save' => 'حفظ',
     'cancel' => 'إلغاء',
+
+    // Currency
+    'currencies_retrieved_successfully' => 'تم جلب العملات بنجاح.',
+    'currency_created_successfully' => 'تم إنشاء العملة بنجاح.',
+    'currency_updated_successfully' => 'تم تحديث العملة بنجاح.',
+    'currency_deleted_successfully' => 'تم حذف العملة بنجاح.',
+    'currency_status_updated_successfully' => 'تم تحديث حالة العملة بنجاح.',
+    'user_currency_retrieved_successfully' => 'تم جلب عملة المستخدم بنجاح.',
+    'user_currency_updated_successfully' => 'تم تحديث عملة المستخدم بنجاح.',
+    'cannot_deactivate_default_currency' => 'لا يمكن تعطيل العملة الافتراضية.',
     'search' => 'بحث',
     'filter' => 'تصفية',
     'all' => 'الكل',

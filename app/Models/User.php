@@ -34,7 +34,7 @@ class User extends Authenticatable
         'affiliate_id',
         'coupon_id',
         'affiliate_rate',
-
+        'currency_id'
     ];
 
     /**
@@ -87,7 +87,10 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Coupon::class);
     }
-
+    public function currency()
+    {
+        return $this->belongsTo(Currency::class);
+    }
     public function addresses()
     {
         return $this->hasMany(UserAddress::class, 'user_id');
