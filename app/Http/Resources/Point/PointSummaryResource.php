@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\PointRule;
 use App\Models\PointTransaction;
+use App\Models\Currency;
 
 class PointSummaryResource extends JsonResource
 {
@@ -13,8 +14,24 @@ class PointSummaryResource extends JsonResource
     {
         $pointsSettings = \App\Helpers\SettingsHelper::getPointsSettings();
         $balance = $this->resource['balance'];
-        $currencyRate = $pointsSettings['currency_rate'];
-        $currencySymbol = $pointsSettings['currency_symbol'];
+
+        // الحصول على عملة المستخدم
+        $user = auth('user')->user();
+        $currency = null;
+
+        if ($user && $user->currency_id) {
+            $currency = Currency::find($user->currency_id);
+        }
+
+        if (!$currency) {
+            $currency = Currency::default()->first() ?? Currency::where('code', 'USD')->first();
+        }
+
+        // تحويل قيمة النقطة للعملة المختارة
+        $currencyRateUSD = $pointsSettings['currency_rate']; // قيمة النقطة بالدولار
+        $currencyRate = $currency->convertFromUSD($currencyRateUSD);
+        $currencySymbol = $currency->symbol;
+        $currencyCode = $currency->code;
 
         $estimatedValue = $balance * $currencyRate;
 
@@ -28,7 +45,11 @@ class PointSummaryResource extends JsonResource
             'points' =>  $balance,
             'value' => [
                 'point_value' => "1 pt = {$currencyRate} {$currencySymbol}",
-                'estimated_value' => number_format($estimatedValue, 0) . " {$currencySymbol} in rewards",
+                'point_value_usd' => "1 pt = {$currencyRateUSD} USD",
+                'estimated_value' => number_format($estimatedValue, 2) . " {$currencySymbol}",
+                'estimated_value_formatted' => "{$currencySymbol} " . number_format($estimatedValue, 2),
+                'currency_code' => $currencyCode,
+                'currency_symbol' => $currencySymbol,
             ],
             'next_reward' => "Next reward at " . number_format($nextReward, 0) . " pts",
 

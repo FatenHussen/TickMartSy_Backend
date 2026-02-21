@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Translatable\HasTranslations;
 
 class Currency extends Model
 {
+    use HasTranslations;
     protected $fillable = [
         'code',
         'name',
@@ -15,7 +17,7 @@ class Currency extends Model
         'is_default',
         'is_active',
     ];
-
+    public $translatable = ['name'];
     protected $casts = [
         'name' => 'array',
         'exchange_rate' => 'decimal:6',
@@ -56,4 +58,3 @@ class Currency extends Model
         return $query->where('is_default', true);
     }
 }
-

@@ -6,12 +6,15 @@ use App\Http\Resources\Governorate\AllResource;
 use App\Http\Resources\Governorate\OneResource as GovernorateOneResource;
 use App\Models\Category;
 use App\Models\ShopProductVariant;
+use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Log;
 
 class RecipeItemResource extends JsonResource
 {
+    use HasCurrencyConversion;
+
     public function toArray($request): array
     {
         $itemShopId = $this->shopProductVariant->shop_id;
@@ -63,15 +66,16 @@ class RecipeItemResource extends JsonResource
                 'min_quantity' => $this->min_quantity ?? $this->quantity,
                 'max_quantity' => $this->max_quantity ?? $this->quantity,
             ],
-            'main_item' => [
-                'product_id' => $this->shopProductVariant->productVariant->product->id,
-                'shop_product_variant_id' => $this->shop_product_variant_id,
-                'image_url' => $this->shopProductVariant->productVariant->product->image_url,
-                'name' => $this->shopProductVariant->productVariant->product->name,
-                'variant' =>  $this->shopProductVariant->productVariant->attributes_values->pluck('name')->toArray(),
-
-                'price' => $this->shopProductVariant->price,
-            ],
+            'main_item' => array_merge(
+                [
+                    'product_id' => $this->shopProductVariant->productVariant->product->id,
+                    'shop_product_variant_id' => $this->shop_product_variant_id,
+                    'image_url' => $this->shopProductVariant->productVariant->product->image_url,
+                    'name' => $this->shopProductVariant->productVariant->product->name,
+                    'variant' =>  $this->shopProductVariant->productVariant->attributes_values->pluck('name')->toArray(),
+                ],
+                $this->withCurrency($this->shopProductVariant->price, 'price')
+            ),
             'alternatives' => $same_shop,
             'other_shops' => $other_shops
         ];

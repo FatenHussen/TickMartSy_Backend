@@ -3,11 +3,14 @@
 namespace App\Http\Resources\Recipe;
 
 use App\Http\Resources\Badge\OneResource as BadgeOneResource;
+use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class OneResource extends JsonResource
 {
+    use HasCurrencyConversion;
+
     /**
      * Transform the resource into an array.
      *
@@ -48,11 +51,11 @@ class OneResource extends JsonResource
                 $total_after_discount = $total_before_discount * (1 - $discount_percentage / 100);
                 $discount_value = $total_before_discount - $total_after_discount;
 
-                return [
-                    'total_before_discount' => round($total_before_discount, 2),
-                    'total_after_discount' => round($total_after_discount, 2),
-                    'discount_value' => round($discount_value, 2),
-                ];
+                return array_merge(
+                    $this->withCurrency($total_before_discount, 'total_before_discount'),
+                    $this->withCurrency($total_after_discount, 'total_after_discount'),
+                    $this->withCurrency($discount_value, 'discount_value')
+                );
             }),
             'steps' => RecipeStepResource::collection(
                 $this->whenLoaded('steps')

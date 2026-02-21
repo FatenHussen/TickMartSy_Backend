@@ -2,17 +2,23 @@
 
 namespace App\Http\Resources\Basket;
 
+use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class BasketItemResource extends JsonResource
 {
+    use HasCurrencyConversion;
+
     public function toArray($request)
     {
+        $user = auth('user')->user();
+        $currencyId = $user?->currency_id;
+
         return [
             'id' => $this->id,
             'quantity' => (int) $this->quantity,
-            'unit_price' => round($this->price, 2),
-            'subtotal' => $this->subtotal,
+            ...$this->withCurrency($this->price, 'unit_price'),
+            ...$this->withCurrency($this->subtotal, 'subtotal'),
             'is_required' => $this->is_required,
             'is_extra' => $this->is_extra,
             'min_quantity' => (int) $this->min_quantity,
@@ -41,10 +47,15 @@ class BasketItemResource extends JsonResource
             ])
             ->get();
 
-        return $variants->map(function ($variant) {
+        $user = auth('user')->user();
+        $currencyId = $user?->currency_id;
+
+        return $variants->map(function ($variant) use ($currencyId) {
 
             $product = optional($variant->productVariant)->product;
             $brand   = optional($product)->brand;
+
+            $priceData = $this->convertPrice($variant->price, $currencyId);
 
             return [
                 'product_id' => $product->id ?? null,
@@ -56,7 +67,10 @@ class BasketItemResource extends JsonResource
 
                 'image_url' => optional($product->media->first())->url,
 
-                'price' => (float) $variant->price,
+                'price' => $priceData['amount'],
+                'price_formatted' => $priceData['formatted'],
+                'currency' => $priceData['currency'],
+                'currency_symbol' => $priceData['symbol'],
             ];
         })->values();
     }

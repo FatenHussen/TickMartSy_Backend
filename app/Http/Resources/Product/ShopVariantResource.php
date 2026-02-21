@@ -3,10 +3,13 @@
 namespace App\Http\Resources\Product;
 
 use App\Services\Base\LocationService;
+use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ShopVariantResource extends JsonResource
 {
+    use HasCurrencyConversion;
+
     public function toArray($request)
     {
         $shopId = $request->get('shop_id');
@@ -27,8 +30,11 @@ class ShopVariantResource extends JsonResource
         }
 
         if (!$shopVariant) {
-            return null; 
+            return null;
         }
+
+        $user = auth('user')->user();
+        $currencyId = $user?->currency_id;
 
         return [
             'id' => $shopVariant->id,
@@ -36,7 +42,7 @@ class ShopVariantResource extends JsonResource
             'attributes' => VariantAttributeResource::collection(
                 $this->attributesValues
             ),
-            'price'    => $shopVariant->price,
+            ...$this->withCurrency($shopVariant->price, 'price'),
             'quantity' => $shopVariant->quantity,
             'shop_id'  => $shopVariant->shop_id,
             'images'   => MediaResource::collection(

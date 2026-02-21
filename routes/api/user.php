@@ -155,7 +155,14 @@ Route::prefix('user')->group(
         Route::post('/orders/coupon-preview', [OrderController::class, 'couponPreview'])->middleware(['auth:user']);
         Route::post('/orders/preview', [OrderController::class, 'preview'])->middleware(['auth:user']);
 
-        // Route::apiResource('scheduled-baskets', UserBasketScheduleController::class)->middleware(['auth:user']);
+        // Scheduled Baskets - سلال المستخدم المجدولة (CRUD كامل)
+        Route::middleware(['auth:user'])->group(function () {
+            Route::get('scheduled-baskets', [UserBasketScheduleController::class, 'index'])->name('user.scheduled-baskets.index');
+            Route::post('scheduled-baskets', [UserBasketScheduleController::class, 'store'])->name('user.scheduled-baskets.store');
+            Route::get('scheduled-baskets/{id}', [UserBasketScheduleController::class, 'show'])->name('user.scheduled-baskets.show');
+            Route::put( 'scheduled-baskets/{id}', [UserBasketScheduleController::class, 'update'])->name('user.scheduled-baskets.update');
+            Route::delete('scheduled-baskets/{id}', [UserBasketScheduleController::class, 'destroy'])->name('user.scheduled-baskets.destroy');
+        });
 
         Route::get('/my-baskets', [MyBasketController::class, 'index'])->middleware(['auth:user']);
 

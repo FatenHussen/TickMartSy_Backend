@@ -3,13 +3,15 @@
 namespace App\Http\Resources\Basket;
 
 use App\Http\Resources\BasketSchedule\AllResource as BasketScheduleAllResource;
-
+use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\Badge\OneResource as BadgeOneResource;
 
 class OneResource extends JsonResource
 {
+    use HasCurrencyConversion;
+
     /**
      * Transform the resource into an array.
      *
@@ -17,6 +19,9 @@ class OneResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $user = auth('user')->user();
+        $currencyId = $user?->currency_id;
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -27,11 +32,11 @@ class OneResource extends JsonResource
             ]),
             'num_varieties'   => (int) $this->num_varieties,
             'offer_ends_at'   => $this->offer_ends_at?->format('Y-m-d') ?? null,
-            'original_price'    => round($this->calculated_price, 2),
+            ...$this->withCurrency($this->calculated_price, 'original_price'),
             'discount_value'    => $this->discount,
             'discount_type'     => $this->discount_type,
-            'discount_amount'   => round($this->discount_amount, 2),
-            'final_price'       => round($this->final_price, 2),
+            ...$this->withCurrency($this->discount_amount, 'discount_amount'),
+            ...$this->withCurrency($this->final_price, 'final_price'),
             'rating'    => number_format((float) $this->rating, 1),
             'num_sold'  => (int) $this->num_sold,
             'is_on_offer' => $this->offer_ends_at && $this->offer_ends_at->isFuture(),

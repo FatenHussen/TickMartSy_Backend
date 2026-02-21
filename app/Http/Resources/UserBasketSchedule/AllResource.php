@@ -2,11 +2,14 @@
 
 namespace App\Http\Resources\UserBasketSchedule;
 
+use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class AllResource extends JsonResource
 {
+    use HasCurrencyConversion;
+
     public function toArray(Request $request): array
     {
         $totalPrice = $this->items?->sum(fn($item) => $item->price * $item->quantity) ?? 0;
@@ -24,16 +27,19 @@ class AllResource extends JsonResource
             }
         }
 
+        $user = auth('user')->user();
+        $currencyId = $user?->currency_id;
+
         return [
             'id'              => $this->id,
             'name'            => $this->name,
             'image'           => $this->category?->image_url ?? null,
             'num_varieties'   => $this->items?->count() ?? 0,
-            'original_price'  => round($totalPrice, 2),
+            ...$this->withCurrency($totalPrice, 'original_price'),
             'discount_value'  => $discountValue,
             'discount_type'   => $discountType,
-            'discount_amount' => $discountAmount,
-            'final_price'     => round($totalPrice - $discountAmount, 2),
+            ...$this->withCurrency($discountAmount, 'discount_amount'),
+            ...$this->withCurrency($totalPrice - $discountAmount, 'final_price'),
             'next_run_date'   => $this->next_run_date?->format('Y-m-d'),
         ];
     }

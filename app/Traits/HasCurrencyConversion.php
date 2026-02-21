@@ -12,7 +12,7 @@ trait HasCurrencyConversion
     public function convertPrice($priceInUSD, $currencyId = null)
     {
         if (!$currencyId) {
-            $user = auth()->user();
+            $user = auth('user')->user();
             $currencyId = $user?->currency_id;
         }
 
@@ -61,7 +61,6 @@ trait HasCurrencyConversion
         $converted = $this->convertPrice($priceInUSD);
 
         return [
-            $key . '_usd' => round($priceInUSD, 2),
             $key => $converted['amount'],
             'currency' => $converted['currency'],
             'currency_symbol' => $converted['symbol'],

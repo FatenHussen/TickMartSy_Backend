@@ -141,6 +141,8 @@ class UserService
         //     throw new InvalidVerificationCodeException();
         // }
 
+        $user->load('currency');
+
         return new UserResource($user);
     }
 
@@ -309,7 +311,7 @@ class UserService
     {
         $data = auth('user')->user()
             ->loadCount(['orders', 'userBasketSchedules'])
-            ->load(['pointWallet', 'preferredPaymentMethod']);
+            ->load(['pointWallet', 'preferredPaymentMethod', 'currency']);
 
         return new ProfileResource($data);
     }
@@ -338,7 +340,7 @@ class UserService
                 + (isset($data['image']) ? ['image' => $data['image']] : [])
         );
 
-        return new ProfileResource($user->fresh());
+        return new ProfileResource($user->fresh()->load('currency'));
     }
 
 

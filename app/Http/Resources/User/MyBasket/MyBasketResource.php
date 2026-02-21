@@ -2,11 +2,14 @@
 
 namespace App\Http\Resources\User\MyBasket;
 
+use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class MyBasketResource extends JsonResource
 {
+    use HasCurrencyConversion;
+
     public function toArray(Request $request): array
     {
         $calculatedPrice = $this->items->sum(function ($item) {
@@ -24,6 +27,9 @@ class MyBasketResource extends JsonResource
 
         $finalPrice = $calculatedPrice - $discountAmount;
 
+        $user = auth('user')->user();
+        $currencyId = $user?->currency_id;
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -34,11 +40,11 @@ class MyBasketResource extends JsonResource
             'start_date' => $this->start_date?->format('Y-m-d'),
             'next_run_date' => $this->next_run_date?->format('Y-m-d'),
             'created_at' => $this->created_at?->format('Y-m-d'),
-            'original_price' => round($calculatedPrice, 2),
+            ...$this->withCurrency($calculatedPrice, 'original_price'),
             'discount_value' => $this->schedule?->discount_value ?? 0,
             'discount_type' => $this->schedule?->discount_type,
-            'discount_amount' => round($discountAmount, 2),
-            'final_price' => round($finalPrice, 2),
+            ...$this->withCurrency($discountAmount, 'discount_amount'),
+            ...$this->withCurrency($finalPrice, 'final_price'),
             'schedules' => $this->whenLoaded('schedule', function () {
                 return [[
                     'id' => $this->schedule->id,

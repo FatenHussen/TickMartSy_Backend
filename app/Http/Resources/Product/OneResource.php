@@ -5,22 +5,28 @@ namespace App\Http\Resources\Product;
 
 use App\Models\Product;
 use App\Services\Base\LocationService;
+use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Collection;
 use App\Http\Resources\Badge\OneResource as BadgeOneResource;
 
 class OneResource extends JsonResource
 {
+    use HasCurrencyConversion;
+
     public function toArray($request)
     {
+        $user = auth('user')->user();
+        $currencyId = $user?->currency_id;
+
         return [
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
             'full_description' => $this->full_description,
             'country' => $this->country,
-            'price' => $this->price,
-            'price_after_discount' => $this->price_after_discount,
+            ...$this->withCurrency($this->price, 'price'),
+            ...$this->withCurrency($this->price_after_discount, 'price_after_discount'),
             'quantity' => $this->quantity,
 
             'sku' => $this->sku,

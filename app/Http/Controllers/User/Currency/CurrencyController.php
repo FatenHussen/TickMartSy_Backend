@@ -21,7 +21,7 @@ class CurrencyController extends BaseCRUDController
 
     public function getUserCurrency(): JsonResponse
     {
-        $user = auth()->user();
+        $user = auth('user')->user();
         $currency = $this->currencyService->getUserCurrency($user);
 
         return $this->sendResponse(
