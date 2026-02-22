@@ -83,22 +83,135 @@ class MarketService
     // ===============================
     // جلب الطلبات للمسوّق
     // ===============================
-    public function getOrders(int $perPage): LengthAwarePaginator
+    public function getOrders(array $filters, int $perPage): array
     {
-        return Order::where('affiliate_id', $this->affiliate->affiliate_id)
-            ->latest()
-            ->paginate($perPage);
+        $affiliate = auth('user')->user();
+
+        $query = Order::query()
+            ->where('affiliate_id', $affiliate->affiliate_id)
+            ->with('coupon');
+
+        if (!empty($filters['from'])) {
+            $query->whereDate('created_at', '>=', $filters['from']);
+        }
+
+        if (!empty($filters['to'])) {
+            $query->whereDate('created_at', '<=', $filters['to']);
+        }
+
+        if (!empty($filters['coupon_code'])) {
+            $query->whereHas('coupon', function ($q) use ($filters) {
+                $q->where('code', $filters['coupon_code']);
+            });
+        }
+
+        $query->orderBy('created_at', 'asc');
+
+        // ناخد نسخة بدون paginate عشان نحسب summary
+        $ordersCollection = (clone $query)->get();
+
+        $deliveredOrders = $ordersCollection
+            ->where('status', OrderStatus::DELIVERED->value);
+
+        $summary = [
+            'total_orders'      => $ordersCollection->count(),
+            'delivered_orders'  => $deliveredOrders->count(),
+            'total_sales'       => round($ordersCollection->sum('total'), 2),
+            'earned_commission' => round($deliveredOrders->sum('affiliate_commission'), 2),
+            'pending_earnings'  => round(
+                $ordersCollection
+                    ->where('status', '!=', OrderStatus::DELIVERED->value)
+                    ->sum('affiliate_commission'),
+                2
+            ),
+        ];
+
+        $paginatedOrders = $query->paginate($perPage);
+
+        return [
+            'orders' => $paginatedOrders,
+            'summary' => $summary,
+        ];
     }
+
+
 
     // ===============================
     // العمليات المالية
     // ===============================
-    public function getTransactions(int $perPage): LengthAwarePaginator
+    public function getTransactions(array $filters, int $perPage): array
     {
-        return AffiliateWalletTransaction::where('affiliate_id', $this->affiliate->affiliate_id)
-            ->latest()
-            ->paginate($perPage);
+        $query = AffiliateWalletTransaction::where(
+            'affiliate_id',
+            $this->affiliate->affiliate_id
+        );
+
+        // ===============================
+        // الفلاتر
+        // ===============================
+
+        if (!empty($filters['type'])) {
+            $query->where('type', $filters['type']);
+        }
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        if (!empty($filters['from'])) {
+            $query->whereDate('created_at', '>=', $filters['from']);
+        }
+
+        if (!empty($filters['to'])) {
+            $query->whereDate('created_at', '<=', $filters['to']);
+        }
+
+        if (!empty($filters['min_amount'])) {
+            $query->where('amount', '>=', $filters['min_amount']);
+        }
+
+        if (!empty($filters['max_amount'])) {
+            $query->where('amount', '<=', $filters['max_amount']);
+        }
+
+        $query->orderBy('created_at', 'desc');
+
+        // ===============================
+        // Summary (بدون paginate)
+        // ===============================
+        $collection = (clone $query)->get();
+
+        $totalCommissions = $collection
+            ->where('type', 'commission')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        $totalWithdrawn = $collection
+            ->where('type', 'withdraw')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        $pendingWithdrawals = $collection
+            ->where('type', 'withdraw')
+            ->where('status', 'pending')
+            ->sum('amount');
+
+        $summary = [
+            'transactions_count' => $collection->count(),
+            'total_commissions'  => round($totalCommissions, 2),
+            'total_withdrawn'    => round($totalWithdrawn, 2),
+            'pending_withdrawals' => round($pendingWithdrawals, 2),
+            'available_balance'  => round($totalCommissions - $totalWithdrawn, 2),
+        ];
+
+        $paginated = $query->paginate($perPage);
+
+        return [
+            'transactions' => $paginated,
+            'summary' => $summary,
+        ];
     }
+
 
     // ===============================
     // إنشاء طلب سحب

@@ -17,7 +17,7 @@ class CityService extends BaseService
     {
         $this->model      = $model;
         $this->resource   = OneResource::class;
-        $this->collection = OneResource::class;
+        $this->collection = AllResource::class;
         $this->pagination = true;
         $this->searchableFields = ['id', 'name', 'email'];
     }

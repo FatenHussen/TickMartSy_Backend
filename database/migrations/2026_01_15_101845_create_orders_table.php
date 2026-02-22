@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('driver_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('user_address_id')->constrained('user_addresses')->cascadeOnDelete();
+            $table->foreignId('coupon_id')->nullable()->constrained('coupons')->cascadeOnDelete();
 
             $table->boolean('is_instant_delivery')->default(false);
 

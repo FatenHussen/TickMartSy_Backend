@@ -16,7 +16,7 @@ class BannerService extends BaseService
     public function __construct(Banner $model)
     {
         $this->model      = $model;
-        $this->resource   = AllResource::class;
+        $this->resource   = OneResource::class;
         $this->collection = AllResource::class;
         $this->searchableFields = ['title', 'description'];
         $this->sortableFields   = ['id', 'order'];

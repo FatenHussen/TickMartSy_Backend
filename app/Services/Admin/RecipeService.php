@@ -2,6 +2,7 @@
 
 namespace App\Services\Admin;
 
+use App\Http\Resources\Recipe\AdminOneResource;
 use App\Http\Resources\Recipe\AllResource;
 use App\Http\Resources\Recipe\OneResource;
 use App\Models\Coupon;
@@ -15,7 +16,7 @@ class RecipeService extends BaseService
     public function __construct(Recipe $model)
     {
         $this->model      = $model;
-        $this->resource   = OneResource::class;
+        $this->resource   = AdminOneResource::class;
         $this->collection = AllResource::class;
         $this->pagination = true;
         $this->relations = ['items', 'steps'];

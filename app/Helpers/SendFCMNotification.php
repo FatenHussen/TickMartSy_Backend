@@ -44,7 +44,7 @@ class SendFCMNotification
             $payload = json_encode($data);
 
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/v1/projects/mawaeed-b493a/messages:send');
+            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/v1/projects/tikmool-app-3241/messages:send');
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -79,12 +79,11 @@ class SendFCMNotification
             }
         }
 
-
-        // return [
-        //     'message'   => 'Notifications have been sent',
-        //     'success'   => $successCount,
-        //     'failure'   => $failureCount,
-        //     'responses' => $responses,
-        // ];
+        Log::info('notifications', [
+            'message'   => 'Notifications have been sent',
+            'success'   => $successCount,
+            'failure'   => $failureCount,
+            'responses' => $responses,
+        ]);
     }
 }

@@ -21,6 +21,7 @@ Route::prefix('driver')->group(
                 Route::middleware(['auth:driver'])->group(function () {
                     Route::get('/logout', [AuthController::class, 'logout']);
                     Route::post('/store-token', [AuthController::class, 'storOrUpdateToken']);
+                    Route::get('/notifications', [AuthController::class, 'notifications']);
 
                     Route::middleware(['auth:driver', 'abilities:reset-password'])->group(function () {
                         Route::post('/reset-password', [AuthController::class, 'resetPassword']);
