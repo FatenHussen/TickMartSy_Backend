@@ -58,6 +58,7 @@ return [
     'user_currency_retrieved_successfully' => 'تم جلب عملة المستخدم بنجاح.',
     'user_currency_updated_successfully' => 'تم تحديث عملة المستخدم بنجاح.',
     'cannot_deactivate_default_currency' => 'لا يمكن تعطيل العملة الافتراضية.',
+    'cannot_delete_package_with_active_subscriptions' => 'لا يمكن حذف الباقة لوجود اشتراكات نشطة.',
     'search' => 'بحث',
     'filter' => 'تصفية',
     'all' => 'الكل',

@@ -20,8 +20,8 @@ class DatabaseSeeder extends Seeder
             // Basic Setup
             BadgeSeeder::class,
             GovernorateSeeder::class,
-            CitySeeder::class,
-            AreaSeeder::class,
+            // CitySeeder::class,
+            // AreaSeeder::class,
             // Admin & Permissions
             AdminSeeder::class,
             AdminRolePermissionSeeder::class,
@@ -79,10 +79,15 @@ class DatabaseSeeder extends Seeder
             PackageSeeder::class,
             SubscriptionSeeder::class,
 
-            // Point System
+            // Vendor Packages & Subscriptions
+            VendorPackageSeeder::class,
+            VendorSubscriptionSeeder::class,
+
+            // Point System (GiftSeeder أولاً - مطلوب لاستبدال النقاط بهدية)
+            GiftSeeder::class,
             PointSystemSeeder::class,
             ExchangeSettingsSeeder::class,
-            GiftSeeder::class,
+            PointExchangeSeeder::class,
 
             // Payment & Orders
             PaymentMethodSeeder::class,

@@ -37,6 +37,8 @@ use App\Http\Controllers\Admin\Gift\GiftController;
 use App\Http\Controllers\Admin\PointExchange\PointExchangeController;
 use App\Http\Controllers\Admin\UserPoint\UserPointController;
 use App\Http\Controllers\Admin\Currency\CurrencyController;
+use App\Http\Controllers\Admin\VendorPackage\VendorPackageController;
+use App\Http\Controllers\Admin\VendorSubscription\VendorSubscriptionController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(
@@ -62,17 +64,18 @@ Route::prefix('admin')->group(
             Route::apiResource('gifts', GiftController::class);
             Route::apiResource('point-exchanges', PointExchangeController::class)->only(['index', 'show', 'update']);
 
+            // Vendor Packages & Subscriptions
+            Route::apiResource('vendor-packages', VendorPackageController::class);
+            Route::apiResource('vendor-subscriptions', VendorSubscriptionController::class);
+
             // Currency Management
             Route::apiResource('currencies', CurrencyController::class);
 
             // User Points Management
             Route::prefix('user-points')->group(function () {
                 Route::get('/', [UserPointController::class, 'index']);
-                Route::get('/statistics', [UserPointController::class, 'statistics']);
                 Route::get('/{userId}', [UserPointController::class, 'show']);
                 Route::get('/{userId}/transactions', [UserPointController::class, 'transactions']);
-                Route::post('/{userId}/add', [UserPointController::class, 'addPoints']);
-                Route::post('/{userId}/deduct', [UserPointController::class, 'deductPoints']);
             });
 
             // User Basket Schedules (Read-Only)

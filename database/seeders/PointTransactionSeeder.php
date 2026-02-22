@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\PointTransaction;
 use App\Models\PointWallet;
 use App\Models\PointRule;
+use App\Models\Gift;
 use Illuminate\Database\Seeder;
 use Carbon\Carbon;
 
@@ -184,12 +185,12 @@ class PointTransactionSeeder extends Seeder
                 // Don't add pending points to balance
             }
 
-            // 6. Some redeemed transactions (random)
+            // 6. Some redeemed transactions - كوبون/خصم (random)
             if (rand(1, 4) === 1 && $currentBalance > 20) {
                 $redeemedPoints = rand(10, min(30, $currentBalance));
                 $createdAt = Carbon::now()->subDays(rand(1, 20));
                 
-                $transaction = PointTransaction::create([
+                PointTransaction::create([
                     'user_id' => $wallet->user_id,
                     'wallet_id' => $wallet->id,
                     'rule_id' => null,
@@ -205,6 +206,29 @@ class PointTransactionSeeder extends Seeder
                     'updated_at' => $createdAt,
                 ]);
                 $currentBalance -= $redeemedPoints;
+            }
+
+            // 7. استبدال بهدية - Gift redemption (random)
+            $gift = Gift::orderBy('points_required')->first();
+            if ($gift && rand(1, 5) === 1 && $currentBalance >= $gift->points_required) {
+                $createdAt = Carbon::now()->subDays(rand(1, 15));
+                
+                PointTransaction::create([
+                    'user_id' => $wallet->user_id,
+                    'wallet_id' => $wallet->id,
+                    'rule_id' => null,
+                    'created_by_admin_id' => null,
+                    'source' => 'gift_exchange',
+                    'points' => -$gift->points_required,
+                    'status' => 'redeemed',
+                    'reference_type' => 'gift',
+                    'reference_id' => $gift->id,
+                    'expires_at' => null,
+                    'reason' => 'استبدال بهدية: ' . $gift->name,
+                    'created_at' => $createdAt,
+                    'updated_at' => $createdAt,
+                ]);
+                $currentBalance -= $gift->points_required;
             }
 
             // Update wallet balance

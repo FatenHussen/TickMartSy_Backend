@@ -69,6 +69,7 @@ class Vendor extends Model
     {
         return $this->hasMany(Product::class);
     }
+
     public function media()
     {
         return $this->morphMany(Media::class, 'mediable');

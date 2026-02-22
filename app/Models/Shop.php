@@ -151,6 +151,26 @@ class Shop extends Model implements Sectionable
             ->toArray();
     }
 
+    public function subscriptions()
+    {
+        return $this->hasMany(VendorSubscription::class, 'shop_id');
+    }
+
+    public function activeSubscription(): ?VendorSubscription
+    {
+        return $this->subscriptions()
+            ->where('status', 'active')
+            ->where('ends_at', '>=', now()->toDateString())
+            ->orderByDesc('ends_at')
+            ->first();
+    }
+
+    public function currentPackage(): ?VendorPackage
+    {
+        $sub = $this->activeSubscription();
+        return $sub?->package;
+    }
+
     public function services()
     {
         return $this->belongsToMany(Service::class, 'shop_service');

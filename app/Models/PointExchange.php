@@ -10,9 +10,9 @@ class PointExchange extends Model
     protected $fillable = [
         'user_id',
         'transaction_id',
-        'exchange_type', // coupon, free_delivery, gift
-        'exchange_data', // JSON data for the exchange
-        'status', // pending, completed, cancelled
+        'exchange_type',
+        'exchange_data',
+        'status',
         'delivered_at',
         'notes',
     ];
