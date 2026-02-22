@@ -23,7 +23,27 @@ class FilterRequest extends FormRequest
 
             'type'          => ['nullable', 'in:new,trend,top_rated,offers,recommended,for_you,search_based'],
             'search'        => ['nullable', 'string', 'max:255'],
-            'brand_id' => ['nullable', 'integer', 'exists:brands,id']
+            'brand_id' => ['nullable', 'integer', 'exists:brands,id'],
+            'is_free_delivery' => ['nullable', 'boolean'],
+            'on_sale' => ['nullable', 'boolean'],
+            'in_stock_only' => ['nullable', 'boolean'],
+
+            // Attribute filters
+            'attribute_values' => ['nullable', 'array'],
+            'attribute_values.*' => ['integer', 'exists:attribute_values,id']
         ];
+    }
+
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        // Support comma-separated attribute_values
+        if ($this->has('attribute_values') && is_string($this->attribute_values)) {
+            $this->merge([
+                'attribute_values' => array_map('intval', explode(',', $this->attribute_values))
+            ]);
+        }
     }
 }

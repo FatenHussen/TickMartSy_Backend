@@ -38,6 +38,10 @@ class AdminRolePermissionSeeder extends Seeder
             'PageSection',
             'Coupon',
             'Package',
+            'Gift',
+            'PointExchange',
+            'PointWallet',
+            'PointTransaction'
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];

@@ -4,10 +4,9 @@ namespace App\Services\User;
 
 use App\Http\Resources\Recipe\AllResource;
 use App\Http\Resources\Recipe\OneResource;
-use App\Http\Resources\User\City\CityResource;
-use App\Models\City;
 use App\Models\Recipe;
 use App\Services\BaseService;
+use Illuminate\Database\Eloquent\Builder;
 
 class RecipeService extends BaseService
 {
@@ -21,12 +20,50 @@ class RecipeService extends BaseService
             'items.shopProductVariant.shop',
             'steps'
         ];
+        $this->searchableFields = ['name', 'description'];
+        $this->sortableFields = ['id', 'discount', 'rating', 'orders_count', 'created_at'];
+    }
+
+    public function queryBuilder($query, $filters = [], $config = [])
+    {
+        $query->with($this->relations);
+
+        // Search filter
+        if (!empty($filters['search'])) {
+            $locale = app()->getLocale();
+            $query->where(function (Builder $q) use ($filters, $locale) {
+                $q->where("name->{$locale}", 'like', '%' . $filters['search'] . '%')
+                    ->orWhere("description->{$locale}", 'like', '%' . $filters['search'] . '%');
+            });
+        }
+
+        // Discount filter
+        if (!empty($filters['discount_min']) || !empty($filters['discount_max'])) {
+            if (!empty($filters['discount_min'])) {
+                $query->where('discount', '>=', $filters['discount_min']);
+            }
+            if (!empty($filters['discount_max'])) {
+                $query->where('discount', '<=', $filters['discount_max']);
+            }
+        }
+
+        // Serves filter
+        if (!empty($filters['serves'])) {
+            $query->where('serves', $filters['serves']);
+        }
+
+        // Prepare time filter
+        if (!empty($filters['prepare_time'])) {
+            $query->where('prepare_time', $filters['prepare_time']);
+        }
+
+        return $query;
     }
 
     public function query(array $filters = [])
     {
         $query = Recipe::query()->latest();
-        $query =  $this->queryBuilder($query, $filters);
+        $query = $this->queryBuilder($query, $filters);
         return $query;
     }
 }

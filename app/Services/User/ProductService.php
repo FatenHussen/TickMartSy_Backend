@@ -157,15 +157,15 @@ class ProductService extends BaseService
             });
         }
 
-        if (!empty($filters['price_min'])) {
+        // Price filter - combine min and max in one whereHas
+        if (!empty($filters['price_min']) || !empty($filters['price_max'])) {
             $query->whereHas('variants.shopVariants', function (Builder $q) use ($filters) {
-                $q->where('price', '>=', $filters['price_min']);
-            });
-        }
-
-        if (!empty($filters['price_max'])) {
-            $query->whereHas('variants.shopVariants', function (Builder $q) use ($filters) {
-                $q->where('price', '<=', $filters['price_max']);
+                if (!empty($filters['price_min'])) {
+                    $q->where('price', '>=', $filters['price_min']);
+                }
+                if (!empty($filters['price_max'])) {
+                    $q->where('price', '<=', $filters['price_max']);
+                }
             });
         }
 
@@ -181,8 +181,52 @@ class ProductService extends BaseService
             $query->where('country->' . app()->getLocale(), 'like', '%' . $filters['country'] . '%');
         }
 
+        // Free delivery filter
+        if (isset($filters['is_free_delivery'])) {
+            $isFreeDelivery = filter_var($filters['is_free_delivery'], FILTER_VALIDATE_BOOLEAN);
+            $query->where('is_instant_delivery', $isFreeDelivery);
+        }
+
+        // On Sale filter (products with discount)
+        if (isset($filters['on_sale'])) {
+            $onSale = filter_var($filters['on_sale'], FILTER_VALIDATE_BOOLEAN);
+            if ($onSale) {
+                $query
+                      ->where('discount', '>', 0);
+            }
+        }
+
+        // In Stock Only filter
+        if (isset($filters['in_stock_only'])) {
+            $inStockOnly = filter_var($filters['in_stock_only'], FILTER_VALIDATE_BOOLEAN);
+            if ($inStockOnly) {
+                $query->whereHas('variants.shopVariants', function (Builder $q) {
+                    $q->where('quantity', '>', 0);
+                });
+            }
+        }
+
+        // Attribute Values filter (Color, Size, etc.)
+        if (!empty($filters['attribute_values'])) {
+            // Support both array and comma-separated string
+            $attributeValues = $filters['attribute_values'];
+            if (is_string($attributeValues)) {
+                $attributeValues = explode(',', $attributeValues);
+            }
+
+            if (is_array($attributeValues) && count($attributeValues) > 0) {
+                $query->whereHas('variants', function (Builder $q) use ($attributeValues) {
+                    $q->where(function ($subQuery) use ($attributeValues) {
+                        foreach ($attributeValues as $attributeValueId) {
+                            $subQuery->orWhereJsonContains('attributes_values_ids', (int)$attributeValueId);
+                        }
+                    });
+                });
+            }
+        }
+
         if (!empty($filters['type'])) {
-            $this->applyTypeFilters($query, $filters['type'], $filters);
+            $this->applyTypeFilters($query, $filters);
         }
 
         return $query;
