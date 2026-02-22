@@ -2,60 +2,65 @@
 
 namespace App\Services\Admin;
 
-use App\Models\Product;
-use App\Models\ProductMedia;
-use App\Traits\FileTrait;
-use Illuminate\Support\Facades\Log;
+use App\Http\Resources\Admin\ProductVariant\AllResource;
+use App\Http\Resources\Admin\ProductVariant\OneResource;
+use App\Models\ProductVariant;
+use App\Services\BaseService;
+use Illuminate\Database\Eloquent\Builder;
 
-class ProductVariantService
+class ProductVariantService extends BaseService
 {
-    use FileTrait;
+    protected $model = ProductVariant::class;
+    protected $resource = OneResource::class;
+    protected $collection = AllResource::class;
 
-    public function handle(Product $product, bool $isUpdate = false): void
+    protected $relations = [
+        'product.category',
+        'product.brand',
+        'shopVariants.shop'
+    ];
+
+    protected $searchableFields = [];
+    protected $sortableFields = ['id', 'created_at'];
+
+    public function queryBuilder($query, $filters = [], $config = [])
     {
+        $query->with($this->relations);
 
-        Log::info('handle');
-        if (!request()->has('variants')) {
-            Log::info('handle1');
-
-            return;
+        // Filter by category
+        if (!empty($filters['category_id'])) {
+            $query->whereHas('product', function (Builder $q) use ($filters) {
+                $q->where('category_id', $filters['category_id']);
+            });
         }
 
-        foreach (request()->get('variants') as $index => $variantData) {
-            Log::info('handle2');
-
-            if (empty($variantData['id'])) {
-
-                Log::info('handle3');
-
-                continue;
-            }
-
-            $variant = $product->variants()
-                ->where('id', $variantData['id'])
-                ->first();
-            Log::info('handle4');
-
-            if (!$variant || !request()->hasFile("variants.$index.images")) {
-                continue;
-            }
-
-            if ($isUpdate) {
-                $variant->media()
-                    ->where('collection', ProductMedia::COLLECTION_VARIANT)
-                    ->delete();
-            }
-
-            foreach (request()->file("variants.$index.images") as $image) {
-                $path = $image->store('products/variants', 'public');
-                Log::info('handle5');
-
-                $variant->media()->create([
-                    'collection' => ProductMedia::COLLECTION_VARIANT,
-                    'path'       => $path,
-                    'order'      => 0,
-                ]);
-            }
+        // Filter by shop
+        if (!empty($filters['shop_id'])) {
+            $query->whereHas('shopVariants', function (Builder $q) use ($filters) {
+                $q->where('shop_id', $filters['shop_id']);
+            });
         }
+
+        // Filter by product
+        if (!empty($filters['product_id'])) {
+            $query->where('product_id', $filters['product_id']);
+        }
+
+        // Search in product name
+        if (!empty($filters['search'])) {
+            $locale = app()->getLocale();
+            $query->whereHas('product', function (Builder $q) use ($filters, $locale) {
+                $q->where("name->{$locale}", 'like', '%' . $filters['search'] . '%');
+            });
+        }
+
+        return $query;
+    }
+
+    public function query(array $filters = [])
+    {
+        $query = ProductVariant::query();
+        $query = $this->queryBuilder($query, $filters);
+        return $query;
     }
 }

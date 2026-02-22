@@ -37,6 +37,40 @@ class ProductVariant extends Model
     {
         return $this->hasMany(ShopProductVariant::class, 'product_variant_id');
     }
+
+    public function getAttributesWithDetails()
+    {
+        if (empty($this->attributes_values_ids)) {
+            return [];
+        }
+
+        $attributeValues = AttributeValue::with('categoryAttribute')
+            ->whereIn('id', $this->attributes_values_ids)
+            ->get();
+
+        return $attributeValues->map(function ($attributeValue) {
+            return [
+                'id' => $attributeValue->id,
+                'value' => $attributeValue->value,
+                'category_attribute' => [
+                    'id' => $attributeValue->categoryAttribute->id,
+                    'name' => $attributeValue->categoryAttribute->name,
+                    'type' => $attributeValue->categoryAttribute->type ?? null,
+                ],
+            ];
+        });
+    }
+
+    public function attributeValues()
+    {
+        return $this->belongsToMany(
+            AttributeValue::class,
+            null,
+            'product_variant_id',
+            'attribute_value_id'
+        )->whereIn('attribute_values.id', $this->attributes_values_ids ?? []);
+    }
+
     public function shops()
     {
         return $this->hasMany(ShopProductVariant::class, 'product_variant_id');

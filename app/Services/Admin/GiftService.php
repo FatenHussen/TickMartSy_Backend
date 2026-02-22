@@ -30,6 +30,7 @@ class GiftService extends BaseService
         'stock_quantity',
         'created_at',
     ];
+    protected $pagination = true;
 
     public function queryBuilder($query, $filters = [], $config = [])
     {

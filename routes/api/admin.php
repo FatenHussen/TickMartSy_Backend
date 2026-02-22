@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\Governorate\GovernorateCrudController;
 use App\Http\Controllers\Admin\Language\LanguageController;
 use App\Http\Controllers\Admin\PageSection\PageSectionCrudController;
 use App\Http\Controllers\Admin\Product\ProductController;
+use App\Http\Controllers\Admin\ProductVariant\ProductVariantController;
 use App\Http\Controllers\Admin\Section\SectionCrudController;
 use App\Http\Controllers\Admin\Section\SectionController;
 use App\Http\Controllers\Admin\Service\ServiceCrudController;
@@ -95,7 +96,8 @@ Route::prefix('admin')->group(
                     'brands' => BrandController::class,
                     'category-attributes' => CategoryAttributeController::class,
                     'category-details' => CategoryDetailController::class,
-                    'products' => ProductController::class
+                    'products' => ProductController::class,
+                    'product-variants' => ProductVariantController::class
                 ]);
                 //     }
                 // );
