@@ -37,13 +37,29 @@ class FavoriteService
         return true;
     }
 
-    public function list(int $userId, ?string $type = null)
+    public function list(int $userId, ?string $type = null, array $filters = [])
     {
         $query = Favorite::where('user_id', $userId)
             ->with('favoriteable');
 
         if ($type) {
             $query->where('favoriteable_type', $this->getModelClass($type));
+        }
+
+        // Shop filter (for products)
+        if (!empty($filters['shop_id'])) {
+            $query->whereHasMorph('favoriteable', [\App\Models\Product::class], function ($q) use ($filters) {
+                $q->whereHas('shopVariants', function ($sq) use ($filters) {
+                    $sq->where('shop_id', $filters['shop_id']);
+                });
+            });
+        }
+
+        // Category filter (for products and baskets)
+        if (!empty($filters['category_id'])) {
+            $query->whereHasMorph('favoriteable', [\App\Models\Product::class, \App\Models\Basket::class], function ($q) use ($filters) {
+                $q->where('category_id', $filters['category_id']);
+            });
         }
 
         return $query->get()

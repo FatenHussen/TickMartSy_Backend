@@ -43,6 +43,18 @@ class OrderService extends BaseService
         return parent::getAll($filters, $config);
     }
 
+    public function queryBuilder($query, $filters = [], $config = [])
+    {
+        $query = parent::queryBuilder($query, $filters, $config);
+
+        // Status filter
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        return $query;
+    }
+
     /** -----------------------------
      * Create Order with Basket + Coupon
      * ----------------------------- */
@@ -372,7 +384,7 @@ class OrderService extends BaseService
      * ----------------------------- */
     protected function resolveBasketAndDelivery($orderOrNull, $data)
     {
-        //admin basket id 
+        //admin basket id
         //scedule id
         $cartType = $data['cart_type'] ?? CartType::DEFAULT->value;
         $basketDiscount = 0;

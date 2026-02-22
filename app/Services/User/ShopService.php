@@ -54,6 +54,23 @@ class ShopService extends BaseService
                 $q->where('city_id', $filters['city_id']);
             });
         }
+
+        // Filter by category
+        if (!empty($filters['category_id'])) {
+            $query->whereHas('productVariants.productVariant.product', function ($q) use ($filters) {
+                $q->where('category_id', $filters['category_id']);
+            });
+        }
+
+        // Search filter
+        if (!empty($filters['search'])) {
+            $locale = app()->getLocale();
+            $query->where(function ($q) use ($filters, $locale) {
+                $q->where("name->{$locale}", 'like', '%' . $filters['search'] . '%')
+                  ->orWhere("description->{$locale}", 'like', '%' . $filters['search'] . '%')
+                  ->orWhere("address->{$locale}", 'like', '%' . $filters['search'] . '%');
+            });
+        }
     }
 
     /* =========================

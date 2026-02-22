@@ -17,9 +17,11 @@ class ShopRequest extends FormRequest
             'area_id'        => 'sometimes|exists:areas,id',
             'city_id'        => 'sometimes|exists:cities,id',
             'governorate_id' => 'sometimes|exists:governorates,id',
+            'category_id'    => 'sometimes|exists:categories,id',
             'vendor_id'      => 'sometimes|exists:vendors,id',
             'is_active'      => 'sometimes|boolean',
             'type'           => 'sometimes|in:nearby,offers,top_rated,active',
+            'search'         => 'sometimes|string|max:255',
             'lat'            => 'required_if:type,nearby|numeric|between:-90,90',
             'lng'            => 'required_if:type,nearby|numeric|between:-180,180',
             'max_distance'   => 'sometimes|numeric|min:1|max:50', // Maximum distance in KM

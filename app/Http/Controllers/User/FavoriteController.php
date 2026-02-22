@@ -36,7 +36,8 @@ class FavoriteController extends Controller
 
         $userId = auth('user')->id() ?? 1;
 
-        $data = $this->service->list($userId, $request->type);
+        $filters = $request->only(['shop_id', 'category_id']);
+        $data = $this->service->list($userId, $request->type, $filters);
 
         return $this->sendResponse(data: $data);
     }

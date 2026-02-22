@@ -22,7 +22,14 @@ class FilterRequest extends FormRequest
     public function rules(): array
     {
         return [
-           'is_schedule' => 'nullable|boolean'
+            'is_schedule' => 'nullable|boolean',
+            'category_id' => 'nullable|integer|exists:categories,id',
+            'price_min' => 'nullable|numeric|min:0',
+            'price_max' => 'nullable|numeric|min:0',
+            'rating_min' => 'nullable|numeric|min:0|max:5',
+            'items_count_min' => 'nullable|integer|min:0',
+            'items_count_max' => 'nullable|integer|min:0',
+            'type' => 'nullable|in:new,best_selling,top_rated',
         ];
     }
 }
