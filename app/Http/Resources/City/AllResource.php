@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Resources\Governorate;
+namespace App\Http\Resources\City;
 
+use App\Http\Resources\Governorate\OneResource as GovernorateOneResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class OneResource extends JsonResource
+class AllResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,9 +17,9 @@ class OneResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->getTranslations('name'),
+            'name' => $this->name,
+            'governorate' => GovernorateOneResource::make($this->governorate),
             'created_at' => $this->created_at?->format('Y-m-d H:i'),
-
         ];
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\User\Brand\BrandController;
 use App\Http\Controllers\User\AddressController;
 use App\Http\Controllers\User\AreaController;
@@ -59,6 +60,8 @@ Route::prefix('user')->group(
 
                     Route::prefix('/profile')->group(function () {
                         Route::get('/', [ProfileController::class, 'get_profile']);
+                        Route::get('/notifications', [ProfileController::class, 'notifications']);
+
                         Route::post('/update', [ProfileController::class, 'update_profile']);
                         Route::post('/update_password', [ProfileController::class, 'update_password']);
 

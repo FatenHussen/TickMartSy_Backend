@@ -8,6 +8,7 @@ use App\Http\Requests\Driver\Auth\SendPasswordRequest;
 use App\Http\Requests\Driver\Auth\DriverLoginRequest;
 use App\Http\Requests\Driver\Auth\VerifyPasswordRequest;
 use App\Http\Requests\User\Auth\StoreTokenRequest;
+use App\Http\Resources\NotificationResource;
 use App\Models\Driver;
 use App\Services\Driver\DriverService;
 use Illuminate\Http\Request;
@@ -79,5 +80,14 @@ class AuthController extends Controller
         $this->service->storeOrUpdateToken($user, $request->all());
 
         return $this->sendResponse();
+    }
+
+    public function notifications()
+    {
+
+        /** @var Driver */
+        $driver = auth('driver')->user();
+
+        return $this->sendResponse(message: __('custom.Success'), data: NotificationResource::collection($driver->notifications));
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Services\Admin;
 
+use App\Http\Resources\PageSection\AdminOneResource;
 use App\Http\Resources\PageSection\AllResource;
 use App\Http\Resources\PageSection\OneResource;
 use App\Models\PageSection;
@@ -12,7 +13,7 @@ class PageSectionService extends BaseService
     public function __construct(PageSection $model)
     {
         $this->model      = $model;
-        $this->resource   = OneResource::class;
+        $this->resource   = AdminOneResource::class;
         $this->collection = AllResource::class;
         $this->pagination = true;
         $this->searchableFields = ['id', 'name'];

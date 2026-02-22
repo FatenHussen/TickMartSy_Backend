@@ -18,7 +18,7 @@ class OneResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'name' => $this->getTranslations('name'),
             'governorate' => GovernorateOneResource::make($this->governorate),
             'created_at' => $this->created_at?->format('Y-m-d H:i'),
         ];

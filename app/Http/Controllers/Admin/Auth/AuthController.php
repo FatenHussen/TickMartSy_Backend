@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Auth\LoginRequest;
 use App\Http\Requests\User\Auth\StoreTokenRequest;
 use App\Http\Resources\Admin\OneResource;
+use App\Http\Resources\NotificationResource;
 use App\Models\Admin;
 use App\Models\User;
 use App\Services\Admin\AuthService;
@@ -55,5 +56,13 @@ class AuthController extends Controller
         $this->auth_service->storeOrUpdateToken($user, $request->all());
 
         return $this->sendResponse();
+    }
+
+    public function notifications()
+    {
+        /** @var Admin */
+        $admin = auth('admin')->user();
+
+        return $this->sendResponse(message: __('custom.Success'), data: NotificationResource::collection($admin->notifications));
     }
 }

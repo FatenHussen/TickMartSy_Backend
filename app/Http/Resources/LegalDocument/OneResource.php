@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\Governorate;
+namespace App\Http\Resources\LegalDocument;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -16,9 +16,10 @@ class OneResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->getTranslations('name'),
+            'key' => $this->key,
+            'title' => $this->getTranslations('title'),
+            'content' => $this->getTranslations('content'),
             'created_at' => $this->created_at?->format('Y-m-d H:i'),
-
         ];
     }
 }

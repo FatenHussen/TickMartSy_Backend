@@ -28,6 +28,8 @@ use App\Http\Controllers\Admin\Service\ServiceCrudController;
 use App\Http\Controllers\Admin\Store\StoreCrudController;
 use App\Http\Controllers\Admin\Shop\ShopCrudController;
 use App\Http\Controllers\Admin\Coupon\CouponCrudController;
+use App\Http\Controllers\Admin\LegalDocumentController;
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\Order\OrderController;
 use App\Http\Controllers\Admin\User\UserCrudController;
 use App\Http\Controllers\Admin\Recipe\RecipeCrudController;
@@ -46,6 +48,9 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('admin')->group(
     function () {
 
+        Route::apiResource('notifications', NotificationController::class);
+        Route::apiResource('legal-documents', LegalDocumentController::class);
+
         //  Auth routes
         Route::prefix('auth')->group(function () {
             // Public routes
@@ -56,6 +61,7 @@ Route::prefix('admin')->group(
                 Route::post('logout', [AuthController::class, 'logout']);
                 Route::get('profile', [AuthController::class, 'profile']);
                 Route::post('/store-token', [AuthController::class, 'storOrUpdateToken']);
+                Route::get('/notifications', [AuthController::class, 'notifications']);
             });
         });
         Route::middleware('auth:admin')->group(function () {

@@ -40,7 +40,8 @@ class Order extends Model
         'delivered_at',
         //driver
         'driver_id',
-        'assigned_by'
+        'assigned_by',
+        'coupon_id'
     ];
 
     protected $casts = [
@@ -69,6 +70,12 @@ class Order extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function coupon()
+    {
+        return $this->belongsTo(Coupon::class);
+    }
+
 
     public function driver()
     {

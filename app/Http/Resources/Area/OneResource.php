@@ -17,7 +17,7 @@ class OneResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'name' => $this->getTranslations('name'),
             'city' => CityOneResource::make($this->city),
             'base_fee' => $this->base_fee,
             'lat' => $this->lat,

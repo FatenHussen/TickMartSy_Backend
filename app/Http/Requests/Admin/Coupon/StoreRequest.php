@@ -58,9 +58,9 @@ class StoreRequest extends FormRequest
                 'exists:cities,id',
             ],
 
-            'user_id' => [
+            'affiliate_id' => [
                 'nullable',
-                'exists:users,id',
+                'exists:users,affiliate_id',
             ],
 
             'is_active' => [

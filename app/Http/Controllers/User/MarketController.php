@@ -25,10 +25,22 @@ class MarketController extends BaseCRUDController
     public function orders(Request $request)
     {
         $perPage = $request->get('per_page', 10);
-        $orders = $this->marketService->getOrders($perPage);
+
+        $filters = [
+            'from'        => $request->get('from'),
+            'to'          => $request->get('to'),
+            'coupon_code' => $request->get('coupon_code'),
+        ];
+
+        $data = $this->marketService->getOrders($filters, $perPage);
+
+        $orders = $data['orders'];
 
         return $this->sendResponse(data: [
+            'summary' => $data['summary'],
+
             'items' => AllResource::collection($orders->items()),
+
             'pagination' => [
                 'current_page' => $orders->currentPage(),
                 'last_page' => $orders->lastPage(),
@@ -38,13 +50,29 @@ class MarketController extends BaseCRUDController
         ], message: 'Affiliate orders retrieved successfully');
     }
 
+
     public function transactions(Request $request)
     {
         $perPage = $request->get('per_page', 10);
-        $transactions = $this->marketService->getTransactions($perPage);
+
+        $filters = [
+            'type'       => $request->get('type'),
+            'status'     => $request->get('status'),
+            'from'       => $request->get('from'),
+            'to'         => $request->get('to'),
+            'min_amount' => $request->get('min_amount'),
+            'max_amount' => $request->get('max_amount'),
+        ];
+
+        $data = $this->marketService->getTransactions($filters, $perPage);
+
+        $transactions = $data['transactions'];
 
         return $this->sendResponse(data: [
+            'summary' => $data['summary'],
+
             'items' => $transactions->items(),
+
             'pagination' => [
                 'current_page' => $transactions->currentPage(),
                 'last_page' => $transactions->lastPage(),
