@@ -51,7 +51,7 @@ class ProductVariant extends Model
         return $attributeValues->map(function ($attributeValue) {
             return [
                 'id' => $attributeValue->id,
-                'value' => $attributeValue->value,
+                'name' => $attributeValue->name,
                 'category_attribute' => [
                     'id' => $attributeValue->categoryAttribute->id,
                     'name' => $attributeValue->categoryAttribute->name,

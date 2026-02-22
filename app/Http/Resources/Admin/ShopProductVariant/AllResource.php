@@ -1,0 +1,60 @@
+<?php
+
+namespace App\Http\Resources\Admin\ShopProductVariant;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class AllResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        $locale = app()->getLocale();
+
+        // Get product name
+        $productNameData = $this->productVariant->product->name;
+        $productName = is_array($productNameData)
+            ? ($productNameData[$locale] ?? $productNameData['ar'] ?? $productNameData['en'] ?? '')
+            : (string) $productNameData;
+
+        // Get attributes as string
+        $attributes = $this->productVariant->getAttributesWithDetails();
+        $attributesParts = [];
+
+        foreach ($attributes as $attr) {
+            $attrNameData = $attr['category_attribute']['name'] ?? [];
+            $attrName = is_array($attrNameData)
+                ? ($attrNameData[$locale] ?? $attrNameData['ar'] ?? $attrNameData['en'] ?? '')
+                : (string) $attrNameData;
+
+            $attrValueData = $attr['name'] ?? [];
+            $attrValue = is_array($attrValueData)
+                ? ($attrValueData[$locale] ?? $attrValueData['ar'] ?? $attrValueData['en'] ?? '')
+                : (string) $attrValueData;
+
+            if (!empty($attrName) && !empty($attrValue)) {
+                $attributesParts[] = "{$attrName}: {$attrValue}";
+            }
+        }
+
+        $attributesString = implode(' | ', $attributesParts);
+
+        // Get shop name
+        $shopNameData = $this->shop->name;
+        $shopName = is_array($shopNameData)
+            ? ($shopNameData[$locale] ?? $shopNameData['ar'] ?? $shopNameData['en'] ?? '')
+            : (string) $shopNameData;
+
+        // Build label
+        $label = $productName;
+        if (!empty($attributesString)) {
+            $label .= " ({$attributesString})";
+        }
+        $label .= " - {$shopName}";
+
+        return [
+            'id' => $this->id,
+            'label' => $label,
+        ];
+    }
+}

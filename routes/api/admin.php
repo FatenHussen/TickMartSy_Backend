@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\Language\LanguageController;
 use App\Http\Controllers\Admin\PageSection\PageSectionCrudController;
 use App\Http\Controllers\Admin\Product\ProductController;
 use App\Http\Controllers\Admin\ProductVariant\ProductVariantController;
+use App\Http\Controllers\Admin\ShopProductVariant\ShopProductVariantController;
 use App\Http\Controllers\Admin\Section\SectionCrudController;
 use App\Http\Controllers\Admin\Section\SectionController;
 use App\Http\Controllers\Admin\Service\ServiceCrudController;
@@ -97,7 +98,8 @@ Route::prefix('admin')->group(
                     'category-attributes' => CategoryAttributeController::class,
                     'category-details' => CategoryDetailController::class,
                     'products' => ProductController::class,
-                    'product-variants' => ProductVariantController::class
+                    'product-variants' => ProductVariantController::class,
+                    'shop-product-variants' => ShopProductVariantController::class
                 ]);
                 //     }
                 // );

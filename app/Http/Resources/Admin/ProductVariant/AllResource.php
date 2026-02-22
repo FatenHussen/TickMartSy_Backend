@@ -16,7 +16,7 @@ class AllResource extends JsonResource
                 'id' => $this->product->id,
                 'name' => $this->product->name,
                 'description' => $this->product->description,
-                'image' => $this->product->getFirstMediaUrl('products'),
+                'image' => $this->product->media->first()?->url ?? null,
                 'category' => [
                     'id' => $this->product->category->id,
                     'name' => $this->product->category->name,
@@ -37,7 +37,6 @@ class AllResource extends JsonResource
                     ],
                     'price' => $shopVariant->price,
                     'quantity' => $shopVariant->quantity,
-                    'sku' => $shopVariant->sku,
                 ];
             }),
             'created_at' => $this->created_at?->toDateTimeString(),
