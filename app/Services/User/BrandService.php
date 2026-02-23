@@ -55,9 +55,10 @@ class BrandService extends BaseService
     {
         // Search filter
         if (!empty($filters['search'])) {
+            $search = strtolower($filters['search']);
             $locale = app()->getLocale();
-            $query->where(function (Builder $q) use ($filters, $locale) {
-                $q->where("name->{$locale}", 'like', '%' . $filters['search'] . '%');
+            $query->where(function (Builder $q) use ($search, $locale) {
+                $q->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.{$locale}'))) LIKE ?", ["%{$search}%"]);
             });
         }
 

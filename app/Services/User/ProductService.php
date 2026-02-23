@@ -116,10 +116,13 @@ class ProductService extends BaseService
     {
         if (empty($filters['search'])) return;
 
-        $query->where(function ($q) use ($filters) {
-            $q->where('name->' . app()->getLocale(), 'like', '%' . $filters['search'] . '%')
-                ->orWhere('description->' . app()->getLocale(), 'like', '%' . $filters['search'] . '%')
-                ->orWhere('country->' . app()->getLocale(), 'like', '%' . $filters['search'] . '%');
+        $search = strtolower($filters['search']);
+        $locale = app()->getLocale();
+
+        $query->where(function ($q) use ($search, $locale) {
+            $q->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.{$locale}'))) LIKE ?", ["%{$search}%"])
+                ->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(description, '$.{$locale}'))) LIKE ?", ["%{$search}%"])
+                ->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(country, '$.{$locale}'))) LIKE ?", ["%{$search}%"]);
         });
     }
 

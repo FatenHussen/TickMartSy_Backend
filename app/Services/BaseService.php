@@ -227,10 +227,10 @@ abstract class BaseService
         }
 
         if (!empty($config['search'])) {
-            $search = $config['search'];
+            $search = strtolower($config['search']);
             $query->where(function ($q) use ($search) {
                 foreach ($this->searchableFields as $field) {
-                    $q->orWhere($field, 'LIKE', "%$search%");
+                    $q->orWhereRaw("LOWER({$field}) LIKE ?", ["%{$search}%"]);
                 }
             });
         }
