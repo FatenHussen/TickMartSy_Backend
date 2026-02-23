@@ -43,7 +43,7 @@ class AdminRolePermissionSeeder extends Seeder
             'PointWallet',
             'PointTransaction',
             'VendorPackage',
-            'VendorSubscription'
+            'VendorSubscription','Currency'
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];
