@@ -10,14 +10,14 @@ return new class extends Migration
     {
         Schema::create('gifts', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('description')->nullable();
+            $table->json('name');
+            $table->json('description')->nullable();
             $table->string('image')->nullable();
             $table->integer('points_required');
             $table->integer('stock_quantity')->nullable(); // null = unlimited
             $table->boolean('is_active')->default(true);
-            $table->string('category_id')->nullable(); // electronics, books, vouchers, etc.
-            $table->text('terms_conditions')->nullable();
+            $table->foreignId('category_id')->nullable()->constrained(); // electronics, books, vouchers, etc.
+            $table->json('terms_conditions')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

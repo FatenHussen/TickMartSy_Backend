@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Translatable\HasTranslations;
 
 class Gift extends Model
 {
     use SoftDeletes;
-
+use HasTranslations;
     protected $fillable = [
         'name',
         'description',
@@ -19,7 +20,7 @@ class Gift extends Model
         'category_id',
         'terms_conditions',
     ];
-
+public $translatable= ['name', 'description','terms_conditions'];
     protected $casts = [
         'is_active' => 'boolean',
         'points_required' => 'integer',
