@@ -10,7 +10,7 @@ class OneResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'name' =>  $this->getTranslations('name'),
             'price' => (float) $this->price,
             'duration_days' => (int) $this->duration_days,
 
