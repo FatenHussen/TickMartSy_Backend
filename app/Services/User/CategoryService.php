@@ -9,7 +9,7 @@ use App\Http\Resources\Category\AllResource;
 
 class CategoryService extends BaseService
 {
-    protected $searchableFields = ['id'];
+    protected $searchableFields = ['name']; // Disable default search behavior
 
     public function __construct(Category $model)
     {
@@ -22,21 +22,19 @@ class CategoryService extends BaseService
 
     public function queryBuilder($query, $filters = [], $config = [])
     {
-        $query = parent::queryBuilder($query, $filters, $config);
-
-        // Apply search on category name (case-insensitive, supports Arabic/English)
+        // Apply search BEFORE calling parent
         if (!empty($config['search'])) {
             $search = strtolower($config['search']);
-            $locale = app()->getLocale();
 
-            $query->where(function ($q) use ($search, $locale) {
-                // Search in current locale
-                $q->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.{$locale}'))) LIKE ?", ["%{$search}%"])
-                  // Also search in other locale
-                  ->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.ar'))) LIKE ?", ["%{$search}%"])
+            $query->where(function ($q) use ($search) {
+                // Search in both Arabic and English (case-insensitive)
+                $q->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.ar'))) LIKE ?", ["%{$search}%"])
                   ->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.en'))) LIKE ?", ["%{$search}%"]);
             });
         }
+
+        // Now call parent (won't apply search since searchableFields is empty)
+        $query = parent::queryBuilder($query, $filters, $config);
 
         // Apply name filter
         if (isset($filters['name'])) {
