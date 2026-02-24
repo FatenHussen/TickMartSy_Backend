@@ -7,6 +7,7 @@ use App\Models\Gift;
 use App\Models\Coupon;
 use App\Helpers\SettingsHelper;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PointExchangeService
 {
@@ -276,9 +277,8 @@ class PointExchangeService
                           $sq->whereNull('exchange_data->expires_at')
                              ->orWhereRaw("JSON_UNQUOTE(JSON_EXTRACT(exchange_data, '$.expires_at')) >= ?", [$now->toDateString()]);
                       });
-                })
-                // Completed gifts (for reference)
-                ->orWhere('exchange_type', 'gift');
+                });
+                // Completed gifts (for reference);
             })
             ->orderBy('created_at', 'desc')
             ->get();
@@ -286,7 +286,6 @@ class PointExchangeService
         $grouped = [
             'coupons' => [],
             'free_deliveries' => [],
-            'gifts' => [],
         ];
 
         foreach ($exchanges as $exchange) {
@@ -299,9 +298,6 @@ class PointExchangeService
                 case 'free_delivery':
                     $grouped['free_deliveries'][] = $resource;
                     break;
-                case 'gift':
-                    $grouped['gifts'][] = $resource;
-                    break;
             }
         }
 
@@ -310,7 +306,6 @@ class PointExchangeService
             'summary' => [
                 'total_coupons' => count($grouped['coupons']),
                 'total_free_deliveries' => count($grouped['free_deliveries']),
-                'total_gifts' => count($grouped['gifts']),
             ],
         ];
     }
@@ -335,14 +330,35 @@ class PointExchangeService
      */
     public function isExchangeValid(PointExchange $exchange): bool
     {
+        Log::info('🔍 Validating exchange', [
+            'exchange_id' => $exchange->id,
+            'exchange_type' => $exchange->exchange_type,
+            'status' => $exchange->status,
+            'exchange_data' => $exchange->exchange_data
+        ]);
+
         // Check if expired
         if (isset($exchange->exchange_data['expires_at'])) {
             $expiresAt = $exchange->exchange_data['expires_at'];
-            if (now()->toDateString() > $expiresAt) {
+            $now = now()->toDateString();
+
+            Log::info('📅 Checking expiration', [
+                'expires_at' => $expiresAt,
+                'now' => $now,
+                'is_expired' => $now > $expiresAt
+            ]);
+
+            if ($now > $expiresAt) {
+                Log::warning('❌ Exchange expired', [
+                    'exchange_id' => $exchange->id,
+                    'expires_at' => $expiresAt,
+                    'now' => $now
+                ]);
                 return false;
             }
         }
 
+        Log::info('✅ Exchange is valid', ['exchange_id' => $exchange->id]);
         return true;
     }
 

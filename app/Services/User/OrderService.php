@@ -566,45 +566,98 @@ class OrderService extends BaseService
         $usedCouponExchangeId = null;
         $usedFreeDeliveryExchangeId = null;
 
+        Log::info('🔍 Starting applyPointExchanges', [
+            'user_id' => $userId,
+            'point_coupon_exchange_id' => $data['point_coupon_exchange_id'] ?? null,
+            'point_free_delivery_exchange_id' => $data['point_free_delivery_exchange_id'] ?? null,
+            'delivery_price' => $deliveryPrice
+        ]);
+
         try {
             $exchangeService = app(\App\Services\PointExchangeService::class);
 
             // Apply coupon from points
             if (!empty($data['point_coupon_exchange_id'])) {
+                Log::info('🎟️ Processing coupon exchange', ['exchange_id' => $data['point_coupon_exchange_id']]);
+
                 $exchange = \App\Models\PointExchange::where('id', $data['point_coupon_exchange_id'])
                     ->where('user_id', $userId)
                     ->where('exchange_type', 'coupon')
                     ->where('status', 'completed')
                     ->first();
 
+                Log::info('🎟️ Coupon exchange query result', [
+                    'found' => $exchange ? 'yes' : 'no',
+                    'exchange_data' => $exchange ? $exchange->toArray() : null
+                ]);
+
                 if ($exchange && $exchangeService->isExchangeValid($exchange)) {
                     $pointCouponDiscount = $exchange->exchange_data['discount_amount'] ?? 0;
                     $usedCouponExchangeId = $exchange->id;
 
+                    Log::info('✅ Coupon exchange applied', [
+                        'discount_amount' => $pointCouponDiscount,
+                        'exchange_id' => $usedCouponExchangeId
+                    ]);
+
                     // Mark as used
                     $exchangeService->markExchangeAsUsed($exchange->id);
+                } else {
+                    Log::warning('❌ Coupon exchange validation failed', [
+                        'exchange_exists' => $exchange ? 'yes' : 'no',
+                        'is_valid' => $exchange ? $exchangeService->isExchangeValid($exchange) : 'N/A'
+                    ]);
                 }
             }
 
             // Apply free delivery from points
             if (!empty($data['point_free_delivery_exchange_id'])) {
+                Log::info('🚚 Processing free delivery exchange', ['exchange_id' => $data['point_free_delivery_exchange_id']]);
+
                 $exchange = \App\Models\PointExchange::where('id', $data['point_free_delivery_exchange_id'])
                     ->where('user_id', $userId)
                     ->where('exchange_type', 'free_delivery')
                     ->where('status', 'completed')
                     ->first();
 
+                Log::info('🚚 Free delivery exchange query result', [
+                    'found' => $exchange ? 'yes' : 'no',
+                    'exchange_data' => $exchange ? $exchange->toArray() : null
+                ]);
+
                 if ($exchange && $exchangeService->isExchangeValid($exchange)) {
                     $pointFreeDelivery = true;
                     $usedFreeDeliveryExchangeId = $exchange->id;
 
+                    Log::info('✅ Free delivery exchange applied', [
+                        'exchange_id' => $usedFreeDeliveryExchangeId
+                    ]);
+
                     // Mark as used
                     $exchangeService->markExchangeAsUsed($exchange->id);
+                } else {
+                    Log::warning('❌ Free delivery exchange validation failed', [
+                        'exchange_exists' => $exchange ? 'yes' : 'no',
+                        'is_valid' => $exchange ? $exchangeService->isExchangeValid($exchange) : 'N/A',
+                        'exchange_status' => $exchange->status ?? 'N/A',
+                        'expires_at' => $exchange->exchange_data['expires_at'] ?? 'N/A'
+                    ]);
                 }
             }
+
+            Log::info('🏁 applyPointExchanges completed', [
+                'coupon_discount' => $pointCouponDiscount,
+                'free_delivery' => $pointFreeDelivery,
+                'used_coupon_id' => $usedCouponExchangeId,
+                'used_free_delivery_id' => $usedFreeDeliveryExchangeId
+            ]);
+
         } catch (\Throwable $e) {
             // تجاهل أخطاء النقاط لعدم تعطيل إنشاء الطلب
-            Log::error('Point exchange application failed', ['error' => $e->getMessage()]);
+            Log::error('❌ Point exchange application failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
         }
 
         return [$pointCouponDiscount, $pointFreeDelivery, $usedCouponExchangeId, $usedFreeDeliveryExchangeId];
