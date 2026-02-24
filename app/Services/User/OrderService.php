@@ -199,6 +199,8 @@ class OrderService extends BaseService
     {
         return DB::transaction(function () use ($data) {
 
+            $user = auth('user')->user() ?? User::find(1);
+
             // 1️⃣ Basket & delivery
             [$basketDiscount, $deliveryPrice] = $this->resolveBasketAndDelivery(null, $data);
 
@@ -270,13 +272,17 @@ class OrderService extends BaseService
                 $couponInfo['fail_reasons'][] = 'No coupon provided';
             }
 
-            // 4️⃣ Totals
+            // 4️⃣ Check Point Exchanges (without modifying them)
+            $pointExchangesInfo = $this->checkPointExchanges($user->id, $data, $deliveryPrice);
+
+            // 5️⃣ Totals
             $basketDiscountAmount = $subtotalAfterProductDiscount * ($basketDiscount / 100);
 
             $finalSubtotal = $subtotalAfterProductDiscount
-                - ($basketDiscountAmount + $couponDiscountAmount);
+                - ($basketDiscountAmount + $couponDiscountAmount + $pointExchangesInfo['coupon_discount']);
 
-            $total = $finalSubtotal + $deliveryPrice;
+            $finalDeliveryPrice = $pointExchangesInfo['free_delivery_applicable'] ? 0 : $deliveryPrice;
+            $total = $finalSubtotal + $finalDeliveryPrice;
 
             return [
                 'subtotal_before_discount' => round($subtotalBeforeDiscount, 2),
@@ -287,7 +293,9 @@ class OrderService extends BaseService
 
                 'coupon' => $couponInfo,
 
-                'delivery_price' => round($deliveryPrice, 2),
+                'point_exchanges' => $pointExchangesInfo,
+
+                'delivery_price' => round($finalDeliveryPrice, 2),
 
                 'total_quantity' => $totalQuantity,
                 'subtotal' => round($finalSubtotal, 2),
@@ -367,7 +375,7 @@ class OrderService extends BaseService
                         $eligibleSubtotal = $basketItemsCollection
                             ->whereNotIn('shop_product_variant_id', $excludedItems)
                             ->sum(fn($i) => $i['price_after_discount'] * $i['quantity']);
-                        $reason[] = 'Some items are excluded from coupon: ' . implode(',', $excludedItems);
+                        $reason[] = 'Some items are excluded from coupon: ' . implode(',', array_map('strval', $excludedItems));
                     }
 
                     if ($eligibleSubtotal > 0) {
@@ -709,6 +717,86 @@ class OrderService extends BaseService
             changedBy: 'user'
         ));
         return $order;
+    }
+    /** -----------------------------
+     * Check Point Exchanges (Preview Only - No Modifications)
+     * ----------------------------- */
+    protected function checkPointExchanges(int $userId, array $data, float $deliveryPrice): array
+    {
+        $result = [
+            'coupon' => [
+                'provided' => !empty($data['point_coupon_exchange_id']),
+                'valid' => false,
+                'applicable' => false,
+                'exchange_id' => $data['point_coupon_exchange_id'] ?? null,
+                'discount_amount' => 0,
+                'fail_reasons' => [],
+            ],
+            'free_delivery' => [
+                'provided' => !empty($data['point_free_delivery_exchange_id']),
+                'valid' => false,
+                'applicable' => false,
+                'exchange_id' => $data['point_free_delivery_exchange_id'] ?? null,
+                'fail_reasons' => [],
+            ],
+            'coupon_discount' => 0,
+            'free_delivery_applicable' => false,
+        ];
+
+        try {
+            $exchangeService = app(\App\Services\PointExchangeService::class);
+
+            // Check coupon exchange
+            if (!empty($data['point_coupon_exchange_id'])) {
+                $exchange = \App\Models\PointExchange::where('id', $data['point_coupon_exchange_id'])
+                    ->where('user_id', $userId)
+                    ->where('exchange_type', 'coupon')
+                    ->where('status', 'completed')
+                    ->first();
+
+                if (!$exchange) {
+                    $result['coupon']['fail_reasons'][] = 'Exchange not found or not owned by user';
+                } elseif (!$exchangeService->isExchangeValid($exchange)) {
+                    $result['coupon']['fail_reasons'][] = 'Exchange has expired';
+                    $result['coupon']['valid'] = false;
+                } else {
+                    $result['coupon']['valid'] = true;
+                    $result['coupon']['applicable'] = true;
+                    $result['coupon']['discount_amount'] = $exchange->exchange_data['discount_amount'] ?? 0;
+                    $result['coupon_discount'] = $exchange->exchange_data['discount_amount'] ?? 0;
+                }
+            } else {
+                $result['coupon']['fail_reasons'][] = 'No coupon exchange provided';
+            }
+
+            // Check free delivery exchange
+            if (!empty($data['point_free_delivery_exchange_id'])) {
+                $exchange = \App\Models\PointExchange::where('id', $data['point_free_delivery_exchange_id'])
+                    ->where('user_id', $userId)
+                    ->where('exchange_type', 'free_delivery')
+                    ->where('status', 'completed')
+                    ->first();
+
+                if (!$exchange) {
+                    $result['free_delivery']['fail_reasons'][] = 'Exchange not found or not owned by user';
+                } elseif (!$exchangeService->isExchangeValid($exchange)) {
+                    $result['free_delivery']['fail_reasons'][] = 'Exchange has expired';
+                    $result['free_delivery']['valid'] = false;
+                } else {
+                    $result['free_delivery']['valid'] = true;
+                    $result['free_delivery']['applicable'] = true;
+                    $result['free_delivery_applicable'] = true;
+                }
+            } else {
+                $result['free_delivery']['fail_reasons'][] = 'No free delivery exchange provided';
+            }
+        } catch (\Throwable $e) {
+            Log::error('Point exchange check failed in preview', ['error' => $e->getMessage()]);
+            $result['coupon']['fail_reasons'][] = 'System error checking exchange';
+            $result['free_delivery']['fail_reasons'][] = 'System error checking exchange';
+        }
+
+        return $result;
     }
 }
 /**
