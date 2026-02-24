@@ -220,6 +220,9 @@ abstract class BaseService
 
     public function queryBuilder($query, $filters = [], $config = [])
     {
+        // Remove 'search' from filters if it exists (it should be in $config, not $filters)
+        unset($filters['search']);
+
         foreach ($filters as $key => $value) {
             if ($value === null) continue;
 
