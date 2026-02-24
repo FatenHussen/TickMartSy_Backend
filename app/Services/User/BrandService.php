@@ -17,6 +17,7 @@ class BrandService extends BaseService
         $this->resource = OneResource::class;
         $this->searchableFields = ['name'];
         $this->sortableFields = ['id', 'created_at'];
+        $this->relations = ['favorites'];
     }
 
     protected function applyTypeFilters($query, $type)
@@ -66,6 +67,18 @@ class BrandService extends BaseService
         if (!empty($filters['type'])) {
             $this->applyTypeFilters($query, $filters['type']);
         }
+        /* ================= FAVORITES ================= */
+        if (
+            auth('user')->check() &&
+            method_exists($query->getModel(), 'favorites')
+        ) {
+            $query->withExists([
+                'favorites as is_favorite' => function ($q) {
+                    $q->where('user_id', auth('user')->id());
+                }
+            ]);
+        }
+
 
         return $query;
     }
@@ -79,6 +92,7 @@ class BrandService extends BaseService
         if (empty($filters['type'])) {
             $query->latest();
         }
+
 
         return $query;
     }

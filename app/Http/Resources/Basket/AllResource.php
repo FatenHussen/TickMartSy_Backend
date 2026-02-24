@@ -46,6 +46,8 @@ class AllResource extends JsonResource
             'is_on_offer'     => $this->offer_ends_at && $this->offer_ends_at->isFuture(),
             'next_delivery_date' => $nextDelivery,
             ...$this->withCurrency($this->delivery_price ?? 0, 'delivery_price'),
+            'is_favorite' => (bool) ($this->is_favorite ?? false),
+
             'top_badges' => BadgeOneResource::collection(
                 $this->badges->where('pivot.position', 'top')->values()
             ),

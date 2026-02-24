@@ -63,6 +63,10 @@ class User extends Authenticatable
         'phone_verified_at' => 'datetime',
         'password' => 'hashed'
     ];
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class, 'user_id');
+    }
 
     // public function images()
     // {
@@ -118,10 +122,7 @@ class User extends Authenticatable
     {
         return asset('storage/' . $this->image);
     }
-    public function favorites()
-    {
-        return $this->hasMany(Favorite::class, 'user_id');
-    }
+
 
     public function fcmTokens()
     {

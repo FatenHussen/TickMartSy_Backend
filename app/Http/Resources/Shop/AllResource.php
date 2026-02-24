@@ -27,6 +27,8 @@ class AllResource extends JsonResource
             'ratings_count'         => $this->ratings_count,
             'is_open_now'           => $this->isOpenNow(),
             'created_at'            => $this->created_at?->format('Y-m-d H:i'),
+            'is_favorite' => (bool) ($this->is_favorite ?? false),
+
             'vendor' => VendorAllResource::make($this->vendor),
         ];
     }

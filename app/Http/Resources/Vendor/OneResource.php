@@ -37,6 +37,8 @@ class OneResource extends JsonResource
 
             'created_at'            => $this->created_at?->format('Y-m-d H:i'),
             'updated_at'            => $this->updated_at?->format('Y-m-d H:i'),
+            'is_favorite' => (bool) ($this->is_favorite ?? false),
+
             'top_badges' => BadgeOneResource::collection(
                 $this->badges->where('pivot.position', 'top')->values()
             ),

@@ -31,6 +31,7 @@ class OneResource extends JsonResource
             'average_rating'        => $this->average_rating,
             'ratings_count'         => $this->ratings_count,
             'is_open_now'           => $this->isOpenNow(),
+            'is_favorite' => (bool) ($this->is_favorite ?? false),
 
             'area'                 => $this->area->name,
             'services'              => $this->whenLoaded('services', fn() => $this->services),

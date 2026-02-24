@@ -23,6 +23,7 @@ class ProductService extends BaseService
         'categoryDetails.categoryDetail',
         'extraDetails',
         'variants.shopVariants.shop',
+        'favorites',
     ];
     protected $searchableFields = ['name', 'description', 'country'];
     protected $sortableFields   = ['id', 'price', 'created_at', 'name'];
@@ -195,7 +196,7 @@ class ProductService extends BaseService
             $onSale = filter_var($filters['on_sale'], FILTER_VALIDATE_BOOLEAN);
             if ($onSale) {
                 $query
-                      ->where('discount', '>', 0);
+                    ->where('discount', '>', 0);
             }
         }
 
@@ -231,6 +232,19 @@ class ProductService extends BaseService
         if (!empty($filters['type'])) {
             $this->applyTypeFilters($query, $filters);
         }
+
+        /* ================= FAVORITES ================= */
+        if (
+            auth('user')->check() &&
+            method_exists($query->getModel(), 'favorites')
+        ) {
+            $query->withExists([
+                'favorites as is_favorite' => function ($q) {
+                    $q->where('user_id', auth('user')->id());
+                }
+            ]);
+        }
+
 
         return $query;
     }

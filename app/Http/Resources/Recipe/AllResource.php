@@ -33,6 +33,8 @@ class AllResource extends JsonResource
             'orders_count' => $this->orders_count,
             'created_at' => $this->created_at,
             // 'budges'                => OneResource::collection($this->badges),
+            'is_favorite' => (bool) ($this->is_favorite ?? false),
+
             'top_badges' => BadgeOneResource::collection(
                 $this->badges->where('pivot.position', 'top')->values()
             ),

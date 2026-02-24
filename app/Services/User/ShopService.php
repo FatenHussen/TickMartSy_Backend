@@ -20,6 +20,7 @@ class ShopService extends BaseService
         'services',
         'productVariants.productVariant.product',
         'media',
+        'favorites'
     ];
 
     protected $searchableFields = ['name', 'description', 'address'];
@@ -34,6 +35,18 @@ class ShopService extends BaseService
 
         $this->applyGeographicalFilters($query, $filters);
         $this->applyTypeFilters($query, $filters);
+
+        /* ================= FAVORITES ================= */
+        if (
+            auth('user')->check() &&
+            method_exists($query->getModel(), 'favorites')
+        ) {
+            $query->withExists([
+                'favorites as is_favorite' => function ($q) {
+                    $q->where('user_id', auth('user')->id());
+                }
+            ]);
+        }
 
         return $query;
     }
@@ -68,8 +81,8 @@ class ShopService extends BaseService
             $locale = app()->getLocale();
             $query->where(function ($q) use ($search, $locale) {
                 $q->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.{$locale}'))) LIKE ?", ["%{$search}%"])
-                  ->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(description, '$.{$locale}'))) LIKE ?", ["%{$search}%"])
-                  ->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(address, '$.{$locale}'))) LIKE ?", ["%{$search}%"]);
+                    ->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(description, '$.{$locale}'))) LIKE ?", ["%{$search}%"])
+                    ->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(address, '$.{$locale}'))) LIKE ?", ["%{$search}%"]);
             });
         }
     }
@@ -129,7 +142,7 @@ class ShopService extends BaseService
     protected function filterTopRated(Builder $query)
     {
         $query->withAvg('ratings', 'rating')
-              ->orderByDesc('ratings_avg_rating');
+            ->orderByDesc('ratings_avg_rating');
     }
 
     protected function filterActive(Builder $query)

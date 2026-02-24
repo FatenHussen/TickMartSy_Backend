@@ -41,6 +41,10 @@ class Shop extends Model implements Sectionable
         return $this->morphToMany(Badge::class, 'badgeable')->withPivot('position');
     }
 
+    public function favorites(): MorphMany
+    {
+        return $this->morphMany(Favorite::class, 'favoriteable');
+    }
 
     protected $casts = [
         'working_hours'     => 'array',
@@ -78,7 +82,7 @@ class Shop extends Model implements Sectionable
     {
         return $this->media()->where('collection', 'logo')->first();
     }
- public function  getLogoUrlAttribute()
+    public function  getLogoUrlAttribute()
     {
         return asset('storage/' . $this->logo);
     }

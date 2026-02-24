@@ -52,6 +52,7 @@ class OneResource extends JsonResource
             'schedules' => $this->is_schedule
                 ? BasketScheduleAllResource::collection($this->schedules)
                 : [],
+            'is_favorite' => (bool) ($this->is_favorite ?? false),
 
             'top_badges' => BadgeOneResource::collection(
                 $this->badges->where('pivot.position', 'top')->values()

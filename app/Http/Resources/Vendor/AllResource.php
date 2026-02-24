@@ -25,6 +25,8 @@ class AllResource extends JsonResource
             'average_rating'        => $this->average_rating,
             'ratings_count'         => $this->ratings_count,
             'created_at'            => $this->created_at?->format('Y-m-d H:i'),
+            'is_favorite' => (bool) ($this->is_favorite ?? false),
+
             'top_badges' => BadgeOneResource::collection(
                 $this->badges->where('pivot.position', 'top')->values()
             ),

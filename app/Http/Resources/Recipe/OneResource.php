@@ -34,6 +34,8 @@ class OneResource extends JsonResource
             'serves' => $this->serves,
             'prepare_time' => $this->prepare_time,
             // 'budges'                => BadgeOneResource::collection($this->badges),
+            'is_favorite' => (bool) ($this->is_favorite ?? false),
+
             'top_badges' => BadgeOneResource::collection(
                 $this->badges->where('pivot.position', 'top')->values()
             ),

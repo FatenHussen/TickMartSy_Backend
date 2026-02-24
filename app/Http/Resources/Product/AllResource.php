@@ -32,6 +32,8 @@ class AllResource extends JsonResource
             'created_at'            => $this->created_at,
             'sold_number'           => $this->sold_quantity ?? 0,
             'rating' => $this->average_rating ?? 0,
+            'is_favorite' => (bool) ($this->is_favorite ?? false),
+
             'top_badges' => BadgeOneResource::collection(
                 $this->badges->where('pivot.position', 'top')->values()
             ),

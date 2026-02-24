@@ -69,6 +69,8 @@ class OneResource extends JsonResource
                     'name' => $shop->name,
                 ];
             }),
+            'is_favorite' => (bool) ($this->is_favorite ?? false),
+
 
             'top_badges' => BadgeOneResource::collection(
                 $this->badges->where('pivot.position', 'top')->values()

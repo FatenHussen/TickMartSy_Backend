@@ -11,6 +11,8 @@ class FavoriteService
         'recipe'  => \App\Models\Recipe::class,
         'brand'   => \App\Models\Brand::class,
         'basket'  => \App\Models\Basket::class,
+        'shop' => \App\Models\Shop::class,
+        'vendor' => \App\Models\Vendor::class
     ];
 
     public function toggle(int $userId, string $type, int $id): bool

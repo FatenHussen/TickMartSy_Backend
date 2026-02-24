@@ -46,6 +46,7 @@ class Vendor extends Model
     {
         return $this->belongsToMany(Brand::class);
     }
+
     public function users()
     {
         return $this->belongsToMany(
@@ -99,6 +100,10 @@ class Vendor extends Model
     }
 
 
+    public function favorites()
+    {
+        return $this->morphMany(Favorite::class, 'favoriteable');
+    }
     // public function products(): HasMany
     // {
     //     return $this->hasMany(Product::class);

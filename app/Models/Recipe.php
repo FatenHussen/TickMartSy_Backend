@@ -35,6 +35,10 @@ class Recipe extends Model implements Sectionable
     ];
 
 
+    public function favorites(): MorphMany
+    {
+        return $this->morphMany(Favorite::class, 'favoriteable');
+    }
     public function items()
     {
         return $this->hasMany(RecipeItem::class);
@@ -96,10 +100,5 @@ class Recipe extends Model implements Sectionable
         //     'bottom_badges' => [],
         // ];
         return AllResource::make($this);
-    }
-
-    public function favorites(): MorphMany
-    {
-        return $this->morphMany(Favorite::class, 'favoriteable');
     }
 }

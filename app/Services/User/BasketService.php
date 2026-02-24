@@ -20,6 +20,7 @@ class BasketService extends BaseService
         // 'items.companies',
         // 'items.companies.brand',
         'schedules',
+        'favorites'
     ];
     protected $searchableFields = ['name'];
     protected $sortableFields   = ['id'];
@@ -69,6 +70,19 @@ class BasketService extends BaseService
         if (!empty($filters['type'])) {
             $this->applyTypeFilters($query, $filters['type']);
         }
+
+        /* ================= FAVORITES ================= */
+        if (
+            auth('user')->check() &&
+            method_exists($query->getModel(), 'favorites')
+        ) {
+            $query->withExists([
+                'favorites as is_favorite' => function ($q) {
+                    $q->where('user_id', auth('user')->id());
+                }
+            ]);
+        }
+
 
         return $query;
     }

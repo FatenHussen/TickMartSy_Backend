@@ -60,7 +60,12 @@ abstract class BaseService
 
     public function getOne($id)
     {
-        $object = $this->model::with($this->relations)->find($id);
+
+        $query = $this->model::query()->with($this->relations);
+        $query = $this->queryBuilder($query);
+
+        $object = $query->find($id);
+
 
         if (!$object) {
             throw new NotFoundException();
