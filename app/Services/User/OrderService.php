@@ -6,6 +6,7 @@ use App\Enums\CartType;
 use App\Enums\OrderStatus;
 use App\Events\OrderCreated;
 use App\Events\OrderStatusChanged;
+use App\Exceptions\CustomExceptionWithMessage;
 use App\Http\Resources\Order\OneResource;
 use App\Http\Resources\Order\AllResource;
 use App\Models\AffiliateWalletTransaction;
@@ -64,9 +65,18 @@ class OrderService extends BaseService
 
             $user = auth('user')->user() ?? User::find(1);
 
+            // Get address
+            if ($data['address_id']) {
+                $address = $user->addresses()->findOrFail($data['address_id']);
+            } else {
+                $address = $user->addresses()
+                    ->where('is_default', true)
+                    ->firstOrFail();
+            }
+
             $order = Order::create([
                 'user_id'             => $user->id,
-                'user_address_id'     => $data['address_id'],
+                'user_address_id'     => $address->id,
                 'cart_type'           => $data['cart_type'] ?? CartType::DEFAULT->value,
                 'is_instant_delivery' => $data['is_instant_delivery'] ?? false,
                 'status'        => OrderStatus::PENDING->value,
@@ -294,6 +304,7 @@ class OrderService extends BaseService
     public function couponPreview(array $data)
     {
         $user = auth('user')->user() ?? User::find(1);
+
 
         [$basketDiscount, $deliveryPrice] = $this->resolveBasketAndDelivery(null, $data);
 
@@ -651,7 +662,6 @@ class OrderService extends BaseService
                 'used_coupon_id' => $usedCouponExchangeId,
                 'used_free_delivery_id' => $usedFreeDeliveryExchangeId
             ]);
-
         } catch (\Throwable $e) {
             // تجاهل أخطاء النقاط لعدم تعطيل إنشاء الطلب
             Log::error('❌ Point exchange application failed', [
@@ -661,6 +671,44 @@ class OrderService extends BaseService
         }
 
         return [$pointCouponDiscount, $pointFreeDelivery, $usedCouponExchangeId, $usedFreeDeliveryExchangeId];
+    }
+
+    public function cancel(int $orderId)
+    {
+        $userId = auth('user')->id();
+
+        $order = Order::with('items')->where('id', $orderId)
+            ->where('user_id', $userId)
+            ->firstOrFail();
+
+        if ($order->status !== OrderStatus::PENDING->value) {
+            throw new CustomExceptionWithMessage('Order cannot be cancelled');
+        }
+
+        foreach ($order->items as $item) {
+            if ($item->status !== OrderStatus::PENDING->value) {
+                throw new CustomExceptionWithMessage('Some items cannot be cancelled');
+            }
+        }
+        $oldStatus = $order->status;
+
+        $order->update([
+            'status' => OrderStatus::CANCELLED->value
+        ]);
+
+        foreach ($order->items as $item) {
+            $item->update([
+                'status' => OrderStatus::CANCELLED->value
+            ]);
+        }
+
+        event(new OrderStatusChanged(
+            order: $order,
+            from: $oldStatus,
+            to: OrderStatus::CANCELLED->value,
+            changedBy: 'user'
+        ));
+        return $order;
     }
 }
 /**

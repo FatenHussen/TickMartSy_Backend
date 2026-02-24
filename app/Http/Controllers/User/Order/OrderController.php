@@ -32,4 +32,9 @@ class OrderController extends BaseCRUDController
     {
         return   $this->service->preview($request->all());
     }
+
+    public function cancel($orderId)
+    {
+        return   $this->service->cancel($orderId);
+    }
 }
