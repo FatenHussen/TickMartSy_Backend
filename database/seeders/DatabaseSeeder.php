@@ -85,9 +85,9 @@ class DatabaseSeeder extends Seeder
 
             // Point System (GiftSeeder أولاً - مطلوب لاستبدال النقاط بهدية)
             GiftSeeder::class,
-            PointSystemSeeder::class,
+            PointSystemSeeder::class, // يشمل PointTransactionSeeder
             ExchangeSettingsSeeder::class,
-            PointExchangeSeeder::class,
+            PointExchangeSeeder::class, // لازم يجي بعد PointSystemSeeder
 
             // Payment & Orders
             PaymentMethodSeeder::class,
