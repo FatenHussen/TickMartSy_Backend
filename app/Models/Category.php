@@ -69,6 +69,16 @@ class Category extends Model implements Sectionable
         return $this->hasMany(Store::class);
     }
 
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+
+    public function baskets()
+    {
+        return $this->hasMany(Basket::class);
+    }
+
 
     public function toSectionArray(): array
     {

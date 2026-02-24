@@ -10,7 +10,8 @@ class AllResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'name' => $this->name, // Will return translated based on locale
+            'description' => $this->description,
             'image' => $this->image ? asset('storage/' . $this->image) : null,
             'points_required' => $this->points_required,
             'stock_quantity' => $this->stock_quantity,

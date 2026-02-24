@@ -12,7 +12,7 @@ class OneResource extends JsonResource
         return [
             'id' => $this->id,
             'code' => $this->code,
-            'name' => $this->name,
+            'name' =>  $this->getTranslations('name'),
             'symbol' => $this->symbol,
             'exchange_rate' => $this->exchange_rate,
             'is_default' => $this->is_default,

@@ -9,10 +9,11 @@ This document provides comprehensive information about all available filters acr
 1. [Products Filters](#products-filters)
 2. [Recipes Filters](#recipes-filters)
 3. [Brands Filters](#brands-filters)
-4. [Shops Filters](#shops-filters)
-5. [Orders Filters](#orders-filters)
-6. [Favorites Filters](#favorites-filters)
-7. [Baskets Filters](#baskets-filters)
+4. [Categories Filters](#categories-filters)
+5. [Shops Filters](#shops-filters)
+6. [Orders Filters](#orders-filters)
+7. [Favorites Filters](#favorites-filters)
+8. [Baskets Filters](#baskets-filters)
 
 ---
 
@@ -99,6 +100,37 @@ GET /api/user/recipes?prepare_time_max=30&serves_max=4
 GET /api/user/brands?search=adidas
 GET /api/user/brands?type=new
 GET /api/user/brands?type=most_popular
+```
+
+---
+
+## Categories Filters
+
+**Endpoint:** `GET /api/user/categories`
+
+### Available Filters
+
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `name` | string | Filter by category name | `name=electronics` |
+| `parent_id` | integer | Filter by parent category | `parent_id=1` |
+| `search` | string | Search in category name | `search=fashion` |
+| `shop_id` | integer | Categories with products in shop | `shop_id=5` |
+| `type` | string | Type filter (new, most_popular, top_rated) | `type=most_popular` |
+
+### Type Filters Explained
+
+- `new`: Orders by created_at DESC (newest categories first)
+- `most_popular`: Orders by total products sold in category DESC
+- `top_rated`: Orders by average product rating in category DESC
+
+### Example Requests
+
+```
+GET /api/user/categories?search=electronics
+GET /api/user/categories?shop_id=5&type=most_popular
+GET /api/user/categories?parent_id=1&type=top_rated
+GET /api/user/categories?type=new
 ```
 
 ---
@@ -261,3 +293,4 @@ All filtered endpoints return data in this format:
 3. Array parameters can be sent as `param[]=value1&param[]=value2` or `param=value1,value2`
 4. Numeric filters (price, rating) support decimal values
 5. All filters are optional - omit them to get unfiltered results
+6. **Search is case-insensitive** - searching for "Nike", "nike", or "NIKE" will return the same results

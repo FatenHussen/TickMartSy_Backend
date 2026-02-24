@@ -36,6 +36,10 @@ class StoreRequest extends FormRequest
             'admin_basket_id' => 'nullable|exists:baskets,id',
             'coupon' => 'nullable|string',
             'affiliate_id' => 'nullable|string',
+
+            // Point exchanges
+            'point_coupon_exchange_id' => 'nullable|integer|exists:point_exchanges,id',
+            'point_free_delivery_exchange_id' => 'nullable|integer|exists:point_exchanges,id',
         ];
     }
 }

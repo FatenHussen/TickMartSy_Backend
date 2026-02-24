@@ -18,11 +18,21 @@ class CategoryService extends BaseService
         $this->pagination = true;
     }
 
-    protected function applyFilters($query, $filters)
-    {
+    public function queryBuilder($query, $filters = [], $config = [])
+    {if (empty($filters['search'])) return;
+
+        $search = strtolower($filters['search']);
+        $locale = app()->getLocale();
+
+        $query->where(function ($q) use ($search, $locale) {
+            $q->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.{$locale}'))) LIKE ?", ["%{$search}%"])
+                ->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(description, '$.{$locale}'))) LIKE ?", ["%{$search}%"])
+                ->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(country, '$.{$locale}'))) LIKE ?", ["%{$search}%"]);
+        });
         // Apply name filter
         if (isset($filters['name'])) {
-            $query->where('name', 'like', '%' . $filters['name'] . '%');
+            $locale = app()->getLocale();
+            $query->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.{$locale}'))) LIKE ?", ['%' . strtolower($filters['name']) . '%']);
         }
 
         // Apply parent_id filter
@@ -34,6 +44,43 @@ class CategoryService extends BaseService
             }
         }
 
-        return $query;
+        // Shop filter - categories that have products in this shop
+        if (!empty($filters['shop_id'])) {
+            $query->whereHas('products', function ($q) use ($filters) {
+                $q->whereHas('shopVariants', function ($sq) use ($filters) {
+                    $sq->where('shop_id', $filters['shop_id']);
+                });
+            });
+        }
+
+        // Type filters
+        if (!empty($filters['type'])) {
+            $this->applyTypeFilters($query, $filters['type']);
+        }
+
+        return parent::queryBuilder($query, $filters, $config);
+    }
+
+    protected function applyTypeFilters($query, $type)
+    {
+        switch ($type) {
+            case 'new':
+                $query->orderBy('created_at', 'desc');
+                break;
+
+            case 'most_popular':
+                // Most popular = categories with most products sold
+                $query->withCount(['products as total_sales' => function ($q) {
+                    $q->join('order_items', 'products.id', '=', 'order_items.product_id')
+                      ->selectRaw('SUM(order_items.quantity)');
+                }])->orderBy('total_sales', 'desc');
+                break;
+
+            case 'top_rated':
+                // Top rated = categories with highest average product rating
+                $query->withAvg('products as avg_rating', 'rating')
+                      ->orderBy('avg_rating', 'desc');
+                break;
+        }
     }
 }

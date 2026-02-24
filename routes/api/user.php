@@ -205,6 +205,7 @@ Route::prefix('user')->group(
                     Route::post('/free-delivery', [\App\Http\Controllers\User\Point\ExchangeController::class, 'exchangeForFreeDelivery']);
                     Route::post('/gift', [\App\Http\Controllers\User\Point\ExchangeController::class, 'exchangeForGift']);
                     Route::get('/history', [\App\Http\Controllers\User\Point\ExchangeController::class, 'history']);
+                    Route::get('/active', [\App\Http\Controllers\User\Point\ExchangeController::class, 'activeExchanges']);
                     Route::get('/free-delivery-status', [\App\Http\Controllers\User\Point\ExchangeController::class, 'freeDeliveryStatus']);
                 });
             });
