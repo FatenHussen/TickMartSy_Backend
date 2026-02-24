@@ -41,7 +41,12 @@ class Order extends Model
         //driver
         'driver_id',
         'assigned_by',
-        'coupon_id'
+        'coupon_id',
+        //point exchanges
+        'used_coupon_exchange_id',
+        'used_free_delivery_exchange_id',
+        'coupon_discount_from_points',
+        'free_delivery_from_points'
     ];
 
     protected $casts = [
@@ -95,6 +100,16 @@ class Order extends Model
     public function basketSchedule()
     {
         return $this->belongsTo(BasketSchedule::class);
+    }
+
+    public function usedCouponExchange()
+    {
+        return $this->belongsTo(PointExchange::class, 'used_coupon_exchange_id');
+    }
+
+    public function usedFreeDeliveryExchange()
+    {
+        return $this->belongsTo(PointExchange::class, 'used_free_delivery_exchange_id');
     }
 
 

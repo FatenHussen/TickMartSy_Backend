@@ -36,7 +36,6 @@ class FilterRequest extends FormRequest
         return [
             'name' => 'nullable|string',
             'parent_id' => 'nullable|integer|exists:categories,id',
-            'search' => 'nullable|string',
             'shop_id' => 'nullable|integer|exists:shops,id',
             'type' => 'nullable|in:new,most_popular,top_rated',
         ];

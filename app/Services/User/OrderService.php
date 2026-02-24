@@ -88,19 +88,25 @@ class OrderService extends BaseService
                     $basketDiscount
                 );
 
+            // 4️⃣ Apply point exchanges
+            [$pointCouponDiscount, $pointFreeDelivery, $usedCouponExchangeId, $usedFreeDeliveryExchangeId] =
+                $this->applyPointExchanges($user->id, $data, $deliveryPrice);
 
             // ❗ إذا تم تطبيق كوبون → نلغي خصم السلة
             if ($couponCode !== null) {
                 $basketDiscount = 0;
             }
 
-
-            // 4️⃣ Calculate totals
+            // 5️⃣ Calculate totals
             $basketDiscountAmount = $subtotalAfterProductDiscount * ($basketDiscount / 100);
 
             $finalTotal = $subtotalAfterProductDiscount
-                - ($basketDiscountAmount + $couponDiscountAmount);
+                - ($basketDiscountAmount + $couponDiscountAmount + $pointCouponDiscount);
 
+            // Apply free delivery from points
+            if ($pointFreeDelivery) {
+                $deliveryPrice = 0;
+            }
 
             // =======================
             // Affiliate / Marketer
@@ -141,6 +147,12 @@ class OrderService extends BaseService
                 'affiliate_id'     => $affiliateId,
                 'affiliate_rate'   => $affiliateRate,
                 'affiliate_source' => $affiliateSource, // link | coupon | null
+
+                // Point exchange data
+                'used_coupon_exchange_id' => $usedCouponExchangeId,
+                'used_free_delivery_exchange_id' => $usedFreeDeliveryExchangeId,
+                'coupon_discount_from_points' => round($pointCouponDiscount, 2),
+                'free_delivery_from_points' => $pointFreeDelivery,
             ]);
 
 
@@ -542,6 +554,60 @@ class OrderService extends BaseService
             $excludedItems,
             $coupon
         ];
+    }
+
+    /** -----------------------------
+     * Apply Point Exchanges
+     * ----------------------------- */
+    protected function applyPointExchanges(int $userId, array $data, float $deliveryPrice): array
+    {
+        $pointCouponDiscount = 0;
+        $pointFreeDelivery = false;
+        $usedCouponExchangeId = null;
+        $usedFreeDeliveryExchangeId = null;
+
+        try {
+            $exchangeService = app(\App\Services\PointExchangeService::class);
+
+            // Apply coupon from points
+            if (!empty($data['point_coupon_exchange_id'])) {
+                $exchange = \App\Models\PointExchange::where('id', $data['point_coupon_exchange_id'])
+                    ->where('user_id', $userId)
+                    ->where('exchange_type', 'coupon')
+                    ->where('status', 'completed')
+                    ->first();
+
+                if ($exchange && $exchangeService->isExchangeValid($exchange)) {
+                    $pointCouponDiscount = $exchange->exchange_data['discount_amount'] ?? 0;
+                    $usedCouponExchangeId = $exchange->id;
+
+                    // Mark as used
+                    $exchangeService->markExchangeAsUsed($exchange->id);
+                }
+            }
+
+            // Apply free delivery from points
+            if (!empty($data['point_free_delivery_exchange_id'])) {
+                $exchange = \App\Models\PointExchange::where('id', $data['point_free_delivery_exchange_id'])
+                    ->where('user_id', $userId)
+                    ->where('exchange_type', 'free_delivery')
+                    ->where('status', 'completed')
+                    ->first();
+
+                if ($exchange && $exchangeService->isExchangeValid($exchange)) {
+                    $pointFreeDelivery = true;
+                    $usedFreeDeliveryExchangeId = $exchange->id;
+
+                    // Mark as used
+                    $exchangeService->markExchangeAsUsed($exchange->id);
+                }
+            }
+        } catch (\Throwable $e) {
+            // تجاهل أخطاء النقاط لعدم تعطيل إنشاء الطلب
+            Log::error('Point exchange application failed', ['error' => $e->getMessage()]);
+        }
+
+        return [$pointCouponDiscount, $pointFreeDelivery, $usedCouponExchangeId, $usedFreeDeliveryExchangeId];
     }
 }
 /**

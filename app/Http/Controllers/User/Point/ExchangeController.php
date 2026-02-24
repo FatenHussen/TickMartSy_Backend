@@ -37,7 +37,7 @@ class ExchangeController extends Controller
         ]);
 
         $userId = auth('user')->id();
-        
+
         $result = $this->exchangeService->exchangeForCoupon(
             $userId,
             $request->points,
@@ -73,7 +73,7 @@ class ExchangeController extends Controller
         ]);
 
         $userId = auth('user')->id();
-        
+
         $result = $this->exchangeService->exchangeForFreeDelivery(
             $userId,
             $request->delivery_zones
@@ -107,7 +107,7 @@ class ExchangeController extends Controller
         ]);
 
         $userId = auth('user')->id();
-        
+
         $result = $this->exchangeService->exchangeForGift(
             $userId,
             $request->gift_id,
@@ -135,12 +135,27 @@ class ExchangeController extends Controller
     {
         $userId = auth('user')->id();
         $perPage = $request->get('per_page', 15);
-        
+
         $history = $this->exchangeService->getUserExchangeHistory($userId, $perPage);
 
         return response()->json([
             'success' => true,
             'data' => $history,
+        ]);
+    }
+
+    /**
+     * Get user active exchanges (currently usable)
+     */
+    public function activeExchanges()
+    {
+        $userId = auth('user')->id();
+
+        $activeExchanges = $this->exchangeService->getUserActiveExchanges($userId);
+
+        return response()->json([
+            'success' => true,
+            'data' => $activeExchanges,
         ]);
     }
 

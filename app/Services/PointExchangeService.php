@@ -241,12 +241,76 @@ class PointExchangeService
             ->paginate($perPage);
 
         return [
-            'exchanges' => $exchanges->items(),
+            'exchanges' => \App\Http\Resources\PointExchange\PointExchangeResource::collection($exchanges->items()),
             'pagination' => [
                 'current_page' => $exchanges->currentPage(),
                 'last_page' => $exchanges->lastPage(),
                 'per_page' => $exchanges->perPage(),
                 'total' => $exchanges->total(),
+            ],
+        ];
+    }
+
+    /**
+     * Get user active exchanges (currently usable)
+     */
+    public function getUserActiveExchanges(int $userId): array
+    {
+        $now = now();
+
+        $exchanges = PointExchange::where('user_id', $userId)
+            ->where('status', 'completed')
+            ->where(function ($query) use ($now) {
+                // Active coupons
+                $query->where(function ($q) use ($now) {
+                    $q->where('exchange_type', 'coupon')
+                      ->where(function ($sq) use ($now) {
+                          $sq->whereNull('exchange_data->expires_at')
+                             ->orWhereRaw("JSON_UNQUOTE(JSON_EXTRACT(exchange_data, '$.expires_at')) >= ?", [$now->toDateString()]);
+                      });
+                })
+                // Active free delivery
+                ->orWhere(function ($q) use ($now) {
+                    $q->where('exchange_type', 'free_delivery')
+                      ->where(function ($sq) use ($now) {
+                          $sq->whereNull('exchange_data->expires_at')
+                             ->orWhereRaw("JSON_UNQUOTE(JSON_EXTRACT(exchange_data, '$.expires_at')) >= ?", [$now->toDateString()]);
+                      });
+                })
+                // Completed gifts (for reference)
+                ->orWhere('exchange_type', 'gift');
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $grouped = [
+            'coupons' => [],
+            'free_deliveries' => [],
+            'gifts' => [],
+        ];
+
+        foreach ($exchanges as $exchange) {
+            $resource = new \App\Http\Resources\PointExchange\PointExchangeResource($exchange);
+
+            switch ($exchange->exchange_type) {
+                case 'coupon':
+                    $grouped['coupons'][] = $resource;
+                    break;
+                case 'free_delivery':
+                    $grouped['free_deliveries'][] = $resource;
+                    break;
+                case 'gift':
+                    $grouped['gifts'][] = $resource;
+                    break;
+            }
+        }
+
+        return [
+            'active_exchanges' => $grouped,
+            'summary' => [
+                'total_coupons' => count($grouped['coupons']),
+                'total_free_deliveries' => count($grouped['free_deliveries']),
+                'total_gifts' => count($grouped['gifts']),
             ],
         ];
     }
@@ -264,5 +328,37 @@ class PointExchangeService
                     ->orWhere('exchange_data->expires_at', '>=', now()->toDateString());
             })
             ->exists();
+    }
+
+    /**
+     * Check if exchange is valid (not expired)
+     */
+    public function isExchangeValid(PointExchange $exchange): bool
+    {
+        // Check if expired
+        if (isset($exchange->exchange_data['expires_at'])) {
+            $expiresAt = $exchange->exchange_data['expires_at'];
+            if (now()->toDateString() > $expiresAt) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Mark exchange as used/expired
+     */
+    public function markExchangeAsUsed(int $exchangeId): bool
+    {
+        $exchange = PointExchange::find($exchangeId);
+
+        if (!$exchange) {
+            return false;
+        }
+
+        $exchange->update(['status' => 'used']);
+
+        return true;
     }
 }
