@@ -9,6 +9,8 @@ use App\Http\Resources\Category\AllResource;
 
 class CategoryService extends BaseService
 {
+    protected $searchableFields = ['id'];
+
     public function __construct(Category $model)
     {
         $this->model      = $model;
@@ -19,13 +21,23 @@ class CategoryService extends BaseService
     }
 
     public function queryBuilder($query, $filters = [], $config = [])
-    {if (empty($filters['search'])) return;
+    {
+        $query = parent::queryBuilder($query, $filters, $config);
 
-        $search = strtolower($filters['search']);
-        $locale = app()->getLocale();
+        // Apply search on category name (case-insensitive, supports Arabic/English)
+        if (!empty($config['search'])) {
+            $search = strtolower($config['search']);
+            $locale = app()->getLocale();
 
-        $query->where(function ($q) use ($search, $locale) {
-            $q->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.{$locale}'))) LIKE ?", ["%{$search}%"]);        });
+            $query->where(function ($q) use ($search, $locale) {
+                // Search in current locale
+                $q->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.{$locale}'))) LIKE ?", ["%{$search}%"])
+                  // Also search in other locale
+                  ->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.ar'))) LIKE ?", ["%{$search}%"])
+                  ->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.en'))) LIKE ?", ["%{$search}%"]);
+            });
+        }
+
         // Apply name filter
         if (isset($filters['name'])) {
             $locale = app()->getLocale();
@@ -55,7 +67,7 @@ class CategoryService extends BaseService
             $this->applyTypeFilters($query, $filters['type']);
         }
 
-        return parent::queryBuilder($query, $filters, $config);
+        return $query;
     }
 
     protected function applyTypeFilters($query, $type)
