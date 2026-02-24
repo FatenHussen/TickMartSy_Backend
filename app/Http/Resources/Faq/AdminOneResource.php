@@ -18,6 +18,8 @@ class AdminOneResource extends JsonResource
             'id' => $this->id,
             'question' => $this->getTranslations('question'),
             'answer' => $this->getTranslations('answer'),
+            'type' =>  $this->type
+
         ];
     }
 }

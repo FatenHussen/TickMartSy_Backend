@@ -11,7 +11,6 @@ class AffiliateWalletTransaction extends Model
         'type',           // commission / withdraw
         'amount',         // موجب للعمولة، سالب للسحب
         'order_id',
-        'status',         // pending / completed / rejected
     ];
 
     public function affiliate()

@@ -34,7 +34,10 @@ class User extends Authenticatable
         'affiliate_id',
         'coupon_id',
         'affiliate_rate',
-        'currency_id'
+        'affiliate_visits',
+
+
+        'currency_id',
     ];
 
     /**
