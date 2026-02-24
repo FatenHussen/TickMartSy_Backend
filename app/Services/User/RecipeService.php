@@ -24,42 +24,42 @@ class RecipeService extends BaseService
         $this->sortableFields = ['id', 'discount', 'rating', 'orders_count', 'created_at'];
     }
 
-    public function queryBuilder($query, $filters = [], $config = [])
-    {
-        $query->with($this->relations);
+    // public function queryBuilder($query, $filters = [], $config = [])
+    // {
+    //     $query->with($this->relations);
 
-        // Search filter
-        if (!empty($filters['search'])) {
-            $search = strtolower($filters['search']);
-            $locale = app()->getLocale();
-            $query->where(function (Builder $q) use ($search, $locale) {
-                $q->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.{$locale}'))) LIKE ?", ["%{$search}%"])
-                    ->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(description, '$.{$locale}'))) LIKE ?", ["%{$search}%"]);
-            });
-        }
+    //     // Search filter
+    //     if (!empty($filters['search'])) {
+    //         $search = strtolower($filters['search']);
+    //         $locale = app()->getLocale();
+    //         $query->where(function (Builder $q) use ($search, $locale) {
+    //             $q->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.{$locale}'))) LIKE ?", ["%{$search}%"])
+    //                 ->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(description, '$.{$locale}'))) LIKE ?", ["%{$search}%"]);
+    //         });
+    //     }
 
-        // Discount filter
-        if (!empty($filters['discount_min']) || !empty($filters['discount_max'])) {
-            if (!empty($filters['discount_min'])) {
-                $query->where('discount', '>=', $filters['discount_min']);
-            }
-            if (!empty($filters['discount_max'])) {
-                $query->where('discount', '<=', $filters['discount_max']);
-            }
-        }
+    //     // Discount filter
+    //     if (!empty($filters['discount_min']) || !empty($filters['discount_max'])) {
+    //         if (!empty($filters['discount_min'])) {
+    //             $query->where('discount', '>=', $filters['discount_min']);
+    //         }
+    //         if (!empty($filters['discount_max'])) {
+    //             $query->where('discount', '<=', $filters['discount_max']);
+    //         }
+    //     }
 
-        // Serves filter
-        if (!empty($filters['serves'])) {
-            $query->where('serves', $filters['serves']);
-        }
+    //     // Serves filter
+    //     if (!empty($filters['serves'])) {
+    //         $query->where('serves', $filters['serves']);
+    //     }
 
-        // Prepare time filter
-        if (!empty($filters['prepare_time'])) {
-            $query->where('prepare_time', $filters['prepare_time']);
-        }
+    //     // Prepare time filter
+    //     if (!empty($filters['prepare_time'])) {
+    //         $query->where('prepare_time', $filters['prepare_time']);
+    //     }
 
-        return $query;
-    }
+    //     return $query;
+    // }
 
     public function query(array $filters = [])
     {

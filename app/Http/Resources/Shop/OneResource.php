@@ -35,6 +35,7 @@ class OneResource extends JsonResource
             'area'                 => $this->area->name,
             'services'              => $this->whenLoaded('services', fn() => $this->services),
             'categories'            => $this->whenLoaded('categories', fn() => $this->categories),
+            'is_favorite' => $this->is_favorite,
 
             'created_at'            => $this->created_at?->format('Y-m-d H:i'),
             'updated_at'            => $this->updated_at?->format('Y-m-d H:i')

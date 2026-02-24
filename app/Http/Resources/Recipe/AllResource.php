@@ -20,6 +20,7 @@ class AllResource extends JsonResource
     {
         $price = $this->getTotalItemsPrice();
         $priceAfterDiscount = $this->getTotalAfterDiscount();
+        // return parent::toArray($request);
 
         return [
             'id' => $this->id,
@@ -32,6 +33,7 @@ class AllResource extends JsonResource
             'discount' => $this->discount,
             'orders_count' => $this->orders_count,
             'created_at' => $this->created_at,
+            'is_favorite' => $this->is_favorite,
             // 'budges'                => OneResource::collection($this->badges),
             'top_badges' => BadgeOneResource::collection(
                 $this->badges->where('pivot.position', 'top')->values()

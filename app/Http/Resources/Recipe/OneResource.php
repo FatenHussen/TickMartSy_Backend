@@ -18,54 +18,56 @@ class OneResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
-            'id' => $this->id,
+        return parent::toArray($request);
 
-            'name' => $this->name,
-            'description' => $this->description,
+        // return [
+        //     'id' => $this->id,
 
-            'image' => $this->image,
-            'video_url' => $this->video_url,
+        //     'name' => $this->name,
+        //     'description' => $this->description,
 
-            'rating' => $this->average_rating,
-            'orders_count' => $this->orders_count,
+        //     'image' => $this->image,
+        //     'video_url' => $this->video_url,
 
-            'discount' => $this->discount,
-            'serves' => $this->serves,
-            'prepare_time' => $this->prepare_time,
-            // 'budges'                => BadgeOneResource::collection($this->badges),
-            'top_badges' => BadgeOneResource::collection(
-                $this->badges->where('pivot.position', 'top')->values()
-            ),
+        //     'rating' => $this->average_rating,
+        //     'orders_count' => $this->orders_count,
 
-            'bottom_badges' => BadgeOneResource::collection(
-                $this->badges->where('pivot.position', 'bottom')->values()
-            ),
+        //     'discount' => $this->discount,
+        //     'serves' => $this->serves,
+        //     'prepare_time' => $this->prepare_time,
+        //     // 'budges'                => BadgeOneResource::collection($this->badges),
+        //     'top_badges' => BadgeOneResource::collection(
+        //         $this->badges->where('pivot.position', 'top')->values()
+        //     ),
 
-            'totals' => $this->whenLoaded('items', function () {
-                $total_before_discount = $this->items->sum(function ($item) {
-                    return $item->shopProductVariant->price * $item->quantity;
-                });
+        //     'bottom_badges' => BadgeOneResource::collection(
+        //         $this->badges->where('pivot.position', 'bottom')->values()
+        //     ),
 
-                $discount_percentage = $this->discount ?? 0;
-                $total_after_discount = $total_before_discount * (1 - $discount_percentage / 100);
-                $discount_value = $total_before_discount - $total_after_discount;
+        //     'totals' => $this->whenLoaded('items', function () {
+        //         $total_before_discount = $this->items->sum(function ($item) {
+        //             return $item->shopProductVariant->price * $item->quantity;
+        //         });
 
-                return array_merge(
-                    $this->withCurrency($total_before_discount, 'total_before_discount'),
-                    $this->withCurrency($total_after_discount, 'total_after_discount'),
-                    $this->withCurrency($discount_value, 'discount_value')
-                );
-            }),
-            'steps' => RecipeStepResource::collection(
-                $this->whenLoaded('steps')
-            ),
+        //         $discount_percentage = $this->discount ?? 0;
+        //         $total_after_discount = $total_before_discount * (1 - $discount_percentage / 100);
+        //         $discount_value = $total_before_discount - $total_after_discount;
 
-            'items' => RecipeItemResource::collection(
-                $this->whenLoaded('items')
-            ),
+        //         return array_merge(
+        //             $this->withCurrency($total_before_discount, 'total_before_discount'),
+        //             $this->withCurrency($total_after_discount, 'total_after_discount'),
+        //             $this->withCurrency($discount_value, 'discount_value')
+        //         );
+        //     }),
+        //     'steps' => RecipeStepResource::collection(
+        //         $this->whenLoaded('steps')
+        //     ),
 
-            'created_at' => $this->created_at,
-        ];
+        //     'items' => RecipeItemResource::collection(
+        //         $this->whenLoaded('items')
+        //     ),
+
+        //     'created_at' => $this->created_at,
+        // ];
     }
 }

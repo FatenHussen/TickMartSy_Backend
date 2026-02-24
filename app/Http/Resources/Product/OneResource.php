@@ -69,7 +69,7 @@ class OneResource extends JsonResource
                     'name' => $shop->name,
                 ];
             }),
-
+            'is_favorite' => $this->is_favorite,
             'top_badges' => BadgeOneResource::collection(
                 $this->badges->where('pivot.position', 'top')->values()
             ),
