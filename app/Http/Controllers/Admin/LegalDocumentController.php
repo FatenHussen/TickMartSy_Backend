@@ -12,6 +12,6 @@ class LegalDocumentController extends BaseCRUDController
         LegalDocumentService $service
     ) {
         $this->service = $service;
-        $this->createRequest = UpdateRequest::class;
+        $this->updateRequest = UpdateRequest::class;
     }
 }

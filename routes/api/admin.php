@@ -41,6 +41,7 @@ use App\Http\Controllers\Admin\Gift\GiftController;
 use App\Http\Controllers\Admin\PointExchange\PointExchangeController;
 use App\Http\Controllers\Admin\UserPoint\UserPointController;
 use App\Http\Controllers\Admin\Currency\CurrencyController;
+use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\VendorPackage\VendorPackageController;
 use App\Http\Controllers\Admin\VendorSubscription\VendorSubscriptionController;
 use Illuminate\Support\Facades\Route;
@@ -134,6 +135,7 @@ Route::prefix('admin')->group(
                 Route::apiResource('complaints', ComplaintController::class);
                 Route::apiResource('recipes', RecipeCrudController::class);
                 Route::apiResource('users', UserCrudController::class);
+                Route::apiResource('faqs', FaqController::class);
             }
 
         );
@@ -145,13 +147,7 @@ Route::prefix('admin')->group(
                 Route::get('item-types', [SectionController::class, 'sectionItemTypes']);
                 Route::get('display-types', [SectionController::class, 'displayTypes']);
 
-
                 // Protected routes
-
-
-
-
-
                 // Basket management routes
 
                 // // Points management routes

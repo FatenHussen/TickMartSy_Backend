@@ -35,6 +35,9 @@ use App\Http\Controllers\User\Currency\CurrencyController;
 Route::prefix('user')->group(
     function () {
 
+
+        Route::post('/visit-website-bymarkter', [MarketController::class, 'visit']);
+
         // public routes
         Route::get('/governorates', [GovernorateController::class, 'index']);
         Route::get('/cities', [CityController::class, 'index']);
@@ -163,7 +166,7 @@ Route::prefix('user')->group(
             Route::get('scheduled-baskets', [UserBasketScheduleController::class, 'index'])->name('user.scheduled-baskets.index');
             Route::post('scheduled-baskets', [UserBasketScheduleController::class, 'store'])->name('user.scheduled-baskets.store');
             Route::get('scheduled-baskets/{id}', [UserBasketScheduleController::class, 'show'])->name('user.scheduled-baskets.show');
-            Route::put( 'scheduled-baskets/{id}', [UserBasketScheduleController::class, 'update'])->name('user.scheduled-baskets.update');
+            Route::put('scheduled-baskets/{id}', [UserBasketScheduleController::class, 'update'])->name('user.scheduled-baskets.update');
             Route::delete('scheduled-baskets/{id}', [UserBasketScheduleController::class, 'destroy'])->name('user.scheduled-baskets.destroy');
         });
 
@@ -222,6 +225,7 @@ Route::prefix('user')->group(
             Route::get('/transactions', [MarketController::class, 'transactions']);
             Route::post('/withdraw-request', [MarketController::class, 'requestWithdraw']);
             Route::get('/withdraw-requests', [MarketController::class, 'withdrawRequests']);
+            Route::get('/monthly-orders', [MarketController::class, 'monthlyOrders']);
         });
 
         Route::prefix('complaints')->middleware(['auth:user'])->group(function () {

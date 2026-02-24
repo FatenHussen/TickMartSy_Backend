@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Admin\LegalDocument;
+namespace App\Http\Requests\Admin\AdminNotification;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -15,7 +15,7 @@ class FilterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type'  => 'nullable|in:all,driver,user,vendor'
+            'type'   => 'nullable|in:orders,delivery,payments,account,stores&drivers,other',
         ];
     }
 }

@@ -40,7 +40,7 @@ class OneResource extends JsonResource
 
             // Relations
             'city_id' => $this->city_id,
-            'user_id' => $this->user_id,
+            // 'user_id' =>    $this->user_id,
 
             'products' => AllResource::collection(
                 $this->whenLoaded('products')

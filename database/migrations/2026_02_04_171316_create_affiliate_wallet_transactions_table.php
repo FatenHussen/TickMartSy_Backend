@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('affiliate_id');
             $table->enum('type', ['commission', 'withdraw'])->default('commission');
             $table->decimal('amount', 10, 2);
-            $table->enum('status', ['pending', 'completed', 'rejected'])->default('completed');
             $table->foreignId('order_id')->nullable()->constrained('orders')->nullOnDelete(); // مرتبط بطلب أو لا
             $table->timestamps();
         });

@@ -2,6 +2,7 @@
 
 namespace App\Services\Admin;
 
+use App\Exceptions\CustomExceptionWithMessage;
 use App\Http\Resources\Coupon\AllResource;
 use App\Http\Resources\Coupon\OneResource;
 use App\Models\Coupon;
@@ -24,5 +25,22 @@ class CouponService extends BaseService
             'categories' => 'categories',
             'products' => 'products'
         ];
+    }
+
+    public function create($data)
+    {
+        $affiliateId = $data['affiliate_id'];
+
+        $hasActiveCoupon = Coupon::where('affiliate_id', $affiliateId)
+            ->where('is_active', true)
+            ->get()
+            ->contains(function ($coupon) {
+                return $coupon->isValid();
+            });
+
+        if ($hasActiveCoupon) {
+            throw new CustomExceptionWithMessage('This affiliate already has an active coupon.');
+        }
+        return parent::create($data);
     }
 }

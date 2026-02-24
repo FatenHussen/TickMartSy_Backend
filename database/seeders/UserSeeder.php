@@ -31,6 +31,10 @@ class UserSeeder extends Seeder
                 'area_id' => $defaultCityId,
                 'created_at' => Carbon::now()->subDays(60),
                 'updated_at' => Carbon::now()->subDays(60),
+                'is_affiliate' => true,
+                'affiliate_approved' => true,
+                'affiliate_id' => '34567',
+                'affiliate_rate' => '20',
             ],
             [
                 'name' => 'حمزة فواز',
@@ -42,6 +46,10 @@ class UserSeeder extends Seeder
                 'area_id' => $defaultCityId,
                 'created_at' => Carbon::now()->subDays(45),
                 'updated_at' => Carbon::now()->subDays(45),
+                'is_affiliate' => true,
+                'affiliate_approved' => true,
+                'affiliate_id' => '12567',
+                'affiliate_rate' => '20',
             ],
             [
                 'name' => 'محمد حسن',
@@ -53,6 +61,10 @@ class UserSeeder extends Seeder
                 'area_id' => !empty($cityIds) && count($cityIds) > 1 ? $cityIds[1] : $defaultCityId,
                 'created_at' => Carbon::now()->subDays(30),
                 'updated_at' => Carbon::now()->subDays(30),
+                'is_affiliate' => true,
+                'affiliate_approved' => true,
+                'affiliate_id' => '12345',
+                'affiliate_rate' => '20',
             ],
             [
                 'name' => 'سارة أحمد',
