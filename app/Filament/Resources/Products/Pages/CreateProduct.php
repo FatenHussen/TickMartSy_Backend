@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Products\Pages;
 use App\Filament\Resources\Products\ProductResource;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CreateProduct extends CreateRecord
 {
@@ -30,15 +31,15 @@ class CreateProduct extends CreateRecord
             }
         }
 
-        \Log::info('variantMediaMap in mutate:', $this->variantMediaMap);
+        Log::info('variantMediaMap in mutate:', $this->variantMediaMap);
 
         return $data;
     }
 
     protected function afterCreate(): void
     {
-        \Log::info('=== afterCreate START ===');
-        
+        Log::info('=== afterCreate START ===');
+
         $product = $this->record;
         $formData = $this->form->getState();
 
@@ -56,16 +57,16 @@ class CreateProduct extends CreateRecord
         // Handle variant media using the stored map
         if (!empty($this->variantMediaMap)) {
             $product->load('variants');
-            \Log::info('Variants in DB:', $product->variants->count());
-            \Log::info('variantMediaMap:', $this->variantMediaMap);
-            
+            Log::info('Variants in DB:', $product->variants->count());
+            Log::info('variantMediaMap:', $this->variantMediaMap);
+
             $variantIndex = 0;
             foreach ($product->variants as $variant) {
                 // Try to find media for this variant by index
                 if (isset($this->variantMediaMap[$variantIndex])) {
                     $mediaPaths = $this->variantMediaMap[$variantIndex];
-                    \Log::info("Saving media for variant {$variant->id} (index $variantIndex)");
-                    
+                    Log::info("Saving media for variant {$variant->id} (index $variantIndex)");
+
                     foreach ($mediaPaths as $index => $filePath) {
                         $variant->media()->create([
                             'path' => $filePath,
@@ -77,7 +78,7 @@ class CreateProduct extends CreateRecord
                 $variantIndex++;
             }
         }
-        
-        \Log::info('=== afterCreate END ===');
+
+        Log::info('=== afterCreate END ===');
     }
 }
