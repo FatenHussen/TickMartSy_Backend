@@ -25,10 +25,7 @@ class CategoryService extends BaseService
         $locale = app()->getLocale();
 
         $query->where(function ($q) use ($search, $locale) {
-            $q->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.{$locale}'))) LIKE ?", ["%{$search}%"])
-                ->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(description, '$.{$locale}'))) LIKE ?", ["%{$search}%"])
-                ->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(country, '$.{$locale}'))) LIKE ?", ["%{$search}%"]);
-        });
+            $q->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.{$locale}'))) LIKE ?", ["%{$search}%"]);        });
         // Apply name filter
         if (isset($filters['name'])) {
             $locale = app()->getLocale();
