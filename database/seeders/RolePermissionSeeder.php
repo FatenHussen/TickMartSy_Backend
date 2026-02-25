@@ -38,7 +38,9 @@ class RolePermissionSeeder extends Seeder
             'UserBasketSchedule',
             'Faq',
             'Setting',
-            'LegalDocument'
+            'LegalDocument',
+            'Notification',
+            'VendorPackage'
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];

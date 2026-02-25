@@ -12,14 +12,34 @@ class OneResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'name' => $this->name,
             'phone' => $this->phone,
-            'address' => $this->address,
             'status' => $this->status,
-            'is_active' => $this->is_active,
-            'rate_per_order' => $this->rate_per_order,
-            'areas' => AreaOneResource::collection($this->areas),
-            'created_at' => $this->created_at?->format('Y-m-d H:i'),
+            'image' => $this->image_url,
+            'address' => $this->address,
+            'rate_per_order' => (float) $this->rate_per_order,
+            'is_active' => (bool) $this->is_active,
 
+            // Vehicle information
+            'vehicle_type' => $this->vehicle_type,
+            'vehicle_number' => $this->vehicle_number,
+
+            // Statistics
+            'average_rating' => $this->average_rating,
+            'total_orders' => $this->orders()->count(),
+            'completed_orders' => $this->completedOrders()->count(),
+            'total_earnings' => $this->total_earnings,
+
+            // Areas served
+            'areas' => $this->areas->map(function ($area) {
+                return [
+                    'id' => $area->id,
+                    'name' => $area->name,
+                ];
+            }),
+
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

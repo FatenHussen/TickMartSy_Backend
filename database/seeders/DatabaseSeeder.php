@@ -104,6 +104,8 @@ class DatabaseSeeder extends Seeder
             // Legal & FAQ
             LegalDocumentSeeder::class,
             FaqSeeder::class,
+
+
         ]);
 
         User::create([

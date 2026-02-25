@@ -21,8 +21,11 @@ class StoreRequest extends FormRequest
             'address' => 'nullable|string',
             'status' => 'nullable|in:available,busy,inactive',
             'area_ids' => 'nullable|array',
-            'area_ids.*.id' => 'required|integer|exists:areas,id'
-
+            'area_ids.*.id' => 'required|integer|exists:areas,id',
+            'rate_per_order' => 'required',
+            'vehicle_type' => 'required',
+            'vehicle_number' => 'required',
+            'image'                 => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
 
         ];
     }

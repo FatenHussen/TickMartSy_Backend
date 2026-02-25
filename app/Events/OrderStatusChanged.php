@@ -22,7 +22,7 @@ class OrderStatusChanged
         public Order $order,
         public ?string $from,
         public string $to,
-        public string $changedBy // admin | driver | system
+        public string $changedBy // admin | driver | system | user
     ) {}
 
     /**

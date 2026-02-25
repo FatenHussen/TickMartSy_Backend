@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Enums\OrderStatus;
 use App\Enums\CartType;
+use App\Models\AffiliateWalletTransaction;
 
 class OrderWithItemsSeeder extends Seeder
 {
@@ -145,7 +146,18 @@ class OrderWithItemsSeeder extends Seeder
                 'status' => $data['status'],
                 'driver_id' => $data['driver_id'],
                 'is_instant_delivery' => $data['is_instant_delivery'],
+                'affiliate_id' => '12567',
+                'affiliate_rate'   => 20,
+                'affiliate_source' => 'link', // link | coupon | null
+
             ], $data['timestamps']));
+
+            AffiliateWalletTransaction::create([
+                'affiliate_id' => '12567',
+                'type' => 'commission',
+                'amount' => 500,
+                'order_id' => $order->id,
+            ]);
 
             // 🧾 items (2 لكل order)
             foreach ([1, 2] as $i) {

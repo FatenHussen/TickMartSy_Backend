@@ -30,7 +30,8 @@ class Shop extends Model implements Sectionable
         'ratings_sum',
         'vendor_id',
         'is_default',
-        'is_free_delivery'
+        'is_free_delivery',
+        'logo'
     ];
     public function area()
     {
@@ -78,14 +79,15 @@ class Shop extends Model implements Sectionable
         return $this->media()->where('collection', 'cover')
             ->orderBy('order');
     }
-    public function logo(): ?Media
-    {
-        return $this->media()->where('collection', 'logo')->first();
-    }
+    // public function logo(): ?Media
+    // {
+    //     return $this->media()->where('collection', 'logo')->first();
+    // }
     public function  getLogoUrlAttribute()
     {
         return asset('storage/' . $this->logo);
     }
+
     public function isOpenNow(): bool
     {
         $day = strtolower(now()->englishDayOfWeek); // monday, tuesday, ...
@@ -121,8 +123,9 @@ class Shop extends Model implements Sectionable
     public function getLogoUrl(): ?string
     {
         // Try media relationship first, fallback to logo field
-        $mediaLogo = $this->media()->where('collection', 'logo')->first()?->path;
-        return $mediaLogo ?? $this->logo;
+        // $mediaLogo = $this->media()->where('collection', 'logo')->first()?->path;
+        // return $mediaLogo ?? $this->logo;
+        return asset('storage/' . $this->logo);
     }
 
 
@@ -195,5 +198,34 @@ class Shop extends Model implements Sectionable
     public function toSectionArray()
     {
         return AllResource::make($this);
+    }
+
+    public function scopeDeepSearch($query, $search)
+    {
+        $locale = app()->getLocale();
+        $keywords = collect(explode(' ', $search))->filter();
+
+        return $query->where(function ($q) use ($keywords, $locale) {
+
+            foreach ($keywords as $word) {
+
+                $q->where(function ($subQuery) use ($word, $locale) {
+
+                    $subQuery
+                        // Shop basic fields
+                        ->where("name->$locale", 'like', "%{$word}%")
+                        ->orWhere("description->$locale", 'like', "%{$word}%")
+                        ->orWhere("address->$locale", 'like', "%{$word}%")
+
+                        // Vendor name
+                        ->orWhereHas('vendor', function ($vendorQuery) use ($word, $locale) {
+                            $vendorQuery->where("name->$locale", 'like', "%{$word}%");
+                        });
+                });
+            }
+        })
+            ->where('is_active', true)
+            ->withCount(['productVariants'])
+            ->orderByDesc('product_variants_count');
     }
 }

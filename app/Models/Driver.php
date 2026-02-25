@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -36,7 +37,7 @@ class Driver extends Authenticatable
 
     public function completedOrders()
     {
-        return $this->hasMany(Order::class)->where('status', 'completed');
+        return $this->hasMany(Order::class)->where('status', OrderStatus::DELIVERED->value);
     }
     public function fcmTokens()
     {

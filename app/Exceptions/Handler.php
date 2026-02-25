@@ -41,13 +41,13 @@ class Handler
         // });
 
         // 405
-        $exceptions->render(function (MethodNotAllowedHttpException $e, $request) {
-            return response()->json([
-                'status' => false,
-                'message' => __('custom.errors.405') . ' ,' . $e->getMessage(),
-                'errors' => [],
-            ], 405);
-        });
+        // $exceptions->render(function (MethodNotAllowedHttpException $e, $request) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'message' => __('custom.errors.405') . ' ,' . $e->getMessage(),
+        //         'errors' => [],
+        //     ], 405);
+        // });
 
         // HTTP Exceptions
         // $exceptions->render(function (HttpException $e, $request) {

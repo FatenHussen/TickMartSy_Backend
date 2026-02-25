@@ -110,5 +110,30 @@ class HandleOrderStatusNotifications implements ShouldQueue
                 }
             });
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | 5️⃣ إذا التغيير من User → بلغ الأدمن
+        |--------------------------------------------------------------------------
+        */
+        if (
+            $event->changedBy === 'user'
+            && $event->to === \App\Enums\OrderStatus::CANCELLED->value
+        ) {
+
+            Admin::chunk(100, function ($admins) use ($order) {
+                foreach ($admins as $admin) {
+                    $this->notificationService->send(
+                        $admin,
+                        'إلغاء طلب',
+                        "قام المستخدم بإلغاء الطلب رقم {$order->id}",
+                        [
+                            'order_id' => $order->id,
+                            'type'     => 'order'
+                        ]
+                    );
+                }
+            });
+        }
     }
 }

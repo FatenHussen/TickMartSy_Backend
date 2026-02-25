@@ -25,13 +25,18 @@ class UpdateRequest extends FormRequest
         $Id = $this->route('driver');
         return [
             'name'              => 'nullable|string|max:255',
-            'phone' => ['required', 'unique:drivers,phone,' . $Id],
-            'password' => ['required'],
+            'phone' => ['nullable', 'unique:drivers,phone,' . $Id],
+            'password' => ['nullable'],
             'is_active'            => 'nullable|boolean',
             'address' => 'nullable|string',
             'status' => 'nullable|in:available,busy,inactive',
             'area_ids' => 'nullable|array',
-            'area_ids.*.id' => 'required|integer|exists:areas,id'
+            'area_ids.*.id' => 'required|integer|exists:areas,id',
+            'rate_per_order' => 'nullable',
+            'vehicle_type' => 'nullable',
+            'vehicle_number' => 'nullable',
+            'image'                 => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+
         ];
     }
 }

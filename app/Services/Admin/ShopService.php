@@ -8,7 +8,7 @@ use App\Services\Base\MediaService;
 use App\Services\BaseService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\Shop\AllResource;
-use App\Http\Resources\Shop\OneResource;
+use App\Http\Resources\Shop\AdminOneResource;
 
 class ShopService extends BaseService
 {
@@ -16,11 +16,11 @@ class ShopService extends BaseService
     public function __construct(Shop $model)
     {
         $this->model      = $model;
-        $this->resource   = OneResource::class;
+        $this->resource   = AdminOneResource::class;
         $this->collection = AllResource::class;
         $this->searchableFields = ['name', 'description'];
         $this->sortableFields   = ['id'];
-        $this->relations = ['vendor', 'services'];
+        $this->relations = ['vendor', 'services', 'area'];
         $this->pagination = true;
 
         $this->syncRelations = [
@@ -38,8 +38,8 @@ class ShopService extends BaseService
             ],
         ];
 
-        // $this->singleImages = [
-        //     'logo'  => 'logo',
-        // ];
+        $this->singleImages = [
+            'logo'  => 'logo',
+        ];
     }
 }

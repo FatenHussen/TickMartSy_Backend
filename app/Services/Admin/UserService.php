@@ -3,11 +3,13 @@
 namespace App\Services\Admin;
 
 use App\Exceptions\CustomExceptionWithMessage;
+use App\Helpers\SendFCMNotification;
 use App\Http\Resources\EndUser\AllResource;
 use App\Http\Resources\EndUser\OneResource;
 use App\Models\Coupon;
 use App\Models\User;
 use App\Models\Vendor;
+use App\Services\Base\NotificationService;
 use App\Services\BaseService;
 use Illuminate\Support\Facades\DB;
 
@@ -28,7 +30,6 @@ class UserService extends BaseService
         if ($data['affiliate_id'] && $data['affiliate_rate']) {
             $data['is_affiliate'] = true;
             $data['affiliate_approved'] = true;
-            //send notify
         }
         parent::create($data);
     }
@@ -58,8 +59,14 @@ class UserService extends BaseService
             // approve automatically if rate exists
             if (array_key_exists('affiliate_rate', $data)) {
                 $data['affiliate_approved'] = true;
-
-                // send notification here
+                (new NotificationService)->send(
+                    $this->model,
+                    'قبول طلبك ك مسوّق',
+                    'تم قبول طلبك ك مسوق من قبل الادمن ',
+                    [
+                        'type' => 'markter'
+                    ]
+                );
             }
         }
 
