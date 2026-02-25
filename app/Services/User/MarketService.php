@@ -40,7 +40,6 @@ class MarketService
 
         $totalWithdrawn = AffiliateWalletTransaction::where('affiliate_id', $affiliateId)
             ->where('type', 'withdraw')
-            ->where('status', 'completed')
             ->sum('amount');
 
         return [
