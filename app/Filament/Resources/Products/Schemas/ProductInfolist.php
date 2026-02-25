@@ -4,279 +4,450 @@ namespace App\Filament\Resources\Products\Schemas;
 
 use Filament\Infolists;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 
 class ProductInfolist
 {
     public static function configure(Schema $infolist): Schema
     {
-        return $infolist->columns(1)
-            ->schema([
+        return $infolist->columns(1)->schema([
+            Tabs::make('product_info_tabs')
+                ->tabs([
+                    // Tab 1: المعلومات الأساسية
+                    Tab::make(__('custom.products.sections.basic_info'))
+                        ->icon('heroicon-o-information-circle')
+                        ->schema([
+                            Section::make(__('custom.products.sections.basic_info'))
+                                ->schema([
+                                    Infolists\Components\TextEntry::make('name')
+                                        ->label(__('custom.products.name'))
+                                        ->weight('bold')
+                                        ->size('xl')
+                                        ->color('primary')
+                                        ->icon('heroicon-o-cube')
+                                        ->columnSpan(2),
 
-                Section::make(__('custom.products.sections.basic_info'))
-                    ->schema([
-                        Infolists\Components\TextEntry::make('name')
-                            ->label(__('custom.products.name'))
-                            ->weight('bold')
-                            ->size('lg'),
+                                    Infolists\Components\TextEntry::make('approval_status')
+                                        ->label(__('custom.products.approval_status'))
+                                        ->badge()
+                                        ->size('lg')
+                                        ->color(fn(\App\Enums\ProductApprovalStatus $state): string => match ($state) {
+                                            \App\Enums\ProductApprovalStatus::PENDING => 'warning',
+                                            \App\Enums\ProductApprovalStatus::APPROVED => 'success',
+                                            \App\Enums\ProductApprovalStatus::REJECTED => 'danger',
+                                        })
+                                        ->formatStateUsing(fn(\App\Enums\ProductApprovalStatus $state): string => match ($state) {
+                                            \App\Enums\ProductApprovalStatus::PENDING => '⏳ ' . __("custom.products.approval_statuses.{$state->value}"),
+                                            \App\Enums\ProductApprovalStatus::APPROVED => '✅ ' . __("custom.products.approval_statuses.{$state->value}"),
+                                            \App\Enums\ProductApprovalStatus::REJECTED => '❌ ' . __("custom.products.approval_statuses.{$state->value}"),
+                                        })
+                                        ->columnSpan(2),
 
-                        Infolists\Components\TextEntry::make('sku')
-                            ->label(__('custom.products.sku'))
-                            ->badge(),
+                                    Infolists\Components\TextEntry::make('sku')
+                                        ->label(__('custom.products.sku'))
+                                        ->badge()
+                                        ->color('gray')
+                                        ->icon('heroicon-o-hashtag')
+                                        ->copyable()
+                                        ->copyMessage('تم نسخ SKU'),
 
-                        Infolists\Components\TextEntry::make('barcode')
-                            ->label(__('custom.products.barcode'))
-                            ->badge(),
+                                    Infolists\Components\TextEntry::make('barcode')
+                                        ->label(__('custom.products.barcode'))
+                                        ->badge()
+                                        ->color('gray')
+                                        ->icon('heroicon-o-qr-code')
+                                        ->copyable()
+                                        ->copyMessage('تم نسخ الباركود'),
 
-                        Infolists\Components\TextEntry::make('model')
-                            ->label(__('custom.products.model'))
-                            ->badge(),
+                                    Infolists\Components\TextEntry::make('model')
+                                        ->label(__('custom.products.model'))
+                                        ->badge()
+                                        ->color('gray')
+                                        ->icon('heroicon-o-tag'),
 
-                        Infolists\Components\TextEntry::make('category.name')
-                            ->label(__('custom.products.category'))
-                            ->badge()
-                            ->color('info'),
+                                    Infolists\Components\TextEntry::make('category.name')
+                                        ->label(__('custom.products.category'))
+                                        ->badge()
+                                        ->color('info')
+                                        ->icon('heroicon-o-folder'),
 
-                        Infolists\Components\TextEntry::make('brand.name')
-                            ->label(__('custom.products.brand'))
-                            ->badge()
-                            ->color('gray'),
+                                    Infolists\Components\TextEntry::make('brand.name')
+                                        ->label(__('custom.products.brand'))
+                                        ->badge()
+                                        ->color('purple')
+                                        ->icon('heroicon-o-building-storefront'),
 
-                        Infolists\Components\TextEntry::make('vendor.name')
-                            ->label(__('custom.products.vendor'))
-                            ->badge()
-                            ->color('warning'),
+                                    Infolists\Components\TextEntry::make('vendor.name')
+                                        ->label(__('custom.products.vendor'))
+                                        ->badge()
+                                        ->color('warning')
+                                        ->icon('heroicon-o-user-group'),
 
-                        Infolists\Components\TextEntry::make('country')
-                            ->label(__('custom.products.country'))
-                            ->badge(),
+                                    Infolists\Components\TextEntry::make('country')
+                                        ->label(__('custom.products.country'))
+                                        ->badge()
+                                        ->color('gray')
+                                        ->icon('heroicon-o-globe-alt'),
 
-                        Infolists\Components\TextEntry::make('approval_status')
-                            ->label(__('custom.products.approval_status'))
-                            ->badge()
-                            ->color(fn(\App\Enums\ProductApprovalStatus $state): string => match ($state) {
-                                \App\Enums\ProductApprovalStatus::PENDING => 'warning',
-                                \App\Enums\ProductApprovalStatus::APPROVED => 'success',
-                                \App\Enums\ProductApprovalStatus::REJECTED => 'danger',
-                            })
-                            ->formatStateUsing(fn(\App\Enums\ProductApprovalStatus $state): string => __('custom.products.approval_statuses.' . $state->value)),
+                                    Infolists\Components\TextEntry::make('rejection_reason')
+                                        ->label(__('custom.products.rejection_reason'))
+                                        ->columnSpanFull()
+                                        ->color('danger')
+                                        ->icon('heroicon-o-exclamation-triangle')
+                                        ->visible(fn($record) => $record->approval_status === \App\Enums\ProductApprovalStatus::REJECTED),
+                                ])
+                                ->columns(4)
+                                ->collapsible(),
+                        ]),
 
-                        Infolists\Components\TextEntry::make('rejection_reason')
-                            ->label(__('custom.products.rejection_reason'))
-                            ->columnSpanFull()
-                            ->visible(fn($record) => $record->approval_status === \App\Enums\ProductApprovalStatus::REJECTED),
-                    ])
-                    ->columns([
-                        'sm' => 2,
-                        'xl' => 4,
-                    ])
-                    ->collapsible(),
+                    // Tab 2: الأسعار والكميات
+                    Tab::make(__('custom.products.sections.pricing'))
+                        ->icon('heroicon-o-currency-dollar')
+                        ->schema([
+                            Section::make(__('custom.products.sections.pricing'))
+                                ->schema([
+                                    Infolists\Components\TextEntry::make('price')
+                                        ->label(__('custom.products.price'))
+                                        ->money('USD')
+                                        ->weight('bold')
+                                        ->size('xl')
+                                        ->color('success')
+                                        ->icon('heroicon-o-banknotes'),
 
-                Section::make(__('custom.products.sections.description'))
-                    ->schema([
-                        Infolists\Components\TextEntry::make('description')
-                            ->label(__('custom.products.description'))
-                            ->columnSpanFull()
-                            ->markdown(),
+                                    Infolists\Components\TextEntry::make('discount')
+                                        ->label(__('custom.products.discount'))
+                                        ->suffix('%')
+                                        ->badge()
+                                        ->size('lg')
+                                        ->color('danger')
+                                        ->icon('heroicon-o-receipt-percent')
+                                        ->default('-'),
 
-                        Infolists\Components\TextEntry::make('full_description')
-                            ->label('الوصف الكامل')
-                            ->columnSpanFull()
-                            ->html(),
-                    ])
-                    ->collapsible(),
+                                    Infolists\Components\TextEntry::make('price_after_discount')
+                                        ->label(__('custom.products.price_after_discount'))
+                                        ->money('USD')
+                                        ->color('primary')
+                                        ->weight('bold')
+                                        ->size('xl')
+                                        ->icon('heroicon-o-tag'),
 
-                Section::make(__('custom.products.sections.pricing'))
-                    ->schema([
-                        Infolists\Components\TextEntry::make('price')
-                            ->label(__('custom.products.price'))
-                            ->money('USD')
-                            ->weight('bold')
-                            ->size('lg')
-                            ->color('success'),
+                                    Infolists\Components\TextEntry::make('quantity')
+                                        ->label(__('custom.products.quantity_available'))
+                                        ->badge()
+                                        ->size('lg')
+                                        ->color(fn($state) => $state > 10 ? 'success' : ($state > 0 ? 'warning' : 'danger'))
+                                        ->icon(fn($state) => $state > 10 ? 'heroicon-o-check-circle' : ($state > 0 ? 'heroicon-o-exclamation-triangle' : 'heroicon-o-x-circle'))
+                                        ->default('-'),
+                                ])
+                                ->columns(4)
+                                ->collapsible(),
 
-                        Infolists\Components\TextEntry::make('discount')
-                            ->label(__('custom.products.discount'))
-                            ->suffix('%')
-                            ->badge()
-                            ->color('danger')
-                            ->default('-'),
+                            Section::make(__('custom.products.statistics'))
+                                ->schema([
+                                    Infolists\Components\TextEntry::make('average_rating')
+                                        ->label(__('custom.products.rating'))
+                                        ->badge()
+                                        ->color('success')
+                                        ->size('xl')
+                                        ->icon('heroicon-o-star')
+                                        ->suffix(' ⭐')
+                                        ->default('0'),
 
-                        Infolists\Components\TextEntry::make('price_after_discount')
-                            ->label(__('custom.products.price_after_discount'))
-                            ->money('USD')
-                            ->color('primary')
-                            ->weight('bold'),
+                                    Infolists\Components\TextEntry::make('sold_quantity')
+                                        ->label(__('custom.products.sold_quantity'))
+                                        ->badge()
+                                        ->color('primary')
+                                        ->size('xl')
+                                        ->icon('heroicon-o-shopping-cart')
+                                        ->default('0'),
 
-                        Infolists\Components\TextEntry::make('quantity')
-                            ->label(__('custom.products.quantity_available'))
-                            ->badge()
-                            ->color(fn($state) => $state > 10 ? 'success' : ($state > 0 ? 'warning' : 'danger'))
-                            ->default('-'),
-                    ])
-                    ->columns(4)
-                    ->collapsible(),
-Section::make(__('custom.products.sections.images'))
-                    ->schema([
-                        Infolists\Components\ImageEntry::make('media')
-                            ->label('')->disk('public')
-                            ->getStateUsing(fn($record) => $record->media->pluck('path')->toArray())
-                            ->columnSpanFull()
-                            ->height(120)
-                            ->extraAttributes(['class' => 'rounded-xl']),
-                    ])
-                    ->collapsible(false),
-                Section::make(__('custom.products.sections.delivery_settings'))
-                    ->schema([
-                        Infolists\Components\IconEntry::make('is_instant_delivery')
-                            ->label(__('custom.products.is_instant_delivery'))
-                            ->boolean(),
+                                    Infolists\Components\TextEntry::make('created_at')
+                                        ->label(__('custom.products.date_added'))
+                                        ->dateTime('Y-m-d H:i')
+                                        ->badge()
+                                        ->color('gray')
+                                        ->icon('heroicon-o-calendar')
+                                        ->since(),
+                                ])
+                                ->columns(3)
+                                ->collapsible(),
+                        ]),
 
-                        Infolists\Components\TextEntry::make('time_prepare')
-                            ->label(__('custom.products.time_prepare'))
-                            ->formatStateUsing(fn($state) => $state ? $state->format('H:i') : '-')
-                            ->badge(),
-                    ])
-                    ->columns(2)
-                    ->collapsible(),
+                    // Tab 3: الصور
+                    Tab::make(__('custom.products.sections.images'))
+                        ->icon('heroicon-o-photo')
+                        ->badge(fn($record) => $record->media->count() > 0 ? $record->media->count() : null)
+                        ->schema([
+                            Section::make(__('custom.products.sections.images'))
+                                ->schema([
+                                    Infolists\Components\ImageEntry::make('media')
+                                        ->label('')
+                                        ->disk('public')
+                                        ->getStateUsing(fn($record) => $record->media->pluck('path')->toArray())
+                                        ->columnSpanFull()
+                                        ->size(200)
+                                        ->extraAttributes(['class' => 'rounded-xl'])
+                                        ->visible(fn($record) => $record->media->count() > 0),
 
-                Section::make(__('custom.products.statistics'))
-                    ->schema([
-                        Infolists\Components\TextEntry::make('average_rating')
-                            ->label(__('custom.products.rating'))
-                            ->badge()
-                            ->color('success')
-                            ->size('lg')
-                            ->default('0'),
+                                    Infolists\Components\TextEntry::make('no_images')
+                                        ->label('')
+                                        ->default('📷 لا توجد صور')
+                                        ->color('gray')
+                                        ->size('lg')
+                                        ->columnSpanFull()
+                                        ->visible(fn($record) => $record->media->count() === 0),
+                                ])
+                                ->collapsible(false),
+                        ]),
 
-                        Infolists\Components\TextEntry::make('sold_quantity')
-                            ->label(__('custom.products.sold_quantity'))
-                            ->badge()
-                            ->color('primary')
-                            ->default('0'),
+                    // Tab 4: الوصف
+                    Tab::make(__('custom.products.sections.description'))
+                        ->icon('heroicon-o-document-text')
+                        ->schema([
+                            Section::make(__('custom.products.sections.description'))
+                                ->schema([
+                                    Infolists\Components\TextEntry::make('description')
+                                        ->label(__('custom.products.description'))
+                                        ->columnSpanFull()
+                                        ->prose()
+                                        ->markdown(),
+                                ])
+                                ->collapsible(),
 
-                        Infolists\Components\TextEntry::make('created_at')
-                            ->label(__('custom.products.date_added'))
-                            ->dateTime()
-                            ->since(),
-                    ])
-                    ->columns(3)
-                    ->collapsible(),
+                            Section::make('الوصف الكامل')
+                                ->schema([
+                                    Infolists\Components\TextEntry::make('full_description')
+                                        ->label('الوصف الكامل')
+                                        ->columnSpanFull()
+                                        ->prose()
+                                        ->html(),
+                                ])
+                                ->collapsible(),
+                        ]),
 
+                    // Tab 5: المتغيرات
+                    Tab::make(__('custom.products.sections.variants'))
+                        ->icon('heroicon-o-squares-2x2')
+                        ->badge(fn($record) => $record->variants->count() > 0 ? $record->variants->count() : null)
+                        ->schema([
+                            Section::make(__('custom.products.sections.variants'))
+                                ->schema([
+                                    Infolists\Components\RepeatableEntry::make('variants')
+                                        ->label('')
+                                        ->schema([
+                                            Infolists\Components\ViewEntry::make('attributes_display')
+                                                ->label(__('custom.products.sections.attributes'))
+                                                ->view('filament.infolists.variant-attributes')
+                                                ->columnSpanFull(),
 
-                Section::make(__('custom.products.sections.variants'))
-                    ->schema([
-                        Infolists\Components\RepeatableEntry::make('variants')
-                            ->label('')
-                            ->schema([
+                                            Infolists\Components\IconEntry::make('is_trend')
+                                                ->label(__('custom.products.trending'))
+                                                ->boolean()
+                                                ->trueIcon('heroicon-o-fire')
+                                                ->falseIcon('heroicon-o-minus')
+                                                ->trueColor('danger')
+                                                ->falseColor('gray'),
 
+                                            Infolists\Components\TextEntry::make('average_rating')
+                                                ->label(__('custom.products.rating'))
+                                                ->badge()
+                                                ->color('success')
+                                                ->icon('heroicon-o-star')
+                                                ->suffix(' ⭐'),
 
-                                Infolists\Components\ViewEntry::make('attributes_display')
-                                    ->label(__('custom.products.sections.attributes'))
-                                    ->view('filament.infolists.variant-attributes')
-                                    ->columnSpanFull(),
+                                            Infolists\Components\ImageEntry::make('media')
+                                                ->label(__('custom.products.sections.images'))
+                                                ->getStateUsing(fn($record) => $record->media->pluck('path')->toArray())
+                                                ->columnSpanFull()
+                                                ->disk('public')
+                                                ->size(120)
+                                                ->extraAttributes(['class' => 'rounded-xl']),
 
-                                Infolists\Components\IconEntry::make('is_trend')
-                                    ->label(__('custom.products.trending'))
-                                    ->boolean(),
+                                            Section::make(__('custom.products.sections.shop_availability'))
+                                                ->schema([
+                                                    Infolists\Components\RepeatableEntry::make('shopVariants')
+                                                        ->label('')
+                                                        ->schema([
+                                                            Infolists\Components\TextEntry::make('shop.name')
+                                                                ->label(__('custom.products.shop'))
+                                                                ->weight('bold')
+                                                                ->icon('heroicon-o-building-storefront')
+                                                                ->color('info'),
 
-                                Infolists\Components\TextEntry::make('average_rating')
-                                    ->label(__('custom.products.rating'))
-                                    ->badge()
-                                    ->color('success'),
+                                                            Infolists\Components\TextEntry::make('quantity')
+                                                                ->label(__('custom.products.quantity'))
+                                                                ->badge()
+                                                                ->color(fn($state) => $state > 10 ? 'success' : ($state > 0 ? 'warning' : 'danger'))
+                                                                ->icon(fn($state) => $state > 10 ? 'heroicon-o-check-circle' : ($state > 0 ? 'heroicon-o-exclamation-triangle' : 'heroicon-o-x-circle')),
 
-                                Infolists\Components\ImageEntry::make('media')
-                                    ->label(__('custom.products.sections.images'))
-                                    ->getStateUsing(fn($record) => $record->media->pluck('path')->toArray())
-                                    ->columnSpanFull()->disk('public')
-                                    ->height(90),
+                                                            Infolists\Components\TextEntry::make('price')
+                                                                ->label(__('custom.products.price'))
+                                                                ->money('USD')
+                                                                ->color('success')
+                                                                ->icon('heroicon-o-banknotes'),
 
-                                Section::make(__('custom.products.sections.shop_availability'))
-                                    ->schema([
-                                        Infolists\Components\RepeatableEntry::make('shopVariants')
-                                            ->label('')
-                                            ->schema([
-                                                Infolists\Components\TextEntry::make('shop.name')
-                                                    ->label(__('custom.products.shop'))
-                                                    ->weight('bold'),
+                                                            Infolists\Components\TextEntry::make('created_at')
+                                                                ->label(__('custom.products.date_added'))
+                                                                ->badge()
+                                                                ->color('gray')
+                                                                ->icon('heroicon-o-calendar')
+                                                                ->since(),
+                                                        ])
+                                                        ->columns(4),
+                                                ])
+                                                ->columnSpanFull()
+                                                ->collapsible(),
+                                        ])
+                                        ->columns([
+                                            'sm' => 1,
+                                            'xl' => 3,
+                                        ])
+                                        ->contained(false),
+                                ])
+                                ->columnSpanFull()
+                                ->collapsible(false)
+                                ->visible(fn($record) => $record->variants->count() > 0),
 
-                                                Infolists\Components\TextEntry::make('quantity')
-                                                    ->label(__('custom.products.quantity'))
-                                                    ->badge()
-                                                    ->color(fn($state) => $state > 10 ? 'success' : ($state > 0 ? 'warning' : 'danger')),
+                            Section::make('لا توجد متغيرات')
+                                ->schema([
+                                    Infolists\Components\TextEntry::make('no_variants')
+                                        ->label('')
+                                        ->default('📦 لا توجد متغيرات لهذا المنتج')
+                                        ->color('gray')
+                                        ->size('lg')
+                                        ->columnSpanFull(),
+                                ])
+                                ->visible(fn($record) => $record->variants->count() === 0),
+                        ]),
 
-                                                Infolists\Components\TextEntry::make('price')
-                                                    ->label(__('custom.products.price'))
-                                                    ->money('USD')
-                                                    ->color('success'),
+                    // Tab 6: التفاصيل الإضافية
+                    Tab::make('التفاصيل الإضافية')
+                        ->icon('heroicon-o-list-bullet')
+                        ->badge(fn($record) => ($record->categoryDetails->count() + $record->extraDetails->count()) > 0 ? ($record->categoryDetails->count() + $record->extraDetails->count()) : null)
+                        ->schema([
+                            Section::make(__('custom.products.category_details'))
+                                ->schema([
+                                    Infolists\Components\RepeatableEntry::make('categoryDetails')
+                                        ->label('')
+                                        ->schema([
+                                            Infolists\Components\TextEntry::make('categoryDetail.detail_key')
+                                                ->label(__('custom.products.detail_key'))
+                                                ->weight('bold')
+                                                ->icon('heroicon-o-key')
+                                                ->color('info'),
 
-                                                Infolists\Components\TextEntry::make('created_at')
-                                                    ->label(__('custom.products.date_added'))
-                                                    ->since(),
-                                            ])
-                                            ->columns(4),
-                                    ])
-                                    ->columnSpanFull()
-                                    ->collapsible(),
-                            ])
-                            ->columns([
-                                'sm' => 1,
-                                'xl' => 3,
-                            ]),
-                    ])->columnSpanFull()
-                    ->collapsible(),
+                                            Infolists\Components\TextEntry::make('detail_value')
+                                                ->label(__('custom.products.detail_value'))
+                                                ->icon('heroicon-o-document-text'),
+                                        ])
+                                        ->columns(2)
+                                        ->contained(false),
+                                ])
+                                ->visible(fn($record) => $record->categoryDetails->count() > 0)
+                                ->collapsible(),
 
+                            Section::make(__('custom.products.extra_details'))
+                                ->schema([
+                                    Infolists\Components\RepeatableEntry::make('extraDetails')
+                                        ->label('')
+                                        ->schema([
+                                            Infolists\Components\TextEntry::make('detail_key')
+                                                ->label(__('custom.products.detail_key'))
+                                                ->weight('bold')
+                                                ->icon('heroicon-o-key')
+                                                ->color('info'),
 
-                Section::make(__('custom.products.category_details'))
-                    ->schema([
-                        Infolists\Components\RepeatableEntry::make('categoryDetails')
-                            ->label('')
-                            ->schema([
-                                Infolists\Components\TextEntry::make('categoryDetail.detail_key')
-                                    ->label(__('custom.products.detail_key'))
-                                    ->weight('bold'),
+                                            Infolists\Components\TextEntry::make('detail_value')
+                                                ->label(__('custom.products.detail_value'))
+                                                ->icon('heroicon-o-document-text'),
+                                        ])
+                                        ->columns(2)
+                                        ->contained(false),
+                                ])
+                                ->visible(fn($record) => $record->extraDetails->count() > 0)
+                                ->collapsible(),
 
-                                Infolists\Components\TextEntry::make('detail_value')
-                                    ->label(__('custom.products.detail_value')),
-                            ])
-                            ->columns(2),
-                    ])
-                    ->visible(fn($record) => $record->categoryDetails->count() > 0)
-                    ->collapsible(),
+                            Section::make('لا توجد تفاصيل إضافية')
+                                ->schema([
+                                    Infolists\Components\TextEntry::make('no_details')
+                                        ->label('')
+                                        ->default('📋 لا توجد تفاصيل إضافية لهذا المنتج')
+                                        ->color('gray')
+                                        ->size('lg')
+                                        ->columnSpanFull(),
+                                ])
+                                ->visible(fn($record) => $record->categoryDetails->count() === 0 && $record->extraDetails->count() === 0),
+                        ]),
 
-                Section::make(__('custom.products.extra_details'))
-                    ->schema([
-                        Infolists\Components\RepeatableEntry::make('extraDetails')
-                            ->label('')
-                            ->schema([
-                                Infolists\Components\TextEntry::make('detail_key')
-                                    ->label(__('custom.products.detail_key'))
-                                    ->weight('bold'),
+                    // Tab 7: إعدادات التوصيل
+                    Tab::make(__('custom.products.sections.delivery_settings'))
+                        ->icon('heroicon-o-truck')
+                        ->schema([
+                            Section::make(__('custom.products.sections.delivery_settings'))
+                                ->schema([
+                                    Infolists\Components\IconEntry::make('is_instant_delivery')
+                                        ->label(__('custom.products.is_instant_delivery'))
+                                        ->boolean()
+                                        ->trueIcon('heroicon-o-bolt')
+                                        ->falseIcon('heroicon-o-clock')
+                                        ->trueColor('success')
+                                        ->falseColor('gray'),
 
-                                Infolists\Components\TextEntry::make('detail_value')
-                                    ->label(__('custom.products.detail_value')),
-                            ])
-                            ->columns(2),
-                    ])
-                    ->visible(fn($record) => $record->extraDetails->count() > 0)
-                    ->collapsible(),Section::make(__('custom.products.sections.bought_with'))
-                    ->schema([
-                        Infolists\Components\RepeatableEntry::make('bought_with_products_list')
-                            ->label('')
-                            ->schema([
-                                Infolists\Components\TextEntry::make('name')
-                                    ->label(__('custom.products.name'))
-                                    ->weight('bold'),
+                                    Infolists\Components\TextEntry::make('time_prepare')
+                                        ->label(__('custom.products.time_prepare'))
+                                        ->formatStateUsing(fn($state) => $state ? $state->format('H:i') : '-')
+                                        ->badge()
+                                        ->color('info')
+                                        ->icon('heroicon-o-clock')
+                                        ->size('lg'),
+                                ])
+                                ->columns(2)
+                                ->collapsible(),
+                        ]),
 
-                                Infolists\Components\TextEntry::make('price')
-                                    ->label(__('custom.products.price'))
-                                    ->money('USD')
-                                    ->color('success'),
-                            ])
-                            ->columns(2),
-                    ])
-                    ->visible(fn($record) => $record->bought_with && count($record->bought_with) > 0)
-                    ->collapsible(),
-            ]);
+                    // Tab 8: المنتجات المشتراة معاً
+                    Tab::make(__('custom.products.sections.bought_with'))
+                        ->icon('heroicon-o-shopping-bag')
+                        ->badge(fn($record) => $record->bought_with && \count($record->bought_with) > 0 ? \count($record->bought_with) : null)
+                        ->schema([
+                            Section::make(__('custom.products.sections.bought_with'))
+                                ->schema([
+                                    Infolists\Components\RepeatableEntry::make('bought_with_products_list')
+                                        ->label('')
+                                        ->schema([
+                                            Infolists\Components\TextEntry::make('name')
+                                                ->label(__('custom.products.name'))
+                                                ->weight('bold')
+                                                ->icon('heroicon-o-cube')
+                                                ->color('primary'),
+
+                                            Infolists\Components\TextEntry::make('price')
+                                                ->label(__('custom.products.price'))
+                                                ->money('USD')
+                                                ->color('success')
+                                                ->icon('heroicon-o-banknotes'),
+                                        ])
+                                        ->columns(2)
+                                        ->contained(false),
+                                ])
+                                ->visible(fn($record) => $record->bought_with && \count($record->bought_with) > 0)
+                                ->collapsible(false),
+
+                            Section::make('لا توجد منتجات مشتراة معاً')
+                                ->schema([
+                                    Infolists\Components\TextEntry::make('no_bought_with')
+                                        ->label('')
+                                        ->default('🛍️ لا توجد منتجات مشتراة معاً')
+                                        ->color('gray')
+                                        ->size('lg')
+                                        ->columnSpanFull(),
+                                ])
+                                ->visible(fn($record) => !$record->bought_with || \count($record->bought_with) === 0),
+                        ]),
+                ])
+                ->columnSpanFull(),
+        ]);
     }
 }

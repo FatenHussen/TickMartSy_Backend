@@ -44,6 +44,7 @@ use App\Http\Controllers\Admin\Currency\CurrencyController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\VendorPackage\VendorPackageController;
 use App\Http\Controllers\Admin\VendorSubscription\VendorSubscriptionController;
+use App\Http\Controllers\Admin\SellerRegistration\SellerRegistrationCrudController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(
@@ -136,6 +137,11 @@ Route::prefix('admin')->group(
                 Route::apiResource('recipes', RecipeCrudController::class);
                 Route::apiResource('users', UserCrudController::class);
                 Route::apiResource('faqs', FaqController::class);
+
+                // Seller Registration routes
+                Route::apiResource('seller-registrations', SellerRegistrationCrudController::class)->only(['index', 'show', 'destroy']);
+                Route::post('seller-registrations/{id}/approve', [SellerRegistrationCrudController::class, 'approve']);
+                Route::post('seller-registrations/{id}/reject', [SellerRegistrationCrudController::class, 'reject']);
             }
 
         );

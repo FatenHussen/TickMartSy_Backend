@@ -6,6 +6,8 @@ use App\Enums\PromotionType;
 use App\Models\Shop;
 use Filament\Forms;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
@@ -18,185 +20,238 @@ class PromotionRequestForm
         $user = Auth::guard('vendor-user')->user();
         $shopIds = Shop::where('vendor_id', $user?->vendor_id)->pluck('id', 'id')->toArray();
 
-        return $schema
-            ->schema([
-                Section::make('معلومات أساسية')
-                    ->schema([
-                        Forms\Components\Select::make('shop_id')
-                            ->label('المتجر')
-                            ->options(function () use ($shopIds) {
-                                return Shop::whereIn('id', array_keys($shopIds))
-                                    ->get()
-                                    ->mapWithKeys(fn($shop) => [
-                                        $shop->id => $shop->getTranslation('name', app()->getLocale())
-                                    ]);
-                            })
-                            ->required()
-                            ->searchable()
-                            ->preload()
-                            ->native(false),
+        return $schema->columns(1)->schema([
+            Tabs::make('promotion_tabs')
+                ->tabs([
+                    // Tab 1: المعلومات الأساسية
+                    Tab::make('المعلومات الأساسية')
+                        ->icon('heroicon-o-information-circle')
+                        ->schema([
+                            Section::make('معلومات أساسية')
+                                ->schema([
+                                    Forms\Components\Select::make('shop_id')
+                                        ->label('المتجر')
+                                        ->options(function () use ($shopIds) {
+                                            return Shop::whereIn('id', array_keys($shopIds))
+                                                ->get()
+                                                ->mapWithKeys(fn($shop) => [
+                                                    $shop->id => $shop->getTranslation('name', app()->getLocale())
+                                                ]);
+                                        })
+                                        ->required()
+                                        ->searchable()
+                                        ->preload()
+                                        ->native(false)
+                                        ->columnSpan(1),
 
-                        Forms\Components\Select::make('type')
-                            ->label('نوع الترويج')
-                            ->options([
-                                'offer' => 'عرض',
-                                'banner' => 'بنر إعلاني',
-                            ])
-                            ->required()
-                            ->native(false)
-                            ->live()
-                            ->afterStateUpdated(function ($state, Set $set) {
-                                // Reset fields when type changes
-                                if ($state === 'offer') {
-                                    $set('banner_position', null);
-                                    $set('link_url', null);
-                                    $set('banner_starts_at', null);
-                                    $set('banner_ends_at', null);
-                                } else {
-                                    $set('discount_percentage', null);
-                                    $set('offer_starts_at', null);
-                                    $set('offer_ends_at', null);
-                                }
-                            }),
-                    ])
-                    ->columns(2),
+                                    Forms\Components\Select::make('type')
+                                        ->label('نوع الترويج')
+                                        ->options([
+                                            'offer' => 'عرض',
+                                            'banner' => 'بنر إعلاني',
+                                        ])
+                                        ->required()
+                                        ->native(false)
+                                        ->live()
+                                        ->afterStateUpdated(function ($state, Set $set) {
+                                            // Reset fields when type changes
+                                            if ($state === 'offer') {
+                                                $set('banner_position', null);
+                                                $set('link_url', null);
+                                                $set('banner_starts_at', null);
+                                                $set('banner_ends_at', null);
+                                            } else {
+                                                $set('discount_percentage', null);
+                                                $set('offer_starts_at', null);
+                                                $set('offer_ends_at', null);
+                                            }
+                                        })
+                                        ->columnSpan(1),
+                                ])
+                                ->columns(2)
+                                ->collapsible(),
 
-                Section::make('التفاصيل')
-                    ->schema([
-                        Forms\Components\TextInput::make('title.ar')
-                            ->label('العنوان (عربي)')
-                            ->required()
-                            ->maxLength(255),
+                            Section::make('التفاصيل')
+                                ->schema([
+                                    Forms\Components\TextInput::make('title.ar')
+                                        ->label('العنوان (عربي)')
+                                        ->required()
+                                        ->maxLength(255)
+                                        ->columnSpan(1),
 
-                        Forms\Components\TextInput::make('title.en')
-                            ->label('العنوان (English)')
-                            ->maxLength(255),
+                                    Forms\Components\TextInput::make('title.en')
+                                        ->label('العنوان (English)')
+                                        ->maxLength(255)
+                                        ->columnSpan(1),
 
-                        Forms\Components\Textarea::make('description.ar')
-                            ->label('الوصف (عربي)')
-                            ->rows(3)
-                            ->maxLength(1000),
+                                    Forms\Components\Textarea::make('description.ar')
+                                        ->label('الوصف (عربي)')
+                                        ->rows(3)
+                                        ->maxLength(1000)
+                                        ->columnSpan(1),
 
-                        Forms\Components\Textarea::make('description.en')
-                            ->label('الوصف (English)')
-                            ->rows(3)
-                            ->maxLength(1000),
+                                    Forms\Components\Textarea::make('description.en')
+                                        ->label('الوصف (English)')
+                                        ->rows(3)
+                                        ->maxLength(1000)
+                                        ->columnSpan(1),
+                                ])
+                                ->columns(2)
+                                ->collapsible(),
+                        ]),
 
-                        Forms\Components\FileUpload::make('images')
-                            ->label('الصور')
-                            ->image()
-                            ->multiple()
-                            ->maxFiles(5)
-                            ->directory('promotion-requests')
-                            ->imageEditor()
-                            ->columnSpanFull(),
-                    ])
-                    ->columns(2),
+                    // Tab 2: الصور
+                    Tab::make('الصور')
+                        ->icon('heroicon-o-photo')
+                        ->schema([
+                            Section::make('صور الترويج')
+                                ->schema([
+                                    Forms\Components\FileUpload::make('images')
+                                        ->label('اسحب وأفلت أو انقر لتحميل الصور')
+                                        ->image()
+                                        ->multiple()
+                                        ->maxFiles(5)
+                                        ->disk('public')
+                                        ->directory('promotion-requests')
+                                        ->imageEditor()
+                                        ->reorderable()
+ ->helperText('يمكنك تحميل حتى 5 صور')
+                                        ->columnSpanFull(),
+                                ])
+                                ->collapsible(),
+                        ]),
 
-                // Offer-specific fields
-                Section::make('تفاصيل العرض')
-                    ->schema([
-                        Forms\Components\TextInput::make('discount_percentage')
-                            ->label('نسبة الخصم (%)')
-                            ->numeric()
-                            ->minValue(0)
-                            ->maxValue(100)
-                            ->suffix('%')
-                            ->required(fn(Get $get) => $get('type') === 'offer'),
+                    // Tab 3: تفاصيل العرض
+                    Tab::make('تفاصيل العرض')
+                        ->icon('heroicon-o-tag')
+                        ->visible(fn(Get $get) => $get('type') === 'offer')
+                        ->schema([
+                            Section::make('معلومات العرض')
+                                ->schema([
+                                    Forms\Components\TextInput::make('discount_percentage')
+                                        ->label('نسبة الخصم (%)')
+                                        ->numeric()
+                                        ->minValue(0)
+                                        ->maxValue(100)
+                                        ->suffix('%')
+                                        ->required(fn(Get $get) => $get('type') === 'offer')
+                                        ->columnSpan(1),
 
-                        Forms\Components\DatePicker::make('offer_starts_at')
-                            ->label('تاريخ بداية العرض')
-                            ->native(false)
-                            ->required(fn(Get $get) => $get('type') === 'offer')
-                            ->minDate(now())
-                            ->live()
-                            ->afterStateUpdated(function ($state, Set $set, Get $get) {
-                                if ($state && $get('offer_ends_at') && $state > $get('offer_ends_at')) {
-                                    $set('offer_ends_at', null);
-                                }
-                            }),
+                                    Forms\Components\DatePicker::make('offer_starts_at')
+                                        ->label('تاريخ بداية العرض')
+                                        ->native(false)
+                                        ->required(fn(Get $get) => $get('type') === 'offer')
+                                        ->minDate(now())
+                                        ->live()
+                                        ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                            if ($state && $get('offer_ends_at') && $state > $get('offer_ends_at')) {
+                                                $set('offer_ends_at', null);
+                                            }
+                                        })
+                                        ->columnSpan(1),
 
-                        Forms\Components\DatePicker::make('offer_ends_at')
-                            ->label('تاريخ نهاية العرض')
-                            ->native(false)
-                            ->required(fn(Get $get) => $get('type') === 'offer')
-                            ->minDate(fn(Get $get) => $get('offer_starts_at') ?? now())
-                            ->afterOrEqual('offer_starts_at'),
-                    ])
-                    ->columns(3)
-                    ->visible(fn(Get $get) => $get('type') === 'offer'),
+                                    Forms\Components\DatePicker::make('offer_ends_at')
+                                        ->label('تاريخ نهاية العرض')
+                                        ->native(false)
+                                        ->required(fn(Get $get) => $get('type') === 'offer')
+                                        ->minDate(fn(Get $get) => $get('offer_starts_at') ?? now())
+                                        ->afterOrEqual('offer_starts_at')
+                                        ->columnSpan(1),
+                                ])
+                                ->columns(3)
+                                ->collapsible(),
+                        ]),
 
-                // Banner-specific fields
-                Section::make('تفاصيل البنر الإعلاني')
-                    ->schema([
-                        Forms\Components\Select::make('banner_position')
-                            ->label('موقع البنر')
-                            ->options([
-                                'home_top' => 'الصفحة الرئيسية - أعلى',
-                                'home_middle' => 'الصفحة الرئيسية - وسط',
-                                'home_bottom' => 'الصفحة الرئيسية - أسفل',
-                                'category_top' => 'صفحة الفئات - أعلى',
-                                'product_sidebar' => 'صفحة المنتج - جانبي',
-                            ])
-                            ->required(fn(Get $get) => $get('type') === 'banner')
-                            ->native(false),
+                    // Tab 4: تفاصيل البنر
+                    Tab::make('تفاصيل البنر')
+                        ->icon('heroicon-o-rectangle-stack')
+                        ->visible(fn(Get $get) => $get('type') === 'banner')
+                        ->schema([
+                            Section::make('معلومات البنر الإعلاني')
+                                ->schema([
+                                    Forms\Components\Select::make('banner_position')
+                                        ->label('موقع البنر')
+                                        ->options([
+                                            'home_top' => 'الصفحة الرئيسية - أعلى',
+                                            'home_middle' => 'الصفحة الرئيسية - وسط',
+                                            'home_bottom' => 'الصفحة الرئيسية - أسفل',
+                                            'category_top' => 'صفحة الفئات - أعلى',
+                                            'product_sidebar' => 'صفحة المنتج - جانبي',
+                                        ])
+                                        ->required(fn(Get $get) => $get('type') === 'banner')
+                                        ->native(false)
+                                        ->columnSpan(1),
 
-                        Forms\Components\TextInput::make('link_url')
-                            ->label('رابط البنر')
-                            ->url()
-                            ->placeholder('https://example.com')
-                            ->helperText('الرابط الذي سيتم التوجيه إليه عند النقر على البنر'),
+                                    Forms\Components\TextInput::make('link_url')
+                                        ->label('رابط البنر')
+                                        ->url()
+                                        ->placeholder('https://example.com')
+                                        ->helperText('الرابط الذي سيتم التوجيه إليه عند النقر على البنر')
+                                        ->columnSpan(1),
 
-                        Forms\Components\DatePicker::make('banner_starts_at')
-                            ->label('تاريخ بداية البنر')
-                            ->native(false)
-                            ->required(fn(Get $get) => $get('type') === 'banner')
-                            ->minDate(now())
-                            ->live()
-                            ->afterStateUpdated(function ($state, Set $set, Get $get) {
-                                if ($state && $get('banner_ends_at') && $state > $get('banner_ends_at')) {
-                                    $set('banner_ends_at', null);
-                                }
-                            }),
+                                    Forms\Components\DatePicker::make('banner_starts_at')
+                                        ->label('تاريخ بداية البنر')
+                                        ->native(false)
+                                        ->required(fn(Get $get) => $get('type') === 'banner')
+                                        ->minDate(now())
+                                        ->live()
+                                        ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                            if ($state && $get('banner_ends_at') && $state > $get('banner_ends_at')) {
+                                                $set('banner_ends_at', null);
+                                            }
+                                        })
+                                        ->columnSpan(1),
 
-                        Forms\Components\DatePicker::make('banner_ends_at')
-                            ->label('تاريخ نهاية البنر')
-                            ->native(false)
-                            ->required(fn(Get $get) => $get('type') === 'banner')
-                            ->minDate(fn(Get $get) => $get('banner_starts_at') ?? now())
-                            ->afterOrEqual('banner_starts_at'),
-                    ])
-                    ->columns(2)
-                    ->visible(fn(Get $get) => $get('type') === 'banner'),
+                                    Forms\Components\DatePicker::make('banner_ends_at')
+                                        ->label('تاريخ نهاية البنر')
+                                        ->native(false)
+                                        ->required(fn(Get $get) => $get('type') === 'banner')
+                                        ->minDate(fn(Get $get) => $get('banner_starts_at') ?? now())
+                                        ->afterOrEqual('banner_starts_at')
+                                        ->columnSpan(1),
+                                ])
+                                ->columns(2)
+                                ->collapsible(),
+                        ]),
 
-                // Admin notes (read-only for vendors)
-                Section::make('ملاحظات الإدارة')
-                    ->schema([
-                        Forms\Components\Placeholder::make('status')
-                            ->label('الحالة')
-                            ->content(fn($record) => match ($record?->status?->value ?? 'pending') {
-                                'pending' => 'قيد المراجعة',
-                                'approved' => 'موافق عليه',
-                                'rejected' => 'مرفوض',
-                                'expired' => 'منتهي',
-                                default => 'قيد المراجعة',
-                            }),
+                    // Tab 5: حالة الطلب
+                    Tab::make('حالة الطلب')
+                        ->icon('heroicon-o-clipboard-document-check')
+                        ->visible(fn($record) => $record !== null)
+                        ->schema([
+                            Section::make('ملاحظات الإدارة')
+                                ->schema([
+                                    Forms\Components\Placeholder::make('status')
+                                        ->label('الحالة')
+                                        ->content(fn($record) => match ($record?->status?->value ?? 'pending') {
+                                            'pending' => '⏳ قيد المراجعة',
+                                            'approved' => '✅ موافق عليه',
+                                            'rejected' => '❌ مرفوض',
+                                            'expired' => '⌛ منتهي',
+                                            default => '⏳ قيد المراجعة',
+                                        })
+                                        ->columnSpan(1),
 
-                        Forms\Components\Placeholder::make('admin_notes')
-                            ->label('ملاحظات الإدارة')
-                            ->content(fn($record) => $record?->admin_notes ?? 'لا توجد ملاحظات'),
+                                    Forms\Components\Placeholder::make('approved_at')
+                                        ->label('تاريخ الموافقة')
+                                        ->content(fn($record) => $record?->approved_at?->format('Y-m-d H:i') ?? '-')
+                                        ->columnSpan(1),
 
-                        Forms\Components\Placeholder::make('approved_at')
-                            ->label('تاريخ الموافقة')
-                            ->content(fn($record) => $record?->approved_at?->format('Y-m-d H:i') ?? '-'),
+                                    Forms\Components\Placeholder::make('approved_by')
+                                        ->label('تمت الموافقة بواسطة')
+                                        ->content(fn($record) => $record?->approvedBy?->name ?? '-')
+                                        ->columnSpan(1),
 
-                        Forms\Components\Placeholder::make('approved_by')
-                            ->label('تمت الموافقة بواسطة')
-                            ->content(fn($record) => $record?->approvedBy?->name ?? '-'),
-                    ])
-                    ->columns(2)
-                    ->visible(fn($record) => $record !== null),
-            ]);
+                                    Forms\Components\Placeholder::make('admin_notes')
+                                        ->label('ملاحظات الإدارة')
+                                        ->content(fn($record) => $record?->admin_notes ?? 'لا توجد ملاحظات')
+                                        ->columnSpanFull(),
+                                ])
+                                ->columns(3)
+                                ->collapsible(),
+                        ]),
+                ])
+                ->columnSpanFull(),
+        ]);
     }
 }
-

@@ -6,6 +6,8 @@ use App\Models\VendorUser;
 use Filament\Forms;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Support\Facades\Auth;
 
 class ProductForm
@@ -17,317 +19,585 @@ class ProductForm
         $vendorId = $user?->vendor_id;
 
         return $schema->columns(1)->schema([
-            Section::make(__('custom.products.sections.basic_info'))
-                ->schema([
-                    Forms\Components\TextInput::make('name.ar')
-                        ->label(__('custom.products.name_ar'))
-                        ->required()
-                        ->maxLength(255),
-
-                    Forms\Components\TextInput::make('name.en')
-                        ->label(__('custom.products.name_en'))
-                        ->required()
-                        ->maxLength(255),
-
-                    Forms\Components\Select::make('category_id')
-                        ->label(__('custom.products.category'))
-                        ->relationship('category', 'name')
-                        ->required()
-                        ->searchable()
-                        ->preload()
-                        ->live(onBlur: true),
-
-                    Forms\Components\Select::make('brand_id')
-                        ->label(__('custom.products.brand'))
-                        ->relationship('brand', 'name')
-                        ->searchable()
-                        ->preload(),
-
-                    Forms\Components\Hidden::make('vendor_id')
-                        ->default($vendorId),
-
-                    Forms\Components\Hidden::make('approval_status')
-                        ->default(fn () => Auth::guard('admin')->check()
-                            ? \App\Enums\ProductApprovalStatus::APPROVED
-                            : \App\Enums\ProductApprovalStatus::PENDING),
-
-                    Forms\Components\TextInput::make('sku')
-                        ->label(__('custom.products.sku'))
-                        ->unique(ignoreRecord: true)
-                        ->maxLength(255),
-
-                    Forms\Components\TextInput::make('barcode')
-                        ->label(__('custom.products.barcode'))
-                        ->maxLength(255),
-
-                    Forms\Components\TextInput::make('model')
-                        ->label(__('custom.products.model'))
-                        ->unique(ignoreRecord: true)
-                        ->maxLength(255),
-                        Forms\Components\Textarea::make('description.ar')
-                        ->label(__('custom.products.description_ar'))
-                        ->required()
-                        ->rows(3),
-                        Forms\Components\Textarea::make('description.en')
-                        ->label(__('custom.products.description_en'))
-                        ->required()
-                        ->rows(3),
-                          Forms\Components\Textarea::make('full_description.ar')
-                        ->label(__('custom.products.full_description_ar'))
-                        ,
-
-                    Forms\Components\Textarea::make('full_description.en')
-                        ->label(__('custom.products.full_description_en')),
-
-                ]),
-
-            Section::make(__('custom.products.sections.pricing'))
-                ->schema([
-                    Forms\Components\TextInput::make('price')
-                        ->label(__('custom.products.price'))
-                        ->required()
-                        ->numeric()
-                        ->prefix('$')
-                        ->minValue(0),
-
-                    Forms\Components\TextInput::make('discount')
-                        ->label(__('custom.products.discount'))
-                        ->numeric()
-                        ->minValue(0)
-                        ->maxValue(100)
-                        ->suffix('%'),
-
-                    Forms\Components\TextInput::make('quantity')
-                        ->label(__('custom.products.quantity_available'))
-                        ->numeric()
-                        ->minValue(0),
-
-                    Forms\Components\TextInput::make('country.ar')
-                        ->label(__('custom.products.country_ar'))
-                        ->maxLength(255),
-
-                    Forms\Components\TextInput::make('country.en')
-                        ->label(__('custom.products.country_en'))
-                        ->maxLength(255),
-                ]),
-
-            Section::make('إعدادات التوصيل')
-                ->schema([
-                    Forms\Components\Toggle::make('is_instant_delivery')
-                        ->label(__('custom.products.is_instant_delivery'))
-                        ->default(false),
-
-                    Forms\Components\TimePicker::make('time_prepare')
-                        ->label(__('custom.products.time_prepare'))
-                        ->seconds(false),
-                ])
-                ->columns(2),
-
-            Section::make(__('custom.products.sections.images'))
-                ->schema([
-                    Forms\Components\FileUpload::make('media')
-                        ->label(__('custom.products.media'))
-                        ->image()->disk('public')->directory('product')
-                        ->multiple()
-                        ->maxFiles(10)
-                        ->reorderable()
-                        ->imageEditor()
-                        ->columnSpanFull(),
-                ]),
-
-            Section::make(__('custom.products.sections.bought_with'))
-                ->schema([
-                    Forms\Components\Select::make('bought_with')
-                        ->label(__('custom.products.bought_with'))
-                        ->multiple()
-                        ->options(function () {
-                            return \App\Models\Product::query()
-                                ->orderBy('name')
-                                ->limit(50)
-                                ->pluck('name', 'id');
-                        })
-                        ->searchable()
-                        ->preload()
-                        ->columnSpanFull(),
-                ]),
-
-            Section::make(__('custom.products.sections.variants'))
-                ->description(__('custom.products.variants.description'))
-                ->schema([
-                    Forms\Components\Repeater::make('variants')
-                        ->label('')
-                        ->relationship('variants')
+            Tabs::make('product_tabs')
+                ->tabs([
+                    // Tab 1: المعلومات الأساسية
+                    Tab::make('المعلومات الأساسية')
+                        ->icon('heroicon-o-information-circle')
                         ->schema([
-                            Section::make(__('custom.products.variants.attributes.title'))
-                                ->description(__('custom.products.variants.attributes.description'))
+                            Section::make('المعلومات العامة')
                                 ->schema([
-                                    Forms\Components\Repeater::make('attribute_selections')
-                                        ->label('')
-                                        ->schema([
-                                            Forms\Components\Select::make('attribute_id')
-                                                ->label(__('custom.products.variants.attributes.attribute'))
-                                                ->options(function (callable $get) {
-                                                    // Get category_id from the root form level
-                                                    $categoryId = $get('../../../../category_id');
+                                    Forms\Components\TextInput::make('name.ar')
+                                        ->label('الاسم بالعربي')
+                                        ->required()
+                                        ->maxLength(255)
+                                        ->columnSpan(1),
 
-                                                    if (!$categoryId) {
-                                                        return ['_placeholder' => __('custom.products.variants.attributes.select_category_first')];
-                                                    }
+                                    Forms\Components\TextInput::make('name.en')
+                                        ->label('الاسم بالانجليزي')
+                                        ->required()
+                                        ->maxLength(255)
+                                        ->columnSpan(1),
 
-                                                    $options = \App\Models\CategoryAttribute::where('category_id', $categoryId)
-                                                        ->get()
-                                                        ->pluck('name', 'id')
-                                                        ->toArray();
+                                    Forms\Components\TextInput::make('model')
+                                        ->label('رقم الموديل')
+                                        ->unique(ignoreRecord: true)
+                                        ->maxLength(255)
+                                        ->columnSpan(1),
 
-                                                    if (empty($options)) {
-                                                        return ['_placeholder' => __('custom.products.variants.attributes.no_attributes')];
-                                                    }
+                                    Forms\Components\TextInput::make('sku')
+                                        ->label('رقم المنتج')
+                                        ->unique(ignoreRecord: true)
+                                        ->maxLength(255)
+                                        ->columnSpan(1),
 
-                                                    return $options;
-                                                })
-                                                ->live(onBlur: true)
-                                                ->required()
-                                                ->searchable()
-                                                ->afterStateUpdated(fn (callable $set) => $set('value_id', null)),
+                                    Forms\Components\Select::make('category_id')
+                                        ->label('العلامة التجارية')
+                                        ->relationship('category', 'name')
+                                        ->required()
+                                        ->searchable()
+                                        ->preload()
+                                        ->live(onBlur: true)
+                                        ->columnSpan(1),
 
-                                            Forms\Components\ViewField::make('value_id')
-                                                ->view('filament.forms.color-value-selector')
-                                                ->viewData(function (callable $get) {
-                                                    $attributeId = $get('attribute_id');
-                                                    if (!$attributeId || $attributeId === '_placeholder') {
-                                                        return [
-                                                            'options' => [],
-                                                            'type' => 'text',
-                                                        ];
-                                                    }
+                                    Forms\Components\TextInput::make('barcode')
+                                        ->label('الصنف')
+                                        ->maxLength(255)
+                                        ->columnSpan(1),
 
-                                                    $attribute = \App\Models\CategoryAttribute::find($attributeId);
-                                                    $values = \App\Models\AttributeValue::where('category_attribute_id', $attributeId)->get();
+                                    Forms\Components\Select::make('brand_id')
+                                        ->label('بلد المنشأ')
+                                        ->relationship('brand', 'name')
+                                        ->searchable()
+                                        ->preload()
+                                        ->columnSpan(1),
 
-                                                    return [
-                                                        'options' => $values->mapWithKeys(fn($v) => [$v->id => $v->name])->toArray(),
-                                                        'type' => $attribute?->type ?? 'text',
-                                                    ];
-                                                }),
-                                        ])
-                                        ->columns(2)
-                                        ->defaultItems(1)
-                                        ->addActionLabel('➕ إضافة خاصية')
-                                        ->collapsible()
-                                        ->itemLabel(fn (array $state): ?string =>
-                                            isset($state['attribute_id']) && isset($state['value_id'])
-                                                ? \App\Models\CategoryAttribute::find($state['attribute_id'])?->name . ': ' . \App\Models\AttributeValue::find($state['value_id'])?->name
-                                                : __('custom.products.variants.attributes.new')
-                                        ),
+                                    Forms\Components\TextInput::make('country.ar')
+                                        ->label('بلد المنتج')
+                                        ->maxLength(255)
+                                        ->columnSpan(1),
 
-                                    Forms\Components\Hidden::make('attributes_values_ids')
-                                        ->afterStateHydrated(function ($component, $state, callable $get, callable $set) {
-                                            // Load existing attributes into repeater format
-                                            if ($state && is_array($state)) {
-                                                $selections = [];
-                                                foreach ($state as $valueId) {
-                                                    $value = \App\Models\AttributeValue::find($valueId);
-                                                    if ($value) {
-                                                        $selections[] = [
-                                                            'attribute_id' => $value->category_attribute_id,
-                                                            'value_id' => $valueId,
-                                                        ];
-                                                    }
-                                                }
-                                                $set('attribute_selections', $selections);
-                                            }
-                                        })
-                                        ->dehydrateStateUsing(function ($state, callable $get) {
-                                            $selections = $get('attribute_selections');
-                                            if (!$selections) {
-                                                return [];
-                                            }
-                                            return collect($selections)->pluck('value_id')->filter()->values()->toArray();
-                                        })
+                                    Forms\Components\Hidden::make('vendor_id')
+                                        ->default($vendorId),
+
+                                    Forms\Components\Hidden::make('approval_status')
+                                        ->default(fn() => Auth::guard('admin')->check()
+                                            ? \App\Enums\ProductApprovalStatus::APPROVED
+                                            : \App\Enums\ProductApprovalStatus::PENDING),
                                 ])
-                                ->columnSpanFull(),
+                                ->columns(2)
+                                ->collapsible(),
 
-                            Forms\Components\Toggle::make('is_trend')
-                                ->label(__('custom.products.variants.is_trend'))
-                                ->helperText(__('custom.products.variants.is_trend_help')),
-
-                            Forms\Components\FileUpload::make('variant_media')
-                                ->label(__('custom.products.variants.variant_media'))
-                                ->image()
-                                ->multiple()->disk('public')->directory('product-variant')
-                                ->maxFiles(5)
-                                ->columnSpanFull(),
-
-                            Section::make(__('custom.products.variants.shop_variants.title'))
-                                ->description(__('custom.products.variants.shop_variants.description'))
+                            Section::make('الحالة')
                                 ->schema([
-                                    Forms\Components\Repeater::make('shopVariants')
-                                        ->label('')
-                                        ->relationship('shopVariants')
-                                        ->schema([
-                                            Forms\Components\Select::make('shop_id')
-                                                ->label(__('custom.products.variants.shop_variants.shop_name'))
-                                                ->options(function () use ($user) {
-                                                    if (!$user) {
-                                                        return [];
-                                                    }
-                                                    return $user->shops()
-                                                        ->pluck('shops.name', 'shops.id');
-                                                })->required()
-                                                ->searchable()
-                                                ->distinct()
-                                                ->columnSpan(2),
-
-                                            Forms\Components\TextInput::make('quantity')
-                                                ->label('الكمية المتاحة')
-                                                ->numeric()
-                                                ->minValue(0)
-                                                ->required()
-                                                ->suffix(__('custom.products.variants.shop_variants.unit'))
-                                                ->helperText(__('custom.products.variants.shop_variants.quantity_help')),
-
-                                            Forms\Components\TextInput::make('price')
-                                                ->label(__('custom.products.variants.shop_variants.price'))
-                                                ->numeric()
-                                                ->prefix('$')
-                                                ->minValue(0)
-                                                ->required()
-                                                ->helperText(__('custom.products.variants.shop_variants.price_help')),
+                                    Forms\Components\Radio::make('availability')
+                                        ->label('مكان التواجد')
+                                        ->options([
+                                            'in_stock' => 'ضمن مستودعاتي',
+                                            'external' => 'خارجي',
+                                            'for_sale' => 'للبيع',
                                         ])
-                                        ->columns(4)
+                                        ->default('in_stock')
+                                        ->inline()
+                                        ->columnSpan(1),
+
+                                    Forms\Components\Radio::make('condition')
+                                        ->label('لمن')
+                                        ->options([
+                                            'new' => 'لي',
+                                            'used' => 'للبائع',
+                                        ])
+                                        ->default('new')
+                                        ->inline()
+                                        ->columnSpan(1),
+
+                                    Forms\Components\Select::make('vendor_select')
+                                        ->label('البائع')
+                                        ->options([])
+                                        ->searchable()
+                                        ->columnSpan(2),
+                                ])
+                                ->columns(2)
+                                ->collapsible(),
+
+                            Section::make('الخصم')
+                                ->schema([
+                                    Forms\Components\Select::make('discount_type')
+                                        ->label('نوع الخصم')
+                                        ->options([
+                                            'none' => 'لا يوجد خصم',
+                                            'percentage' => 'نسبة مئوية',
+                                            'fixed' => 'مبلغ ثابت',
+                                        ])
+                                        ->default('none')
+                                        ->columnSpan(1),
+
+                                    Forms\Components\TextInput::make('discount')
+                                        ->label('الخصم')
+                                        ->numeric()
+                                        ->minValue(0)
+                                        ->maxValue(100)
+                                        ->suffix('%')
+                                        ->columnSpan(1),
+                                ])
+                                ->columns(2)
+                                ->collapsible(),
+
+                            Section::make('الضمان')
+                                ->schema([
+                                    Forms\Components\Select::make('warranty_type')
+                                        ->label('الضمان')
+                                        ->options([
+                                            'none' => 'إرجاع مجاني',
+                                            'warranty' => 'ضمان',
+                                        ])
+                                        ->default('none')
+                                        ->columnSpan(2),
+                                ])
+                                ->columns(2)
+                                ->collapsible(),
+
+                            Section::make('البائع والأفوكات')
+                                ->schema([
+                                    Forms\Components\Select::make('top_seller')
+                                        ->label('البائع الأعلى')
+                                        ->options([
+                                            'new' => 'منتج جديد',
+                                        ])
+                                        ->default('new')
+                                        ->columnSpan(1),
+
+                                    Forms\Components\TagsInput::make('tags_ar')
+                                        ->label('البائع الأسفل')
+                                        ->placeholder('أضف وسم')
+                                        ->suggestions([
+                                            'توصيل سريع',
+                                            'أرباحي وفوري معنا',
+                                        ])
+                                        ->columnSpan(1),
+                                ])
+                                ->columns(2)
+                                ->collapsible(),
+
+                            Section::make('الأفوكات')
+                                ->schema([
+                                    Forms\Components\TagsInput::make('tags')
+                                        ->label('الأفوكات')
+                                        ->placeholder('أضف وسم')
+                                        ->suggestions([
+                                            'منتج مكفول',
+                                            'دفع عند الاستلام',
+                                            'منتج أصلي',
+                                            'محاملتك آمنة',
+                                        ])
+                                        ->columnSpanFull(),
+                                ])
+                                ->collapsible(),
+
+                            Section::make('الملاحظات')
+                                ->schema([
+                                    Forms\Components\Textarea::make('notes')
+                                        ->label('نص الملاحظة')
+                                        ->rows(3)
+                                        ->columnSpanFull(),
+                                ])
+                                ->collapsible(),
+
+                            Section::make('السعر والكمية')
+                                ->schema([
+                                    Forms\Components\TextInput::make('price')
+                                        ->label('السعر')
+                                        ->required()
+                                        ->numeric()
+                                        ->prefix('$')
+                                        ->minValue(0)
+                                        ->columnSpan(1),
+
+                                    Forms\Components\TextInput::make('quantity')
+                                        ->label('الكمية المتاحة')
+                                        ->numeric()
+                                        ->minValue(0)
+                                        ->columnSpan(1),
+                                ])
+                                ->columns(2)
+                                ->collapsible(),
+
+                            Section::make('إعدادات التوصيل')
+                                ->schema([
+                                    Forms\Components\Toggle::make('is_instant_delivery')
+                                        ->label('توصيل فوري')
+                                        ->default(false),
+
+                                    Forms\Components\TimePicker::make('time_prepare')
+                                        ->label('وقت التحضير')
+                                        ->seconds(false),
+                                ])
+                                ->columns(2)
+                                ->collapsible(),
+                        ]),
+
+                    // Tab 2: الصور
+                    Tab::make('الصور')
+                        ->icon('heroicon-o-photo')
+                        ->schema([
+                            Section::make('الصورة الرئيسية')
+                                ->schema([
+                                    Forms\Components\FileUpload::make('main_image')
+                                        ->label('اسحب وأفلت أو انقر لتحميل الصورة الرئيسية')
+                                        ->image()
+                                        ->disk('public')
+                                        ->directory('product')
+                                        ->imageEditor()
+                                        ->columnSpanFull(),
+                                ])
+                                ->collapsible(),
+
+                            Section::make('صور إضافية')
+                                ->schema([
+                                    Forms\Components\FileUpload::make('media')
+                                        ->label('اسحب وأفلت أو انقر لتحميل صور إضافية')
+                                        ->image()
+                                        ->disk('public')
+                                        ->directory('product')
+                                        ->multiple()
+                                        ->maxFiles(10)
+                                        ->reorderable()
+                                        ->imageEditor()
+                                        ->helperText('استبدال جميع الصور القديمة بالصور الجديدة فقط. سيتم الاحتفاظ بالصور القديمة وإضافة الصور الجديدة إليها')
+                                        ->columnSpanFull(),
+                                ])
+                                ->collapsible(),
+                        ]),
+
+                    // Tab 3: المتغيرات
+                    Tab::make('المتغيرات')
+                        ->icon('heroicon-o-squares-2x2')
+                        ->schema([
+                            Section::make('إضافة متغير جديد')
+                                ->description('يرجى اختيار الخصائص والقيم لإنشاء متغير جديد')
+                                ->schema([
+                                    Forms\Components\Placeholder::make('variant_info')
+                                        ->label('')
+                                        ->content('إضافة متغير جديد')
+                                        ->columnSpanFull(),
+                                ])
+                                ->collapsible(),
+
+                            Section::make('متغيرات المنتج')
+                                ->schema([
+                                    Forms\Components\Repeater::make('variants')
+                                        ->label('')
+                                        ->relationship('variants')
+                                        ->schema([
+                                            Section::make('المعلومات الأساسية')
+                                                ->schema([
+                                                    Forms\Components\TextInput::make('variant_sku')
+                                                        ->label('رقم الخصم (SKU)')
+                                                        ->maxLength(255)
+                                                        ->columnSpan(1),
+
+                                                    Forms\Components\TextInput::make('variant_barcode')
+                                                        ->label('رمز SKU مساوية')
+                                                        ->maxLength(255)
+                                                        ->columnSpan(1),
+
+                                                    Forms\Components\TextInput::make('variant_price')
+                                                        ->label('السعر')
+                                                        ->numeric()
+                                                        ->prefix('$')
+                                                        ->minValue(0)
+                                                        ->columnSpan(1),
+
+                                                    Forms\Components\TextInput::make('variant_discount')
+                                                        ->label('الخصم')
+                                                        ->numeric()
+                                                        ->suffix('%')
+                                                        ->minValue(0)
+                                                        ->maxValue(100)
+                                                        ->columnSpan(1),
+
+                                                    Forms\Components\TextInput::make('variant_cost')
+                                                        ->label('سعر التكلفة')
+                                                        ->numeric()
+                                                        ->prefix('$')
+                                                        ->minValue(0)
+                                                        ->columnSpan(1),
+
+                                                    Forms\Components\TextInput::make('variant_weight')
+                                                        ->label('الوزن (كلغ)')
+                                                        ->numeric()
+                                                        ->suffix('كلغ')
+                                                        ->minValue(0)
+                                                        ->columnSpan(1),
+                                                ])
+                                                ->columns(3)
+                                                ->collapsible(),
+
+                                            Section::make('الخصائص')
+                                                ->schema([
+                                                    Forms\Components\Repeater::make('attribute_selections')
+                                                        ->label('')
+                                                        ->schema([
+                                                            Forms\Components\Select::make('attribute_id')
+                                                                ->label('الخاصية')
+                                                                ->options(function (callable $get) {
+                                                                    $categoryId = $get('../../../../category_id');
+
+                                                                    if (!$categoryId) {
+                                                                        return ['_placeholder' => 'اختر الفئة أولاً'];
+                                                                    }
+
+                                                                    $options = \App\Models\CategoryAttribute::where('category_id', $categoryId)
+                                                                        ->get()
+                                                                        ->pluck('name', 'id')
+                                                                        ->toArray();
+
+                                                                    if (empty($options)) {
+                                                                        return ['_placeholder' => 'لا توجد خصائص'];
+                                                                    }
+
+                                                                    return $options;
+                                                                })
+                                                                ->live(onBlur: true)
+                                                                ->required()
+                                                                ->searchable()
+                                                                ->afterStateUpdated(fn(callable $set) => $set('value_id', null)),
+
+                                                            Forms\Components\Select::make('value_id')
+                                                                ->label('القيمة')
+                                                                ->options(function (callable $get) {
+                                                                    $attributeId = $get('attribute_id');
+                                                                    if (!$attributeId || $attributeId === '_placeholder') {
+                                                                        return [];
+                                                                    }
+
+                                                                    $values = \App\Models\AttributeValue::where('category_attribute_id', $attributeId)->get();
+                                                                    return $values->mapWithKeys(fn($v) => [$v->id => $v->getTranslation('name', app()->getLocale())])->toArray();
+                                                                })
+                                                                ->required()
+                                                                ->searchable()
+                                                                ->native(false),
+                                                        ])
+                                                        ->columns(2)
+                                                        ->defaultItems(1)
+                                                        ->addActionLabel('➕ إضافة خاصية')
+                                                        ->collapsible()
+                                                        ->itemLabel(
+                                                            fn(array $state): ?string =>
+                                                            isset($state['attribute_id']) && isset($state['value_id'])
+                                                                ? \App\Models\CategoryAttribute::find($state['attribute_id'])?->name . ': ' . \App\Models\AttributeValue::find($state['value_id'])?->name
+                                                                : 'خاصية جديدة'
+                                                        ),
+
+                                                    Forms\Components\Hidden::make('attributes_values_ids')
+                                                        ->afterStateHydrated(function ($component, $state, callable $get, callable $set) {
+                                                            if ($state && is_array($state)) {
+                                                                $selections = [];
+                                                                foreach ($state as $valueId) {
+                                                                    $value = \App\Models\AttributeValue::find($valueId);
+                                                                    if ($value) {
+                                                                        $selections[] = [
+                                                                            'attribute_id' => $value->category_attribute_id,
+                                                                            'value_id' => $valueId,
+                                                                        ];
+                                                                    }
+                                                                }
+                                                                $set('attribute_selections', $selections);
+                                                            }
+                                                        })
+                                                        ->dehydrateStateUsing(function ($state, callable $get) {
+                                                            $selections = $get('attribute_selections');
+                                                            if (!$selections) {
+                                                                return [];
+                                                            }
+                                                            return collect($selections)->pluck('value_id')->filter()->values()->toArray();
+                                                        })
+                                                ])
+                                                ->columnSpanFull()
+                                                ->collapsible(),
+
+                                            Forms\Components\Toggle::make('is_trend')
+                                                ->label('منتج رائج')
+                                                ->helperText('هل هذا المتغير رائج؟'),
+
+                                            Forms\Components\FileUpload::make('variant_media')
+                                                ->label('صور المتغير')
+                                                ->image()
+                                                ->multiple()
+                                                ->disk('public')
+                                                ->directory('product-variant')
+                                                ->maxFiles(5)
+                                                ->columnSpanFull(),
+
+                                            Section::make('توفر المتغير في المتاجر')
+                                                ->description('حدد المتاجر التي يتوفر فيها هذا المتغير')
+                                                ->schema([
+                                                    Forms\Components\Repeater::make('shopVariants')
+                                                        ->label('')
+                                                        ->relationship('shopVariants')
+                                                        ->schema([
+                                                            Forms\Components\Select::make('shop_id')
+                                                                ->label('اسم المتجر')
+                                                                ->options(function () use ($user) {
+                                                                    if (!$user) {
+                                                                        return [];
+                                                                    }
+                                                                    return $user->shops()
+                                                                        ->pluck('shops.name', 'shops.id');
+                                                                })
+                                                                ->required()
+                                                                ->searchable()
+                                                                ->distinct()
+                                                                ->columnSpan(2),
+
+                                                            Forms\Components\TextInput::make('quantity')
+                                                                ->label('الكمية المتاحة')
+                                                                ->numeric()
+                                                                ->minValue(0)
+                                                                ->required()
+                                                                ->suffix('وحدة')
+                                                                ->helperText('الكمية المتوفرة في هذا المتجر'),
+
+                                                            Forms\Components\TextInput::make('price')
+                                                                ->label('السعر')
+                                                                ->numeric()
+                                                                ->prefix('$')
+                                                                ->minValue(0)
+                                                                ->required()
+                                                                ->helperText('سعر المنتج في هذا المتجر'),
+                                                        ])
+                                                        ->columns(4)
+                                                        ->collapsible()
+                                                        ->cloneable()
+                                                        ->itemLabel(
+                                                            fn(array $state): ?string =>
+                                                            isset($state['shop_id']) && $state['shop_id']
+                                                                ? 'متجر: ' . \App\Models\Shop::find($state['shop_id'])?->name . ' - الكمية: ' . ($state['quantity'] ?? 0)
+                                                                : 'متجر جديد'
+                                                        )
+                                                        ->defaultItems(0)
+                                                        ->addActionLabel('➕ إضافة متجر')
+                                                        ->reorderable(false),
+                                                ])
+                                                ->columnSpanFull()
+                                                ->collapsible()
+                                                ->collapsed(false),
+                                        ])
+                                        ->columns(1)
                                         ->collapsible()
                                         ->cloneable()
-                                        ->itemLabel(fn (array $state): ?string =>
-                                            isset($state['shop_id']) && $state['shop_id']
-                                                ? __('custom.products.variants.shop_variants.with_quantity', [
-                                                    'shop' => \App\Models\Shop::find($state['shop_id'])?->name,
-                                                    'quantity' => $state['quantity'] ?? 0
-                                                ])
-                                                : __('custom.products.variants.shop_variants.new')
+                                        ->itemLabel(
+                                            fn(array $state): ?string =>
+                                            isset($state['attribute_selections']) && is_array($state['attribute_selections']) && count($state['attribute_selections']) > 0
+                                                ? 'متغير مع ' . count($state['attribute_selections']) . ' خصائص'
+                                                : 'متغير جديد'
                                         )
-                                        ->defaultItems(0)
-                                        ->addActionLabel('➕ إضافة متجر')
-                                        ->reorderable(false),
+                                        ->defaultItems(1)
+                                        ->addActionLabel('➕ إضافة متغير جديد')
+                                        ->reorderableWithButtons(),
                                 ])
-                                ->columnSpanFull()
                                 ->collapsible()
-                                ->collapsed(false),
-                        ])
-                        ->columns(1)
-                        ->collapsible()
-                        ->cloneable()
-                        ->itemLabel(fn (array $state): ?string =>
-                            isset($state['attribute_selections']) && is_array($state['attribute_selections']) && count($state['attribute_selections']) > 0
-                                ? __('custom.products.variants.with_attributes', ['count' => count($state['attribute_selections'])])
-                                : __('custom.products.variants.new')
-                        )
-                        ->defaultItems(1)
-                        ->addActionLabel('➕ إضافة متغير جديد')
-                        ->reorderableWithButtons(),
-                ])
-                ->collapsible()->columnSpanFull(),
+                                ->columnSpanFull(),
+                        ]),
 
+                    // Tab 4: التفاصيل
+                    Tab::make('التفاصيل')
+                        ->icon('heroicon-o-document-text')
+                        ->schema([
+                            Section::make('الوصف')
+                                ->schema([
+                                    Forms\Components\RichEditor::make('description.ar')
+                                        ->label('الوصف بالعربي')
+                                        ->required()
+                                        ->toolbarButtons([
+                                            'bold',
+                                            'italic',
+                                            'underline',
+                                            'bulletList',
+                                            'orderedList',
+                                        ])
+                                        ->columnSpanFull(),
+
+                                    Forms\Components\RichEditor::make('description.en')
+                                        ->label('الوصف بالانجليزي')
+                                        ->required()
+                                        ->toolbarButtons([
+                                            'bold',
+                                            'italic',
+                                            'underline',
+                                            'bulletList',
+                                            'orderedList',
+                                        ])
+                                        ->columnSpanFull(),
+                                ])
+                                ->collapsible(),
+
+                            Section::make('الوصف الكامل')
+                                ->schema([
+                                    Forms\Components\RichEditor::make('full_description.ar')
+                                        ->label('الوصف الكامل بالعربي')
+                                        ->toolbarButtons([
+                                            'bold',
+                                            'italic',
+                                            'underline',
+                                            'bulletList',
+                                            'orderedList',
+                                            'link',
+                                        ])
+                                        ->columnSpanFull(),
+
+                                    Forms\Components\RichEditor::make('full_description.en')
+                                        ->label('الوصف الكامل بالانجليزي')
+                                        ->toolbarButtons([
+                                            'bold',
+                                            'italic',
+                                            'underline',
+                                            'bulletList',
+                                            'orderedList',
+                                            'link',
+                                        ])
+                                        ->columnSpanFull(),
+                                ])
+                                ->collapsible(),
+                        ]),
+
+                    // Tab 5: تحسين محركات البحث
+                    Tab::make('تحسين محركات البحث')
+                        ->icon('heroicon-o-magnifying-glass')
+                        ->schema([
+                            Section::make('معلومات تحسين محركات البحث (SEO)')
+                                ->schema([
+                                    Forms\Components\TextInput::make('seo_title')
+                                        ->label('عنوان السيو')
+                                        ->maxLength(160)
+                                        ->helperText('الطول المثالي: 50-60 حرف')
+                                        ->columnSpanFull(),
+
+                                    Forms\Components\Textarea::make('seo_description')
+                                        ->label('وصف السيو')
+                                        ->rows(3)
+                                        ->maxLength(320)
+                                        ->helperText('الطول المثالي: 150-160 حرف')
+                                        ->columnSpanFull(),
+
+                                    Forms\Components\TagsInput::make('seo_keywords')
+                                        ->label('الكلمات المفتاحية')
+                                        ->placeholder('أضف كلمة مفتاحية')
+                                        ->helperText('أضف الكلمات المفتاحية المتعلقة بالمنتج')
+                                        ->columnSpanFull(),
+
+                                    Forms\Components\FileUpload::make('seo_image')
+                                        ->label('صورة السيو')
+                                        ->image()
+                                        ->disk('public')
+                                        ->directory('product-seo')
+                                        ->helperText('اسحب وأفلت أو انقر لتحميل صورة السيو')
+                                        ->columnSpanFull(),
+                                ])
+                                ->collapsible(),
+                        ]),
+                ])
+                ->columnSpanFull(),
         ]);
     }
 }
-

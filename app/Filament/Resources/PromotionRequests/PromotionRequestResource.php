@@ -20,7 +20,7 @@ class PromotionRequestResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Megaphone;
 
-    protected static ?string $navigationLabel = 'طلبات الترويج';
+    protected static ?string $navigationLabel = 'طلبات الترويج(عروض وحملات إعلانية)';
 
     protected static ?string $modelLabel = 'طلب ترويج';
 

@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Http\Resources\SellerRegistration;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class OneResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'seller_name' => $this->seller_name,
+            'email' => $this->email,
+            'store_name' => $this->store_name,
+            'address' => $this->address,
+            'commercial_register_number' => $this->commercial_register_number,
+            'commercial_register_date' => $this->commercial_register_date?->format('Y-m-d'),
+            'country' => $this->country,
+            'governorate' => [
+                'id' => $this->governorate?->id,
+                'name' => $this->governorate?->name,
+            ],
+            'city' => [
+                'id' => $this->city?->id,
+                'name' => $this->city?->name,
+            ],
+            'logo' => $this->logo ? asset('storage/' . $this->logo) : null,
+            'status' => $this->status,
+            'registered_at' => $this->registered_at?->format('Y-m-d H:i:s'),
+            'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
+        ];
+    }
+}
