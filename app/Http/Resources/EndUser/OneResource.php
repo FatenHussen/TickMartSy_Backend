@@ -32,7 +32,7 @@ class OneResource extends JsonResource
                 'affiliate_rate'     => $this->affiliate_approved ? $this->affiliate_rate : null,
             ],
 
-            'markter'   => $markter,
+            'markter_statistics'   => $markter,
             'addresses' => AddressOneResource::collection($this->addresses),
         ];
     }

@@ -43,15 +43,14 @@ class MarketService
             ->sum('amount');
 
         return [
-            'stats' => [
-                'total_orders'      => $totalOrders,
-                'delivered_orders'  => $deliveredOrders,
-                'total_sales'       => round($totalSales, 2),
-                'earned_commission' => round($earnedCommission, 2),
-                'pending_earnings'  => round($pendingCommission, 2),
-                'withdrawn'         => round($totalWithdrawn, 2),
-                'available_balance' => round($earnedCommission - $totalWithdrawn, 2),
-            ],
+            'total_orders'      => $totalOrders,
+            'delivered_orders'  => $deliveredOrders,
+            'total_sales'       => round($totalSales, 2),
+            'earned_commission' => round($earnedCommission, 2),
+            'pending_earnings'  => round($pendingCommission, 2),
+            'withdrawn'         => round($totalWithdrawn, 2),
+            'available_balance' => round($earnedCommission - $totalWithdrawn, 2),
+
         ];
     }
 
