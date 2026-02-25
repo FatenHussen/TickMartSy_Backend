@@ -177,7 +177,6 @@ class OrderService extends BaseService
                     'type' => 'commission',
                     'amount' => $commissionAmount,
                     'order_id' => $order->id,
-                    'status' => 'completed',
                 ]);
             }
 
