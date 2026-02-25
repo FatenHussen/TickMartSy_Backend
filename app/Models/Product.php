@@ -195,4 +195,54 @@ class Product extends Model implements Sectionable
     {
         return $this->morphMany(Favorite::class, 'favoriteable');
     }
+
+    public function scopeDeepSearch($query, $search)
+    {
+        $locale = app()->getLocale();
+        $keywords = collect(explode(' ', $search))->filter();
+
+        return $query->where(function ($q) use ($keywords, $locale) {
+
+            foreach ($keywords as $word) {
+
+                $q->where(function ($subQuery) use ($word, $locale) {
+
+                    $subQuery
+                        // Product name & description
+                        ->where("name->$locale", 'like', "%{$word}%")
+                        ->orWhere("description->$locale", 'like', "%{$word}%")
+                        ->orWhere('sku', 'like', "%{$word}%")
+                        ->orWhere('barcode', 'like', "%{$word}%")
+
+                        // Brand
+                        ->orWhereHas('brand', function ($brandQuery) use ($word, $locale) {
+                            $brandQuery->where("name->$locale", 'like', "%{$word}%");
+                        })
+
+                        // Category
+                        ->orWhereHas('category', function ($catQuery) use ($word, $locale) {
+                            $catQuery->where("name->$locale", 'like', "%{$word}%");
+                        })
+
+                        // Vendor
+                        ->orWhereHas('vendor', function ($vendorQuery) use ($word, $locale) {
+                            $vendorQuery->where("name->$locale", 'like', "%{$word}%");
+                        })
+
+                        // Variant attributes
+                        ->orWhereHas('variants.attributeValues', function ($attrQuery) use ($word, $locale) {
+                            $attrQuery->where("name->$locale", 'like', "%{$word}%");
+                        })
+
+                        // Extra details
+                        ->orWhereHas('extraDetails', function ($extraQuery) use ($word, $locale) {
+                            $extraQuery
+                                ->where("detail_key->$locale", 'like', "%{$word}%")
+                                ->orWhere("detail_value->$locale", 'like', "%{$word}%");
+                        });
+                });
+            }
+        })
+            ->where('approval_status', 'approved');
+    }
 }

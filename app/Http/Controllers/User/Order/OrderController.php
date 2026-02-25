@@ -35,6 +35,14 @@ class OrderController extends BaseCRUDController
 
     public function cancel($orderId)
     {
-        return   $this->service->cancel($orderId);
+        $this->service->cancel($orderId);
+        return $this->sendResponse();
+    }
+
+    public function activeOrder()
+    {
+        $order =  $this->service->activeOrder();
+
+        return $this->sendResponse(data: $order);
     }
 }

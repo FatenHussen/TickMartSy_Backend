@@ -155,11 +155,13 @@ Route::prefix('user')->group(
                 Route::delete('/{id}', [RatingController::class, 'destroy']);
             });
         });
-        Route::apiResource('orders', OrderController::class)->middleware(['auth:user']);
 
-        // Route::apiResource('orders', OrderController::class);
         Route::post('/orders/coupon-preview', [OrderController::class, 'couponPreview'])->middleware(['auth:user']);
         Route::post('/orders/preview', [OrderController::class, 'preview'])->middleware(['auth:user']);
+        Route::get('/orders/active', [OrderController::class, 'activeOrder'])->middleware(['auth:user']);
+        Route::post('/orders/{orderId}/cancel', [OrderController::class, 'cancel'])->middleware(['auth:user']);
+
+        Route::apiResource('orders', OrderController::class)->middleware(['auth:user']);
 
         // Scheduled Baskets - سلال المستخدم المجدولة (CRUD كامل)
         Route::middleware(['auth:user'])->group(function () {
@@ -226,6 +228,7 @@ Route::prefix('user')->group(
             Route::post('/withdraw-request', [MarketController::class, 'requestWithdraw']);
             Route::get('/withdraw-requests', [MarketController::class, 'withdrawRequests']);
             Route::get('/monthly-orders', [MarketController::class, 'monthlyOrders']);
+            Route::get('profile', [MarketController::class, 'profile']);
         });
 
         Route::prefix('complaints')->middleware(['auth:user'])->group(function () {

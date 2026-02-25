@@ -24,6 +24,7 @@ class Vendor extends Model
         'is_active',
         'ratings_count',
         'ratings_sum',
+        'logo'
     ];
 
     protected $casts = [
@@ -81,23 +82,23 @@ class Vendor extends Model
         return $this->media()->where('collection', 'cover')
             ->orderBy('order');
     }
-    public function logo(): ?Media
-    {
-        return $this->media()->where('collection', 'logo')->first();
-    }
+    // public function logo(): ?Media
+    // {
+    //     return $this->media()->where('collection', 'logo')->first();
+    // }
 
-    public function isOpenNow(): bool
-    {
-        $day = strtolower(now()->englishDayOfWeek); // monday, tuesday, ...
-        $hours = $this->working_hours[$day] ?? null;
+    // public function isOpenNow(): bool
+    // {
+    //     $day = strtolower(now()->englishDayOfWeek); // monday, tuesday, ...
+    //     $hours = $this->working_hours[$day] ?? null;
 
-        if (!$hours || ($hours['closed'] ?? false)) {
-            return false;
-        }
+    //     if (!$hours || ($hours['closed'] ?? false)) {
+    //         return false;
+    //     }
 
-        $now = now()->format('H:i');
-        return $now >= $hours['open'] && $now <= $hours['close'];
-    }
+    //     $now = now()->format('H:i');
+    //     return $now >= $hours['open'] && $now <= $hours['close'];
+    // }
 
 
     public function favorites()
@@ -124,8 +125,9 @@ class Vendor extends Model
     public function getLogoUrl(): ?string
     {
         // Try media relationship first, fallback to logo field
-        $mediaLogo = $this->media()->where('collection', 'logo')->first()?->path;
-        return $mediaLogo ?? $this->logo;
+        // $mediaLogo = $this->media()->where('collection', 'logo')->first()?->path;
+        // return $mediaLogo ?? $this->logo;
+        return asset('storage/' . $this->logo);
     }
 
 

@@ -21,5 +21,9 @@ class DriverService extends BaseService
             'areas'   => 'area_ids',
         ];
         $this->relations = ['areas'];
+
+        $this->singleImages = [
+            'image'  => 'image',
+        ];
     }
 }

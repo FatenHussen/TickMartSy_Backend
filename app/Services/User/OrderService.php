@@ -694,7 +694,7 @@ class OrderService extends BaseService
         }
 
         foreach ($order->items as $item) {
-            if ($item->status !== OrderStatus::PENDING->value) {
+            if ($item->item_status !== OrderStatus::PENDING->value) {
                 throw new CustomExceptionWithMessage('Some items cannot be cancelled');
             }
         }
@@ -716,7 +716,6 @@ class OrderService extends BaseService
             to: OrderStatus::CANCELLED->value,
             changedBy: 'user'
         ));
-        return $order;
     }
     /** -----------------------------
      * Check Point Exchanges (Preview Only - No Modifications)
@@ -797,6 +796,20 @@ class OrderService extends BaseService
         }
 
         return $result;
+    }
+
+    public function activeOrder()
+    {
+        $userId = auth('user')->id();
+        $order = Order::with('items')
+            ->where('user_id', $userId)
+            ->whereNotIn('status', [
+                OrderStatus::DELIVERED->value,
+                OrderStatus::CANCELLED->value,
+            ])
+            ->latest()
+            ->first();
+        return $order ? OneResource::make($order) : null;
     }
 }
 /**

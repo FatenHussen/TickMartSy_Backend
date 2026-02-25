@@ -3,6 +3,7 @@
 namespace App\Http\Resources\EndUser;
 
 use App\Http\Resources\Address\OneResource as AddressOneResource;
+use App\Services\User\MarketService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -10,26 +11,29 @@ class OneResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $response = [
+        $markter = null;
+
+        if ($this->affiliate_approved && $this->affiliate_id) {
+            $marketService = new MarketService();
+
+            $markter = $marketService->getStatistics($this->affiliate_id);
+        }
+
+        return [
             'id' => $this->id,
             'name' => $this->name,
+            'email' => $this->email,
+            'phone' => $this->phone,
 
-            // phone OR email
-            $this->phone ? 'phone' : 'email' => $this->phone ?? $this->email,
-
-            'addresses' => AddressOneResource::collection($this->addresses),
-
-            // Affiliate / Marketer info
             'affiliate' => [
-                'is_affiliate' => (bool) $this->is_affiliate,
-                'affiliate_approved'     => (bool) $this->affiliate_approved,
-                'affiliate_id' => $this->affiliate_approved ? $this->affiliate_id : null,
-                'coupon_id'    => $this->affiliate_approved ? $this->coupon_id : null,
-                'affiliate_rate'         => $this->affiliate_approved ? $this->affiliate_rate : null,
+                'is_affiliate'       => (bool) $this->is_affiliate,
+                'affiliate_approved' => (bool) $this->affiliate_approved,
+                'affiliate_id'       => $this->affiliate_approved ? $this->affiliate_id : null,
+                'affiliate_rate'     => $this->affiliate_approved ? $this->affiliate_rate : null,
             ],
 
+            'markter'   => $markter,
+            'addresses' => AddressOneResource::collection($this->addresses),
         ];
-
-        return $response;
     }
 }

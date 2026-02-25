@@ -23,12 +23,13 @@ class AllResource extends JsonResource
             'description'            => $this->description,
             'logo_url'                => $this->logo_url,
             'is_active'             => $this->is_active,
-            'average_rating'        => $this->average_rating,
-            'ratings_count'         => $this->ratings_count,
             'is_open_now'           => $this->isOpenNow(),
             'created_at'            => $this->created_at?->format('Y-m-d H:i'),
             'is_favorite' => (bool) ($this->is_favorite ?? false),
-
+            'is_active'             => $this->is_active,
+            'average_rating'        =>  $this->average_rating ?? 0,
+            // 'ratings_count'         => $this->ratings_count,
+            'is_open_now'           => $this->isOpenNow(),
             'vendor' => VendorAllResource::make($this->vendor),
         ];
     }
