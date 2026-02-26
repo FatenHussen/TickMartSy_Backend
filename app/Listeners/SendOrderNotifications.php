@@ -40,6 +40,7 @@ class SendOrderNotifications implements ShouldQueue
                     [
                         'order_id' => $order->id,
                         'type' => $type,
+                        'status' => $order->status
                     ]
                 );
             }
@@ -58,6 +59,7 @@ class SendOrderNotifications implements ShouldQueue
                         [
                             'order_id' => $order->id,
                             'type' => 'instant',
+                            'status' => $order->status
                         ]
                     );
                 }

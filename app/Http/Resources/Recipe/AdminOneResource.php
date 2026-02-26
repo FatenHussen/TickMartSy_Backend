@@ -3,11 +3,13 @@
 namespace App\Http\Resources\Recipe;
 
 use App\Http\Resources\Badge\OneResource as BadgeOneResource;
+use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class AdminOneResource extends JsonResource
 {
+    use HasCurrencyConversion;
     /**
      * Transform the resource into an array.
      *
@@ -15,8 +17,12 @@ class AdminOneResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $price = $this->getTotalItemsPrice();
+        $priceAfterDiscount = $this->getTotalAfterDiscount();
+
         return [
             'id' => $this->id,
+
 
             'name' => $this->getTranslations('name'),
             'description' => $this->getTranslations('description'),
@@ -28,6 +34,8 @@ class AdminOneResource extends JsonResource
             'orders_count' => $this->orders_count,
 
             'discount' => $this->discount,
+            ...$this->withCurrency($price, 'price'),
+            ...$this->withCurrency($priceAfterDiscount, 'price_after_discount'),
             'serves' => $this->serves,
             'prepare_time' => $this->prepare_time,
 

@@ -18,6 +18,9 @@ class OneResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $price = $this->getTotalItemsPrice();
+        $priceAfterDiscount = $this->getTotalAfterDiscount();
+
         return [
             'id' => $this->id,
 
@@ -30,6 +33,8 @@ class OneResource extends JsonResource
             'rating' => $this->average_rating ?? 0,
             'orders_count' => $this->orders_count,
 
+            ...$this->withCurrency($price, 'price'),
+            ...$this->withCurrency($priceAfterDiscount, 'price_after_discount'),
             'discount' => $this->discount,
             'serves' => $this->serves,
             'prepare_time' => $this->prepare_time,

@@ -27,6 +27,7 @@ class AllResource extends JsonResource
             'description' => $this->description,
             'image' => $this->image_url,
             'rating' => $this->average_rating ?? 0,
+
             ...$this->withCurrency($price, 'price'),
             ...$this->withCurrency($priceAfterDiscount, 'price_after_discount'),
             'discount' => $this->discount,

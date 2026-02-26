@@ -29,7 +29,8 @@ class HandleOrderStatusNotifications implements ShouldQueue
                 "تم تحديث حالة طلبك رقم {$order->id}",
                 [
                     'order_id' => $order->id,
-                    'type'     => 'order'
+                    'type'     => 'order',
+                    'status' => $order->status
                 ]
             );
         }
@@ -48,7 +49,9 @@ class HandleOrderStatusNotifications implements ShouldQueue
                         "تم تحديث الطلب رقم {$order->id} من قبل الدرايفر",
                         [
                             'order_id' => $order->id,
-                            'type'     => 'order'
+                            'type'     => 'order',
+                            'status' => $order->status
+
                         ]
                     );
                 }
@@ -69,7 +72,9 @@ class HandleOrderStatusNotifications implements ShouldQueue
                 "طلبك رقم {$order->id} خرج للتوصيل",
                 [
                     'order_id' => $order->id,
-                    'type'     => 'order'
+                    'type'     => 'order',
+                    'status' => $order->status
+
                 ]
             );
 
@@ -82,7 +87,8 @@ class HandleOrderStatusNotifications implements ShouldQueue
                         "الطلب رقم {$order->id} خرج للتوصيل",
                         [
                             'order_id' => $order->id,
-                            'type'     => 'order'
+                            'type'     => 'order',
+                            'status' => $order->status
                         ]
                     );
                 }
@@ -104,7 +110,8 @@ class HandleOrderStatusNotifications implements ShouldQueue
                         "تم تسليم الطلب رقم {$order->id}",
                         [
                             'order_id' => $order->id,
-                            'type'     => 'order'
+                            'type'     => 'order',
+                            'status' => $order->status
                         ]
                     );
                 }
@@ -129,7 +136,9 @@ class HandleOrderStatusNotifications implements ShouldQueue
                         "قام المستخدم بإلغاء الطلب رقم {$order->id}",
                         [
                             'order_id' => $order->id,
-                            'type'     => 'order'
+                            'type'     => 'order',
+                            'status' => $order->status
+
                         ]
                     );
                 }
