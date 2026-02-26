@@ -15,6 +15,8 @@ class NotificationService
         string $body,
         array $data = []
     ): void {
+
+        Log::info("NotificationService");
         try {
             $this->sendFcm($recipient, $title, $body, $data);
             $this->sendDatabase($recipient, $title, $body);
@@ -43,6 +45,9 @@ class NotificationService
 
         if (! empty($tokens)) {
             SendFcmNotificationJob::dispatch($tokens, $title, $body, $data);
+            Log::info("send notification to user");
+        } else {
+            Log::info("no tokens to user");
         }
     }
 

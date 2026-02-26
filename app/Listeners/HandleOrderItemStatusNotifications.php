@@ -6,6 +6,7 @@ use App\Events\OrderItemStatusChanged;
 use App\Models\Admin;
 use App\Services\Base\NotificationService;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Log;
 
 class HandleOrderItemStatusNotifications implements ShouldQueue
 {
@@ -15,8 +16,18 @@ class HandleOrderItemStatusNotifications implements ShouldQueue
 
     public function handle(OrderItemStatusChanged $event): void
     {
+        Log::info("HandleOrderItemStatusNotifications Listener");
+
+
         $item  = $event->item;
         $order = $item->order;
+
+        Log::info('Order item status changed', [
+            'changed_by' => $event->changedBy,
+            'order_id'   => $order->id,
+            'item_id'    => $item->id,
+            'new_status' => $item->item_status,
+        ]);
 
         /*
         |--------------------------------------------------------------------------
