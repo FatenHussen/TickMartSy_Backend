@@ -25,5 +25,9 @@ class RecipeService extends BaseService
             'items'   => 'items',
             'steps' => 'steps',
         ];
+
+        $this->singleImages = [
+            'image'  => 'image',
+        ];
     }
 }

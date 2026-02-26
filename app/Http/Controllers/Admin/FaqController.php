@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\BaseCRUDController;
+use App\Http\Requests\Admin\Faq\FilterRequest;
 use App\Http\Requests\Admin\Faq\UpdateRequest;
 use App\Http\Requests\Admin\Faq\StoreRequest;
 use App\Services\Admin\FaqService;
@@ -15,5 +16,6 @@ class FaqController extends BaseCRUDController
         $this->service = $service;
         $this->createRequest = StoreRequest::class;
         $this->updateRequest = UpdateRequest::class;
+        $this->filterRequest = FilterRequest::class;
     }
 }

@@ -24,7 +24,7 @@ class StoreRequest extends FormRequest
             'description' => ['required', 'array'],
             'description.*' => ['required', 'string'],
 
-            'image' => ['required', 'image', 'max:2048'],
+            'image' => ['required', 'image'],
             'video_url' => ['required', 'url'],
 
             'discount' => ['required', 'numeric', 'min:1'],

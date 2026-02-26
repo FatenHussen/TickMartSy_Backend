@@ -21,10 +21,10 @@ class AdminOneResource extends JsonResource
             'name' => $this->getTranslations('name'),
             'description' => $this->getTranslations('description'),
 
-            'image' => $this->image,
+            'image' => $this->image_url,
             'video_url' => $this->video_url,
 
-            'rating' => $this->average_rating,
+            'rating' => $this->average_rating ?? 0,
             'orders_count' => $this->orders_count,
 
             'discount' => $this->discount,
