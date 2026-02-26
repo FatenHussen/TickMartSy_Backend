@@ -47,6 +47,9 @@ class DatabaseSeeder extends Seeder
             VendorRolePermissionSeeder::class,
             ShopUserSeeder::class,
 
+            // Seller Registrations
+            SellerRegistrationSeeder::class,
+
             // Products
             ProductSeeder::class,
             ProductCategoryDetailSeeder::class,

@@ -1,108 +1,208 @@
 <!DOCTYPE html>
-<html lang="ar">
-
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>رمز التحقق - يلا بازار</title>
-
+    <meta name="x-apple-disable-message-reformatting">
+    <title>رمز التحقق</title>
     <style>
-        body {
-            direction: rtl !important;
-            text-align: right !important;
-            font-family: 'Tahoma', 'Arial', sans-serif;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f7f8fa;
+            direction: rtl;
+            text-align: right;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-
-        .container {
-            direction: rtl !important;
-            text-align: right !important;
+        .email-wrapper {
             width: 100%;
+            background-color: #f7f8fa;
+            padding: 20px 0;
+        }
+        .container {
             max-width: 600px;
-            margin: 40px auto;
+            margin: 0 auto;
             background-color: #ffffff;
-            padding: 30px 25px;
-            border-radius: 10px;
-            border: 1px solid #e0e0e0;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
-
         .header {
-            direction: rtl !important;
-            text-align: center !important;
-            margin-bottom: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            text-align: center;
         }
-
-        .header img {
-            max-width: 130px;
+        .header-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 50%;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 15px;
         }
-
+        .header h1 {
+            color: #ffffff;
+            font-size: 24px;
+            margin: 0;
+        }
         .content {
-            direction: rtl !important;
-            text-align: right !important;
-            font-size: 16px;
+            padding: 40px 30px;
+        }
+        .content p {
             color: #333333;
+            font-size: 16px;
             line-height: 1.8;
+            margin: 15px 0;
         }
-
-        .otp {
-            display: inline-block;
-            font-weight: bold;
-            background-color: #f1f1f1;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 18px;
-            color: #222;
-            margin: 10px 0;
+        .otp-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 30px 0;
         }
-
-        .footer {
-            direction: rtl !important;
-            text-align: center !important;
+        .otp-label {
+            color: rgba(255, 255, 255, 0.9);
             font-size: 14px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .otp {
+            color: #ffffff;
+            font-size: 36px;
+            font-weight: bold;
+            letter-spacing: 8px;
+            font-family: 'Courier New', monospace;
+            display: block;
+        }
+        .info-box {
+            background: #fff3cd;
+            border-right: 4px solid #ffc107;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .info-box p {
+            color: #856404;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 25px 20px;
+            text-align: center;
+            border-top: 1px solid #e0e0e0;
+        }
+        .footer p {
             color: #888888;
-            margin-top: 25px;
-            border-top: 1px solid #eeeeee;
-            padding-top: 15px;
+            font-size: 13px;
+            line-height: 1.6;
+            margin: 5px 0;
+        }
+
+        /* Mobile Responsive */
+        @media only screen and (max-width: 600px) {
+            .email-wrapper {
+                padding: 10px;
+            }
+            .container {
+                border-radius: 8px;
+            }
+            .header {
+                padding: 30px 15px;
+            }
+            .header-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 30px;
+            }
+            .header h1 {
+                font-size: 20px;
+            }
+            .content {
+                padding: 25px 20px;
+            }
+            .content p {
+                font-size: 15px;
+            }
+            .otp-box {
+                padding: 20px 15px;
+                margin: 20px 0;
+            }
+            .otp {
+                font-size: 28px;
+                letter-spacing: 5px;
+            }
+            .info-box {
+                padding: 12px 15px;
+                margin: 20px 0;
+            }
+            .info-box p {
+                font-size: 13px;
+            }
+            .footer {
+                padding: 20px 15px;
+            }
+            .footer p {
+                font-size: 12px;
+            }
+        }
+
+        @media only screen and (max-width: 400px) {
+            .header {
+                padding: 25px 10px;
+            }
+            .content {
+                padding: 20px 15px;
+            }
+            .otp {
+                font-size: 24px;
+                letter-spacing: 3px;
+            }
         }
     </style>
 </head>
+<body>
+    <div class="email-wrapper">
+        <div class="container">
+            <div class="header">
+                <div class="header-icon">🔐</div>
+                <h1>رمز التحقق</h1>
+            </div>
 
-<body style="direction: rtl; text-align: right;">
+            <div class="content">
+                <p><strong>أهلاً بك 👋</strong></p>
 
-    <div class="container" style="direction: rtl; text-align: right;">
+                <p>شكراً لاستخدامك منصتنا. لإتمام عملية التحقق، يرجى استخدام الرمز التالي:</p>
 
-        <div class="header" style="text-align: center;">
-            <img src="https://yallabazaar.app/images/logo-yalla-bazar.png" alt="شعار يلا بازار">
-        </div>
+                <div class="otp-box">
+                    <span class="otp-label">رمز التحقق الخاص بك</span>
+                    <span class="otp">{{ $otp }}</span>
+                </div>
 
-        <div class="content" style="direction: rtl; text-align: right;">
-            <p>أهلاً بك 👋</p>
+                <div class="info-box">
+                    <p><strong>⏳ تنبيه مهم:</strong></p>
+                    <p>• هذا الرمز صالح لمدة <strong>ساعة واحدة</strong> فقط من وقت استلام الرسالة</p>
+                    <p>• إذا لم تكن أنت من طلب هذا الرمز، يرجى تجاهل هذه الرسالة</p>
+                    <p>• لا تشارك هذا الرمز مع أي شخص</p>
+                </div>
 
-            <p>
-                شكراً لانضمامك إلى                <br>
-                رمز التحقق الخاص بك هو:
-            </p>
+                <p>مع أطيب التحيات،<br><strong>فريق الدعم</strong></p>
+            </div>
 
-            <p class="otp">{{ $otp }}</p>
-
-            <p>
-                ⏳ هذا الرمز صالح لمدة <strong>ساعة واحدة</strong> فقط من وقت استلام الرسالة.  
-                <br>
-                إذا لم تكن أنت من طلب تسجيل الدخول، يرجى تجاهل هذه الرسالة.
-            </p>
-
-            <p>
-                مع أطيب التحيات،  
-                <br>
-            </p>
+            <div class="footer">
+                <p>هذا بريد إلكتروني تلقائي. يرجى عدم الرد على هذه الرسالة.</p>
+                <p>&copy; {{ date('Y') }} {{ config('app.name') }}. جميع الحقوق محفوظة.</p>
+            </div>
         </div>
     </div>
-
 </body>
-
 </html>

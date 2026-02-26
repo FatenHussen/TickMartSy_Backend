@@ -61,9 +61,9 @@ class SellerRegistrationService extends BaseService
                 'description' => ['en' => '', 'ar' => ''],
                 'address' => ['en' => $registration->address ?? '', 'ar' => $registration->address ?? ''],
                 'email' => $registration->email,
+                'mobile' => $registration->email, // Using email as placeholder, should be phone number
                 'area_id' => null,
                 'is_active' => true,
-                'is_default' => true,
             ]);
 
             // Handle logo if exists
