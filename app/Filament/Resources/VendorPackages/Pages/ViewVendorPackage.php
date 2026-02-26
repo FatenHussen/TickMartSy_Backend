@@ -3,16 +3,17 @@
 namespace App\Filament\Resources\VendorPackages\Pages;
 
 use App\Filament\Resources\VendorPackages\VendorPackageResource;
-use Filament\Resources\Pages\ListRecords;
+use Filament\Resources\Pages\ViewRecord;
 
-class ListVendorPackages extends ListRecords
+class ViewVendorPackage extends ViewRecord
 {
     protected static string $resource = VendorPackageResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            // No create action - vendors can only view packages
+            // No edit action - vendors can only view packages
         ];
     }
 }
+

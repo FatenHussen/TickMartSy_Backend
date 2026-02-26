@@ -5,57 +5,52 @@
 @endphp
 
 <div x-data="{ state: @entangle($statePath) }">
-    @if($type === 'color' && !empty($options))
-        <div class="space-y-2">
-            <label class="fi-fo-field-wrp-label inline-flex items-center gap-x-3">
-                <span class="text-sm font-medium leading-6 text-gray-950 dark:text-white">
+    @if($type === 'color')
+        <div style="margin-top: 0.5rem;">
+            <label style="display: inline-flex; align-items: center; gap: 0.75rem; font-size: 0.875rem; font-weight: 500; color: #111827;">
+                <span>
                     القيمة
-                    <sup class="text-danger-600 dark:text-danger-400 font-medium">*</sup>
+                    <sup style="color: #dc2626; font-weight: 500;">*</sup>
                 </span>
             </label>
-            
-            <div class="flex flex-wrap gap-3">
-                @foreach($options as $valueId => $colorHex)
+
+            <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem; padding: 0.75rem; background-color: #f9fafb; border: 1px solid #d1d5db; border-radius: 0.5rem;">
+                @forelse($options as $valueId => $colorHex)
                     <button
                         type="button"
                         @click="state = {{ $valueId }}"
-                        :class="state == {{ $valueId }} ? 'ring-2 ring-primary-600 ring-offset-2 dark:ring-offset-gray-900' : 'ring-1 ring-gray-300 dark:ring-gray-600'"
-                        class="relative flex flex-col items-center gap-2 p-2 rounded-lg transition-all hover:shadow-md bg-white dark:bg-gray-800"
+                        style="position: relative; width: 48px; height: 48px; border-radius: 50%; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex-shrink: 0; background-color: {{ $colorHex }}; border: 2px solid #d1d5db; cursor: pointer;"
+                        :style="state == {{ $valueId }} ? 'border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2); transform: scale(1.1);' : ''"
+                        onmouseover="this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)'"
+                        onmouseout="this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)'"
                         title="{{ $colorHex }}"
                     >
-                        <div 
-                            class="w-8 h-8 rounded-full border-2 border-gray-200 dark:border-gray-700 shadow-sm"
-                            style="background-color: {{ $colorHex }}"
-                        ></div>
-                        <span class="text-[10px] text-gray-600 dark:text-gray-400 font-mono">
-                            {{ $colorHex }}
-                        </span>
-                        <div 
+                        <span
                             x-show="state == {{ $valueId }}"
-                            x-cloak
-                            class="absolute -top-1 -right-1 w-4 h-4 bg-primary-600 rounded-full flex items-center justify-center"
+                            style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center;"
                         >
-                            <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                            <svg style="width: 24px; height: 24px; color: white; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                             </svg>
-                        </div>
+                        </span>
                     </button>
-                @endforeach
+                @empty
+                    <p style="font-size: 0.875rem; color: #6b7280;">لا توجد ألوان متاحة</p>
+                @endforelse
             </div>
         </div>
     @else
-        {{-- Regular select for non-color attributes --}}
-        <div class="fi-fo-field-wrp">
-            <label class="fi-fo-field-wrp-label inline-flex items-center gap-x-3">
-                <span class="text-sm font-medium leading-6 text-gray-950 dark:text-white">
+        <div style="margin-top: 0.5rem;">
+            <label style="display: inline-flex; align-items: center; gap: 0.75rem; font-size: 0.875rem; font-weight: 500; color: #111827;">
+                <span>
                     القيمة
-                    <sup class="text-danger-600 dark:text-danger-400 font-medium">*</sup>
+                    <sup style="color: #dc2626; font-weight: 500;">*</sup>
                 </span>
             </label>
-            
-            <select 
+
+            <select
                 x-model="state"
-                class="fi-select-input block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white focus:border-primary-600 focus:ring-primary-600 rounded-lg shadow-sm"
+                style="display: block; width: 100%; border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.5rem 0.75rem; font-size: 0.875rem; margin-top: 0.25rem;"
             >
                 <option value="">اختر قيمة</option>
                 @foreach($options as $valueId => $label)
