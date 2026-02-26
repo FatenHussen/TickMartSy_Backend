@@ -45,6 +45,7 @@ use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\VendorPackage\VendorPackageController;
 use App\Http\Controllers\Admin\VendorSubscription\VendorSubscriptionController;
 use App\Http\Controllers\Admin\SellerRegistration\SellerRegistrationCrudController;
+use App\Http\Controllers\Admin\VendorUser\VendorUserCrudController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(
@@ -142,6 +143,9 @@ Route::prefix('admin')->group(
                 Route::apiResource('seller-registrations', SellerRegistrationCrudController::class)->only(['index', 'show', 'destroy']);
                 Route::post('seller-registrations/{id}/approve', [SellerRegistrationCrudController::class, 'approve']);
                 Route::post('seller-registrations/{id}/reject', [SellerRegistrationCrudController::class, 'reject']);
+
+                // Vendor User Management routes (includes shop assignments)
+                Route::apiResource('vendor-users', VendorUserCrudController::class);
             }
 
         );

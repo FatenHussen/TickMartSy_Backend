@@ -15,14 +15,14 @@ return new class extends Migration
             $table->id();
             $table->json('name');
             $table->json('description')->nullable();
-            $table->json('address');
+            $table->json('address')->nullable();
             $table->string('phone')->nullable(); //store
-            $table->string('mobile');
+            $table->string('mobile')->nullable;
             $table->string('email');
             $table->decimal('lat', 10, 8)->nullable();
             $table->decimal('lng', 11, 8)->nullable();
-            $table->foreignId('area_id')->constrained('areas')->cascadeOnDelete();
-            $table->json('working_hours');
+            $table->foreignId('area_id')->nullable()->constrained('areas')->cascadeOnDelete();
+            $table->json('working_hours')->nullable();
             $table->string('logo')->nullable();
             $table->json('cover_images')->nullable();
             $table->boolean('is_active')->default(true);

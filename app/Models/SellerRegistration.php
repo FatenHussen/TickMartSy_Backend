@@ -34,6 +34,7 @@ class SellerRegistration extends Model
 
     protected $casts = [
         'registered_at' => 'datetime',
+        'commercial_register_date' => 'date',
     ];
     public function governorate()
     {
