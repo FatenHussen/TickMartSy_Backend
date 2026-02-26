@@ -30,6 +30,9 @@ class StoreRequest extends FormRequest
             'discount' => ['required', 'numeric', 'min:1'],
             // 'orders_count' => ['nullable', 'integer', 'min:0'],
 
+            'serves' => 'nullable',
+            'prepare_time' => 'nullable',
+
             'delivery_price' => ['required', 'numeric', 'min:0'],
 
             /* =======================

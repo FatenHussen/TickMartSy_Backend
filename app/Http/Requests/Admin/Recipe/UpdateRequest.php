@@ -30,6 +30,10 @@ class UpdateRequest extends FormRequest
             'discount' => ['nullable', 'numeric', 'min:1'],
             // 'orders_count' => ['nullable', 'integer', 'min:0'],
 
+            'serves' => 'nullable',
+            'prepare_time' => 'nullable',
+
+
             'delivery_price' => ['nullable', 'numeric', 'min:0'],
 
             /* =======================
