@@ -192,6 +192,7 @@ Route::prefix('admin')->group(
         Route::prefix('orders')->group(function () {
 
             Route::get('/', [OrderController::class, 'index']);
+            Route::get('{id}/get_one', [OrderController::class, 'get_one']);
 
             Route::patch('{orderId}/change-status', [OrderController::class, 'changeStatus']);
 

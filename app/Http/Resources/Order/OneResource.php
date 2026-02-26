@@ -2,8 +2,12 @@
 
 namespace App\Http\Resources\Order;
 
+use App\Http\Resources\Address\AllResource as AddressOneResource;
+use App\Http\Resources\Basket\AllResource as BasketAllResource;
+use App\Http\Resources\BasketSchedule\AllResource as BasketScheduleAllResource;
 use App\Http\Resources\Driver\AllResource as DriverAllResource;
 use App\Http\Resources\EndUser\AllResource;
+use App\Http\Resources\SectionItem\AllResource as SectionItemAllResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -30,6 +34,7 @@ class OneResource extends JsonResource
             'total_quantity' => $this->total_quantity,
             'basket_discount' => $this->basket_discount,
             'coupon_discount' => $this->coupon_discount,
+            'assigned_by' => $this->assigned_by,
 
             // Point exchanges used
             'coupon_discount_from_points' => $this->coupon_discount_from_points ?? 0,
@@ -39,12 +44,22 @@ class OneResource extends JsonResource
 
             'created_at' => $this->created_at?->toDateTimeString(),
             'assigned_by' => $this->assigned_by,
-            'affiliate_rate' => $this->affiliate_rate,
-            'affiliate_source' => $this->affiliate_source,
-            'affiliate_commission' => $this->affiliate_commission,
+            'affiliate' => [
+                'affiliate_rate' => $this->affiliate_rate,
+                'affiliate_source' => $this->affiliate_source,
+                'affiliate_commission' => $this->affiliate_commission,
+            ],
+            'timestamps' => [
+                'pending_at' => $this->pending_at,
+                'preparing_at' => $this->preparing_at,
+                'out_delivery_at' => $this->out_delivery_at,
+                'delivered_at' => $this->delivered_at,
+            ],
             'user' => AllResource::make($this->user),
             'driver' => DriverAllResource::make($this->driver),
-
+            'user_address' => AddressOneResource::make($this->address),
+            // 'baskes' => $this->basket ? BasketAllResource::make($this->basket) : null,
+            // 'basket_schedule' => $this->basket_schedule_id ? BasketScheduleAllResource::make($this->basketSchedule) : null,
             'items' => OrderItemResource::collection(
                 $this->whenLoaded('items')
             ),

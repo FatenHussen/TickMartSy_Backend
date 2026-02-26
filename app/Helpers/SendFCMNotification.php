@@ -14,6 +14,24 @@ class SendFCMNotification
     {
         $credentialsFilePath = storage_path('app/cred.json');
 
+        // 🔎 تحقق من وجود الملف
+        if (!file_exists($credentialsFilePath)) {
+            Log::error('FCM Credentials file not found', [
+                'path' => $credentialsFilePath
+            ]);
+            return;
+        }
+
+        // 🔎 تحقق من إمكانية القراءة
+        if (!is_readable($credentialsFilePath)) {
+            Log::error('FCM Credentials file is not readable', [
+                'path' => $credentialsFilePath
+            ]);
+            return;
+        }
+        Log::info('FCM Credentials file loaded successfully', [
+            'path' => $credentialsFilePath
+        ]);
         $client = new GoogleClient();
         $client->setAuthConfig($credentialsFilePath);
         $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
