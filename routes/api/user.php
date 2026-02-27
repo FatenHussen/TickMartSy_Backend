@@ -31,11 +31,11 @@ use App\Http\Controllers\User\RecipeController;
 use App\Http\Controllers\User\Schedule\ScheduleController;
 use App\Http\Controllers\User\SellerRegistrationController;
 use App\Http\Controllers\User\Currency\CurrencyController;
+use App\Http\Controllers\User\SearchController;
 
 Route::prefix('user')->group(
     function () {
-
-
+        Route::get('/search', [SearchController::class, 'search']);
         Route::post('/visit-website-bymarkter', [MarketController::class, 'visit']);
 
         // public routes

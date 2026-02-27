@@ -101,4 +101,22 @@ class Recipe extends Model implements Sectionable
         // ];
         return AllResource::make($this);
     }
+
+    public function scopeDeepSearch($query, $search)
+    {
+        $locale = app()->getLocale();
+        $keywords = collect(explode(' ', $search))->filter();
+
+        return $query->where(function ($q) use ($keywords, $locale) {
+
+            foreach ($keywords as $word) {
+
+                $q->where(function ($subQuery) use ($word, $locale) {
+                    $subQuery
+                        ->where("name->$locale", 'like', "%{$word}%")
+                        ->orWhere("description->$locale", 'like', "%{$word}%");
+                });
+            }
+        });
+    }
 }

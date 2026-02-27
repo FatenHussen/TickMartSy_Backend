@@ -228,4 +228,11 @@ class Shop extends Model implements Sectionable
             ->withCount(['productVariants'])
             ->orderByDesc('product_variants_count');
     }
+
+    public function getImageUrlAttribute()
+    {
+        return $this->logo
+            ? asset('storage/' . $this->logo)
+            : null;
+    }
 }
