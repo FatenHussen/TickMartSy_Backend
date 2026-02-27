@@ -230,19 +230,25 @@ class Product extends Model implements Sectionable
                         })
 
                         // Variant attributes
-                        ->orWhereHas('variants.attributeValues', function ($attrQuery) use ($word, $locale) {
-                            $attrQuery->where("name->$locale", 'like', "%{$word}%");
-                        })
+                        // ->orWhereHas('variants.attributeValues', function ($attrQuery) use ($word, $locale) {
+                        //     $attrQuery->where("name->$locale", 'like', "%{$word}%");
+                        // })
 
                         // Extra details
-                        ->orWhereHas('extraDetails', function ($extraQuery) use ($word, $locale) {
-                            $extraQuery
-                                ->where("detail_key->$locale", 'like', "%{$word}%")
-                                ->orWhere("detail_value->$locale", 'like', "%{$word}%");
-                        });
+                        // ->orWhereHas('extraDetails', function ($extraQuery) use ($word, $locale) {
+                        //     $extraQuery
+                        //         ->where("detail_key->$locale", 'like', "%{$word}%")
+                        //         ->orWhere("detail_value->$locale", 'like', "%{$word}%");
+                        // })
+                    ;
                 });
             }
-        })
-            ->where('approval_status', 'approved');
+        });
+        // ->where('approval_status', 'approved');
+    }
+
+    public function getImageUrlAttribute()
+    {
+        return $this->media->first()?->url;
     }
 }
