@@ -136,7 +136,6 @@ Route::prefix('admin')->group(
                 Route::apiResource('coupons', CouponCrudController::class);
                 Route::apiResource('complaints', ComplaintController::class);
                 Route::apiResource('recipes', RecipeCrudController::class);
-                Route::apiResource('users', UserCrudController::class);
                 Route::apiResource('faqs', FaqController::class);
 
                 // Seller Registration routes
@@ -146,6 +145,8 @@ Route::prefix('admin')->group(
 
                 // Vendor User Management routes (includes shop assignments)
                 Route::apiResource('vendor-users', VendorUserCrudController::class);
+                Route::get('users/markters', [UserCrudController::class, 'markters']);
+                Route::apiResource('users', UserCrudController::class);
             }
 
         );

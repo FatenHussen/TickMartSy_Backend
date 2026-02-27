@@ -12,6 +12,7 @@ use App\Models\Vendor;
 use App\Services\Base\NotificationService;
 use App\Services\BaseService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class UserService extends BaseService
 {
@@ -43,6 +44,7 @@ class UserService extends BaseService
             array_key_exists('affiliate_rate', $data);
 
         if ($hasAffiliateData) {
+            Log::info("hasAffiliateData");
 
             if (!$object->is_affiliate) {
                 throw new CustomExceptionWithMessage('المستخدم غير مقدم على طلب مسوّق');
@@ -58,6 +60,7 @@ class UserService extends BaseService
 
             // approve automatically if rate exists
             if (array_key_exists('affiliate_rate', $data)) {
+                Log::info("affiliate_approved");
                 $data['affiliate_approved'] = true;
                 (new NotificationService)->send(
                     $this->model,
@@ -71,5 +74,20 @@ class UserService extends BaseService
         }
 
         return parent::update($id, $data);
+    }
+
+    public function markters()
+    {
+        $users = User::where('affiliate_approved', true)
+            ->select('id', 'affiliate_id', 'name')
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'label' => $user->id . '-' . $user->affiliate_id . '-' . $user->name,
+                ];
+            });
+
+        return $users;
     }
 }
