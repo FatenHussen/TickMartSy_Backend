@@ -9,6 +9,7 @@ use App\Models\Shop;
 use App\Models\Vendor;
 use App\Models\Driver;
 use App\Models\Rating;
+use App\Models\Complaint;
 use App\Enums\OrderStatus;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -256,10 +257,10 @@ class ReportsService
             ->where('rateable_id', $driverId)
             ->get();
 
-        // Get complaints (if exists)
-        $complaints = DB::table('complaints')
-            ->where('driver_id', $driverId)
-            ->count();
+        // Get complaints related to driver's orders
+        $complaints = Complaint::whereHas('order', function ($q) use ($driverId) {
+            $q->where('driver_id', $driverId);
+        })->count();
 
         return [
             'driver_id' => $driver->id,
