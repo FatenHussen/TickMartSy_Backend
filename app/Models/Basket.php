@@ -173,4 +173,22 @@ class Basket extends Model implements Sectionable
     {
         return round((float) $this->ratings()->avg('rating'), 1);
     }
+
+    public function scopeDeepSearch($query, $search)
+    {
+        $locale = app()->getLocale();
+        $keywords = collect(explode(' ', $search))->filter();
+
+        return $query->where(function ($q) use ($keywords, $locale) {
+
+            foreach ($keywords as $word) {
+
+                $q->where(function ($subQuery) use ($word, $locale) {
+
+                    $subQuery
+                        ->where("name->$locale", 'like', "%{$word}%");
+                });
+            }
+        });
+    }
 }
