@@ -8,9 +8,27 @@ class OneResource extends JsonResource
 {
     public function toArray($request)
     {
+        // Get name - if empty and has shop_product_variant_id, use product name
+        $name = $this->resource->getTranslations('name');
+        if (empty(array_filter($name)) && $this->shopProductVariant) {
+            $product = $this->shopProductVariant->productVariant->product;
+            $productVariant = $this->shopProductVariant->productVariant;
+
+            $variantName = '';
+            if (!empty($productVariant->attribute_values)) {
+                $values = collect($productVariant->attribute_values)->pluck('value')->toArray();
+                $variantName = ' - ' . implode(' / ', $values);
+            }
+
+            $name = [
+                'ar' => ($product->name['ar'] ?? '') . $variantName,
+                'en' => ($product->name['en'] ?? '') . $variantName,
+            ];
+        }
+
         return [
             'id' => $this->id,
-            'name' =>  $this->resource->getTranslations('name'),
+            'name' => $name,
             'description' =>  $this->resource->getTranslations('description'),
             'image' => $this->image ? asset('storage/' . $this->image) : null,
             'points_required' => $this->points_required,
@@ -18,21 +36,21 @@ class OneResource extends JsonResource
             'is_active' => $this->is_active,
             'category_id' => $this->category_id,
             'shop_product_variant_id' => $this->shop_product_variant_id,
-            'product_details' => $this->when($this->shopProductVariant, function () {
-                $productVariant = $this->shopProductVariant->productVariant;
-                $product = $productVariant->product;
+            // 'product_details' => $this->when($this->shopProductVariant, function () {
+            //     $productVariant = $this->shopProductVariant->productVariant;
+            //     $product = $productVariant->product;
 
-                return [
-                    'shop_product_variant_id' => $this->shopProductVariant->id,
-                    'product_id' => $product->id,
-                    'product_name' => $product->name,
-                    'product_variant_id' => $productVariant->id,
-                    'variant_sku' => $productVariant->sku,
-                    'variant_attributes' => $productVariant->attribute_values,
-                    'price' => $this->shopProductVariant->price,
-                    'stock' => $this->shopProductVariant->stock_quantity,
-                ];
-            }),
+            //     return [
+            //         'shop_product_variant_id' => $this->shopProductVariant->id,
+            //         'product_id' => $product->id,
+            //         'product_name' => $product->name,
+            //         'product_variant_id' => $productVariant->id,
+            //         'variant_sku' => $productVariant->sku,
+            //         'variant_attributes' => $productVariant->attribute_values,
+            //         'price' => $this->shopProductVariant->price,
+            //         'stock' => $this->shopProductVariant->stock_quantity,
+            //     ];
+            // }),
             'terms_conditions' => $this->resource->getTranslations('terms_conditions'),
             'is_available' => $this->isAvailable(),
             'total_exchanges' => $this->exchanges_count,

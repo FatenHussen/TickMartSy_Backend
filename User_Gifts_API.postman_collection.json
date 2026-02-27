@@ -1,0 +1,366 @@
+{
+  "info": {
+    "name": "User Gifts API",
+    "description": "API endpoints for managing user gifts - sending gifts from admin to users",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000/api",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_gift_id",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Create User Gift",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gift_id\": 1,\n  \"user_id\": 5,\n  \"address_id\": null,\n  \"status\": \"pending\",\n  \"admin_notes\": \"هدية تقديرية للعميل المميز\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/user-gifts",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "user-gifts"]
+            },
+            "description": "Create a new gift for a user. Sends FCM notification automatically."
+          }
+        },
+        {
+          "name": "Get All User Gifts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/user-gifts?page=1&per_page=10",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "user-gifts"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "pending",
+                  "disabled": true
+                },
+                {
+                  "key": "user_id",
+                  "value": "5",
+                  "disabled": true
+                },
+                {
+                  "key": "gift_id",
+                  "value": "1",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get all user gifts with optional filters"
+          }
+        },
+        {
+          "name": "Get Single User Gift",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/user-gifts/{{user_gift_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "user-gifts", "{{user_gift_id}}"]
+            },
+            "description": "Get details of a single user gift"
+          }
+        },
+        {
+          "name": "Update User Gift Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"processing\",\n  \"admin_notes\": \"جاري تجهيز الهدية للشحن\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/user-gifts/{{user_gift_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "user-gifts", "{{user_gift_id}}"]
+            },
+            "description": "Update gift status to processing. Sends FCM notification."
+          }
+        },
+        {
+          "name": "Update to Shipped",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"shipped\",\n  \"admin_notes\": \"تم الشحن مع شركة أرامكس - رقم التتبع: 123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/user-gifts/{{user_gift_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "user-gifts", "{{user_gift_id}}"]
+            },
+            "description": "Update gift status to shipped. Sends FCM notification."
+          }
+        },
+        {
+          "name": "Update to Delivered",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"delivered\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/user-gifts/{{user_gift_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "user-gifts", "{{user_gift_id}}"]
+            },
+            "description": "Mark gift as delivered. Sends FCM notification."
+          }
+        },
+        {
+          "name": "Delete User Gift",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/user-gifts/{{user_gift_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "user-gifts", "{{user_gift_id}}"]
+            },
+            "description": "Delete a user gift"
+          }
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Get My Gifts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user-gifts?page=1&per_page=10",
+              "host": ["{{base_url}}"],
+              "path": ["user-gifts"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "pending",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get all gifts for the authenticated user"
+          }
+        },
+        {
+          "name": "Get Single Gift",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user-gifts/{{user_gift_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["user-gifts", "{{user_gift_id}}"]
+            },
+            "description": "Get details of a single gift"
+          }
+        },
+        {
+          "name": "Update Delivery Address",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"address_id\": 3,\n  \"user_notes\": \"يرجى التوصيل بعد الساعة 5 مساءً\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/user-gifts/{{user_gift_id}}/address",
+              "host": ["{{base_url}}"],
+              "path": ["user-gifts", "{{user_gift_id}}", "address"]
+            },
+            "description": "Set delivery address for the gift. Only works when status is 'pending'."
+          }
+        }
+      ]
+    }
+  ]
+}

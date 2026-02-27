@@ -3,7 +3,7 @@
 namespace App\Services\Admin;
 
 use Illuminate\Support\Facades\View;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Mpdf\Mpdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SalesReportExport;
 use App\Exports\ProductMovementExport;
@@ -30,15 +30,32 @@ class ExportService
      */
     public function exportSalesToPdf(array $data, array $filters = [])
     {
-        $pdf = Pdf::loadView('exports.pdf.sales-report', [
+        $html = View::make('exports.pdf.sales-report', [
             'data' => $data,
             'filters' => $filters,
             'generated_at' => now()->format('Y-m-d H:i:s'),
+        ])->render();
+
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P',
+            'margin_left' => 10,
+            'margin_right' => 10,
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+            'default_font' => 'dejavusans',
+            'autoScriptToLang' => true,
+            'autoLangToFont' => true,
         ]);
+
+        $mpdf->WriteHTML($html);
 
         $filename = 'sales_report_' . now()->format('Y-m-d_His') . '.pdf';
 
-        return $pdf->download($filename);
+        return response()->streamDownload(function () use ($mpdf) {
+            echo $mpdf->Output('', 'S');
+        }, $filename);
     }
 
     /**
@@ -59,15 +76,32 @@ class ExportService
      */
     public function exportProductMovementToPdf(array $data, array $filters = [])
     {
-        $pdf = Pdf::loadView('exports.pdf.product-movement', [
+        $html = View::make('exports.pdf.product-movement', [
             'data' => $data,
             'filters' => $filters,
             'generated_at' => now()->format('Y-m-d H:i:s'),
+        ])->render();
+
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P',
+            'margin_left' => 10,
+            'margin_right' => 10,
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+            'default_font' => 'dejavusans',
+            'autoScriptToLang' => true,
+            'autoLangToFont' => true,
         ]);
+
+        $mpdf->WriteHTML($html);
 
         $filename = 'product_movement_' . now()->format('Y-m-d_His') . '.pdf';
 
-        return $pdf->download($filename);
+        return response()->streamDownload(function () use ($mpdf) {
+            echo $mpdf->Output('', 'S');
+        }, $filename);
     }
 
     /**
@@ -88,15 +122,32 @@ class ExportService
      */
     public function exportVendorPerformanceToPdf(array $data, array $filters = [])
     {
-        $pdf = Pdf::loadView('exports.pdf.vendor-performance', [
+        $html = View::make('exports.pdf.vendor-performance', [
             'data' => $data,
             'filters' => $filters,
             'generated_at' => now()->format('Y-m-d H:i:s'),
+        ])->render();
+
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P',
+            'margin_left' => 10,
+            'margin_right' => 10,
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+            'default_font' => 'dejavusans',
+            'autoScriptToLang' => true,
+            'autoLangToFont' => true,
         ]);
+
+        $mpdf->WriteHTML($html);
 
         $filename = 'vendor_performance_' . now()->format('Y-m-d_His') . '.pdf';
 
-        return $pdf->download($filename);
+        return response()->streamDownload(function () use ($mpdf) {
+            echo $mpdf->Output('', 'S');
+        }, $filename);
     }
 
     /**
@@ -117,14 +168,31 @@ class ExportService
      */
     public function exportDriverPerformanceToPdf(array $data, array $filters = [])
     {
-        $pdf = Pdf::loadView('exports.pdf.driver-performance', [
+        $html = View::make('exports.pdf.driver-performance', [
             'data' => $data,
             'filters' => $filters,
             'generated_at' => now()->format('Y-m-d H:i:s'),
+        ])->render();
+
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P',
+            'margin_left' => 10,
+            'margin_right' => 10,
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+            'default_font' => 'dejavusans',
+            'autoScriptToLang' => true,
+            'autoLangToFont' => true,
         ]);
+
+        $mpdf->WriteHTML($html);
 
         $filename = 'driver_performance_' . now()->format('Y-m-d_His') . '.pdf';
 
-        return $pdf->download($filename);
+        return response()->streamDownload(function () use ($mpdf) {
+            echo $mpdf->Output('', 'S');
+        }, $filename);
     }
 }

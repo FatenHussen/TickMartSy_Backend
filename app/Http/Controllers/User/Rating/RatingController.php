@@ -29,4 +29,24 @@ class RatingController extends BaseCRUDController
 
         return RatingWithTargetResource::collection($ratings);
     }
+
+    /**
+     * Check if user can rate a specific product
+     */
+    public function canRate(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|integer|exists:products,id'
+        ]);
+
+        $result = $this->service->canRateProduct($request->product_id);
+
+        return response()->json([
+            'status' => true,
+            'message' => $result['can_rate']
+                ? 'You can rate this product'
+                : $result['reason'],
+            'data' => $result
+        ]);
+    }
 }

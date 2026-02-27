@@ -37,11 +37,38 @@ class GiftService extends BaseService
      */
     public function create($data)
     {
+        $imageFromProduct = null;
+
         if (!empty($data['shop_product_variant_id'])) {
+            // Store image path before filling
+            $shopProductVariant = \App\Models\ShopProductVariant::with('productVariant.product.media')
+                ->findOrFail($data['shop_product_variant_id']);
+            $product = $shopProductVariant->productVariant->product;
+
+            if (empty($data['image'])) {
+                // Get first image from product media
+                $firstMedia = $product->media()->first();
+                if ($firstMedia && !empty($firstMedia->path)) {
+                    $imageFromProduct = $firstMedia->path;
+                    unset($data['image']);
+                }
+            }
+
             $data = $this->fillFromShopProductVariant($data);
         }
 
-        return parent::create($data);
+        $result = parent::create($data);
+
+        // Update image after creation if we got it from product
+        if ($imageFromProduct && $result->resource) {
+            $gift = $this->model::find($result->resource->id);
+            if ($gift) {
+                $gift->update(['image' => $imageFromProduct]);
+                $result = new $this->resource($gift->fresh());
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -49,11 +76,38 @@ class GiftService extends BaseService
      */
     public function update($id, array $data)
     {
+        $imageFromProduct = null;
+
         if (!empty($data['shop_product_variant_id'])) {
+            // Store image path before filling
+            $shopProductVariant = \App\Models\ShopProductVariant::with('productVariant.product.media')
+                ->findOrFail($data['shop_product_variant_id']);
+            $product = $shopProductVariant->productVariant->product;
+
+            if (empty($data['image'])) {
+                // Get first image from product media
+                $firstMedia = $product->media()->first();
+                if ($firstMedia && !empty($firstMedia->path)) {
+                    $imageFromProduct = $firstMedia->path;
+                    unset($data['image']);
+                }
+            }
+
             $data = $this->fillFromShopProductVariant($data);
         }
 
-        return parent::update($id, $data);
+        $result = parent::update($id, $data);
+
+        // Update image after update if we got it from product
+        if ($imageFromProduct && $result->resource) {
+            $gift = $this->model::find($result->resource->id);
+            if ($gift) {
+                $gift->update(['image' => $imageFromProduct]);
+                $result = new $this->resource($gift->fresh());
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -61,33 +115,104 @@ class GiftService extends BaseService
      */
     protected function fillFromShopProductVariant(array $data): array
     {
-        $shopProductVariant = \App\Models\ShopProductVariant::with('productVariant.product')
+        $shopProductVariant = \App\Models\ShopProductVariant::with('productVariant.product', 'shop')
             ->findOrFail($data['shop_product_variant_id']);
 
         $productVariant = $shopProductVariant->productVariant;
         $product = $productVariant->product;
 
         // Auto-fill name from product + variant
-        if (empty($data['name'])) {
-            $variantName = '';
-            if (!empty($productVariant->attribute_values)) {
-                $values = collect($productVariant->attribute_values)->pluck('value')->toArray();
-                $variantName = ' - ' . implode(' / ', $values);
+        $shouldFillName = !isset($data['name']) ||
+                         empty($data['name']) ||
+                         (is_array($data['name']) &&
+                          (empty(array_filter($data['name'], fn($v) => !empty($v))) ||
+                           (isset($data['name']['ar']) && $data['name']['ar'] === '') ||
+                           (isset($data['name']['en']) && $data['name']['en'] === '')));
+
+        if ($shouldFillName) {
+            // Build name like ShopProductVariant label
+            $locale = app()->getLocale();
+
+            // Get product name
+            $productNameAr = $product->getTranslation('name', 'ar', false) ?? '';
+            $productNameEn = $product->getTranslation('name', 'en', false) ?? '';
+
+            // Get attributes as string
+            $attributes = $productVariant->getAttributesWithDetails();
+            $attributesPartsAr = [];
+            $attributesPartsEn = [];
+
+            foreach ($attributes as $attr) {
+                $attrNameData = $attr['category_attribute']['name'] ?? [];
+                $attrNameAr = is_array($attrNameData)
+                    ? ($attrNameData['ar'] ?? $attrNameData['en'] ?? '')
+                    : (string) $attrNameData;
+                $attrNameEn = is_array($attrNameData)
+                    ? ($attrNameData['en'] ?? $attrNameData['ar'] ?? '')
+                    : (string) $attrNameData;
+
+                $attrValueData = $attr['name'] ?? [];
+                $attrValueAr = is_array($attrValueData)
+                    ? ($attrValueData['ar'] ?? $attrValueData['en'] ?? '')
+                    : (string) $attrValueData;
+                $attrValueEn = is_array($attrValueData)
+                    ? ($attrValueData['en'] ?? $attrValueData['ar'] ?? '')
+                    : (string) $attrValueData;
+
+                if (!empty($attrNameAr) && !empty($attrValueAr)) {
+                    $attributesPartsAr[] = "{$attrNameAr}: {$attrValueAr}";
+                }
+                if (!empty($attrNameEn) && !empty($attrValueEn)) {
+                    $attributesPartsEn[] = "{$attrNameEn}: {$attrValueEn}";
+                }
             }
+
+            $attributesStringAr = implode(' | ', $attributesPartsAr);
+            $attributesStringEn = implode(' | ', $attributesPartsEn);
+
+            // Get shop name
+            $shopNameData = $shopProductVariant->shop->name;
+            $shopNameAr = is_array($shopNameData)
+                ? ($shopNameData['ar'] ?? $shopNameData['en'] ?? '')
+                : (string) $shopNameData;
+            $shopNameEn = is_array($shopNameData)
+                ? ($shopNameData['en'] ?? $shopNameData['ar'] ?? '')
+                : (string) $shopNameData;
+
+            // Build label
+            $labelAr = $productNameAr;
+            if (!empty($attributesStringAr)) {
+                $labelAr .= " ({$attributesStringAr})";
+            }
+            $labelAr .= " - {$shopNameAr}";
+
+            $labelEn = $productNameEn;
+            if (!empty($attributesStringEn)) {
+                $labelEn .= " ({$attributesStringEn})";
+            }
+            $labelEn .= " - {$shopNameEn}";
+
             $data['name'] = [
-                'ar' => ($product->name['ar'] ?? '') . $variantName,
-                'en' => ($product->name['en'] ?? '') . $variantName,
+                'ar' => $labelAr,
+                'en' => $labelEn,
             ];
         }
 
         // Auto-fill description from product
-        if (empty($data['description'])) {
-            $data['description'] = $product->description ?? ['ar' => '', 'en' => ''];
+        $shouldFillDescription = !isset($data['description']) ||
+                                empty($data['description']) ||
+                                (is_array($data['description']) &&
+                                 (empty(array_filter($data['description'], fn($v) => !empty($v))) ||
+                                  (isset($data['description']['ar']) && $data['description']['ar'] === '') ||
+                                  (isset($data['description']['en']) && $data['description']['en'] === '')));
+
+        if ($shouldFillDescription) {
+            $data['description'] = $product->getTranslations('description') ?? ['ar' => '', 'en' => ''];
         }
 
-        // Auto-fill image from product
-        if (empty($data['image']) && !empty($product->main_image)) {
-            $data['image'] = $product->main_image;
+        // Auto-fill category_id from product
+        if (empty($data['category_id']) && !empty($product->category_id)) {
+            $data['category_id'] = $product->category_id;
         }
 
         // Auto-fill stock from shop product variant

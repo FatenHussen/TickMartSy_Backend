@@ -150,6 +150,7 @@ Route::prefix('user')->group(
             Route::get('/', [RatingController::class, 'index']);
             Route::middleware(['auth:user'])->group(function () {
                 Route::get('/my_ratings', [RatingController::class, 'myRatings']);
+                Route::get('/can-rate', [RatingController::class, 'canRate']);
                 Route::post('/', [RatingController::class, 'store']);
                 Route::put('/{id}', [RatingController::class, 'update']);
                 Route::delete('/{id}', [RatingController::class, 'destroy']);
@@ -187,6 +188,13 @@ Route::prefix('user')->group(
                 Route::get('/', [FavoriteController::class, 'index']);
                 Route::post('/toggle', [FavoriteController::class, 'toggle']);
             });
+        });
+
+        // User Gifts routes
+        Route::middleware(['auth:user'])->prefix('user-gifts')->group(function () {
+            Route::get('/', [\App\Http\Controllers\User\UserGift\UserGiftController::class, 'index']);
+            Route::get('/{id}', [\App\Http\Controllers\User\UserGift\UserGiftController::class, 'show']);
+            Route::put('/{id}/address', [\App\Http\Controllers\User\UserGift\UserGiftController::class, 'updateAddress']);
         });
 
         // Points routes

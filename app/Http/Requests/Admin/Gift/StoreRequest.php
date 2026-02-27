@@ -11,6 +11,31 @@ class StoreRequest extends FormRequest
         return true;
     }
 
+    /**
+     * Prepare data for validation - remove empty name/description if shop_product_variant_id is provided
+     */
+    protected function prepareForValidation()
+    {
+        if ($this->has('shop_product_variant_id') && !empty($this->shop_product_variant_id)) {
+            // Check if name is empty (all translations are empty strings)
+            if ($this->has('name') && is_array($this->name)) {
+                $nameValues = array_filter($this->name, fn($v) => !empty($v));
+                if (empty($nameValues)) {
+                    // Remove name from request so validation passes
+                    $this->request->remove('name');
+                }
+            }
+
+            // Check if description is empty (all translations are empty strings)
+            if ($this->has('description') && is_array($this->description)) {
+                $descValues = array_filter($this->description, fn($v) => !empty($v));
+                if (empty($descValues)) {
+                    $this->request->remove('description');
+                }
+            }
+        }
+    }
+
     public function rules(): array
     {
         return [

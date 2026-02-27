@@ -33,7 +33,7 @@ class RatingService extends BaseService
         $this->singleImages = ['image'];
     }
 
-   
+
     public function queryBuilder($query, $filters = [], $config = [])
     {
         // handle rateable_type (enum → class)
@@ -62,7 +62,7 @@ class RatingService extends BaseService
 
         $data['rateable_type'] = $this->resolveRateableType($data['type']);
         unset($data['type']);
-        
+
         $rating = parent::create($data);
 
         try {
@@ -129,5 +129,62 @@ class RatingService extends BaseService
         }
 
         return $query->latest()->get();
+    }
+
+    /**
+     * Check if user can rate a specific product
+     * User can rate only if they have ordered any variant of this product in a delivered order
+     */
+    public function canRateProduct(int $productId): array
+    {
+        $userId = auth('user')->id();
+
+        // Check if product exists
+        $product = \App\Models\Product::find($productId);
+        if (!$product) {
+            return [
+                'can_rate' => false,
+                'reason' => 'Product not found',
+                'reason_ar' => 'المنتج غير موجود'
+            ];
+        }
+
+        // Check if user has ordered any variant of this product in a delivered order
+        // ShopProductVariant -> ProductVariant -> Product
+        $hasOrdered = \App\Models\OrderItem::whereHas('order', function ($query) use ($userId) {
+            $query->where('user_id', $userId)
+                  ->where('status', \App\Enums\OrderStatus::DELIVERED->value);
+        })
+        ->whereHas('shopProductVariant.productVariant', function ($query) use ($productId) {
+            $query->where('product_id', $productId);
+        })
+        ->exists();
+
+        if (!$hasOrdered) {
+            return [
+                'can_rate' => false,
+                'reason' => 'You must purchase this product before rating it',
+                'reason_ar' => 'يجب عليك شراء هذا المنتج قبل تقييمه'
+            ];
+        }
+
+        // Check if user already rated this product
+        $alreadyRated = Rating::where('user_id', $userId)
+            ->where('rateable_type', \App\Models\Product::class)
+            ->where('rateable_id', $productId)
+            ->exists();
+
+        if ($alreadyRated) {
+            return [
+                'can_rate' => false,
+                'reason' => 'You have already rated this product',
+                'reason_ar' => 'لقد قمت بتقييم هذا المنتج مسبقاً'
+            ];
+        }
+
+        return [
+            'can_rate' => true,
+            'product_id' => $productId
+        ];
     }
 }
