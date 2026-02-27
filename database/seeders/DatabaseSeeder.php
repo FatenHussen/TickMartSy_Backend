@@ -71,6 +71,7 @@ class DatabaseSeeder extends Seeder
             // Users
             UserSeeder::class,
             UserAddressSeeder::class,
+            UserTokenSeeder::class, // FCM tokens for push notifications
 
             // Schedules
             ScheduleSeeder::class,
@@ -91,6 +92,7 @@ class DatabaseSeeder extends Seeder
             PointSystemSeeder::class, // يشمل PointTransactionSeeder
             ExchangeSettingsSeeder::class,
             PointExchangeSeeder::class, // لازم يجي بعد PointSystemSeeder
+            UserGiftSeeder::class, // User gifts redemptions
 
             // Payment & Orders
             PaymentMethodSeeder::class,

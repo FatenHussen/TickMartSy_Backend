@@ -57,6 +57,14 @@ class AdminRolePermissionSeeder extends Seeder
             }
         }
 
+        // Add custom permissions for Statistics and Reports (not model-based)
+        $customPermissions = [
+            'statistics.view',  // View all statistics endpoints
+            'reports.view',     // View and export all reports
+        ];
+
+        $permissions = array_merge($permissions, $customPermissions);
+
         foreach ($permissions as $permission) {
             Permission::firstOrCreate([
                 'name' => $permission,
