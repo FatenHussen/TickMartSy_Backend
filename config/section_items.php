@@ -16,10 +16,18 @@ return [
         'item_type' => 'App\Models\Brand',
         'url'   => 'admin/brands',
     ],
-    'vendor' => [
-        'item_type' => 'App\Models\Vendor',
-        'url'   => 'admin/shop',
+    'recipe' => [
+        'item_type' => 'App\Models\Recipe',
+        'url'   => 'admin/recipes',
     ],
-    'suggested-basket' => [],
-    'basket' => [],
+    'basket' => [
+        'item_type' => 'App\Models\Basket',
+        'url'   => 'admin/baskets',
+    ],
+    // 'vendor' => [
+    //     'item_type' => 'App\Models\Vendor',
+    //     'url'   => 'admin/shop',
+    // ],
+    // 'suggested-basket' => [],
+    // 'basket' => [],
 ];

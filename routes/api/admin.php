@@ -133,9 +133,21 @@ Route::prefix('admin')->group(
                 Route::get('/', [UserBasketScheduleController::class, 'index']);
                 Route::get('/{id}', [UserBasketScheduleController::class, 'get_one']);
             });
+
+            Route::prefix('sections')->group(
+                function () {
+                    // Public routes
+                    Route::get('pages', [SectionController::class, 'pages']);
+                    Route::get('item-types', [SectionController::class, 'sectionItemTypes']);
+                    Route::get('display-types', [SectionController::class, 'displayTypes']);
+                }
+            );
         });
         Route::middleware('auth:admin')->group(
             function () {
+
+                // Route::get('page-sections/display-types/{manual_model}', [PageSectionCrudController::class, 'displayTypes']);
+
                 Route::resources([
                     'stores'         => StoreCrudController::class,
                     // 'shops'          => ShopCrudController::class,
@@ -189,13 +201,21 @@ Route::prefix('admin')->group(
             }
 
         );
-        //  Auth routes
-        Route::prefix('sections')->group(
-            function () {
-                // Public routes
-                Route::get('pages', [SectionController::class, 'pages']);
-                Route::get('item-types', [SectionController::class, 'sectionItemTypes']);
-                Route::get('display-types', [SectionController::class, 'displayTypes']);
+
+
+        Route::prefix('orders')->group(function () {
+
+            Route::get('/', [OrderController::class, 'index']);
+            Route::get('{id}/get_one', [OrderController::class, 'get_one']);
+
+            Route::patch('{orderId}/change-status', [OrderController::class, 'changeStatus']);
+
+            Route::post('{orderId}/assign-driver', [OrderController::class, 'assignDriver']);
+
+            Route::patch('items/{itemId}/change-status', [OrderController::class, 'changeItemStatus']);
+        });
+    }
+);
 
                 // Protected routes
                 // Basket management routes
@@ -225,20 +245,3 @@ Route::prefix('admin')->group(
                 //         Route::delete('/{key}', [\App\Http\Controllers\Admin\SystemSettingController::class, 'destroy']);
                 //     });
                 // });
-
-            }
-        );
-
-        Route::prefix('orders')->group(function () {
-
-            Route::get('/', [OrderController::class, 'index']);
-            Route::get('{id}/get_one', [OrderController::class, 'get_one']);
-
-            Route::patch('{orderId}/change-status', [OrderController::class, 'changeStatus']);
-
-            Route::post('{orderId}/assign-driver', [OrderController::class, 'assignDriver']);
-
-            Route::patch('items/{itemId}/change-status', [OrderController::class, 'changeItemStatus']);
-        });
-    }
-);

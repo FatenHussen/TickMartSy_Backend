@@ -18,11 +18,11 @@ class OneResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'manual_model' => $this->manual_model,
+            // 'manual_model' => $this->manual_model,
             'image_url'                => $this->image_url,
-            'fields' => $this->fields,
+            // 'fields' => $this->fields,
 
-            'created_at'            => $this->created_at?->format('Y-m-d H:i'),
+            // 'created_at'            => $this->created_at?->format('Y-m-d H:i'),
         ];
     }
 }
