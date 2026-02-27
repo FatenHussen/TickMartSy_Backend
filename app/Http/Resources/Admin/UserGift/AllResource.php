@@ -20,10 +20,12 @@ class AllResource extends JsonResource
                 'name' => $this->user->name,
                 'phone' => $this->user->phone,
             ],
-            'address' => $this->when($this->address, [
-                'id' => $this->address->id ?? null,
-                'full_address' => $this->address->full_address ?? null,
-            ]),
+            'address' => $this->when($this->address, function () {
+                return [
+                    'id' => $this->address->id,
+                    'full_address' => $this->address->full_address,
+                ];
+            }),
             'status' => $this->status,
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
         ];

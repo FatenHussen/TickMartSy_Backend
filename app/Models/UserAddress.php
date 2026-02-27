@@ -38,4 +38,25 @@ class UserAddress extends Model
     {
         return $this->belongsTo(Area::class);
     }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class, 'city_id');
+    }
+
+    /**
+     * Get full address as a formatted string
+     */
+    public function getFullAddressAttribute(): string
+    {
+        $parts = array_filter([
+            $this->street_name,
+            $this->building_number ? "Building: {$this->building_number}" : null,
+            $this->floor_apartment ? "Floor/Apt: {$this->floor_apartment}" : null,
+            $this->nearest_landmark ? "Near: {$this->nearest_landmark}" : null,
+            $this->area?->name,
+        ]);
+
+        return implode(', ', $parts);
+    }
 }

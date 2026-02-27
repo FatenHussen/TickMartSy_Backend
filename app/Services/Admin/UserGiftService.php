@@ -93,15 +93,18 @@ class UserGiftService extends BaseService
         $title = $titles[$type][$locale] ?? $titles[$type]['ar'];
         $body = $bodies[$type][$locale] ?? $bodies[$type]['ar'];
 
-        if ($userGift->user->fcm_token) {
+        // Get all FCM tokens for the user
+        $fcmTokens = $userGift->user->fcmTokens()->pluck('fcm_token')->toArray();
+
+        if (!empty($fcmTokens)) {
             SendFcmNotificationJob::dispatch(
-                $userGift->user->fcm_token,
+                $fcmTokens,
                 $title,
                 $body,
                 [
                     'type' => 'user_gift',
-                    'user_gift_id' => $userGift->id,
-                    'gift_id' => $userGift->gift_id,
+                    'user_gift_id' => (string) $userGift->id,
+                    'gift_id' => (string) $userGift->gift_id,
                     'status' => $userGift->status,
                 ]
             );
