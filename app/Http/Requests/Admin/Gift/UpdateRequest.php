@@ -14,6 +14,8 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'shop_product_variant_id' => ['nullable', 'integer', 'exists:shop_product_variants,id'],
+
             'name' => ['sometimes', 'array'],
             'name.ar' => ['sometimes', 'string', 'max:255'],
             'name.en' => ['sometimes', 'string', 'max:255'],
@@ -37,6 +39,7 @@ class UpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'shop_product_variant_id.exists' => 'المنتج المحدد غير موجود',
             'name.ar.string' => 'الاسم بالعربي يجب أن يكون نص',
             'name.en.string' => 'الاسم بالإنجليزي يجب أن يكون نص',
             'points_required.min' => 'النقاط المطلوبة يجب أن تكون على الأقل 1',

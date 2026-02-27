@@ -14,9 +14,11 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'array'],
-            'name.ar' => ['required', 'string', 'max:255'],
-            'name.en' => ['required', 'string', 'max:255'],
+            'shop_product_variant_id' => ['nullable', 'integer', 'exists:shop_product_variants,id'],
+
+            'name' => ['required_without:shop_product_variant_id', 'array'],
+            'name.ar' => ['required_without:shop_product_variant_id', 'string', 'max:255'],
+            'name.en' => ['required_without:shop_product_variant_id', 'string', 'max:255'],
 
             'description' => ['nullable', 'array'],
             'description.ar' => ['nullable', 'string'],
@@ -37,9 +39,10 @@ class StoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'الاسم مطلوب',
-            'name.ar.required' => 'الاسم بالعربي مطلوب',
-            'name.en.required' => 'الاسم بالإنجليزي مطلوب',
+            'shop_product_variant_id.exists' => 'المنتج المحدد غير موجود',
+            'name.required_without' => 'الاسم مطلوب إذا لم يتم تحديد منتج',
+            'name.ar.required_without' => 'الاسم بالعربي مطلوب إذا لم يتم تحديد منتج',
+            'name.en.required_without' => 'الاسم بالإنجليزي مطلوب إذا لم يتم تحديد منتج',
             'points_required.required' => 'النقاط المطلوبة مطلوبة',
             'points_required.min' => 'النقاط المطلوبة يجب أن تكون على الأقل 1',
         ];

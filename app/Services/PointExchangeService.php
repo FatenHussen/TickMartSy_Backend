@@ -58,6 +58,7 @@ class PointExchangeService
         // Gifts exchange
         if ($settings['gifts_enabled']) {
             $availableGifts = Gift::available()
+                ->whereNotNull('shop_product_variant_id') // Only show gifts with products
                 ->where('points_required', '<=', $userWallet->balance)
                 ->orderBy('points_required')
                 ->get();

@@ -38,6 +38,12 @@ class ShopProductVariant extends Model
     {
         return $this->belongsTo(Shop::class);
     }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class, 'shop_product_variant_id');
+    }
+
     public function ratings(): MorphMany
     {
         return $this->morphMany(Rating::class, 'rateable');

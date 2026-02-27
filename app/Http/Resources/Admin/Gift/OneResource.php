@@ -17,6 +17,22 @@ class OneResource extends JsonResource
             'stock_quantity' => $this->stock_quantity,
             'is_active' => $this->is_active,
             'category_id' => $this->category_id,
+            'shop_product_variant_id' => $this->shop_product_variant_id,
+            'product_details' => $this->when($this->shopProductVariant, function () {
+                $productVariant = $this->shopProductVariant->productVariant;
+                $product = $productVariant->product;
+
+                return [
+                    'shop_product_variant_id' => $this->shopProductVariant->id,
+                    'product_id' => $product->id,
+                    'product_name' => $product->name,
+                    'product_variant_id' => $productVariant->id,
+                    'variant_sku' => $productVariant->sku,
+                    'variant_attributes' => $productVariant->attribute_values,
+                    'price' => $this->shopProductVariant->price,
+                    'stock' => $this->shopProductVariant->stock_quantity,
+                ];
+            }),
             'terms_conditions' => $this->resource->getTranslations('terms_conditions'),
             'is_available' => $this->isAvailable(),
             'total_exchanges' => $this->exchanges_count,

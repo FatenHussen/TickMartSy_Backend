@@ -18,6 +18,7 @@ use HasTranslations;
         'stock_quantity',
         'is_active',
         'category_id',
+        'shop_product_variant_id',
         'terms_conditions',
     ];
 public $translatable= ['name', 'description','terms_conditions'];
@@ -26,6 +27,14 @@ public $translatable= ['name', 'description','terms_conditions'];
         'points_required' => 'integer',
         'stock_quantity' => 'integer',
     ];
+
+    /**
+     * Relationship with ShopProductVariant
+     */
+    public function shopProductVariant()
+    {
+        return $this->belongsTo(\App\Models\ShopProductVariant::class, 'shop_product_variant_id');
+    }
 
     /**
      * Get exchanges for this gift
