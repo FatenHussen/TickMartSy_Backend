@@ -40,7 +40,8 @@ class RolePermissionSeeder extends Seeder
             'Setting',
             'LegalDocument',
             'Notification',
-            'VendorPackage'
+            'VendorPackage',
+
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];
@@ -52,6 +53,7 @@ class RolePermissionSeeder extends Seeder
                 $permissions[] = strtolower($model) . '.' . $action;
             }
         }
+        $permissions[] = 'stats.index';
 
         foreach ($permissions as $permission) {
             Permission::firstOrCreate([
