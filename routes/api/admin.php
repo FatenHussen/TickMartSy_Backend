@@ -38,6 +38,7 @@ use App\Http\Controllers\Admin\Vendor\VendorCrudController;
 use App\Http\Controllers\Admin\Package\PackageController;
 use App\Http\Controllers\Admin\Subscription\SubscriptionController;
 use App\Http\Controllers\Admin\Gift\GiftController;
+use App\Http\Controllers\Admin\UserGift\UserGiftController as AdminUserGiftController;
 use App\Http\Controllers\Admin\PointExchange\PointExchangeController;
 use App\Http\Controllers\Admin\UserPoint\UserPointController;
 use App\Http\Controllers\Admin\Currency\CurrencyController;
@@ -75,6 +76,7 @@ Route::prefix('admin')->group(
             Route::apiResource('packages', PackageController::class);
             Route::apiResource('subscriptions', SubscriptionController::class);
             Route::apiResource('gifts', GiftController::class);
+            Route::apiResource('user-gifts', AdminUserGiftController::class);
             Route::apiResource('point-exchanges', PointExchangeController::class)->only(['index', 'show', 'update']);
 
             // Vendor Packages & Subscriptions
