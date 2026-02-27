@@ -5,6 +5,7 @@ namespace App\Services\Admin;
 use App\Http\Resources\PageSection\AdminOneResource;
 use App\Http\Resources\PageSection\AllResource;
 use App\Http\Resources\PageSection\OneResource;
+use App\Models\DisplayType;
 use App\Models\PageSection;
 use App\Services\BaseService;
 
@@ -21,5 +22,10 @@ class PageSectionService extends BaseService
         $this->syncRelations = [
             'sectionItems'   => 'item_ids',
         ];
+    }
+
+    public function displayTypes($manual_model)
+    {
+        return DisplayType::where('manual_model', $manual_model)->select('id', 'image')->get();
     }
 }
