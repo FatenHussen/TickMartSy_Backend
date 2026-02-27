@@ -46,6 +46,8 @@ use App\Http\Controllers\Admin\VendorPackage\VendorPackageController;
 use App\Http\Controllers\Admin\VendorSubscription\VendorSubscriptionController;
 use App\Http\Controllers\Admin\SellerRegistration\SellerRegistrationCrudController;
 use App\Http\Controllers\Admin\VendorUser\VendorUserCrudController;
+use App\Http\Controllers\Admin\Statistics\StatisticsController;
+use App\Http\Controllers\Admin\Reports\ReportsController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(
@@ -87,6 +89,43 @@ Route::prefix('admin')->group(
                 Route::get('/', [UserPointController::class, 'index']);
                 Route::get('/{userId}', [UserPointController::class, 'show']);
                 Route::get('/{userId}/transactions', [UserPointController::class, 'transactions']);
+            });
+
+            // Statistics & Reports
+            Route::prefix('statistics')->group(function () {
+                Route::get('/dashboard', [StatisticsController::class, 'dashboard']);
+                Route::get('/counts', [StatisticsController::class, 'counts']);
+                Route::get('/monthly-performance', [StatisticsController::class, 'monthlyPerformance']);
+                Route::get('/orders-by-status', [StatisticsController::class, 'ordersByStatus']);
+                Route::get('/top-shops', [StatisticsController::class, 'topShops']);
+
+                // Chart-specific endpoints
+                Route::get('/revenue-trend', [StatisticsController::class, 'revenueTrend']);
+                Route::get('/orders-by-hour', [StatisticsController::class, 'ordersByHour']);
+                Route::get('/orders-by-day', [StatisticsController::class, 'ordersByDayOfWeek']);
+                Route::get('/revenue-by-payment', [StatisticsController::class, 'revenueByPaymentMethod']);
+                Route::get('/top-categories', [StatisticsController::class, 'topCategoriesByRevenue']);
+                Route::get('/user-growth', [StatisticsController::class, 'userGrowth']);
+                Route::get('/order-funnel', [StatisticsController::class, 'orderStatusFunnel']);
+                Route::get('/avg-order-value-trend', [StatisticsController::class, 'averageOrderValueTrend']);
+                Route::get('/driver-comparison', [StatisticsController::class, 'driverPerformanceComparison']);
+                Route::get('/stock-levels', [StatisticsController::class, 'productStockLevels']);
+                Route::get('/sales-heatmap', [StatisticsController::class, 'salesHeatmap']);
+            });
+
+            Route::prefix('reports')->group(function () {
+                Route::get('/sales', [ReportsController::class, 'sales']);
+                Route::get('/product-movement', [ReportsController::class, 'productMovement']);
+                Route::get('/vendor-performance/{vendorId}', [ReportsController::class, 'vendorPerformance']);
+                Route::get('/driver-performance/{driverId}', [ReportsController::class, 'driverPerformance']);
+                Route::get('/sales-by-location', [ReportsController::class, 'salesByLocation']);
+                Route::get('/sales-by-category', [ReportsController::class, 'salesByCategory']);
+
+                // Export endpoints
+                Route::get('/export/sales', [ReportsController::class, 'exportSales']);
+                Route::get('/export/product-movement', [ReportsController::class, 'exportProductMovement']);
+                Route::get('/export/vendor-performance/{vendorId}', [ReportsController::class, 'exportVendorPerformance']);
+                Route::get('/export/driver-performance/{driverId}', [ReportsController::class, 'exportDriverPerformance']);
             });
 
             // User Basket Schedules (Read-Only)

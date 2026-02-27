@@ -17,6 +17,13 @@ class AllResource extends JsonResource
             'stock_quantity' => $this->stock_quantity,
             'is_active' => $this->is_active,
             'is_available' => $this->isAvailable(),
+            'shop_product_variant_id' => $this->shop_product_variant_id,
+            'product_info' => $this->when($this->shopProductVariant, function () {
+                return [
+                    'product_name' => $this->shopProductVariant->productVariant->product->name ?? null,
+                    'variant_attributes' => $this->shopProductVariant->productVariant->attribute_values ?? [],
+                ];
+            }),
             'total_exchanges' => $this->exchanges_count,
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
         ];

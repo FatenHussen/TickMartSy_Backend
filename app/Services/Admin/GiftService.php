@@ -13,7 +13,7 @@ class GiftService extends BaseService
     protected $resource = OneResource::class;
     protected $collection = AllResource::class;
 
-    protected $relations = [];
+    protected $relations = ['shopProductVariant.productVariant.product'];
 
     protected $singleImages = ['image'];
 
@@ -31,6 +31,72 @@ class GiftService extends BaseService
         'created_at',
     ];
     protected $pagination = true;
+
+    /**
+     * Override create to auto-fill data from ShopProductVariant
+     */
+    public function create($data)
+    {
+        if (!empty($data['shop_product_variant_id'])) {
+            $data = $this->fillFromShopProductVariant($data);
+        }
+
+        return parent::create($data);
+    }
+
+    /**
+     * Override update to auto-fill data from ShopProductVariant
+     */
+    public function update($id, array $data)
+    {
+        if (!empty($data['shop_product_variant_id'])) {
+            $data = $this->fillFromShopProductVariant($data);
+        }
+
+        return parent::update($id, $data);
+    }
+
+    /**
+     * Fill gift data from ShopProductVariant
+     */
+    protected function fillFromShopProductVariant(array $data): array
+    {
+        $shopProductVariant = \App\Models\ShopProductVariant::with('productVariant.product')
+            ->findOrFail($data['shop_product_variant_id']);
+
+        $productVariant = $shopProductVariant->productVariant;
+        $product = $productVariant->product;
+
+        // Auto-fill name from product + variant
+        if (empty($data['name'])) {
+            $variantName = '';
+            if (!empty($productVariant->attribute_values)) {
+                $values = collect($productVariant->attribute_values)->pluck('value')->toArray();
+                $variantName = ' - ' . implode(' / ', $values);
+            }
+            $data['name'] = [
+                'ar' => ($product->name['ar'] ?? '') . $variantName,
+                'en' => ($product->name['en'] ?? '') . $variantName,
+            ];
+        }
+
+        // Auto-fill description from product
+        if (empty($data['description'])) {
+            $data['description'] = $product->description ?? ['ar' => '', 'en' => ''];
+        }
+
+        // Auto-fill image from product
+        if (empty($data['image']) && !empty($product->main_image)) {
+            $data['image'] = $product->main_image;
+        }
+
+        // Auto-fill stock from shop product variant
+        if (!isset($data['stock_quantity'])) {
+            $data['stock_quantity'] = $shopProductVariant->stock_quantity;
+        }
+
+        return $data;
+    }
 
     public function queryBuilder($query, $filters = [], $config = [])
     {
