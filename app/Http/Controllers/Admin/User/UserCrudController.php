@@ -20,4 +20,10 @@ class UserCrudController extends BaseCRUDController
         $this->updateRequest = UpdateRequest::class;
         $this->filterRequest = FilterRequest::class;
     }
+
+    public function markters()
+    {
+        $data = $this->service->markters();
+        return $this->sendResponse(data: $data);
+    }
 }

@@ -29,6 +29,10 @@ class CouponService extends BaseService
 
     public function create($data)
     {
+        if (!isset($data['affiliate_id']) || empty($data['affiliate_id'])) {
+            return parent::create($data);
+        }
+
         $affiliateId = $data['affiliate_id'];
 
         $hasActiveCoupon = Coupon::where('affiliate_id', $affiliateId)
@@ -41,6 +45,7 @@ class CouponService extends BaseService
         if ($hasActiveCoupon) {
             throw new CustomExceptionWithMessage('This affiliate already has an active coupon.');
         }
+
         return parent::create($data);
     }
 }

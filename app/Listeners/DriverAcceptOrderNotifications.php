@@ -34,8 +34,8 @@ class DriverAcceptOrderNotifications implements ShouldQueue
                     $title,
                     $body,
                     [
-                        'order_id' => $order->id,
-                        'type' => $type,
+                        'order_id' => (string) $order->id,
+                        'type' => 'driver',
                     ]
                 );
             }

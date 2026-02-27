@@ -43,8 +43,8 @@ class HandleOrderItemStatusNotifications implements ShouldQueue
                         'عنصر خرج للتوصيل',
                         "العنصر رقم {$item->id} من الطلب {$order->id} خرج للتوصيل",
                         [
-                            'order_id' => $order->id,
-                            'item_id'  => $item->id,
+                            'order_id' => (string) $order->id,
+                            'item_id'  => (string)$item->id,
                             'type'     => 'order_item'
                         ]
                     );
@@ -64,8 +64,8 @@ class HandleOrderItemStatusNotifications implements ShouldQueue
                 'تحديث عنصر في طلبك',
                 "تم تحديث عنصر في الطلب رقم {$order->id}",
                 [
-                    'order_id' => $order->id,
-                    'item_id'  => $item->id,
+                    'order_id' => (string)$order->id,
+                    'item_id'  => (string) $item->id,
                     'type'     => 'order_item'
                 ]
             );
