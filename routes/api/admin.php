@@ -94,7 +94,7 @@ Route::prefix('admin')->group(
             });
 
             // Statistics & Reports
-            Route::prefix('statistics')->middleware('permission:statistics.view')->group(function () {
+            Route::prefix('statistics')->group(function () {
                 Route::get('/dashboard', [StatisticsController::class, 'dashboard']);
                 Route::get('/counts', [StatisticsController::class, 'counts']);
                 Route::get('/monthly-performance', [StatisticsController::class, 'monthlyPerformance']);
@@ -115,7 +115,7 @@ Route::prefix('admin')->group(
                 Route::get('/sales-heatmap', [StatisticsController::class, 'salesHeatmap']);
             });
 
-            Route::prefix('reports')->middleware('permission:reports.view')->group(function () {
+            Route::prefix('reports')->group(function () {
                 Route::get('/sales', [ReportsController::class, 'sales']);
                 Route::get('/product-movement', [ReportsController::class, 'productMovement']);
                 Route::get('/vendor-performance/{vendorId}', [ReportsController::class, 'vendorPerformance']);
