@@ -85,7 +85,7 @@ class StoreRequest extends FormRequest
             'variants.*.attributes_values_ids' => 'nullable|array',
             'variants.*.attributes_values_ids.*' => 'required|integer|exists:attribute_values,id',
             'variants.*.images' => 'nullable|array',
-            'variants.*.images.*' => 'nullable|image|max:2048',
+            'variants.*.images.*' => 'nullable|image',
 
             // Category Details
             'category_details'              => 'nullable|array',
@@ -99,7 +99,7 @@ class StoreRequest extends FormRequest
 
             // Media
             'images' => 'nullable|array',
-            'images.*' => 'image|max:2048',
+            'images.*' => 'image',
 
             // Shop Product Variants
             // Shop Product Variants

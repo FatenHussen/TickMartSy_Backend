@@ -11,6 +11,7 @@ class AllResource extends JsonResource
         return [
             'id'                    => $this->id,
             'category_id'           => $this->category->name,
+            'brand_id'              => $this->brand?->name,
 
             'name'                  => $this->name,
             'description'           => $this->description,

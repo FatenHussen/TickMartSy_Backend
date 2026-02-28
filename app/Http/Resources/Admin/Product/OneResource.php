@@ -34,6 +34,11 @@ class OneResource extends JsonResource
                 'name' => $this->category?->name,
             ],
 
+            'brand' => $this->brand ? [
+                'id' => $this->brand->id,
+                'name' => $this->brand->name,
+            ] : null,
+
             'variants' => ($this->variants ?? collect())->map(function ($variant) {
                 return [
                     'id' => $variant->id,
@@ -57,7 +62,7 @@ class OneResource extends JsonResource
                     'images' => ($variant->media ?? collect())->map(function ($img) {
                         return [
                             'id' => $img->id,
-                            'path' => $img->path,
+                            'url' => $img->url,
                         ];
                     }),
                 ];
@@ -85,7 +90,7 @@ class OneResource extends JsonResource
             'images' => ($this->media ?? collect())->map(function ($img) {
                 return [
                     'id' => $img->id,
-                    'path' => $img->path,
+                    'url' => $img->url,
                 ];
             })->values(),
         ];
