@@ -7,10 +7,11 @@ use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use App\Http\Resources\Shop\AllResource;
+use App\Traits\LogsActivity;
 
 class Shop extends Model implements Sectionable
 {
-    use HasTranslations;
+    use HasTranslations, LogsActivity;
 
     public array $translatable = ['name', 'description', 'address'];
 

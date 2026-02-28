@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class AffiliateWalletTransaction extends Model
 {
+
     protected $fillable = [
         'affiliate_id',
         'type',           // commission / withdraw

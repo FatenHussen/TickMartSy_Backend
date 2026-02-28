@@ -54,6 +54,7 @@ class RolePermissionSeeder extends Seeder
             }
         }
         $permissions[] = 'stats.index';
+        $permissions[] = 'activitylog.index';
 
         foreach ($permissions as $permission) {
             Permission::firstOrCreate([

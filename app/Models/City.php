@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
 
 class City extends Model
 {
-    use HasTranslations;
+    use HasTranslations, LogsActivity;
     protected $fillable = ['name', 'governorate_id'];
     public $translatable = ['name'];
 

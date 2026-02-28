@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
 
 class Coupon extends Model
 {
-    use HasTranslations;
+    use HasTranslations, LogsActivity;
     public $translatable = ['name'];
 
     protected $fillable = [

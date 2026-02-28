@@ -9,10 +9,11 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 use App\Models\Favorite;
+use App\Traits\LogsActivity;
 
 class Basket extends Model implements Sectionable
 {
-    use HasFactory, HasTranslations;
+    use HasFactory, HasTranslations, LogsActivity;
 
     protected $fillable = [
         'category_id',

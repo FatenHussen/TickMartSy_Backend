@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\OrderStatus;
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 
 class Order extends Model
 {
-
+    use LogsActivity;
     protected $fillable = [
         'user_id',
         'driver_id',

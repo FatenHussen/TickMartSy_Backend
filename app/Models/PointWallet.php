@@ -3,12 +3,14 @@
 
 namespace App\Models;
 
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PointWallet extends Model
 {
+    use LogsActivity;
     protected $fillable = [
         'user_id',
         'balance',
@@ -31,4 +33,3 @@ class PointWallet extends Model
         return $this->hasMany(PointTransaction::class, 'wallet_id');
     }
 }
-

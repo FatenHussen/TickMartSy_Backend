@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 use App\Http\Resources\Product\AllResource;
 use App\Models\Favorite;
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Product extends Model implements Sectionable
 {
-    use HasFactory, HasTranslations, SoftDeletes;
+    use HasFactory, HasTranslations, SoftDeletes, LogsActivity;
 
     protected $fillable = [
         'category_id',

@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
 
 class Area extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory, HasTranslations, LogsActivity;
 
     public $translatable = ['name'];
 
