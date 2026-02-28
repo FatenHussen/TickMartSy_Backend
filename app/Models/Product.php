@@ -24,7 +24,6 @@ class Product extends Model implements Sectionable
         'country',
         'model',
         'price',
-        'price_after_discount',
         'quantity',
         'barcode',
         'time_prepare',
