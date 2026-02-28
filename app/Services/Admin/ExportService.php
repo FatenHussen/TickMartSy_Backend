@@ -47,6 +47,7 @@ class ExportService
             'default_font' => 'dejavusans',
             'autoScriptToLang' => true,
             'autoLangToFont' => true,
+            'tempDir' => sys_get_temp_dir(),
         ]);
 
         $mpdf->WriteHTML($html);
@@ -93,6 +94,7 @@ class ExportService
             'default_font' => 'dejavusans',
             'autoScriptToLang' => true,
             'autoLangToFont' => true,
+            'tempDir' => sys_get_temp_dir(),
         ]);
 
         $mpdf->WriteHTML($html);
@@ -139,6 +141,7 @@ class ExportService
             'default_font' => 'dejavusans',
             'autoScriptToLang' => true,
             'autoLangToFont' => true,
+            'tempDir' => sys_get_temp_dir(),
         ]);
 
         $mpdf->WriteHTML($html);
@@ -185,6 +188,7 @@ class ExportService
             'default_font' => 'dejavusans',
             'autoScriptToLang' => true,
             'autoLangToFont' => true,
+            'tempDir' => sys_get_temp_dir(),
         ]);
 
         $mpdf->WriteHTML($html);
