@@ -189,6 +189,10 @@ abstract class BaseService
 
         $this->handleRelations($object, $data);
         $this->handleMedia($object, $data);
+
+        // Refresh to get updated data
+        $object->refresh();
+
         return new $this->resource($object) ?? true;
     }
 
@@ -209,6 +213,10 @@ abstract class BaseService
         $this->handleSingleImages($object, $data);
         $this->handleRelations($object, $data);
         $this->handleMedia($object, $data);
+
+        // Refresh to get updated data
+        $object->refresh();
+
         DB::commit();
         return new $this->resource($object);
     }
