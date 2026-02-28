@@ -93,7 +93,7 @@ class UpdateRequest extends FormRequest
             'variants.*.attributes_values_ids.*' => 'required|integer|exists:attribute_values,id',
             'variants.*.price'              => 'nullable|integer|min:0',
             'variants.*.images' => 'nullable|array',
-            'variants.*.images.*' => 'image|max:2048',
+            'variants.*.images.*' => 'image',
             // Category Details
             'category_details'              => 'nullable|array',
             'category_details.*.id'         => 'nullable|exists:product_category_details,id',
@@ -108,7 +108,7 @@ class UpdateRequest extends FormRequest
 
             // Media
             'images' => 'nullable|array',
-            'images.*' => 'image|max:2048',
+            'images.*' => 'image',
 
             // Shop Product Variants (اختياري)
             'shop_variants'                 => 'nullable|array',
