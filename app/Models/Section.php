@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use App\Services\Base\Section\SectionApiService;
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
 
 class Section extends Model
 {
-    use HasTranslations;
+    use HasTranslations, LogsActivity;
     public array $translatable = ['name'];
     protected $casts = [
         'filters' => 'array',

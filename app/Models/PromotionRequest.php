@@ -4,13 +4,14 @@ namespace App\Models;
 
 use App\Enums\PromotionStatus;
 use App\Enums\PromotionType;
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 
 class PromotionRequest extends Model
 {
-    use SoftDeletes, HasTranslations;
+    use SoftDeletes, HasTranslations, LogsActivity;
 
     public $translatable = ['title', 'description'];
 
@@ -32,11 +33,11 @@ class PromotionRequest extends Model
         'admin_notes',
         'approved_at',
         'approved_by',
-];
+    ];
 
     protected $casts = [
         'images' => 'array',
-    'discount_percentage' => 'decimal:2',
+        'discount_percentage' => 'decimal:2',
         'offer_starts_at' => 'date',
         'offer_ends_at' => 'date',
         'banner_starts_at' => 'date',
@@ -76,12 +77,11 @@ class PromotionRequest extends Model
             ->where(function ($q) {
                 $q->where(function ($sq) {
                     $sq->where('type', PromotionType::OFFER)
-                       ->where('offer_ends_at', '>=', now());
+                        ->where('offer_ends_at', '>=', now());
                 })->orWhere(function ($sq) {
                     $sq->where('type', PromotionType::BANNER)
-                       ->where('banner_ends_at', '>=',now());
+                        ->where('banner_ends_at', '>=', now());
                 });
             });
     }
 }
-

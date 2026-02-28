@@ -33,7 +33,13 @@ class StoreRequest extends FormRequest
 
             'filters' => ['nullable', 'array'],
             'filters.*.value' => ['required'],
-            'filters.*.operator' => ['required', 'in:=,<=,>=,<,>'],
+            // 'filters.*.operator' => ['required', 'in:=,<=,>=,<,>'],
+
+            // 'filters' => ['nullable', 'array'],
+            // 'filters.category_id' => ['nullable', 'integer', 'exists:categories,id'],
+            // 'filters.min_price' => ['nullable', 'integer', 'min:1'],
+            // 'filters.max_price' => ['nullable', 'integer', 'min:1'],
+            // 'filters.price' => ['nullable', 'integer', 'min:1'],
         ];
     }
 }

@@ -4,11 +4,13 @@
 
 namespace App\Models;
 
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PointTransaction extends Model
 {
+    use LogsActivity;
     protected $fillable = [
         'user_id',
         'wallet_id',
@@ -47,4 +49,3 @@ class PointTransaction extends Model
         return $this->belongsTo(Admin::class, 'created_by_admin_id');
     }
 }
-

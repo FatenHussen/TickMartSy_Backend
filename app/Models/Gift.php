@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 
 class Gift extends Model
 {
-    use SoftDeletes;
-use HasTranslations;
+    use SoftDeletes, HasTranslations, LogsActivity;
     protected $fillable = [
         'name',
         'description',
@@ -21,7 +21,7 @@ use HasTranslations;
         'shop_product_variant_id',
         'terms_conditions',
     ];
-public $translatable= ['name', 'description','terms_conditions'];
+    public $translatable = ['name', 'description', 'terms_conditions'];
     protected $casts = [
         'is_active' => 'boolean',
         'points_required' => 'integer',
@@ -91,7 +91,7 @@ public $translatable= ['name', 'description','terms_conditions'];
         return $query->where('is_active', true)
             ->where(function ($q) {
                 $q->whereNull('stock_quantity')
-                  ->orWhere('stock_quantity', '>', 0);
+                    ->orWhere('stock_quantity', '>', 0);
             });
     }
 }

@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Spatie\Translatable\HasTranslations;
 
 class Vendor extends Model
 {
-    use HasTranslations;
+    use HasTranslations, LogsActivity;
     protected $imageFolder = "vendors";
     public array $translatable = ['name'];
 

@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 use App\Models\Favorite;
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Recipe extends Model implements Sectionable
 {
-    use HasTranslations;
+    use HasTranslations, LogsActivity;
 
     public $translatable = ['name', 'description'];
 

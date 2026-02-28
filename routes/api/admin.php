@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\Admin\AdminCrudController;
 use App\Http\Controllers\Admin\Auth\AuthController;
 use App\Http\Controllers\Admin\Banner\BannerCrudController;
@@ -54,8 +55,6 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('admin')->group(
     function () {
 
-        Route::apiResource('notifications', NotificationController::class);
-        Route::apiResource('legal-documents', LegalDocumentController::class);
 
         //  Auth routes
         Route::prefix('auth')->group(function () {
@@ -71,6 +70,10 @@ Route::prefix('admin')->group(
             });
         });
         Route::middleware('auth:admin')->group(function () {
+            Route::get('/activity-logs', [ActivityLogController::class, 'index']);
+            Route::apiResource('notifications', NotificationController::class);
+            Route::apiResource('legal-documents', LegalDocumentController::class);
+
             Route::apiResource('baskets', BasketController::class);
             Route::apiResource('scheduled-baskets', ScheduledBasketController::class);
             Route::apiResource('packages', PackageController::class);

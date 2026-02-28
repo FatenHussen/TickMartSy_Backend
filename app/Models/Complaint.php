@@ -10,9 +10,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\ComplaintStatus;
 use App\Enums\ComplaintType;
+use App\Traits\LogsActivity;
 
 class Complaint extends Model
 {
+    use LogsActivity;
     protected $fillable = [
         'user_id',
         'order_id',

@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use App\Enums\RateableType;
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Rating extends Model
 {
+    use LogsActivity;
     protected $fillable = [
         'user_id',
         'rating',
@@ -15,7 +17,7 @@ class Rating extends Model
         'comment',
         'image',
         'is_verified',
-        'rateable_type',   
+        'rateable_type',
         'rateable_id',
     ];
 
