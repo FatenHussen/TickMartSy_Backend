@@ -32,14 +32,12 @@ class StoreRequest extends FormRequest
             'background_card_color' => ['nullable', 'string', 'max:50'],
 
             'filters' => ['nullable', 'array'],
-            'filters.*.value' => ['required'],
-            // 'filters.*.operator' => ['required', 'in:=,<=,>=,<,>'],
-
-            // 'filters' => ['nullable', 'array'],
-            // 'filters.category_id' => ['nullable', 'integer', 'exists:categories,id'],
-            // 'filters.min_price' => ['nullable', 'integer', 'min:1'],
-            // 'filters.max_price' => ['nullable', 'integer', 'min:1'],
-            // 'filters.price' => ['nullable', 'integer', 'min:1'],
+            'filters.brand_id' => ['nullable', 'integer', 'exists:brands,id'],
+            'filters.category_id' => ['nullable', 'integer', 'exists:categories,id'],
+            'filters.shop_id' => ['nullable', 'integer', 'exists:shops,id'],
+            // 'filters.price_min' => ['nullable', 'integer', 'min:1'],
+            // 'filters.price_max' => ['nullable', 'integer', 'min:1'],
+            'filters.type' => ['nullable', 'string'],
         ];
     }
 }

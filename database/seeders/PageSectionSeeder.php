@@ -179,6 +179,7 @@ class PageSectionSeeder extends Seeder
             'see_more' => true,
             'see_more_slug' => 'brands',
             'details_slug' => 'brand_details',
+            'manual_model' => 'brand'
         ]);
 
         PageSection::create([
@@ -199,10 +200,11 @@ class PageSectionSeeder extends Seeder
             'name' => ['en' => 'recipe', 'ar' => 'قسم الطبخة'],
             'type' => 'api',
             'api_method' => 'recipes',
-            'filters' => ['discount' => ['type' => 'number']],
+            'filters' => [],
             'see_more' => true,
             'see_more_slug' => 'recipes',
             'details_slug' => 'recipe_details',
+            'manual_model' => 'recipe'
 
         ]);
 
@@ -213,19 +215,6 @@ class PageSectionSeeder extends Seeder
             'position' => 'after',
             'order' => 5,
             'filters' => []
-        ]);
-
-
-        PageSection::create([
-            'name' => ['en' => 'recipe 50% discount', 'ar' => 'طبخات بخصومات تصل ل 50%'],
-            'page_id' => $homePage->id,
-            'section_id' => $recipeSection->id,
-            'display_type_id' => $recipeDisplayType->id,
-            'position' => 'after',
-            'order' => 5,
-            'filters' => [
-                'discount' => ['value' => 50, 'operator' => '<=']
-            ]
         ]);
 
         /*
@@ -240,7 +229,8 @@ class PageSectionSeeder extends Seeder
             'see_more' => true,
             'see_more_slug' => 'baskets',
             'details_slug' => 'basket_details',
-            'filters' => []
+            'filters' => [],
+            'manual_model' => 'basket'
         ]);
 
         PageSection::create([
@@ -263,18 +253,6 @@ class PageSectionSeeder extends Seeder
             'filters' => []
         ]);
 
-        $recipeSection = Section::create([
-            'name' => ['en' => 'recipe', 'ar' => 'قسم الطبخة'],
-            'type' => 'api',
-            'api_method' => 'products',
-            'filters' => [
-                'discount' => ['type' => 'number']
-            ],
-            'see_more' => true,
-            'see_more_slug' => 'recipes',
-            'details_slug' => 'recipe_details',
-        ]);
-
 
         /*
         |--------------------------------------------------------------------------
@@ -288,8 +266,8 @@ class PageSectionSeeder extends Seeder
             'api_method' => 'products',
             'filters' => [
                 'category_id' => ['type' => 'select', 'url' => 'admin/categories'],
-                'price_max'   => ['type' => 'number'],
-                'price_max' =>  ['type' => 'number'],
+                // 'price_max'   => ['type' => 'number'],
+                // 'price_min' =>  ['type' => 'number'],
                 'shop_id' => ['type' => 'select', 'url' => 'admin/shops'],
                 'brand_id' => ['type' => 'select', 'url' => 'admin/brands'],
                 'type' => [
@@ -308,6 +286,7 @@ class PageSectionSeeder extends Seeder
             'see_more' => true,
             'see_more_slug' => 'products',
             'details_slug'  => 'product_details',
+            'manual_model' => 'product'
         ]);
 
         PageSection::create([
@@ -374,6 +353,7 @@ class PageSectionSeeder extends Seeder
             'see_more' => true,
             'see_more_slug' => 'shops',
             'details_slug'  => 'shop_details',
+            'manual_model' => 'shop'
         ]);
 
         PageSection::create([

@@ -18,6 +18,7 @@ class AllResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'type' => $this->type,
+            'manual_model' => $this->manual_model,
             'filters' => $this->filters,
 
         ];
