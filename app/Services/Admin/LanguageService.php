@@ -17,9 +17,9 @@ class LanguageService extends BaseService
         $this->resource     = OneResource::class;
         $this->collection   = AllResource::class;
         $this->pagination = true;
-
-        $this->imageColumn  = 'flag_icon';
-        $this->imageFolder  = 'flags';
+        $this->singleImages = ['flag_icon'];
+        $this->searchableFields = ['name', 'code'];
+        $this->sortableFields = ['id', 'created_at'];
     }
 
     /* ================= Language Files ================= */
@@ -65,10 +65,13 @@ class LanguageService extends BaseService
                 $this->model->where('is_default', true)->update(['is_default' => false]);
             }
 
-            
+
             $language = $this->model::create($data);
 
-            $this->handleImages($language, $data);
+            $this->handleSingleImages($language, $data);
+
+            // Refresh to get updated data
+            $language->refresh();
 
             $this->createLangFiles($language->code);
 
