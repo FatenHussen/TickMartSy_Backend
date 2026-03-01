@@ -74,8 +74,8 @@ class ShopInfolist
                                 ->collapsible(),
                         ]),
 
-                    // Tab 2: معلومات الاتصال
-                    Tab::make(__('custom.shops.sections.contact_info'))
+                    // Tab 2: معلومات الاتصال والموقع
+                    Tab::make('معلومات الاتصال والموقع')
                         ->icon('heroicon-o-phone')
                         ->schema([
                             Section::make(__('custom.shops.sections.contact_info'))
@@ -100,12 +100,7 @@ class ShopInfolist
                                 ])
                                 ->columns(3)
                                 ->collapsible(),
-                        ]),
 
-                    // Tab 3: الموقع
-                    Tab::make(__('custom.shops.sections.location_info'))
-                        ->icon('heroicon-o-map-pin')
-                        ->schema([
                             Section::make(__('custom.shops.sections.location_info'))
                                 ->schema([
                                     Infolists\Components\TextEntry::make('address')
@@ -131,7 +126,7 @@ class ShopInfolist
                                 ->collapsible(),
                         ]),
 
-                    // Tab 4: التقييمات والحالة
+                    // Tab 3: التقييمات والحالة
                     Tab::make(__('custom.shops.sections.ratings_info'))
                         ->icon('heroicon-o-star')
                         ->schema([
@@ -172,7 +167,7 @@ class ShopInfolist
                                 ->collapsible(),
                         ]),
 
-                    // Tab 5: أوقات العمل
+                    // Tab 4: أوقات العمل
                     Tab::make('أوقات العمل')
                         ->icon('heroicon-o-clock')
                         ->badge(fn($record) => !empty($record->working_hours) ? count($record->working_hours) : null)
@@ -187,7 +182,7 @@ class ShopInfolist
                                 ->collapsible(false),
                         ]),
 
-                    // Tab 6: الخدمات
+                    // Tab 5: الخدمات
                     Tab::make('الخدمات')
                         ->icon('heroicon-o-wrench-screwdriver')
                         ->badge(fn($record) => $record->services?->count() > 0 ? $record->services->count() : null)
