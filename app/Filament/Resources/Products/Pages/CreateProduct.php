@@ -12,6 +12,7 @@ class CreateProduct extends CreateRecord
     protected static string $resource = ProductResource::class;
 
     protected $variantMediaMap = [];
+    protected $mainImagePath = null;
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
@@ -20,6 +21,16 @@ class CreateProduct extends CreateRecord
 
         if ($user) {
             $data['vendor_id'] = $user->shops()->first()?->vendor_id;
+        }
+
+        Log::info('=== mutateFormDataBeforeCreate ===');
+        Log::info('main_image in data:', ['main_image' => $data['main_image'] ?? 'NOT SET']);
+        Log::info('media in data:', ['media' => $data['media'] ?? 'NOT SET']);
+
+        // Store main_image before Filament processes it
+        if (isset($data['main_image'])) {
+            $this->mainImagePath = $data['main_image'];
+            Log::info('Stored main_image:', ['path' => $this->mainImagePath]);
         }
 
         // Extract and store variant_media before Filament processes the data
@@ -43,14 +54,27 @@ class CreateProduct extends CreateRecord
         $product = $this->record;
         $formData = $this->form->getState();
 
-        // Handle main image
-        if (isset($formData['main_image']) && !empty($formData['main_image'])) {
+        Log::info('mainImagePath property:', ['path' => $this->mainImagePath]);
+        Log::info('main_image in formData:', ['main_image' => $formData['main_image'] ?? 'NOT SET']);
+
+        // Handle main image from stored property
+        if ($this->mainImagePath) {
+            $product->media()->create([
+                'path' => $this->mainImagePath,
+                'collection' => 'main',
+                'order' => 0,
+            ]);
+            Log::info('Main image saved from property:', ['path' => $this->mainImagePath]);
+        } elseif (isset($formData['main_image']) && !empty($formData['main_image'])) {
+            // Fallback: try from formData
             $product->media()->create([
                 'path' => $formData['main_image'],
                 'collection' => 'main',
                 'order' => 0,
             ]);
-            Log::info('Main image saved:', ['path' => $formData['main_image']]);
+            Log::info('Main image saved from formData:', ['path' => $formData['main_image']]);
+        } else {
+            Log::warning('No main_image found in property or formData');
         }
 
         // Handle product media (additional images)
