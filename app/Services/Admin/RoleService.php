@@ -20,4 +20,10 @@ class RoleService extends BaseService
         $this->searchableFields = ['id', 'name'];
         $this->sortableFields  = ['id', 'name'];
     }
+
+    public function getAll($filters = [], $config = [])
+    {
+        $filters['guard_name'] = 'admin';
+        return parent::getAll($filters, $config);
+    }
 }

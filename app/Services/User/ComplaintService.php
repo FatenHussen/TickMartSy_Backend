@@ -52,6 +52,6 @@ class ComplaintService
     {
         $user = auth('user')->user();
         // return $user->orders->where('status', OrderStatus::DELIVERED->value)->pluck('order_code');
-        return $user->orders->pluck('order_code');
+        return $user->orders->select(['id', 'order_code']);
     }
 }

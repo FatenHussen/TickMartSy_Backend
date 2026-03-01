@@ -29,6 +29,7 @@ class ComplaintController extends Controller
 
 
 
+
     public function store(StoreRequest $request)
     {
         $complaint = $this->complaintService->store($request->validated());

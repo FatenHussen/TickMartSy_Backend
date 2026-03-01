@@ -18,7 +18,9 @@ class StoreRequest extends FormRequest
             'email' => ['required', 'email', 'unique:admins,email'],
             'password' => ['required', 'min:8'],
             'is_active'            => 'nullable|boolean',
-            'type'=> 'required|in:square,circle,color'
+            'type' => 'nullable|in:square,circle,color',
+            'roles' => 'nullable|array',
+            'roles.*.id' => 'required|exists:roles,id'
         ];
     }
 }

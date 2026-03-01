@@ -18,5 +18,8 @@ class AdminService extends BaseService
         $this->collection = AllResource::class;
         $this->pagination = true;
         $this->searchableFields = ['id', 'name', 'email'];
+        $this->syncRelations = [
+            'roles'   => 'roles',
+        ];
     }
 }
