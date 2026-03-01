@@ -131,6 +131,19 @@ class ProductForm
                                 ])
                                 ->collapsible(),
 
+                            Section::make('المنتجات المشتراة معاً')
+                                ->schema([
+                                    Forms\Components\Select::make('bought_with')
+                                        ->label('اختر المنتجات')
+                                        ->multiple()
+                                        ->searchable()
+                                        ->preload()
+                                        ->relationship('boughtWithProducts', 'name')
+                                        ->helperText('اختر المنتجات التي عادة ما يتم شراؤها مع هذا المنتج')
+                                        ->columnSpanFull(),
+                                ])
+                                ->collapsible(),
+
 
                             Section::make('الخصم')
                                 ->schema([
