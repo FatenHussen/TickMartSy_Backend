@@ -52,7 +52,7 @@ class ProductForm
                                         ->columnSpan(1),
 
                                     Forms\Components\Select::make('category_id')
-                                        ->label('العلامة التجارية')
+                                        ->label('الصنف')
                                         ->relationship('category', 'name')
                                         ->required()
                                         ->searchable()
@@ -61,19 +61,24 @@ class ProductForm
                                         ->columnSpan(1),
 
                                     Forms\Components\TextInput::make('barcode')
-                                        ->label('الصنف')
+                                        ->label('الباركود')
                                         ->maxLength(255)
                                         ->columnSpan(1),
 
                                     Forms\Components\Select::make('brand_id')
-                                        ->label('بلد المنشأ')
+                                        ->label('العلامة التجارية')
                                         ->relationship('brand', 'name')
                                         ->searchable()
                                         ->preload()
                                         ->columnSpan(1),
 
                                     Forms\Components\TextInput::make('country.ar')
-                                        ->label('بلد المنتج')
+                                        ->label('بلد المنتج (عربي)')
+                                        ->maxLength(255)
+                                        ->columnSpan(1),
+
+                                    Forms\Components\TextInput::make('country.en')
+                                        ->label('بلد المنتج (انجليزي)')
                                         ->maxLength(255)
                                         ->columnSpan(1),
 
@@ -86,6 +91,57 @@ class ProductForm
                                             : \App\Enums\ProductApprovalStatus::PENDING),
                                 ])
                                 ->columns(2)
+                                ->collapsible(),
+
+                            Section::make('الوصف')
+                                ->schema([
+                                    Forms\Components\Textarea::make('description.ar')
+                                        ->label('الوصف المختصر (عربي)')
+                                        ->rows(3)
+                                        ->maxLength(500)
+                                        ->columnSpanFull(),
+
+                                    Forms\Components\Textarea::make('description.en')
+                                        ->label('الوصف المختصر (انجليزي)')
+                                        ->rows(3)
+                                        ->maxLength(500)
+                                        ->columnSpanFull(),
+
+                                    Forms\Components\RichEditor::make('full_description.ar')
+                                        ->label('الوصف الكامل (عربي)')
+                                        ->toolbarButtons([
+                                            'bold',
+                                            'italic',
+                                            'underline',
+                                            'bulletList',
+                                            'orderedList',
+                                        ])
+                                        ->columnSpanFull(),
+
+                                    Forms\Components\RichEditor::make('full_description.en')
+                                        ->label('الوصف الكامل (انجليزي)')
+                                        ->toolbarButtons([
+                                            'bold',
+                                            'italic',
+                                            'underline',
+                                            'bulletList',
+                                            'orderedList',
+                                        ])
+                                        ->columnSpanFull(),
+                                ])
+                                ->collapsible(),
+
+                            Section::make('المنتجات المشتراة معاً')
+                                ->schema([
+                                    Forms\Components\Select::make('bought_with')
+                                        ->label('اختر المنتجات')
+                                        ->multiple()
+                                        ->searchable()
+                                        ->preload()
+                                        ->relationship('boughtWithProducts', 'name')
+                                        ->helperText('اختر المنتجات التي عادة ما يتم شراؤها مع هذا المنتج')
+                                        ->columnSpanFull(),
+                                ])
                                 ->collapsible(),
 
 
@@ -198,49 +254,6 @@ class ProductForm
                                         ->label('')
                                         ->relationship('variants')
                                         ->schema([
-                                            Section::make('المعلومات الأساسية')
-                                                ->schema([
-                                                    Forms\Components\TextInput::make('variant_sku')
-                                                        ->label('رقم الخصم (SKU)')
-                                                        ->maxLength(255)
-                                                        ->columnSpan(1),
-
-                                                    Forms\Components\TextInput::make('variant_barcode')
-                                                        ->label('رمز SKU مساوية')
-                                                        ->maxLength(255)
-                                                        ->columnSpan(1),
-
-                                                    Forms\Components\TextInput::make('variant_price')
-                                                        ->label('السعر')
-                                                        ->numeric()
-                                                        ->prefix('$')
-                                                        ->minValue(0)
-                                                        ->columnSpan(1),
-
-                                                    Forms\Components\TextInput::make('variant_discount')
-                                                        ->label('الخصم')
-                                                        ->numeric()
-                                                        ->suffix('%')
-                                                        ->minValue(0)
-                                                        ->maxValue(100)
-                                                        ->columnSpan(1),
-
-                                                    Forms\Components\TextInput::make('variant_cost')
-                                                        ->label('سعر التكلفة')
-                                                        ->numeric()
-                                                        ->prefix('$')
-                                                        ->minValue(0)
-                                                        ->columnSpan(1),
-
-                                                    Forms\Components\TextInput::make('variant_weight')
-                                                        ->label('الوزن (كلغ)')
-                                                        ->numeric()
-                                                        ->suffix('كلغ')
-                                                        ->minValue(0)
-                                                        ->columnSpan(1),
-                                                ])
-                                                ->columns(3)
-                                                ->collapsible(),
 
                                             Section::make('الخصائص')
                                                 ->schema([
@@ -409,68 +422,7 @@ class ProductForm
                                 ->columnSpanFull(),
                         ]),
 
-                    // Tab 4: التفاصيل
-                    Tab::make('التفاصيل')
-                        ->icon('heroicon-o-document-text')
-                        ->schema([
-                            Section::make('الوصف')
-                                ->schema([
-                                    Forms\Components\RichEditor::make('description.ar')
-                                        ->label('الوصف بالعربي')
-                                        ->required()
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'underline',
-                                            'bulletList',
-                                            'orderedList',
-                                        ])
-                                        ->columnSpanFull(),
-
-                                    Forms\Components\RichEditor::make('description.en')
-                                        ->label('الوصف بالانجليزي')
-                                        ->required()
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'underline',
-                                            'bulletList',
-                                            'orderedList',
-                                        ])
-                                        ->columnSpanFull(),
-                                ])
-                                ->collapsible(),
-
-                            Section::make('الوصف الكامل')
-                                ->schema([
-                                    Forms\Components\RichEditor::make('full_description.ar')
-                                        ->label('الوصف الكامل بالعربي')
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'underline',
-                                            'bulletList',
-                                            'orderedList',
-                                            'link',
-                                        ])
-                                        ->columnSpanFull(),
-
-                                    Forms\Components\RichEditor::make('full_description.en')
-                                        ->label('الوصف الكامل بالانجليزي')
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'underline',
-                                            'bulletList',
-                                            'orderedList',
-                                            'link',
-                                        ])
-                                        ->columnSpanFull(),
-                                ])
-                                ->collapsible(),
-                        ]),
-
-                    // Tab 5: تحسين محركات البحث
+                    // Tab 4: تحسين محركات البحث
                     Tab::make('تحسين محركات البحث')
                         ->icon('heroicon-o-magnifying-glass')
                         ->schema([

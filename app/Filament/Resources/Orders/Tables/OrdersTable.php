@@ -24,11 +24,6 @@ class OrdersTable
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('delivery_code')
-                    ->label(__('custom.orders.delivery_code'))
-                    ->searchable()
-                    ->copyable(),
-
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('custom.orders.status'))
                     ->badge()
@@ -59,9 +54,6 @@ class OrdersTable
                     ->label(__('custom.orders.total_quantity'))
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('driver.name')
-                    ->label(__('custom.orders.driver'))
-                    ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_instant_delivery')
                     ->label(__('custom.orders.is_instant_delivery'))

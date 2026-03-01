@@ -200,8 +200,11 @@ class ProductInfolist
                                 ->schema([
                                     Infolists\Components\ImageEntry::make('media')
                                         ->label('')
-                                        ->disk('public')
-                                        ->getStateUsing(fn($record) => $record->media->pluck('path')->toArray())
+                                        ->getStateUsing(function ($record) {
+                                            return $record->media->map(function ($media) {
+                                                return asset('storage/' . $media->path);
+                                            })->toArray();
+                                        })
                                         ->columnSpanFull()
                                         ->size(200)
                                         ->extraAttributes(['class' => 'rounded-xl'])
@@ -250,9 +253,12 @@ class ProductInfolist
 
                                             Infolists\Components\ImageEntry::make('media')
                                                 ->label(__('custom.products.sections.images'))
-                                                ->getStateUsing(fn($record) => $record->media->pluck('path')->toArray())
+                                                ->getStateUsing(function ($record) {
+                                                    return $record->media->map(function ($media) {
+                                                        return asset('storage/' . $media->path);
+                                                    })->toArray();
+                                                })
                                                 ->columnSpanFull()
-                                                ->disk('public')
                                                 ->size(120)
                                                 ->extraAttributes(['class' => 'rounded-xl']),
 
