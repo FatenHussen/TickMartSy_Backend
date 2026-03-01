@@ -17,8 +17,15 @@ class ProductsTable
             ->columns([
                 Tables\Columns\ImageColumn::make('media')
                     ->label(__('custom.products.image'))
-                    ->getStateUsing(fn($record) => $record->media->first()?->path)->disk('public')
-                    ->circular(),
+                    ->getStateUsing(function ($record) {
+                        $media = $record->media->first();
+                        if ($media) {
+                            return asset('storage/' . $media->path);
+                        }
+                        return null;
+                    })
+                    ->circular()
+                    ->defaultImageUrl(asset('images/placeholder.png')),
 
                 Tables\Columns\TextColumn::make('name')
                     ->label(__('custom.products.name'))
