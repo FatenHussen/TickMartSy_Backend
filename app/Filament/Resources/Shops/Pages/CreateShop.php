@@ -16,10 +16,11 @@ class CreateShop extends CreateRecord
             $workingHours = [];
             foreach ($data['working_hours'] as $item) {
                 if (isset($item['day'])) {
+                    $closed = $item['closed'] ?? false;
                     $workingHours[$item['day']] = [
-                        'open' => $item['open'] ?? null,
-                        'close' => $item['close'] ?? null,
-                        'closed' => $item['closed'] ?? false,
+                        'open' => $closed ? null : ($item['open'] ?? null),
+                        'close' => $closed ? null : ($item['close'] ?? null),
+                        'closed' => $closed,
                     ];
                 }
             }

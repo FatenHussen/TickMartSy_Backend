@@ -132,7 +132,6 @@ return [
         'hours' => 'الساعات',
         'add_day' => 'إضافة يوم',
         'working_hours_help' => 'الصيغة: {"monday": {"open": "09:00", "close": "18:00", "closed": false}}',
-    ],
 
     // Products
       'products' => [
