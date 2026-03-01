@@ -100,6 +100,22 @@ class ProductInfolist
                                 ])
                                 ->columns(4)
                                 ->collapsible(),
+
+                            Section::make(__('custom.products.sections.description'))
+                                ->schema([
+                                    Infolists\Components\TextEntry::make('description')
+                                        ->label(__('custom.products.description'))
+                                        ->columnSpanFull()
+                                        ->prose()
+                                        ->markdown(),
+
+                                    Infolists\Components\TextEntry::make('full_description')
+                                        ->label(__('custom.products.full_description'))
+                                        ->columnSpanFull()
+                                        ->prose()
+                                        ->html(),
+                                ])
+                                ->collapsible(),
                         ]),
 
                     // Tab 2: الأسعار والكميات
@@ -202,32 +218,7 @@ class ProductInfolist
                                 ->collapsible(false),
                         ]),
 
-                    // Tab 4: الوصف
-                    Tab::make(__('custom.products.sections.description'))
-                        ->icon('heroicon-o-document-text')
-                        ->schema([
-                            Section::make(__('custom.products.sections.description'))
-                                ->schema([
-                                    Infolists\Components\TextEntry::make('description')
-                                        ->label(__('custom.products.description'))
-                                        ->columnSpanFull()
-                                        ->prose()
-                                        ->markdown(),
-                                ])
-                                ->collapsible(),
-
-                            Section::make('الوصف الكامل')
-                                ->schema([
-                                    Infolists\Components\TextEntry::make('full_description')
-                                        ->label('الوصف الكامل')
-                                        ->columnSpanFull()
-                                        ->prose()
-                                        ->html(),
-                                ])
-                                ->collapsible(),
-                        ]),
-
-                    // Tab 5: المتغيرات
+                    // Tab 4: المتغيرات
                     Tab::make(__('custom.products.sections.variants'))
                         ->icon('heroicon-o-squares-2x2')
                         ->badge(fn($record) => $record->variants->count() > 0 ? $record->variants->count() : null)
@@ -322,7 +313,7 @@ class ProductInfolist
                                 ->visible(fn($record) => $record->variants->count() === 0),
                         ]),
 
-                    // Tab 6: التفاصيل الإضافية
+                    // Tab 5: التفاصيل الإضافية
                     Tab::make('التفاصيل الإضافية')
                         ->icon('heroicon-o-list-bullet')
                         ->badge(fn($record) => ($record->categoryDetails->count() + $record->extraDetails->count()) > 0 ? ($record->categoryDetails->count() + $record->extraDetails->count()) : null)
@@ -381,7 +372,7 @@ class ProductInfolist
                                 ->visible(fn($record) => $record->categoryDetails->count() === 0 && $record->extraDetails->count() === 0),
                         ]),
 
-                    // Tab 7: إعدادات التوصيل
+                    // Tab 6: إعدادات التوصيل
                     Tab::make(__('custom.products.sections.delivery_settings'))
                         ->icon('heroicon-o-truck')
                         ->schema([
@@ -407,7 +398,7 @@ class ProductInfolist
                                 ->collapsible(),
                         ]),
 
-                    // Tab 8: المنتجات المشتراة معاً
+                    // Tab 7: المنتجات المشتراة معاً
                     Tab::make(__('custom.products.sections.bought_with'))
                         ->icon('heroicon-o-shopping-bag')
                         ->badge(fn($record) => $record->bought_with && \count($record->bought_with) > 0 ? \count($record->bought_with) : null)
