@@ -103,6 +103,11 @@ return [
             'saturday' => 'السبت',
             'sunday' => 'الأحد',
         ],
+            'thursday' => 'الخميس',
+            'friday' => 'الجمعة',
+            'saturday' => 'السبت',
+            'sunday' => 'الأحد',
+        ],
         'sections' => [
             'basic_info' => 'المعلومات الأساسية',
             'contact_info' => 'معلومات الاتصال',

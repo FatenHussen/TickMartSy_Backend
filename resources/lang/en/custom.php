@@ -100,6 +100,8 @@ return [
             'saturday' => 'Saturday',
             'sunday' => 'Sunday',
         ],
+            'sunday' => 'Sunday',
+        ],
         'sections' => [
             'basic_info' => 'Basic Information',
             'contact_info' => 'Contact Information',

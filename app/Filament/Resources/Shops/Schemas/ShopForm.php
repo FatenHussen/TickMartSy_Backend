@@ -115,13 +115,49 @@ class ShopForm
                         // Tab 5: Working Hours
                         Tabs\Tab::make(__('custom.shops.tabs.working_hours'))
                             ->schema([
-                                Forms\Components\KeyValue::make('working_hours')
+                                Forms\Components\Repeater::make('working_hours')
                                     ->label(__('custom.shops.working_hours'))
-                                    ->keyLabel(__('custom.shops.day'))
-                                    ->valueLabel(__('custom.shops.hours'))
+                                    ->schema([
+                                        Forms\Components\Select::make('day')
+                                            ->label(__('custom.shops.day'))
+                                            ->options([
+                                                'monday' => __('custom.shops.days.monday'),
+                                                'tuesday' => __('custom.shops.days.tuesday'),
+                                                'wednesday' => __('custom.shops.days.wednesday'),
+                                                'thursday' => __('custom.shops.days.thursday'),
+                                                'friday' => __('custom.shops.days.friday'),
+                                                'saturday' => __('custom.shops.days.saturday'),
+                                                'sunday' => __('custom.shops.days.sunday'),
+                                            ])
+                                            ->required()
+                                            ->distinct()
+                                            ->columnSpan(2),
+
+                                        Forms\Components\TimePicker::make('open')
+                                            ->label(__('custom.shops.open'))
+                                            ->seconds(false)
+                                            ->required(fn ($get) => !$get('closed'))
+                                            ->disabled(fn ($get) => $get('closed'))
+                                            ->columnSpan(2),
+
+                                        Forms\Components\TimePicker::make('close')
+                                            ->label(__('custom.shops.close'))
+                                            ->seconds(false)
+                                            ->required(fn ($get) => !$get('closed'))
+                                            ->disabled(fn ($get) => $get('closed'))
+                                            ->columnSpan(2),
+
+                                        Forms\Components\Toggle::make('closed')
+                                            ->label(__('custom.shops.closed'))
+                                            ->default(false)
+                                            ->reactive()
+                                            ->columnSpan(1),
+                                    ])
+                                    ->columns(7)
+                                    ->defaultItems(0)
                                     ->addActionLabel(__('custom.shops.add_day'))
-                                    ->columnSpanFull()
-                                    ->helperText(__('custom.shops.working_hours_help') . ' Example: "09:00 - 18:00" or "Closed"'),
+                                    ->reorderable(false)
+                                    ->columnSpanFull(),
                             ]),
 
                         // Tab 6: Services & Settings

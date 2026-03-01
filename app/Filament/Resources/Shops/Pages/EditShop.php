@@ -20,22 +20,20 @@ class EditShop extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        // Convert working_hours object to key-value pairs for KeyValue component
+        // Convert working_hours object to array for Repeater component
         if (isset($data['working_hours']) && is_array($data['working_hours'])) {
-            $workingHours = [];
+            $workingHoursArray = [];
             foreach ($data['working_hours'] as $day => $hours) {
                 if (is_array($hours)) {
-                    $closed = $hours['closed'] ?? false;
-                    if ($closed) {
-                        $workingHours[$day] = 'Closed';
-                    } else {
-                        $open = $hours['open'] ?? '';
-                        $close = $hours['close'] ?? '';
-                        $workingHours[$day] = "{$open} - {$close}";
-                    }
+                    $workingHoursArray[] = [
+                        'day' => $day,
+                        'open' => $hours['open'] ?? null,
+                        'close' => $hours['close'] ?? null,
+                        'closed' => $hours['closed'] ?? false,
+                    ];
                 }
             }
-            $data['working_hours'] = $workingHours;
+            $data['working_hours'] = $workingHoursArray;
         }
 
         return $data;
@@ -43,23 +41,15 @@ class EditShop extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        // Convert key-value pairs back to working_hours object structure
+        // Convert Repeater array back to working_hours object structure
         if (isset($data['working_hours']) && is_array($data['working_hours'])) {
             $workingHours = [];
-            foreach ($data['working_hours'] as $day => $hours) {
-                if (strtolower($hours) === 'closed' || empty($hours)) {
-                    $workingHours[$day] = [
-                        'open' => null,
-                        'close' => null,
-                        'closed' => true
-                    ];
-                } else {
-                    // Parse "09:00 - 18:00" format
-                    $times = array_map('trim', explode('-', $hours));
-                    $workingHours[$day] = [
-                        'open' => $times[0] ?? null,
-                        'close' => $times[1] ?? null,
-                        'closed' => false
+            foreach ($data['working_hours'] as $item) {
+                if (isset($item['day'])) {
+                    $workingHours[$item['day']] = [
+                        'open' => $item['open'] ?? null,
+                        'close' => $item['close'] ?? null,
+                        'closed' => $item['closed'] ?? false,
                     ];
                 }
             }
