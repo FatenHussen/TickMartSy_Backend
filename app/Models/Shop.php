@@ -61,6 +61,17 @@ class Shop extends Model implements Sectionable
     {
         return $this->belongsTo(Vendor::class);
     }
+
+    public function vendorUsers()
+    {
+        return $this->belongsToMany(
+            VendorUser::class,
+            'shop_users',
+            'shop_id',
+            'vendor_user_id'
+        );
+    }
+
     protected function averageRating(): Attribute
     {
         return Attribute::make(

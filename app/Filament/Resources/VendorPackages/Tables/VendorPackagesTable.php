@@ -97,7 +97,7 @@ class VendorPackagesTable
                         }
 
                         // Get user's shops through pivot table
-                        $shop = \App\Models\Shop::whereHas('users', function ($query) use ($user) {
+                        $shop = \App\Models\Shop::whereHas('vendorUsers', function ($query) use ($user) {
                             $query->where('vendor_users.id', $user->id);
                         })->first();
 
