@@ -36,7 +36,8 @@ class ShopInfolist
                                     Infolists\Components\TextEntry::make('description')
                                         ->label(__('custom.shops.description'))
                                         ->columnSpanFull()
-                                        ->prose(),
+                                        ->prose()
+                                        ->visible(fn($record) => !empty($record->description)),
 
                                     Infolists\Components\TextEntry::make('vendor.name')
                                         ->label(__('custom.shops.vendor'))
@@ -159,41 +160,10 @@ class ShopInfolist
                         ->schema([
                             Section::make('أوقات العمل')
                                 ->schema([
-                                    Infolists\Components\TextEntry::make('working_hours')
+                                    Infolists\Components\ViewEntry::make('working_hours')
                                         ->label('')
-                                        ->formatStateUsing(function ($state) {
-                                            if (empty($state)) {
-                                                return '🕐 لا توجد أوقات عمل محددة';
-                                            }
-
-                                            $days = [
-                                                'monday' => 'الإثنين',
-                                                'tuesday' => 'الثلاثاء',
-                                                'wednesday' => 'الأربعاء',
-                                                'thursday' => 'الخميس',
-                                                'friday' => 'الجمعة',
-                                                'saturday' => 'السبت',
-                                                'sunday' => 'الأحد',
-                                            ];
-
-                                            $output = '';
-                                            foreach ($state as $day => $hours) {
-                                                $dayName = $days[$day] ?? $day;
-                                                $closed = $hours['closed'] ?? false;
-
-                                                if ($closed) {
-                                                    $output .= "❌ {$dayName}: مغلق\n";
-                                                } else {
-                                                    $open = $hours['open'] ?? '-';
-                                                    $close = $hours['close'] ?? '-';
-                                                    $output .= "✅ {$dayName}: {$open} - {$close}\n";
-                                                }
-                                            }
-
-                                            return trim($output);
-                                        })
-                                        ->columnSpanFull()
-                                        ->prose(),
+                                        ->view('filament.infolists.working-hours')
+                                        ->columnSpanFull(),
                                 ])
                                 ->collapsible(false),
                         ]),
