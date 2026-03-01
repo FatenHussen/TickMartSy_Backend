@@ -291,8 +291,8 @@ return [
             'normal' => 'Normal',
         ],
         'actions' => [
-            'start_preparing' => 'Start Preparing',
-            'ready_for_delivery' => 'Ready for Delivery',
+            'start_preparing' => 'Change to Start Preparing',
+            'ready_for_delivery' => 'Change to Ready for Delivery',
             'status_updated' => 'Order status updated',
             'ready_notification' => 'Order is ready for delivery',
         ],

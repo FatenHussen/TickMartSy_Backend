@@ -291,8 +291,8 @@ return [
             'normal' => 'عادي',
         ],
         'actions' => [
-            'start_preparing' => 'بدء التحضير',
-            'ready_for_delivery' => 'جاهز للتوصيل',
+            'start_preparing' => 'تغيير الحالة لبدء التحضير',
+            'ready_for_delivery' => 'تغير الحالة لجاهز للتوصيل',
             'status_updated' => 'تم تحديث حالة الطلب',
             'ready_notification' => 'الطلب جاهز للتوصيل',
         ],
