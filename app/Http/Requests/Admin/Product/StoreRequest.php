@@ -69,8 +69,8 @@ class StoreRequest extends FormRequest
     {
         $rules = [
             'category_id'           => 'required|exists:categories,id',
-            'sku'                   => 'nullable|string|unique:products,sku' ,
-            'model'                 => 'nullable|string|unique:products,model' ,
+            'sku'                   => 'nullable|string|unique:products,sku',
+            'model'                 => 'nullable|string|unique:products,model',
             'price'                 => 'required|integer|min:0',
             'discount'              => 'nullable|integer|min:0|max:100',
             'quantity'              => 'nullable|integer|min:0',
@@ -108,7 +108,7 @@ class StoreRequest extends FormRequest
             'shop_variants.*.variant_index'     => 'required|integer|min:0',
             'shop_variants.*.price'             => 'nullable|integer|min:0',
             'shop_variants.*.quantity'          => 'nullable|integer|min:0',
-
+            'brand_id' => 'nullable|integer|exists:brands,id'
 
         ];
 
