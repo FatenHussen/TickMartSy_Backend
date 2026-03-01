@@ -21,10 +21,7 @@ class ProductVariantSeeder extends Seeder
             ProductVariant::create([
                 'product_id' => $product->id,
                 'attributes_values_ids' => [2, 6],
-                'is_trend' => 0, // IDs من AttributeValue
-
-                 // IDs من AttributeValue
-                 // IDs من AttributeValue
+                'is_trend' => 0, 
             ]);
         }
     }
