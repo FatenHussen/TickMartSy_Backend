@@ -112,15 +112,6 @@ class ProductForm
                                 ->columns(2)
                                 ->collapsible(),
 
-                            Section::make('الملاحظات')
-                                ->schema([
-                                    Forms\Components\Textarea::make('notes')
-                                        ->label('نص الملاحظة')
-                                        ->rows(3)
-                                        ->columnSpanFull(),
-                                ])
-                                ->collapsible(),
-
                             Section::make('السعر والكمية')
                                 ->schema([
                                     Forms\Components\TextInput::make('price')
