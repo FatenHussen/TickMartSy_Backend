@@ -48,6 +48,7 @@ use App\Http\Controllers\Admin\VendorPackage\VendorPackageController;
 use App\Http\Controllers\Admin\VendorSubscription\VendorSubscriptionController;
 use App\Http\Controllers\Admin\SellerRegistration\SellerRegistrationCrudController;
 use App\Http\Controllers\Admin\VendorUser\VendorUserCrudController;
+use App\Http\Controllers\Admin\Schedule\ScheduleCrudController;
 use App\Http\Controllers\Admin\Statistics\StatisticsController;
 use App\Http\Controllers\Admin\Reports\ReportsController;
 use Illuminate\Support\Facades\Route;
@@ -76,6 +77,7 @@ Route::prefix('admin')->group(
 
             Route::apiResource('baskets', BasketController::class);
             Route::apiResource('scheduled-baskets', ScheduledBasketController::class);
+            Route::apiResource('schedules', ScheduleCrudController::class);
             Route::apiResource('packages', PackageController::class);
             Route::apiResource('subscriptions', SubscriptionController::class);
             Route::apiResource('gifts', GiftController::class);
