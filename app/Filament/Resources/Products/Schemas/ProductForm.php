@@ -52,7 +52,7 @@ class ProductForm
                                         ->columnSpan(1),
 
                                     Forms\Components\Select::make('category_id')
-                                        ->label('العلامة التجارية')
+                                        ->label('الصنف')
                                         ->relationship('category', 'name')
                                         ->required()
                                         ->searchable()
@@ -61,12 +61,12 @@ class ProductForm
                                         ->columnSpan(1),
 
                                     Forms\Components\TextInput::make('barcode')
-                                        ->label('الصنف')
+                                        ->label('الباركود')
                                         ->maxLength(255)
                                         ->columnSpan(1),
 
                                     Forms\Components\Select::make('brand_id')
-                                        ->label('بلد المنشأ')
+                                        ->label('العلامة التجارية')
                                         ->relationship('brand', 'name')
                                         ->searchable()
                                         ->preload()
