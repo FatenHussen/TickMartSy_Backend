@@ -137,8 +137,13 @@ class ProductForm
                                         ->label('اختر المنتجات')
                                         ->multiple()
                                         ->searchable()
-                                        ->preload()
-                                        ->relationship('boughtWithProducts', 'name')
+                                        ->options(function () use ($vendorId) {
+                                            if (!$vendorId) {
+                                                return \App\Models\Product::pluck('name', 'id');
+                                            }
+                                            return \App\Models\Product::where('vendor_id', $vendorId)
+                                                ->pluck('name', 'id');
+                                        })
                                         ->helperText('اختر المنتجات التي عادة ما يتم شراؤها مع هذا المنتج')
                                         ->columnSpanFull(),
                                 ])

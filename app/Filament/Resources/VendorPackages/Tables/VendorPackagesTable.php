@@ -75,7 +75,7 @@ class VendorPackagesTable
             ])
             ->actions([
                 ViewAction::make(),
-                Tables\Actions\Action::make('subscribe')
+                \Filament\Actions\Action::make('subscribe')
                     ->label('اشتراك')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
@@ -97,7 +97,7 @@ class VendorPackagesTable
                         }
 
                         // Get user's shops through pivot table
-                        $shop = \App\Models\Shop::whereHas('users', function ($query) use ($user) {
+                        $shop = \App\Models\Shop::whereHas('vendorUsers', function ($query) use ($user) {
                             $query->where('vendor_users.id', $user->id);
                         })->first();
 

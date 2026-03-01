@@ -127,19 +127,19 @@ class UserService
 
     public function login(array $data)
     {
-        // $field = $this->resolveField($data);
+         $field = $this->resolveField($data);
         $user  = $this->resolveUser($data);
 
         if (!Hash::check($data['password'], $user->password)) {
             throw new CustomExceptionWithMessage('custom.wrong_credential');
         }
 
-        // if (!$user->{$field . '_verified_at'}) {
-        //     $verification = $this->createOtp($user, 'verification');
-        //     $this->sendOtp($user, $verification, $field);
+        if (!$user->{$field . '_verified_at'}) {
+            $verification = $this->createOtp($user, 'verification');
+            $this->sendOtp($user, $verification, $field);
 
-        //     throw new InvalidVerificationCodeException();
-        // }
+            throw new InvalidVerificationCodeException();
+        }
 
         $user->load('currency');
 
