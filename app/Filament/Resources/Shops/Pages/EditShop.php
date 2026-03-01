@@ -17,4 +17,46 @@ class EditShop extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        // Convert working_hours object to array for Repeater component
+        if (isset($data['working_hours']) && is_array($data['working_hours'])) {
+            $workingHoursArray = [];
+            foreach ($data['working_hours'] as $day => $hours) {
+                if (is_array($hours)) {
+                    $workingHoursArray[] = [
+                        'day' => $day,
+                        'open' => $hours['open'] ?? null,
+                        'close' => $hours['close'] ?? null,
+                        'closed' => $hours['closed'] ?? false,
+                    ];
+                }
+            }
+            $data['working_hours'] = $workingHoursArray;
+        }
+
+        return $data;
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        // Convert Repeater array back to working_hours object structure
+        if (isset($data['working_hours']) && is_array($data['working_hours'])) {
+            $workingHours = [];
+            foreach ($data['working_hours'] as $item) {
+                if (isset($item['day'])) {
+                    $closed = $item['closed'] ?? false;
+                    $workingHours[$item['day']] = [
+                        'open' => $closed ? null : ($item['open'] ?? null),
+                        'close' => $closed ? null : ($item['close'] ?? null),
+                        'closed' => $closed,
+                    ];
+                }
+            }
+            $data['working_hours'] = $workingHours;
+        }
+
+        return $data;
+    }
 }

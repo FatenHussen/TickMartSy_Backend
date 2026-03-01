@@ -108,7 +108,7 @@ class StoreRequest extends FormRequest
             'shop_variants.*.variant_index'     => 'required|integer|min:0',
             'shop_variants.*.price'             => 'nullable|integer|min:0',
             'shop_variants.*.quantity'          => 'nullable|integer|min:0',
-
+            'brand_id' => 'nullable|integer|exists:brands,id'
 
 
             'badges'          => 'nullable|array',

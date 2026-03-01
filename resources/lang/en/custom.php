@@ -107,8 +107,26 @@ return [
             'ratings_info' => 'Ratings & Status',
             'working_hours' => 'Working Hours',
             'settings' => 'Settings',
+            'services' => 'Services',
         ],
+        'tabs' => [
+            'basic_info_en' => 'Basic Info (English)',
+            'basic_info_ar' => 'Basic Info (Arabic)',
+            'contact_location' => 'Contact & Location',
+            'media' => 'Media',
+            'working_hours' => 'Working Hours',
+            'settings' => 'Services & Settings',
+        ],
+        'vendor' => 'Vendor',
+        'services' => 'Services',
+        'cover_images' => 'Cover Images',
+        'is_default' => 'Default Shop',
+        'is_default_help' => 'Mark this as the default shop for the vendor',
+        'hours' => 'Hours',
+        'add_day' => 'Add Day',
+        'working_hours_help' => 'Format: {"monday": {"open": "09:00", "close": "18:00", "closed": false}}',
     ],
+
 
     // Products
   'products' => [
@@ -368,11 +386,6 @@ return [
     ],
 
     'unlimited' => 'Unlimited',
-    'active' => 'Active',
-    'inactive' => 'Inactive',
-    'all' => 'All',
     'status' => 'Status',
     'id' => 'ID',
-    'created_at' => 'Created At',
-    'updated_at' => 'Updated At',
 ];

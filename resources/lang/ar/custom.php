@@ -81,6 +81,7 @@ return [
         'email' => 'البريد الإلكتروني',
         'address' => 'العنوان',
         'area' => 'المنطقة',
+        'vendor' => 'المورد',
         'lat' => 'خط العرض',
         'lng' => 'خط الطول',
         'rating' => 'التقييم',
@@ -109,7 +110,23 @@ return [
             'ratings_info' => 'التقييمات والحالة',
             'working_hours' => 'أوقات العمل',
             'settings' => 'الإعدادات',
+            'services' => 'الخدمات',
         ],
+        'tabs' => [
+            'basic_info_en' => 'المعلومات الأساسية (إنجليزي)',
+            'basic_info_ar' => 'المعلومات الأساسية (عربي)',
+            'contact_location' => 'الاتصال والموقع',
+            'media' => 'الوسائط',
+            'working_hours' => 'أوقات العمل',
+            'settings' => 'الخدمات والإعدادات',
+        ],
+        'services' => 'الخدمات',
+        'cover_images' => 'صور الغلاف',
+        'is_default' => 'المتجر الافتراضي',
+        'is_default_help' => 'تعيين هذا كمتجر افتراضي للمورد',
+        'hours' => 'الساعات',
+        'add_day' => 'إضافة يوم',
+        'working_hours_help' => 'الصيغة: {"monday": {"open": "09:00", "close": "18:00", "closed": false}}',
     ],
 
     // Products
@@ -368,12 +385,7 @@ return [
     ],
 
     'unlimited' => 'غير محدود',
-    'active' => 'نشط',
-    'inactive' => 'غير نشط',
-    'all' => 'الكل',
     'status' => 'الحالة',
     'id' => 'الرقم',
-    'created_at' => 'تاريخ الإنشاء',
-    'updated_at' => 'تاريخ التحديث',
 ];
 

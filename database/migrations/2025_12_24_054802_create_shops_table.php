@@ -33,6 +33,8 @@ return new class extends Migration
                 ->constrained('vendors')
                 ->cascadeOnDelete();
 
+            $table->boolean('is_default')->default(false);
+
             $table->timestamps();
         });
 

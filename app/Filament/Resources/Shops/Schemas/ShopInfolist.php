@@ -36,7 +36,8 @@ class ShopInfolist
                                     Infolists\Components\TextEntry::make('description')
                                         ->label(__('custom.shops.description'))
                                         ->columnSpanFull()
-                                        ->prose(),
+                                        ->prose()
+                                        ->visible(fn($record) => !empty($record->description)),
 
                                     Infolists\Components\TextEntry::make('vendor.name')
                                         ->label(__('custom.shops.vendor'))
@@ -52,10 +53,29 @@ class ShopInfolist
                                 ])
                                 ->columns(4)
                                 ->collapsible(),
+
+                            Section::make('صور الغلاف')
+                                ->schema([
+                                    Infolists\Components\ImageEntry::make('coverImages')
+                                        ->label('')
+                                        ->disk('public')
+                                        ->getStateUsing(fn($record) => $record->coverImages()?->get()->pluck('path')->toArray() ?? [])
+                                        ->columnSpanFull()
+                                        ->extraAttributes(['class' => 'rounded-xl'])
+                                        ->visible(fn($record) => $record->coverImages()?->count() > 0),
+
+                                    Infolists\Components\TextEntry::make('no_cover_images')
+                                        ->label('')
+                                        ->default('📷 لا توجد صور غلاف')
+                                        ->color('gray')
+                                        ->columnSpanFull()
+                                        ->visible(fn($record) => $record->coverImages()?->count() === 0 || !$record->coverImages()),
+                                ])
+                                ->collapsible(),
                         ]),
 
-                    // Tab 2: معلومات الاتصال
-                    Tab::make(__('custom.shops.sections.contact_info'))
+                    // Tab 2: معلومات الاتصال والموقع
+                    Tab::make('معلومات الاتصال والموقع')
                         ->icon('heroicon-o-phone')
                         ->schema([
                             Section::make(__('custom.shops.sections.contact_info'))
@@ -80,12 +100,7 @@ class ShopInfolist
                                 ])
                                 ->columns(3)
                                 ->collapsible(),
-                        ]),
 
-                    // Tab 3: الموقع
-                    Tab::make(__('custom.shops.sections.location_info'))
-                        ->icon('heroicon-o-map-pin')
-                        ->schema([
                             Section::make(__('custom.shops.sections.location_info'))
                                 ->schema([
                                     Infolists\Components\TextEntry::make('address')
@@ -111,7 +126,7 @@ class ShopInfolist
                                 ->collapsible(),
                         ]),
 
-                    // Tab 4: التقييمات والحالة
+                    // Tab 3: التقييمات والحالة
                     Tab::make(__('custom.shops.sections.ratings_info'))
                         ->icon('heroicon-o-star')
                         ->schema([
@@ -152,63 +167,25 @@ class ShopInfolist
                                 ->collapsible(),
                         ]),
 
-                    // Tab 5: أوقات العمل
+                    // Tab 4: أوقات العمل
                     Tab::make('أوقات العمل')
                         ->icon('heroicon-o-clock')
-                        ->badge(fn($record) => $record->workingHours->count() > 0 ? $record->workingHours->count() : null)
+                        ->badge(fn($record) => !empty($record->working_hours) ? count($record->working_hours) : null)
                         ->schema([
                             Section::make('أوقات العمل')
                                 ->schema([
-                                    Infolists\Components\RepeatableEntry::make('workingHours')
+                                    Infolists\Components\ViewEntry::make('working_hours')
                                         ->label('')
-                                        ->schema([
-                                            Infolists\Components\TextEntry::make('day')
-                                                ->label('اليوم')
-                                                ->badge()
-                                                ->color('info')
-                                                ->icon('heroicon-o-calendar'),
-
-                                            Infolists\Components\TextEntry::make('open_time')
-                                                ->label('وقت الفتح')
-                                                ->badge()
-                                                ->color('success')
-                                                ->icon('heroicon-o-clock'),
-
-                                            Infolists\Components\TextEntry::make('close_time')
-                                                ->label('وقت الإغلاق')
-                                                ->badge()
-                                                ->color('danger')
-                                                ->icon('heroicon-o-clock'),
-
-                                            Infolists\Components\IconEntry::make('is_open')
-                                                ->label('مفتوح')
-                                                ->boolean()
-                                                ->trueIcon('heroicon-o-check-circle')
-                                                ->falseIcon('heroicon-o-x-circle')
-                                                ->trueColor('success')
-                                                ->falseColor('gray'),
-                                        ])
-                                        ->columns(4)
-                                        ->contained(false),
-                                ])
-                                ->visible(fn($record) => $record->workingHours->count() > 0)
-                                ->collapsible(false),
-
-                            Section::make('لا توجد أوقات عمل')
-                                ->schema([
-                                    Infolists\Components\TextEntry::make('no_working_hours')
-                                        ->label('')
-                                        ->default('🕐 لا توجد أوقات عمل محددة')
-                                        ->color('gray')
+                                        ->view('filament.infolists.working-hours')
                                         ->columnSpanFull(),
                                 ])
-                                ->visible(fn($record) => $record->workingHours->count() === 0),
+                                ->collapsible(false),
                         ]),
 
-                    // Tab 6: الخدمات
+                    // Tab 5: الخدمات
                     Tab::make('الخدمات')
                         ->icon('heroicon-o-wrench-screwdriver')
-                        ->badge(fn($record) => $record->services->count() > 0 ? $record->services->count() : null)
+                        ->badge(fn($record) => $record->services?->count() > 0 ? $record->services->count() : null)
                         ->schema([
                             Section::make('الخدمات')
                                 ->schema([
@@ -228,7 +205,7 @@ class ShopInfolist
                                         ->columns(1)
                                         ->contained(false),
                                 ])
-                                ->visible(fn($record) => $record->services->count() > 0)
+                                ->visible(fn($record) => $record->services?->count() > 0)
                                 ->collapsible(false),
 
                             Section::make('لا توجد خدمات')
@@ -239,32 +216,7 @@ class ShopInfolist
                                         ->color('gray')
                                         ->columnSpanFull(),
                                 ])
-                                ->visible(fn($record) => $record->services->count() === 0),
-                        ]),
-
-                    // Tab 7: صور الغلاف
-                    Tab::make('صور الغلاف')
-                        ->icon('heroicon-o-photo')
-                        ->badge(fn($record) => $record->coverImages->count() > 0 ? $record->coverImages->count() : null)
-                        ->schema([
-                            Section::make('صور الغلاف')
-                                ->schema([
-                                    Infolists\Components\ImageEntry::make('coverImages')
-                                        ->label('')
-                                        ->disk('public')
-                                        ->getStateUsing(fn($record) => $record->coverImages->pluck('path')->toArray())
-                                        ->columnSpanFull()
-                                        ->extraAttributes(['class' => 'rounded-xl'])
-                                        ->visible(fn($record) => $record->coverImages->count() > 0),
-
-                                    Infolists\Components\TextEntry::make('no_cover_images')
-                                        ->label('')
-                                        ->default('📷 لا توجد صور غلاف')
-                                        ->color('gray')
-                                        ->columnSpanFull()
-                                        ->visible(fn($record) => $record->coverImages->count() === 0),
-                                ])
-                                ->collapsible(false),
+                                ->visible(fn($record) => $record->services?->count() === 0 || !$record->services),
                         ]),
                 ])
                 ->columnSpanFull(),

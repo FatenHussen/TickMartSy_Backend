@@ -43,7 +43,17 @@ class CreateProduct extends CreateRecord
         $product = $this->record;
         $formData = $this->form->getState();
 
-        // Handle product media
+        // Handle main image
+        if (isset($formData['main_image']) && !empty($formData['main_image'])) {
+            $product->media()->create([
+                'path' => $formData['main_image'],
+                'collection' => 'main',
+                'order' => 0,
+            ]);
+            Log::info('Main image saved:', ['path' => $formData['main_image']]);
+        }
+
+        // Handle product media (additional images)
         if (isset($formData['media']) && is_array($formData['media'])) {
             foreach ($formData['media'] as $index => $filePath) {
                 $product->media()->create([
@@ -52,6 +62,7 @@ class CreateProduct extends CreateRecord
                     'order' => $index,
                 ]);
             }
+            Log::info('Product media saved:', ['count' => count($formData['media'])]);
         }
 
         // Handle variant media using the stored map
