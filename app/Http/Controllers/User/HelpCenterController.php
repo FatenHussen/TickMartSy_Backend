@@ -38,7 +38,7 @@ class HelpCenterController extends Controller
         }
 
         $faqs = $query->get();
-        $types = ['orders', 'delivery', 'payments', 'account', 'stores & drivers', 'other'];
+        $types = ['orders', 'delivery', 'payments', 'account', 'stores&drivers', 'other'];
 
         return $this->sendResponse(
             data: [

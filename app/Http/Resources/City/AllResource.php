@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\City;
 
-use App\Http\Resources\Governorate\OneResource as GovernorateOneResource;
+use App\Http\Resources\Governorate\AllResource as GovernorateOneResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Area;
 
-use App\Http\Resources\City\OneResource as CityOneResource;
+use App\Http\Resources\City\AllResource as CityOneResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

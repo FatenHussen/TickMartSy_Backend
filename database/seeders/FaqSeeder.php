@@ -66,7 +66,7 @@ class FaqSeeder extends Seeder
         ];
 
 
-        $types = ['orders', 'delivery', 'payments', 'account', 'stores & drivers', 'other'];
+        $types = ['orders', 'delivery', 'payments', 'account', 'stores&drivers', 'other'];
 
         foreach ($types as $type) {
             foreach ($faqs as $faq) {

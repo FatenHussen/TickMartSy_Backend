@@ -83,7 +83,7 @@ class UserService extends BaseService
             ->get()
             ->map(function ($user) {
                 return [
-                    'id' => $user->id,
+                    'id' => $user->affiliate_id,
                     'label' => $user->id . '-' . $user->affiliate_id . '-' . $user->name,
                 ];
             });
