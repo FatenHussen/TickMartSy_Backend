@@ -11,6 +11,14 @@ class AllResource extends JsonResource
     {
         $locale = app()->getLocale();
 
+        // Check if productVariant exists
+        if (!$this->productVariant) {
+            return [
+                'id' => $this->id,
+                'label' => 'متغير غير متوفر',
+            ];
+        }
+
         // Get product name
         $productNameData = $this->productVariant->product->name ?? "product";
         $productName = is_array($productNameData)
@@ -40,9 +48,9 @@ class AllResource extends JsonResource
         $attributesString = implode(' | ', $attributesParts);
 
         // Get shop name
-        $shopNameData = $this->shop->name;
+        $shopNameData = $this->shop->name ?? [];
         $shopName = is_array($shopNameData)
-            ? ($shopNameData[$locale] ?? $shopNameData['ar'] ?? $shopNameData['en'] ?? '')
+            ? ($shopNameData[$locale] ?? $shopNameData['ar'] ?? $shopNameData['en'] ?? 'متجر غير معروف')
             : (string) $shopNameData;
 
         // Build label
