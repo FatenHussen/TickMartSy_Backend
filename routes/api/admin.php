@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\Admin\AdminCrudController;
 use App\Http\Controllers\Admin\Auth\AuthController;
+use App\Http\Controllers\Admin\BadgeController;
 use App\Http\Controllers\Admin\Banner\BannerCrudController;
 use App\Http\Controllers\Admin\Basket\BasketController;
 use App\Http\Controllers\Admin\Basket\ScheduledBasketController;
@@ -195,6 +196,7 @@ Route::prefix('admin')->group(
                 Route::apiResource('complaints', ComplaintController::class);
                 Route::apiResource('recipes', RecipeCrudController::class);
                 Route::apiResource('faqs', FaqController::class);
+                Route::apiResource('badges', BadgeController::class);
 
                 // Seller Registration routes
                 Route::apiResource('seller-registrations', SellerRegistrationCrudController::class)->only(['index', 'show', 'destroy']);

@@ -39,9 +39,7 @@ class AdminOneResource extends JsonResource
             'updated_at'            => $this->updated_at?->format('Y-m-d H:i'),
             'is_favorite' => (bool) ($this->is_favorite ?? false),
 
-            'badges' => BadgeOneResource::collection(
-                $this->badges
-            ),
+
         ];
     }
 }

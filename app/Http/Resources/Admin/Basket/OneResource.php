@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Admin\Basket;
 
+use App\Http\Resources\Badge\OneResource as BadgeOneResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class OneResource extends JsonResource
@@ -42,6 +43,10 @@ class OneResource extends JsonResource
             // Timestamps
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
+
+            'badges' => BadgeOneResource::collection(
+                $this->badges
+            ),
         ];
     }
 }

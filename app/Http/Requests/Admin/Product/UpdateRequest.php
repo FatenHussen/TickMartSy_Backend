@@ -116,6 +116,11 @@ class UpdateRequest extends FormRequest
             'shop_variants.*.variant_index'     => 'required|integer|min:0',
             'shop_variants.*.price'             => 'nullable|integer|min:0',
             'shop_variants.*.quantity'          => 'nullable|integer|min:0',
+
+
+            'badges'          => 'nullable|array',
+            'badges.*.id'  => 'required|integer|exists:badges,id',
+            'badges.*.position'  => 'required|in:top,bottom',
         ];
 
         // Locale-specific validation

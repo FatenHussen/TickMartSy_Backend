@@ -5,7 +5,7 @@ namespace App\Http\Resources\Badge;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class OneResource extends JsonResource
+class AdminOneResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,7 +16,7 @@ class OneResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'name' => $this->getTranslations('name'),
             'color' => $this->color,
             'postion' => $this->pivot?->position
         ];

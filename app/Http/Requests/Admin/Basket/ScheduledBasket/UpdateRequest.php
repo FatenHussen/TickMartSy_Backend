@@ -43,6 +43,11 @@ class UpdateRequest extends FormRequest
             'items.*.is_extra' => 'required|boolean',
             'items.*.min_quantity' => 'nullable|integer|min:1',
             'items.*.max_quantity' => 'nullable|integer|min:1',
+
+
+            'badges'          => 'nullable|array',
+            'badges.*.id'  => 'required|integer|exists:badges,id',
+            'badges.*.position'  => 'required|in:top,bottom',
         ];
     }
 

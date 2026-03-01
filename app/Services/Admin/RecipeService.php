@@ -24,6 +24,8 @@ class RecipeService extends BaseService
         $this->syncRelations = [
             'items'   => 'items',
             'steps' => 'steps',
+            'badges'   => 'badges',
+
         ];
 
         $this->singleImages = [

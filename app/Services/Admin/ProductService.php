@@ -28,6 +28,7 @@ class ProductService extends BaseService
         'categoryDetails'  => 'category_details',
         'extraDetails'     => 'extra_details',
         'variants.shopVariants'     => 'shop_variants',
+        'badges'   => 'badges',
     ];
 
     protected $mediaCollections = [

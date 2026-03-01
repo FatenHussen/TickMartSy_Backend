@@ -152,20 +152,7 @@ class Basket extends Model implements Sectionable
         return $this->morphToMany(Badge::class, 'badgeable')->withPivot('position');
     }
 
-    // public function toSectionArray(): array
-    // {
-    //     return [
-    //         'id'       => $this->id,
-    //         'title'     => $this->name,
-    //         'desc'     => null,
-    //         'image'    => $this->image_url,
-    //         'price' => $this->calculated_price,
-    //         'price_after_discount' => $this->final_price,
-    //         'discount' => $this->discount,
-    //         'top_badges' => [],
-    //         'bottom_badges' => [],
-    //     ];
-    // }
+
     public function ratings(): MorphMany
     {
         return $this->morphMany(Rating::class, 'rateable');

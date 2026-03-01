@@ -42,6 +42,11 @@ class BasketService extends BaseService
         'offer_ends_at',
     ];
 
+    protected $syncRelations = [
+        'badges'   => 'badges',
+    ];
+
+
     /**
      * Override queryBuilder to filter only non-scheduled baskets
      */

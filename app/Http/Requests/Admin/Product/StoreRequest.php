@@ -69,8 +69,8 @@ class StoreRequest extends FormRequest
     {
         $rules = [
             'category_id'           => 'required|exists:categories,id',
-            'sku'                   => 'nullable|string|unique:products,sku' ,
-            'model'                 => 'nullable|string|unique:products,model' ,
+            'sku'                   => 'nullable|string|unique:products,sku',
+            'model'                 => 'nullable|string|unique:products,model',
             'price'                 => 'required|integer|min:0',
             'discount'              => 'nullable|integer|min:0|max:100',
             'quantity'              => 'nullable|integer|min:0',
@@ -110,6 +110,10 @@ class StoreRequest extends FormRequest
             'shop_variants.*.quantity'          => 'nullable|integer|min:0',
 
 
+
+            'badges'          => 'nullable|array',
+            'badges.*.id'  => 'required|integer|exists:badges,id',
+            'badges.*.position'  => 'required|in:top,bottom',
         ];
 
         // Add locale-specific validation

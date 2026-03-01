@@ -40,7 +40,12 @@ class StoreRequest extends FormRequest
             'items' => 'required|array|min:1',
             'items.*.shop_product_variant_id' => 'required|integer|exists:shop_product_variants,id',
             'items.*.quantity' => 'required|integer|min:1',
-           ];
+
+
+            'badges'          => 'nullable|array',
+            'badges.*.id'  => 'required|integer|exists:badges,id',
+            'badges.*.position'  => 'required|in:top,bottom',
+        ];
     }
 
     public function messages(): array

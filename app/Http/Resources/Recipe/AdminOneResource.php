@@ -62,6 +62,9 @@ class AdminOneResource extends JsonResource
                 $this->whenLoaded('items')
             ),
 
+            'badges' => BadgeOneResource::collection(
+                $this->badges
+            ),
             'created_at' => $this->created_at,
         ];
     }

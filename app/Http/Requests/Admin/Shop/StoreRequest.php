@@ -31,7 +31,7 @@ class StoreRequest extends FormRequest
             'working_hours'        => 'required|array',
             'working_hours.*'      => 'array',
             'working_hours.*.open' => 'required_without:working_hours.*.closed|date_format:H:i',
-            'working_hours.*.close'=> 'required_without:working_hours.*.closed|date_format:H:i',
+            'working_hours.*.close' => 'required_without:working_hours.*.closed|date_format:H:i',
             'working_hours.*.closed' => 'sometimes|boolean',
 
             'logo'                 => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
@@ -42,10 +42,15 @@ class StoreRequest extends FormRequest
 
             'area_id'           => 'required|exists:areas,id',
             'vendor_id' => 'required|exists:vendors,id',
-        
+
             'service_ids'          => 'nullable|array',
             'service_ids.*.id'  => 'required|integer|exists:services,id',
-        
+
+
+            'badges'          => 'nullable|array',
+            'badges.*.id'  => 'required|integer|exists:badges,id',
+            'badges.*.position'  => 'required|in:top,bottom',
+
         ];
     }
 

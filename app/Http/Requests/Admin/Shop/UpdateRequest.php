@@ -37,15 +37,15 @@ class UpdateRequest extends FormRequest
 
             'phone'                => 'nullable|string|max:20',
             'mobile'               => 'nullable|string|max:20',
-            'email'                => ['nullable', 'email','unique:shops,email,'.$shopId],
+            'email'                => ['nullable', 'email', 'unique:shops,email,' . $shopId],
 
             'working_hours'        => 'nullable|array',
             'working_hours.*'      => 'array',
             'working_hours.*.open' => 'required_without:working_hours.*.closed|date_format:H:i',
-            'working_hours.*.close'=> 'required_without:working_hours.*.closed|date_format:H:i',
-            'working_hours.*.closed'=> 'sometimes|boolean',
+            'working_hours.*.close' => 'required_without:working_hours.*.closed|date_format:H:i',
+            'working_hours.*.closed' => 'sometimes|boolean',
 
-            'logo'                 => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'logo'                 => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'cover_images'         => 'nullable|array',
             'cover_images.*'       => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
 
@@ -54,10 +54,14 @@ class UpdateRequest extends FormRequest
             'vendor_id' => 'nullable|exists:vendors,id',
             'service_ids'          => 'nullable|array',
             'service_ids.*'        => 'exists:services,id',
+
+            'badges'          => 'nullable|array',
+            'badges.*.id'  => 'required|integer|exists:badges,id',
+            'badges.*.position'  => 'required|in:top,bottom',
         ];
     }
 
-        public function attributes(): array
+    public function attributes(): array
     {
         return [
             'name.ar' => 'اسم المتجر (عربي)',
@@ -67,5 +71,4 @@ class UpdateRequest extends FormRequest
             'address.ar' => 'العنوان (عربي)',
         ];
     }
-    
 }

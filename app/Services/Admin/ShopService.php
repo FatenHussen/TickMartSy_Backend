@@ -25,6 +25,7 @@ class ShopService extends BaseService
 
         $this->syncRelations = [
             'services'   => 'service_ids',
+            'badges'   => 'badges',
         ];
 
         $this->mediaCollections = [

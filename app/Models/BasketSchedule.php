@@ -41,4 +41,9 @@ class BasketSchedule extends Model
     {
         return round((float) $this->ratings()->avg('rating'), 1);
     }
+
+    public function badges()
+    {
+        return $this->morphToMany(Badge::class, 'badgeable')->withPivot('position');
+    }
 }
