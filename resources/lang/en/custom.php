@@ -127,7 +127,7 @@ return [
         'hours' => 'Hours',
         'add_day' => 'Add Day',
         'working_hours_help' => 'Format: {"monday": {"open": "09:00", "close": "18:00", "closed": false}}',
-    ],
+  
 
     // Products
   'products' => [
