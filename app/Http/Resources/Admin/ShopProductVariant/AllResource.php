@@ -12,7 +12,7 @@ class AllResource extends JsonResource
         $locale = app()->getLocale();
 
         // Get product name
-        $productNameData = $this->productVariant->product->name;
+        $productNameData = $this->productVariant->product->name ?? "product";
         $productName = is_array($productNameData)
             ? ($productNameData[$locale] ?? $productNameData['ar'] ?? $productNameData['en'] ?? '')
             : (string) $productNameData;
