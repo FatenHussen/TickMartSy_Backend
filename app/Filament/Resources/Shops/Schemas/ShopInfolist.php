@@ -155,60 +155,53 @@ class ShopInfolist
                     // Tab 5: أوقات العمل
                     Tab::make('أوقات العمل')
                         ->icon('heroicon-o-clock')
-                        ->badge(fn($record) => $record->workingHours->count() > 0 ? $record->workingHours->count() : null)
+                        ->badge(fn($record) => !empty($record->working_hours) ? count($record->working_hours) : null)
                         ->schema([
                             Section::make('أوقات العمل')
                                 ->schema([
-                                    Infolists\Components\RepeatableEntry::make('workingHours')
+                                    Infolists\Components\TextEntry::make('working_hours')
                                         ->label('')
-                                        ->schema([
-                                            Infolists\Components\TextEntry::make('day')
-                                                ->label('اليوم')
-                                                ->badge()
-                                                ->color('info')
-                                                ->icon('heroicon-o-calendar'),
+                                        ->formatStateUsing(function ($state) {
+                                            if (empty($state)) {
+                                                return '🕐 لا توجد أوقات عمل محددة';
+                                            }
 
-                                            Infolists\Components\TextEntry::make('open_time')
-                                                ->label('وقت الفتح')
-                                                ->badge()
-                                                ->color('success')
-                                                ->icon('heroicon-o-clock'),
+                                            $days = [
+                                                'monday' => 'الإثنين',
+                                                'tuesday' => 'الثلاثاء',
+                                                'wednesday' => 'الأربعاء',
+                                                'thursday' => 'الخميس',
+                                                'friday' => 'الجمعة',
+                                                'saturday' => 'السبت',
+                                                'sunday' => 'الأحد',
+                                            ];
 
-                                            Infolists\Components\TextEntry::make('close_time')
-                                                ->label('وقت الإغلاق')
-                                                ->badge()
-                                                ->color('danger')
-                                                ->icon('heroicon-o-clock'),
+                                            $output = '';
+                                            foreach ($state as $day => $hours) {
+                                                $dayName = $days[$day] ?? $day;
+                                                $closed = $hours['closed'] ?? false;
 
-                                            Infolists\Components\IconEntry::make('is_open')
-                                                ->label('مفتوح')
-                                                ->boolean()
-                                                ->trueIcon('heroicon-o-check-circle')
-                                                ->falseIcon('heroicon-o-x-circle')
-                                                ->trueColor('success')
-                                                ->falseColor('gray'),
-                                        ])
-                                        ->columns(4)
-                                        ->contained(false),
+                                                if ($closed) {
+                                                    $output .= "❌ {$dayName}: مغلق\n";
+                                                } else {
+                                                    $open = $hours['open'] ?? '-';
+                                                    $close = $hours['close'] ?? '-';
+                                                    $output .= "✅ {$dayName}: {$open} - {$close}\n";
+                                                }
+                                            }
+
+                                            return trim($output);
+                                        })
+                                        ->columnSpanFull()
+                                        ->prose(),
                                 ])
-                                ->visible(fn($record) => $record->workingHours->count() > 0)
                                 ->collapsible(false),
-
-                            Section::make('لا توجد أوقات عمل')
-                                ->schema([
-                                    Infolists\Components\TextEntry::make('no_working_hours')
-                                        ->label('')
-                                        ->default('🕐 لا توجد أوقات عمل محددة')
-                                        ->color('gray')
-                                        ->columnSpanFull(),
-                                ])
-                                ->visible(fn($record) => $record->workingHours->count() === 0),
                         ]),
 
                     // Tab 6: الخدمات
                     Tab::make('الخدمات')
                         ->icon('heroicon-o-wrench-screwdriver')
-                        ->badge(fn($record) => $record->services->count() > 0 ? $record->services->count() : null)
+                        ->badge(fn($record) => $record->services?->count() > 0 ? $record->services->count() : null)
                         ->schema([
                             Section::make('الخدمات')
                                 ->schema([
@@ -228,7 +221,7 @@ class ShopInfolist
                                         ->columns(1)
                                         ->contained(false),
                                 ])
-                                ->visible(fn($record) => $record->services->count() > 0)
+                                ->visible(fn($record) => $record->services?->count() > 0)
                                 ->collapsible(false),
 
                             Section::make('لا توجد خدمات')
@@ -239,30 +232,30 @@ class ShopInfolist
                                         ->color('gray')
                                         ->columnSpanFull(),
                                 ])
-                                ->visible(fn($record) => $record->services->count() === 0),
+                                ->visible(fn($record) => $record->services?->count() === 0 || !$record->services),
                         ]),
 
                     // Tab 7: صور الغلاف
                     Tab::make('صور الغلاف')
                         ->icon('heroicon-o-photo')
-                        ->badge(fn($record) => $record->coverImages->count() > 0 ? $record->coverImages->count() : null)
+                        ->badge(fn($record) => $record->coverImages()?->count() > 0 ? $record->coverImages()->count() : null)
                         ->schema([
                             Section::make('صور الغلاف')
                                 ->schema([
                                     Infolists\Components\ImageEntry::make('coverImages')
                                         ->label('')
                                         ->disk('public')
-                                        ->getStateUsing(fn($record) => $record->coverImages->pluck('path')->toArray())
+                                        ->getStateUsing(fn($record) => $record->coverImages()?->get()->pluck('path')->toArray() ?? [])
                                         ->columnSpanFull()
                                         ->extraAttributes(['class' => 'rounded-xl'])
-                                        ->visible(fn($record) => $record->coverImages->count() > 0),
+                                        ->visible(fn($record) => $record->coverImages()?->count() > 0),
 
                                     Infolists\Components\TextEntry::make('no_cover_images')
                                         ->label('')
                                         ->default('📷 لا توجد صور غلاف')
                                         ->color('gray')
                                         ->columnSpanFull()
-                                        ->visible(fn($record) => $record->coverImages->count() === 0),
+                                        ->visible(fn($record) => $record->coverImages()?->count() === 0 || !$record->coverImages()),
                                 ])
                                 ->collapsible(false),
                         ]),
