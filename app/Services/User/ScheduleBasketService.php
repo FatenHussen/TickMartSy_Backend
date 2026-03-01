@@ -6,8 +6,9 @@ use App\Http\Resources\Basket\AllResource;
 use App\Http\Resources\Basket\OneResource;
 use App\Models\Basket;
 use App\Services\BaseService;
+use Illuminate\Support\Facades\Log;
 
-class BasketService extends BaseService
+class ScheduleBasketService extends BaseService
 {
     protected $model      = Basket::class;
     protected $resource   = OneResource::class;
@@ -23,72 +24,19 @@ class BasketService extends BaseService
         'favorites'
     ];
     protected $searchableFields = ['name'];
-    protected $sortableFields   = ['id', 'created_at', 'num_sold', 'rating'];
+    protected $sortableFields   = ['id'];
     protected $pagination = true;
 
-    public function queryBuilder($query, $filters = [], $config = [])
-    {
-        // Apply base query builder first (search, sort, favorites)
-        $query = parent::queryBuilder($query, $filters, $config);
-
-        // Apply latest ordering by default
-        if (empty($config['sortField'])) {
-            $query->latest();
-        }
-
-        // Filter by schedule status
-        if (isset($filters['is_schedule'])) {
-            $query->where('is_schedule', $filters['is_schedule']);
-        }
-
-        // Category filter
-        if (!empty($filters['category_id'])) {
-            $query->where('category_id', $filters['category_id']);
-        }
-
-        // Price range filter
-        if (!empty($filters['price_min']) || !empty($filters['price_max'])) {
-            $query->where(function ($q) use ($filters) {
-                if (!empty($filters['price_min'])) {
-                    $q->where('price', '>=', $filters['price_min']);
-                }
-                if (!empty($filters['price_max'])) {
-                    $q->where('price', '<=', $filters['price_max']);
-                }
-            });
-        }
-
-        // Rating filter
-        if (!empty($filters['rating_min'])) {
-            $query->where('rating', '>=', $filters['rating_min']);
-        }
-
-        // Items count filter
-        if (!empty($filters['items_count_min']) || !empty($filters['items_count_max'])) {
-            $query->whereHas('items', function ($q) {}, '>=', $filters['items_count_min'] ?? 0);
-
-            if (!empty($filters['items_count_max'])) {
-                $query->whereHas('items', function ($q) {}, '<=', $filters['items_count_max']);
-            }
-        }
-
-        // Type filters
-        if (!empty($filters['type'])) {
-            $this->applyTypeFilters($query, $filters['type']);
-        }
-
-        return $query;
-    }
- public function query(array $filters)
+    public function query(array $filters)
     {
         $query = Basket::query()->latest();
 
+
         // Filter by schedule status
-        if (isset($filters['is_schedule'])) {
-            $query->where('is_schedule', $filters['is_schedule']);
-        } else {
-            $query->where('is_schedule', 0);
-        }
+        // if (isset($filters['is_schedule'])) {
+        //     $query->where('is_schedule', $filters['is_schedule']);
+        // }
+        $query->where('is_schedule', 1);
 
         // Category filter
         if (!empty($filters['category_id'])) {
@@ -141,6 +89,7 @@ class BasketService extends BaseService
 
         return $query;
     }
+
     protected function applyTypeFilters($query, $type)
     {
         switch ($type) {

@@ -233,6 +233,7 @@ class PageSectionSeeder extends Seeder
             'manual_model' => 'basket'
         ]);
 
+
         PageSection::create([
             'page_id' => $homePage->id,
             'section_id' => $basketSection->id,
@@ -242,14 +243,24 @@ class PageSectionSeeder extends Seeder
             'filters' => []
         ]);
 
+        $schedulebasketSection = Section::create([
+            'name' => ['en' => 'schedule basket', 'ar' => 'قسم السلات المجدولة'],
+            'type' => 'api',
+            'api_method' => 'schedule-basket',
+            'see_more' => true,
+            'see_more_slug' => 'baskets',
+            'details_slug' => 'basket_details',
+            'filters' => [],
+            'manual_model' => 'schedule-basket'
+        ]);
+
         PageSection::create([
             'name' => ['en' => 'schedule basket', 'ar' => 'قسم السلات المجدولة'],
-
             'page_id' => $homePage->id,
-            'section_id' => $basketSection->id,
+            'section_id' => $schedulebasketSection->id,
             'display_type_id' => $basketsDisplayType->id,
             'position' => 'after',
-            'order' => 6,
+            'order' => 7,
             'filters' => []
         ]);
 
