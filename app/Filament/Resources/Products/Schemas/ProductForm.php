@@ -73,7 +73,12 @@ class ProductForm
                                         ->columnSpan(1),
 
                                     Forms\Components\TextInput::make('country.ar')
-                                        ->label('بلد المنتج')
+                                        ->label('بلد المنتج (عربي)')
+                                        ->maxLength(255)
+                                        ->columnSpan(1),
+
+                                    Forms\Components\TextInput::make('country.en')
+                                        ->label('بلد المنتج (انجليزي)')
                                         ->maxLength(255)
                                         ->columnSpan(1),
 
@@ -86,6 +91,44 @@ class ProductForm
                                             : \App\Enums\ProductApprovalStatus::PENDING),
                                 ])
                                 ->columns(2)
+                                ->collapsible(),
+
+                            Section::make('الوصف')
+                                ->schema([
+                                    Forms\Components\Textarea::make('description.ar')
+                                        ->label('الوصف المختصر (عربي)')
+                                        ->rows(3)
+                                        ->maxLength(500)
+                                        ->columnSpanFull(),
+
+                                    Forms\Components\Textarea::make('description.en')
+                                        ->label('الوصف المختصر (انجليزي)')
+                                        ->rows(3)
+                                        ->maxLength(500)
+                                        ->columnSpanFull(),
+
+                                    Forms\Components\RichEditor::make('full_description.ar')
+                                        ->label('الوصف الكامل (عربي)')
+                                        ->toolbarButtons([
+                                            'bold',
+                                            'italic',
+                                            'underline',
+                                            'bulletList',
+                                            'orderedList',
+                                        ])
+                                        ->columnSpanFull(),
+
+                                    Forms\Components\RichEditor::make('full_description.en')
+                                        ->label('الوصف الكامل (انجليزي)')
+                                        ->toolbarButtons([
+                                            'bold',
+                                            'italic',
+                                            'underline',
+                                            'bulletList',
+                                            'orderedList',
+                                        ])
+                                        ->columnSpanFull(),
+                                ])
                                 ->collapsible(),
 
 
@@ -409,68 +452,7 @@ class ProductForm
                                 ->columnSpanFull(),
                         ]),
 
-                    // Tab 4: التفاصيل
-                    Tab::make('التفاصيل')
-                        ->icon('heroicon-o-document-text')
-                        ->schema([
-                            Section::make('الوصف')
-                                ->schema([
-                                    Forms\Components\RichEditor::make('description.ar')
-                                        ->label('الوصف بالعربي')
-                                        ->required()
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'underline',
-                                            'bulletList',
-                                            'orderedList',
-                                        ])
-                                        ->columnSpanFull(),
-
-                                    Forms\Components\RichEditor::make('description.en')
-                                        ->label('الوصف بالانجليزي')
-                                        ->required()
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'underline',
-                                            'bulletList',
-                                            'orderedList',
-                                        ])
-                                        ->columnSpanFull(),
-                                ])
-                                ->collapsible(),
-
-                            Section::make('الوصف الكامل')
-                                ->schema([
-                                    Forms\Components\RichEditor::make('full_description.ar')
-                                        ->label('الوصف الكامل بالعربي')
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'underline',
-                                            'bulletList',
-                                            'orderedList',
-                                            'link',
-                                        ])
-                                        ->columnSpanFull(),
-
-                                    Forms\Components\RichEditor::make('full_description.en')
-                                        ->label('الوصف الكامل بالانجليزي')
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'underline',
-                                            'bulletList',
-                                            'orderedList',
-                                            'link',
-                                        ])
-                                        ->columnSpanFull(),
-                                ])
-                                ->collapsible(),
-                        ]),
-
-                    // Tab 5: تحسين محركات البحث
+                    // Tab 4: تحسين محركات البحث
                     Tab::make('تحسين محركات البحث')
                         ->icon('heroicon-o-magnifying-glass')
                         ->schema([
