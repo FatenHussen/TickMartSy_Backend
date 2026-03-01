@@ -103,11 +103,6 @@ return [
             'saturday' => 'السبت',
             'sunday' => 'الأحد',
         ],
-            'thursday' => 'الخميس',
-            'friday' => 'الجمعة',
-            'saturday' => 'السبت',
-            'sunday' => 'الأحد',
-        ],
         'sections' => [
             'basic_info' => 'المعلومات الأساسية',
             'contact_info' => 'معلومات الاتصال',
@@ -132,6 +127,7 @@ return [
         'hours' => 'الساعات',
         'add_day' => 'إضافة يوم',
         'working_hours_help' => 'الصيغة: {"monday": {"open": "09:00", "close": "18:00", "closed": false}}',
+    ],
 
     // Products
       'products' => [
@@ -389,12 +385,7 @@ return [
     ],
 
     'unlimited' => 'غير محدود',
-    'active' => 'نشط',
-    'inactive' => 'غير نشط',
-    'all' => 'الكل',
     'status' => 'الحالة',
     'id' => 'الرقم',
-    'created_at' => 'تاريخ الإنشاء',
-    'updated_at' => 'تاريخ التحديث',
 ];
 

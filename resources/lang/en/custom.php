@@ -100,8 +100,6 @@ return [
             'saturday' => 'Saturday',
             'sunday' => 'Sunday',
         ],
-            'sunday' => 'Sunday',
-        ],
         'sections' => [
             'basic_info' => 'Basic Information',
             'contact_info' => 'Contact Information',
@@ -127,7 +125,8 @@ return [
         'hours' => 'Hours',
         'add_day' => 'Add Day',
         'working_hours_help' => 'Format: {"monday": {"open": "09:00", "close": "18:00", "closed": false}}',
-  
+    ],
+
 
     // Products
   'products' => [
@@ -387,11 +386,6 @@ return [
     ],
 
     'unlimited' => 'Unlimited',
-    'active' => 'Active',
-    'inactive' => 'Inactive',
-    'all' => 'All',
     'status' => 'Status',
     'id' => 'ID',
-    'created_at' => 'Created At',
-    'updated_at' => 'Updated At',
 ];
