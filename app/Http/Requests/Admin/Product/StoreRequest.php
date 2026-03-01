@@ -72,7 +72,7 @@ class StoreRequest extends FormRequest
             'sku'                   => 'nullable|string|unique:products,sku' ,
             'model'                 => 'nullable|string|unique:products,model' ,
             'price'                 => 'required|integer|min:0',
-            'price_after_discount'  => 'nullable|integer|min:0',
+            'discount'              => 'nullable|integer|min:0|max:100',
             'quantity'              => 'nullable|integer|min:0',
             'barcode'               => 'nullable|string',
             'time_prepare'          => 'nullable|string',

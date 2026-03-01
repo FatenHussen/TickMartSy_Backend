@@ -18,7 +18,7 @@ class AllResource extends JsonResource
             'id' => $this->id,
             'name' => $this->getTranslation('name', $locale),
             'description' => $this->getTranslation('description', $locale),
-            'icon' => $this->icon,
+            'icon' => $this->image_url,
             'parent_id' => $this->parent_id,
             'parent' => $this->whenLoaded('parent', function () use ($locale) {
                 return [

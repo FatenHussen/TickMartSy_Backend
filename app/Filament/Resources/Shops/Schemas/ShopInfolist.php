@@ -3,80 +3,271 @@
 namespace App\Filament\Resources\Shops\Schemas;
 
 use Filament\Infolists;
-use Filament\Infolists\Infolist;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 
 class ShopInfolist
 {
     public static function configure(Schema $infolist): Schema
     {
-        return $infolist
-            ->schema([
-                Section::make(__('custom.shops.sections.basic_info'))
-                    ->schema([
-                        Infolists\Components\TextEntry::make('name')
-                            ->label(__('custom.shops.name')),
+        return $infolist->columns(1)->schema([
+            Tabs::make('shop_info_tabs')
+                ->tabs([
+                    // Tab 1: المعلومات الأساسية
+                    Tab::make(__('custom.shops.sections.basic_info'))
+                        ->icon('heroicon-o-information-circle')
+                        ->schema([
+                            Section::make(__('custom.shops.sections.basic_info'))
+                                ->schema([
+                                    Infolists\Components\TextEntry::make('name')
+                                        ->label(__('custom.shops.name'))
+                                        ->weight('bold')
+                                        ->color('primary')
+                                        ->icon('heroicon-o-building-storefront')
+                                        ->columnSpan(2),
 
-                        Infolists\Components\TextEntry::make('description')
-                            ->label(__('custom.shops.description'))
-                            ->columnSpanFull(),
+                                    Infolists\Components\ImageEntry::make('logo')
+                                        ->disk('public')
+                                        ->label(__('custom.shops.logo'))
+                                        ->columnSpan(2),
 
-                        Infolists\Components\ImageEntry::make('logo')->disk('public')
-                            ->label(__('custom.shops.logo')),
-                    ])
-                    ->columns(2),
+                                    Infolists\Components\TextEntry::make('description')
+                                        ->label(__('custom.shops.description'))
+                                        ->columnSpanFull()
+                                        ->prose(),
 
-                Section::make(__('custom.shops.sections.contact_info'))
-                    ->schema([
-                        Infolists\Components\TextEntry::make('phone')
-                            ->label(__('custom.shops.phone')),
+                                    Infolists\Components\TextEntry::make('vendor.name')
+                                        ->label(__('custom.shops.vendor'))
+                                        ->badge()
+                                        ->color('warning')
+                                        ->icon('heroicon-o-user-group'),
 
-                        Infolists\Components\TextEntry::make('mobile')
-                            ->label(__('custom.shops.mobile')),
+                                    Infolists\Components\TextEntry::make('area.name')
+                                        ->label(__('custom.shops.area'))
+                                        ->badge()
+                                        ->color('info')
+                                        ->icon('heroicon-o-map-pin'),
+                                ])
+                                ->columns(4)
+                                ->collapsible(),
+                        ]),
 
-                        Infolists\Components\TextEntry::make('email')
-                            ->label(__('custom.shops.email')),
-                    ])
-                    ->columns(3),
+                    // Tab 2: معلومات الاتصال
+                    Tab::make(__('custom.shops.sections.contact_info'))
+                        ->icon('heroicon-o-phone')
+                        ->schema([
+                            Section::make(__('custom.shops.sections.contact_info'))
+                                ->schema([
+                                    Infolists\Components\TextEntry::make('phone')
+                                        ->label(__('custom.shops.phone'))
+                                        ->icon('heroicon-o-phone')
+                                        ->copyable()
+                                        ->copyMessage('تم نسخ رقم الهاتف'),
 
-                Section::make(__('custom.shops.sections.location_info'))
-                    ->schema([
-                        Infolists\Components\TextEntry::make('address')
-                            ->label(__('custom.shops.address'))
-                            ->columnSpanFull(),
+                                    Infolists\Components\TextEntry::make('mobile')
+                                        ->label(__('custom.shops.mobile'))
+                                        ->icon('heroicon-o-device-phone-mobile')
+                                        ->copyable()
+                                        ->copyMessage('تم نسخ رقم الموبايل'),
 
-                        Infolists\Components\TextEntry::make('area.name')
-                            ->label(__('custom.shops.area')),
+                                    Infolists\Components\TextEntry::make('email')
+                                        ->label(__('custom.shops.email'))
+                                        ->icon('heroicon-o-envelope')
+                                        ->copyable()
+                                        ->copyMessage('تم نسخ البريد الإلكتروني'),
+                                ])
+                                ->columns(3)
+                                ->collapsible(),
+                        ]),
 
-                        Infolists\Components\TextEntry::make('lat')
-                            ->label(__('custom.shops.lat')),
+                    // Tab 3: الموقع
+                    Tab::make(__('custom.shops.sections.location_info'))
+                        ->icon('heroicon-o-map-pin')
+                        ->schema([
+                            Section::make(__('custom.shops.sections.location_info'))
+                                ->schema([
+                                    Infolists\Components\TextEntry::make('address')
+                                        ->label(__('custom.shops.address'))
+                                        ->columnSpanFull()
+                                        ->icon('heroicon-o-map'),
 
-                        Infolists\Components\TextEntry::make('lng')
-                            ->label(__('custom.shops.lng')),
-                    ])
-                    ->columns(3),
+                                    Infolists\Components\TextEntry::make('lat')
+                                        ->label(__('custom.shops.lat'))
+                                        ->badge()
+                                        ->color('gray')
+                                        ->icon('heroicon-o-globe-alt')
+                                        ->copyable(),
 
-                Section::make(__('custom.shops.sections.ratings_info'))
-                    ->schema([
-                        Infolists\Components\TextEntry::make('average_rating')
-                            ->label(__('custom.shops.rating'))
-                            ->badge()
-                            ->color('success'),
+                                    Infolists\Components\TextEntry::make('lng')
+                                        ->label(__('custom.shops.lng'))
+                                        ->badge()
+                                        ->color('gray')
+                                        ->icon('heroicon-o-globe-alt')
+                                        ->copyable(),
+                                ])
+                                ->columns(2)
+                                ->collapsible(),
+                        ]),
 
-                        Infolists\Components\TextEntry::make('ratings_count')
-                            ->label(__('custom.shops.ratings_count'))
-                            ->badge(),
+                    // Tab 4: التقييمات والحالة
+                    Tab::make(__('custom.shops.sections.ratings_info'))
+                        ->icon('heroicon-o-star')
+                        ->schema([
+                            Section::make(__('custom.shops.sections.ratings_info'))
+                                ->schema([
+                                    Infolists\Components\TextEntry::make('average_rating')
+                                        ->label(__('custom.shops.rating'))
+                                        ->badge()
+                                        ->color('success')
+                                        ->icon('heroicon-o-star')
+                                        ->suffix(' ⭐')
+                                        ->default('0'),
 
-                        Infolists\Components\IconEntry::make('is_active')
-                            ->label(__('custom.shops.is_active'))
-                            ->boolean(),
+                                    Infolists\Components\TextEntry::make('ratings_count')
+                                        ->label(__('custom.shops.ratings_count'))
+                                        ->badge()
+                                        ->color('primary')
+                                        ->icon('heroicon-o-chat-bubble-left-right')
+                                        ->default('0'),
 
-                        Infolists\Components\IconEntry::make('is_free_delivery')
-                            ->label(__('custom.shops.is_free_delivery'))
-                            ->boolean(),
-                    ])
-                    ->columns(4),
-            ]);
+                                    Infolists\Components\IconEntry::make('is_active')
+                                        ->label(__('custom.shops.is_active'))
+                                        ->boolean()
+                                        ->trueIcon('heroicon-o-check-circle')
+                                        ->falseIcon('heroicon-o-x-circle')
+                                        ->trueColor('success')
+                                        ->falseColor('danger'),
+
+                                    Infolists\Components\IconEntry::make('is_free_delivery')
+                                        ->label(__('custom.shops.is_free_delivery'))
+                                        ->boolean()
+                                        ->trueIcon('heroicon-o-truck')
+                                        ->falseIcon('heroicon-o-x-circle')
+                                        ->trueColor('success')
+                                        ->falseColor('gray'),
+                                ])
+                                ->columns(4)
+                                ->collapsible(),
+                        ]),
+
+                    // Tab 5: أوقات العمل
+                    Tab::make('أوقات العمل')
+                        ->icon('heroicon-o-clock')
+                        ->badge(fn($record) => $record->workingHours->count() > 0 ? $record->workingHours->count() : null)
+                        ->schema([
+                            Section::make('أوقات العمل')
+                                ->schema([
+                                    Infolists\Components\RepeatableEntry::make('workingHours')
+                                        ->label('')
+                                        ->schema([
+                                            Infolists\Components\TextEntry::make('day')
+                                                ->label('اليوم')
+                                                ->badge()
+                                                ->color('info')
+                                                ->icon('heroicon-o-calendar'),
+
+                                            Infolists\Components\TextEntry::make('open_time')
+                                                ->label('وقت الفتح')
+                                                ->badge()
+                                                ->color('success')
+                                                ->icon('heroicon-o-clock'),
+
+                                            Infolists\Components\TextEntry::make('close_time')
+                                                ->label('وقت الإغلاق')
+                                                ->badge()
+                                                ->color('danger')
+                                                ->icon('heroicon-o-clock'),
+
+                                            Infolists\Components\IconEntry::make('is_open')
+                                                ->label('مفتوح')
+                                                ->boolean()
+                                                ->trueIcon('heroicon-o-check-circle')
+                                                ->falseIcon('heroicon-o-x-circle')
+                                                ->trueColor('success')
+                                                ->falseColor('gray'),
+                                        ])
+                                        ->columns(4)
+                                        ->contained(false),
+                                ])
+                                ->visible(fn($record) => $record->workingHours->count() > 0)
+                                ->collapsible(false),
+
+                            Section::make('لا توجد أوقات عمل')
+                                ->schema([
+                                    Infolists\Components\TextEntry::make('no_working_hours')
+                                        ->label('')
+                                        ->default('🕐 لا توجد أوقات عمل محددة')
+                                        ->color('gray')
+                                        ->columnSpanFull(),
+                                ])
+                                ->visible(fn($record) => $record->workingHours->count() === 0),
+                        ]),
+
+                    // Tab 6: الخدمات
+                    Tab::make('الخدمات')
+                        ->icon('heroicon-o-wrench-screwdriver')
+                        ->badge(fn($record) => $record->services->count() > 0 ? $record->services->count() : null)
+                        ->schema([
+                            Section::make('الخدمات')
+                                ->schema([
+                                    Infolists\Components\RepeatableEntry::make('services')
+                                        ->label('')
+                                        ->schema([
+                                            Infolists\Components\TextEntry::make('name')
+                                                ->label('اسم الخدمة')
+                                                ->weight('bold')
+                                                ->icon('heroicon-o-wrench-screwdriver')
+                                                ->color('primary'),
+
+                                            Infolists\Components\TextEntry::make('description')
+                                                ->label('الوصف')
+                                                ->columnSpanFull(),
+                                        ])
+                                        ->columns(1)
+                                        ->contained(false),
+                                ])
+                                ->visible(fn($record) => $record->services->count() > 0)
+                                ->collapsible(false),
+
+                            Section::make('لا توجد خدمات')
+                                ->schema([
+                                    Infolists\Components\TextEntry::make('no_services')
+                                        ->label('')
+                                        ->default('🔧 لا توجد خدمات محددة')
+                                        ->color('gray')
+                                        ->columnSpanFull(),
+                                ])
+                                ->visible(fn($record) => $record->services->count() === 0),
+                        ]),
+
+                    // Tab 7: صور الغلاف
+                    Tab::make('صور الغلاف')
+                        ->icon('heroicon-o-photo')
+                        ->badge(fn($record) => $record->coverImages->count() > 0 ? $record->coverImages->count() : null)
+                        ->schema([
+                            Section::make('صور الغلاف')
+                                ->schema([
+                                    Infolists\Components\ImageEntry::make('coverImages')
+                                        ->label('')
+                                        ->disk('public')
+                                        ->getStateUsing(fn($record) => $record->coverImages->pluck('path')->toArray())
+                                        ->columnSpanFull()
+                                        ->extraAttributes(['class' => 'rounded-xl'])
+                                        ->visible(fn($record) => $record->coverImages->count() > 0),
+
+                                    Infolists\Components\TextEntry::make('no_cover_images')
+                                        ->label('')
+                                        ->default('📷 لا توجد صور غلاف')
+                                        ->color('gray')
+                                        ->columnSpanFull()
+                                        ->visible(fn($record) => $record->coverImages->count() === 0),
+                                ])
+                                ->collapsible(false),
+                        ]),
+                ])
+                ->columnSpanFull(),
+        ]);
     }
 }

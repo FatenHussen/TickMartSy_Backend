@@ -14,9 +14,10 @@ class CategoryService extends BaseService
         $this->model      = $model;
         $this->resource   = OneResource::class;
         $this->collection = AllResource::class;
-        $this->imageColumn = 'icon';
-        $this->imageFolder = 'categories'; 
+        $this->singleImages = ['icon'];
         $this->relations = ['parent', 'children'];
         $this->pagination = true;
+        $this->searchableFields = ['name', 'description'];
+        $this->sortableFields = ['id', 'created_at'];
     }
 }
