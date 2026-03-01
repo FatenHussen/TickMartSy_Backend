@@ -75,7 +75,7 @@ class VendorPackagesTable
             ])
             ->actions([
                 ViewAction::make(),
-                Tables\Actions\Action::make('subscribe')
+                \Filament\Actions\Action::make('subscribe')
                     ->label('اشتراك')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
