@@ -6,8 +6,9 @@ use App\Http\Resources\Basket\AllResource;
 use App\Http\Resources\Basket\OneResource;
 use App\Models\Basket;
 use App\Services\BaseService;
+use Illuminate\Support\Facades\Log;
 
-class BasketService extends BaseService
+class ScheduleBasketService extends BaseService
 {
     protected $model      = Basket::class;
     protected $resource   = OneResource::class;
@@ -30,12 +31,12 @@ class BasketService extends BaseService
     {
         $query = Basket::query()->latest();
 
+
         // Filter by schedule status
-        if (isset($filters['is_schedule'])) {
-            $query->where('is_schedule', $filters['is_schedule']);
-        } else {
-            $query->where('is_schedule', 0);
-        }
+        // if (isset($filters['is_schedule'])) {
+        //     $query->where('is_schedule', $filters['is_schedule']);
+        // }
+        $query->where('is_schedule', 1);
 
         // Category filter
         if (!empty($filters['category_id'])) {
