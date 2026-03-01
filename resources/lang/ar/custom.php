@@ -110,7 +110,23 @@ return [
             'ratings_info' => 'التقييمات والحالة',
             'working_hours' => 'أوقات العمل',
             'settings' => 'الإعدادات',
+            'services' => 'الخدمات',
         ],
+        'tabs' => [
+            'basic_info_en' => 'المعلومات الأساسية (إنجليزي)',
+            'basic_info_ar' => 'المعلومات الأساسية (عربي)',
+            'contact_location' => 'الاتصال والموقع',
+            'media' => 'الوسائط',
+            'working_hours' => 'أوقات العمل',
+            'settings' => 'الخدمات والإعدادات',
+        ],
+        'services' => 'الخدمات',
+        'cover_images' => 'صور الغلاف',
+        'is_default' => 'المتجر الافتراضي',
+        'is_default_help' => 'تعيين هذا كمتجر افتراضي للمورد',
+        'hours' => 'الساعات',
+        'add_day' => 'إضافة يوم',
+        'working_hours_help' => 'الصيغة: {"monday": {"open": "09:00", "close": "18:00", "closed": false}}',
     ],
 
     // Products
