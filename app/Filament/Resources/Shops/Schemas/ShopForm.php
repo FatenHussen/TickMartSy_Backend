@@ -121,7 +121,7 @@ class ShopForm
                                     ->valueLabel(__('custom.shops.hours'))
                                     ->addActionLabel(__('custom.shops.add_day'))
                                     ->columnSpanFull()
-                                    ->helperText(__('custom.shops.working_hours_help')),
+                                    ->helperText(__('custom.shops.working_hours_help') . ' Example: "09:00 - 18:00" or "Closed"'),
                             ]),
 
                         // Tab 6: Services & Settings
