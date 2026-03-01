@@ -138,7 +138,12 @@ class ProductForm
                                         ->multiple()
                                         ->searchable()
                                         ->preload()
-                                        ->relationship('boughtWithProducts', 'name')
+                                        ->options(function () {
+                                            return \App\Models\Product::query()
+                                                ->where('approval_status', \App\Enums\ProductApprovalStatus::APPROVED)
+                                                ->pluck('name', 'id')
+                                                ->toArray();
+                                        })
                                         ->helperText('اختر المنتجات التي عادة ما يتم شراؤها مع هذا المنتج')
                                         ->columnSpanFull(),
                                 ])
