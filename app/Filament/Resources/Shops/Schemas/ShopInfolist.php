@@ -53,6 +53,25 @@ class ShopInfolist
                                 ])
                                 ->columns(4)
                                 ->collapsible(),
+
+                            Section::make('صور الغلاف')
+                                ->schema([
+                                    Infolists\Components\ImageEntry::make('coverImages')
+                                        ->label('')
+                                        ->disk('public')
+                                        ->getStateUsing(fn($record) => $record->coverImages()?->get()->pluck('path')->toArray() ?? [])
+                                        ->columnSpanFull()
+                                        ->extraAttributes(['class' => 'rounded-xl'])
+                                        ->visible(fn($record) => $record->coverImages()?->count() > 0),
+
+                                    Infolists\Components\TextEntry::make('no_cover_images')
+                                        ->label('')
+                                        ->default('📷 لا توجد صور غلاف')
+                                        ->color('gray')
+                                        ->columnSpanFull()
+                                        ->visible(fn($record) => $record->coverImages()?->count() === 0 || !$record->coverImages()),
+                                ])
+                                ->collapsible(),
                         ]),
 
                     // Tab 2: معلومات الاتصال
@@ -203,31 +222,6 @@ class ShopInfolist
                                         ->columnSpanFull(),
                                 ])
                                 ->visible(fn($record) => $record->services?->count() === 0 || !$record->services),
-                        ]),
-
-                    // Tab 7: صور الغلاف
-                    Tab::make('صور الغلاف')
-                        ->icon('heroicon-o-photo')
-                        ->badge(fn($record) => $record->coverImages()?->count() > 0 ? $record->coverImages()->count() : null)
-                        ->schema([
-                            Section::make('صور الغلاف')
-                                ->schema([
-                                    Infolists\Components\ImageEntry::make('coverImages')
-                                        ->label('')
-                                        ->disk('public')
-                                        ->getStateUsing(fn($record) => $record->coverImages()?->get()->pluck('path')->toArray() ?? [])
-                                        ->columnSpanFull()
-                                        ->extraAttributes(['class' => 'rounded-xl'])
-                                        ->visible(fn($record) => $record->coverImages()?->count() > 0),
-
-                                    Infolists\Components\TextEntry::make('no_cover_images')
-                                        ->label('')
-                                        ->default('📷 لا توجد صور غلاف')
-                                        ->color('gray')
-                                        ->columnSpanFull()
-                                        ->visible(fn($record) => $record->coverImages()?->count() === 0 || !$record->coverImages()),
-                                ])
-                                ->collapsible(false),
                         ]),
                 ])
                 ->columnSpanFull(),
