@@ -137,12 +137,12 @@ class ProductForm
                                         ->label('اختر المنتجات')
                                         ->multiple()
                                         ->searchable()
-                                        ->preload()
-                                        ->options(function () {
-                                            return \App\Models\Product::query()
-                                                ->where('approval_status', \App\Enums\ProductApprovalStatus::APPROVED)
-                                                ->pluck('name', 'id')
-                                                ->toArray();
+                                        ->options(function () use ($vendorId) {
+                                            if (!$vendorId) {
+                                                return \App\Models\Product::pluck('name', 'id');
+                                            }
+                                            return \App\Models\Product::where('vendor_id', $vendorId)
+                                                ->pluck('name', 'id');
                                         })
                                         ->helperText('اختر المنتجات التي عادة ما يتم شراؤها مع هذا المنتج')
                                         ->columnSpanFull(),

@@ -117,14 +117,11 @@ class UpdateRequest extends FormRequest
             'shop_variants.*.price'             => 'nullable|integer|min:0',
             'shop_variants.*.quantity'          => 'nullable|integer|min:0',
 
-<<<<<<< HEAD
 
             'badges'          => 'nullable|array',
             'badges.*.id'  => 'required|integer|exists:badges,id',
             'badges.*.position'  => 'required|in:top,bottom',
-=======
             'brand_id' => 'nullable|integer|exists:brands,id'
->>>>>>> 6d29bdcb46b5699169054664a07545581b69078f
         ];
 
         // Locale-specific validation
