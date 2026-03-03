@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
-            $table->string('key');
-            $table->string('value');
+            $table->string('key')->unique(); // مفتاح الإعداد
+            $table->json('value')->nullable();
             $table->string('type')->default('string');
             $table->timestamps();
         });

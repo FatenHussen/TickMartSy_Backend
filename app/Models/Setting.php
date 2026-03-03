@@ -9,6 +9,10 @@ class Setting extends Model
     protected $fillable = [
         'key',
         'value',
-        'type'
+        'type',
+    ];
+
+    protected $casts = [
+        'value' => 'array', // حتى يدعم json تلقائياً
     ];
 }
