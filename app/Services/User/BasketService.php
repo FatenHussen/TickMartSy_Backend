@@ -70,44 +70,12 @@ class BasketService extends BaseService
 
         return $query;
     }
-
     public function query(array $filters)
     {
         $query = Basket::query()->latest();
 
-        // Filter by schedule status
-        if (isset($filters['is_schedule'])) {
-            $query->where('is_schedule', $filters['is_schedule']);
-        } else {
-            $query->where('is_schedule', 0);
-        }
 
-        // Category filter
-        if (!empty($filters['category_id'])) {
-            $query->where('category_id', $filters['category_id']);
-        }
-
-        // Price range filter - تحويل من عملة اليوزر للدولار
-        $query = $this->applyPriceFilter($query, $filters);
-
-        // Rating filter
-        if (!empty($filters['rating_min'])) {
-            $query->where('rating', '>=', $filters['rating_min']);
-        }
-
-        // Items count filter
-        if (!empty($filters['items_count_min']) || !empty($filters['items_count_max'])) {
-            $query->whereHas('items', function ($q) {}, '>=', $filters['items_count_min'] ?? 0);
-
-            if (!empty($filters['items_count_max'])) {
-                $query->whereHas('items', function ($q) {}, '<=', $filters['items_count_max']);
-            }
-        }
-
-        // Type filters
-        if (!empty($filters['type'])) {
-            $this->applyTypeFilters($query, $filters['type']);
-        }
+        $query->where('is_schedule', 0);
 
         /* ================= FAVORITES ================= */
         if (

@@ -53,11 +53,45 @@ class HelpCenterController extends Controller
     }
 
 
+    // public function settings()
+    // {
+    //     return $this->sendResponse(data: Setting::pluck('value', 'key')->toArray());
+    // }
+
     public function settings()
     {
-        return $this->sendResponse(data: Setting::pluck('value', 'key')->toArray());
-    }
+        $settings = Setting::all()->keyBy('key');
+        $locale = app()->getLocale();
 
+        return $this->sendResponse(data: [
+            'welcome' => [
+                'image' => isset($settings['welcome_image'])
+                    ? [asset('storage/' . $settings['welcome_image']->value)]
+                    : null,
+                'text'  => isset($settings['welcome_text'])
+                    ? ($settings['welcome_text']->value[$locale]
+                        ?? $settings['welcome_text']->value['en']
+                        ?? null)
+                    : null,
+            ],
+            'login' => [
+                'image' => isset($settings['login_image'])
+                    ? asset('storage/' . $settings['login_image']->value)
+                    : null,
+                'link'  => $settings['login_link']->value ?? null,
+            ],
+            'contact' => [
+                'phone' => $settings['phone']->value ?? null,
+                'whatsapp' => $settings['whts']->value ?? null,
+                'email' => $settings['email']->value ?? null,
+            ],
+            'color' => [
+                'main_color' => $settings['main_color'] ?? '#E4F0FB',
+                'text_color' => $settings['text_color'] ?? '#2A2A2A',
+                'second_color' => $settings['text_color'] ?? '#e27676',
+            ]
+        ]);
+    }
 
     // public function contactus(StoreRequest $request)
     // {
