@@ -66,7 +66,7 @@ class HelpCenterController extends Controller
         return $this->sendResponse(data: [
             'welcome' => [
                 'image' => isset($settings['welcome_image'])
-                    ? asset('storage/' . $settings['welcome_image']->value)
+                    ? [asset('storage/' . $settings['welcome_image']->value)]
                     : null,
                 'text'  => isset($settings['welcome_text'])
                     ? ($settings['welcome_text']->value[$locale]
