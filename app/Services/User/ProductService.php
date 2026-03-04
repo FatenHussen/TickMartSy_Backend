@@ -161,14 +161,20 @@ class ProductService extends BaseService
             });
         }
 
-        // Price filter - combine min and max in one whereHas
+        // Price filter - تحويل السعر من عملة اليوزر للدولار قبل الفلتر
         if (!empty($filters['price_min']) || !empty($filters['price_max'])) {
-            $query->whereHas('variants.shopVariants', function (Builder $q) use ($filters) {
-                if (!empty($filters['price_min'])) {
-                    $q->where('price', '>=', $filters['price_min']);
+            // تحويل نطاق الأسعار من عملة اليوزر للدولار
+            $priceRange = \App\Helpers\CurrencyHelper::convertPriceRangeToUSD(
+                $filters['price_min'] ?? null,
+                $filters['price_max'] ?? null
+            );
+
+            $query->whereHas('variants.shopVariants', function (Builder $q) use ($priceRange) {
+                if ($priceRange['min']) {
+                    $q->where('price', '>=', $priceRange['min']);
                 }
-                if (!empty($filters['price_max'])) {
-                    $q->where('price', '<=', $filters['price_max']);
+                if ($priceRange['max']) {
+                    $q->where('price', '<=', $priceRange['max']);
                 }
             });
         }

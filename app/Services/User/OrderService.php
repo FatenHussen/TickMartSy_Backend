@@ -102,19 +102,47 @@ class OrderService extends BaseService
             [$pointCouponDiscount, $pointFreeDelivery, $usedCouponExchangeId, $usedFreeDeliveryExchangeId] =
                 $this->applyPointExchanges($user->id, $data, $deliveryPrice);
 
-            // ❗ إذا تم تطبيق كوبون → نلغي خصم السلة
-            if ($couponCode !== null) {
+            // ❗ إذا تم تطبيق كوبون أو نقاط أو باقة → نلغي خصم السلة
+            $hasExternalDiscount = $couponCode !== null
+                || $pointCouponDiscount > 0
+                || !empty($data['use_subscription_discount']);
+
+            if ($hasExternalDiscount) {
                 $basketDiscount = 0;
             }
 
-            // 5️⃣ Calculate totals
+            // 5️⃣ Apply Subscription Benefits (only if user explicitly requests)
+            $subscriptionBenefitsService = app(\App\Services\User\SubscriptionBenefitsService::class);
+
+            // نستخدم subtotalBeforeDiscount إذا في خصم خارجي، وإلا subtotalAfterProductDiscount
+            $baseAmountForSubscription = $hasExternalDiscount
+                ? $subtotalBeforeDiscount
+                : $subtotalAfterProductDiscount;
+
+            $subscriptionBenefits = $subscriptionBenefitsService->applyBenefits(
+                $order,
+                $user->id,
+                $baseAmountForSubscription,
+                $deliveryPrice,
+                $data['use_subscription_discount'] ?? false,
+                $data['use_subscription_free_delivery'] ?? false
+            );
+
+            $subscriptionDiscount = $subscriptionBenefits['discount_amount'] ?? 0;
+            $subscriptionFreeDelivery = $subscriptionBenefits['free_delivery_applied'] ?? false;
+            $subscriptionPointsBonus = $subscriptionBenefits['points_bonus'] ?? 0;
+
+            // 6️⃣ Calculate totals
             $basketDiscountAmount = $subtotalAfterProductDiscount * ($basketDiscount / 100);
 
-            $finalTotal = $subtotalAfterProductDiscount
-                - ($basketDiscountAmount + $couponDiscountAmount + $pointCouponDiscount);
+            // الـ base amount للحساب النهائي
+            $baseAmount = $hasExternalDiscount ? $subtotalBeforeDiscount : $subtotalAfterProductDiscount;
 
-            // Apply free delivery from points
-            if ($pointFreeDelivery) {
+            $finalTotal = $baseAmount
+                - ($basketDiscountAmount + $couponDiscountAmount + $pointCouponDiscount + $subscriptionDiscount);
+
+            // Apply free delivery from points or subscription
+            if ($pointFreeDelivery || $subscriptionFreeDelivery) {
                 $deliveryPrice = 0;
             }
 
@@ -163,6 +191,12 @@ class OrderService extends BaseService
                 'used_free_delivery_exchange_id' => $usedFreeDeliveryExchangeId,
                 'coupon_discount_from_points' => round($pointCouponDiscount, 2),
                 'free_delivery_from_points' => $pointFreeDelivery,
+
+                // Subscription data
+                'subscription_id' => $subscriptionBenefits['subscription_id'] ?? null,
+                'subscription_discount' => round($subscriptionDiscount, 2),
+                'subscription_free_delivery' => $subscriptionFreeDelivery,
+                'subscription_points_bonus' => $subscriptionPointsBonus,
             ]);
 
 
@@ -274,13 +308,54 @@ class OrderService extends BaseService
             // 4️⃣ Check Point Exchanges (without modifying them)
             $pointExchangesInfo = $this->checkPointExchanges($user->id, $data, $deliveryPrice);
 
-            // 5️⃣ Totals
+            // تحديد إذا في خصم خارجي
+            $hasExternalDiscount = $couponInfo['applied']
+                || $pointExchangesInfo['coupon_discount'] > 0
+                || !empty($data['use_subscription_discount']);
+
+            // إذا في خصم خارجي → نلغي خصم السلة
+            if ($hasExternalDiscount) {
+                $basketDiscount = 0;
+            }
+
+            // 5️⃣ Preview Subscription Benefits (check if user wants to use them)
+            $subscriptionBenefitsService = app(\App\Services\User\SubscriptionBenefitsService::class);
+
+            // نستخدم subtotalBeforeDiscount إذا في خصم خارجي
+            $baseAmountForSubscription = $hasExternalDiscount
+                ? $subtotalBeforeDiscount
+                : $subtotalAfterProductDiscount;
+
+            $subscriptionInfo = $subscriptionBenefitsService->previewBenefits(
+                $user->id,
+                $baseAmountForSubscription,
+                $deliveryPrice
+            );
+
+            // Apply subscription discount ONLY if user explicitly requests it
+            $subscriptionDiscount = 0;
+            $subscriptionFreeDelivery = false;
+
+            if (!empty($data['use_subscription_discount']) && $subscriptionInfo['has_subscription']) {
+                $subscriptionDiscount = $subscriptionInfo['discount_amount'] ?? 0;
+            }
+
+            if (!empty($data['use_subscription_free_delivery']) && $subscriptionInfo['has_subscription']) {
+                $subscriptionFreeDelivery = $subscriptionInfo['free_delivery_applicable'] ?? false;
+            }
+
+            // 6️⃣ Totals
             $basketDiscountAmount = $subtotalAfterProductDiscount * ($basketDiscount / 100);
 
-            $finalSubtotal = $subtotalAfterProductDiscount
-                - ($basketDiscountAmount + $couponDiscountAmount + $pointExchangesInfo['coupon_discount']);
+            // الـ base amount للحساب النهائي
+            $baseAmount = $hasExternalDiscount ? $subtotalBeforeDiscount : $subtotalAfterProductDiscount;
 
-            $finalDeliveryPrice = $pointExchangesInfo['free_delivery_applicable'] ? 0 : $deliveryPrice;
+            $finalSubtotal = $baseAmount
+                - ($basketDiscountAmount + $couponDiscountAmount + $pointExchangesInfo['coupon_discount'] + $subscriptionDiscount);
+
+            // Apply free delivery from points OR subscription (based on user choice)
+            $freeDeliveryApplied = $pointExchangesInfo['free_delivery_applicable'] || $subscriptionFreeDelivery;
+            $finalDeliveryPrice = $freeDeliveryApplied ? 0 : $deliveryPrice;
             $total = $finalSubtotal + $finalDeliveryPrice;
 
             return [
@@ -293,6 +368,12 @@ class OrderService extends BaseService
                 'coupon' => $couponInfo,
 
                 'point_exchanges' => $pointExchangesInfo,
+
+                'subscription' => array_merge($subscriptionInfo, [
+                    'discount_applied' => $subscriptionDiscount > 0,
+                    'discount_amount_applied' => round($subscriptionDiscount, 2),
+                    'free_delivery_applied' => $subscriptionFreeDelivery,
+                ]),
 
                 'delivery_price' => round($finalDeliveryPrice, 2),
 
@@ -366,13 +447,13 @@ class OrderService extends BaseService
                         if ($coupon->categories()->exists() && !$coupon->categories->contains($product->category_id)) $allowed = false;
                         if ($coupon->vendors()->exists() && !$coupon->vendors->contains($product->vendor_id)) $allowed = false;
 
-                        if (!$allowed) $excludedItems[] = $product->id;
+                        if (!$allowed) $excludedItems[] = $item['shop_product_variant_id'];
                     }
 
                     $eligibleSubtotal = $subtotalAfterProductDiscount;
                     if (!empty($excludedItems)) {
                         $eligibleSubtotal = $basketItemsCollection
-                            ->whereNotIn('shop_product_variant_id', $excludedItems)
+                            ->whereNotIn('shop_product_variant_id', (array) $excludedItems)
                             ->sum(fn($i) => $i['price_after_discount'] * $i['quantity']);
                         $reason[] = 'Some items are excluded from coupon: ' . implode(',', array_map('strval', $excludedItems));
                     }
@@ -435,10 +516,27 @@ class OrderService extends BaseService
                 break;
 
             case CartType::SCHEDULE_ADMIN_CART->value:
-                $basket = Basket::findOrFail($data['admin_schedule_basket_id']);
-                //schedule
-                $basketDiscount = $basket->discount; //change
-                $deliveryPrice  = $basket->delivery_price;
+                // Support both admin_schedule_basket_id and admin_basket_id for backward compatibility
+                $basketId = $data['admin_schedule_basket_id'] ?? $data['admin_basket_id'] ?? null;
+
+                if (!$basketId) {
+                    throw new Exception('Basket ID is required for scheduled admin cart');
+                }
+
+                $basket = Basket::findOrFail($basketId);
+
+                // Get the basket schedule discount if exists
+                $basketSchedule = $basket->schedules()->where('is_active', true)->first();
+
+                if ($basketSchedule && $basketSchedule->discount_value > 0) {
+                    // Use schedule discount instead of basket discount
+                    $basketDiscount = $basketSchedule->discount_value;
+                } else {
+                    // Fallback to basket discount
+                    $basketDiscount = $basket->discount;
+                }
+
+                $deliveryPrice = $basket->delivery_price;
                 break;
 
             case CartType::DEFAULT->value:
@@ -475,6 +573,15 @@ class OrderService extends BaseService
         $totalQuantity = 0;
         $orderItems = collect();
 
+        // تحديد إذا في خصم خارجي (كوبون، نقاط، باقة)
+        $hasExternalDiscount = !empty($data['coupon'])
+            || !empty($data['point_coupon_exchange_id'])
+            || !empty($data['use_subscription_discount']);
+
+        // تحديد إذا في سلة (basket/recipe/schedule)
+        $cartType = $data['cart_type'] ?? 'default';
+        $hasBasket = $cartType !== CartType::DEFAULT->value;
+
         foreach ($data['items'] as $item) {
             $shopVariant = ShopProductVariant::with('productVariant.product')
                 ->lockForUpdate()
@@ -487,7 +594,16 @@ class OrderService extends BaseService
             $product = $shopVariant->productVariant->product;
             $price = $shopVariant->price;
             $quantity = $item['quantity'];
-            $productDiscount = ($data['cart_type'] ?? 'default') === CartType::DEFAULT->value ? $product->discount : 0;
+
+            // تطبيق خصم المنتج فقط إذا:
+            // 1. ما في خصم خارجي (كوبون/نقاط/باقة)
+            // 2. ما في سلة (basket/recipe/schedule)
+            // 3. cart_type = default
+            $productDiscount = 0;
+            if (!$hasExternalDiscount && !$hasBasket && $cartType === CartType::DEFAULT->value) {
+                $productDiscount = $product->discount;
+            }
+
             $priceAfterDiscount = $price * (1 - ($productDiscount / 100));
 
             if ($order) {

@@ -19,9 +19,9 @@ return new class extends Migration
             $table->foreignId('rule_id')->nullable()->constrained('point_rules')->nullOnDelete();
             $table->foreignId('created_by_admin_id')->nullable()->constrained('admins')->nullOnDelete();
 
-            $table->string('source'); 
-            $table->integer('points'); 
-            $table->enum('status', ['pending', 'earned', 'expired'])->default('earned');
+            $table->string('source');
+            $table->integer('points');
+            $table->enum('status', ['pending', 'earned', 'expired', 'redeemed'])->default('earned');
 
             $table->string('reference_type')->nullable();
             $table->unsignedBigInteger('reference_id')->nullable();

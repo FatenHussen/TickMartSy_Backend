@@ -57,8 +57,8 @@ class OrderPricingService
             ],
 
             CartType::SCHEDULE_ADMIN_CART->value => [
-                Basket::findOrFail($data['admin_schedule_basket_id'])->discount,
-                Basket::findOrFail($data['admin_schedule_basket_id'])->delivery_price
+                Basket::findOrFail($data['admin_schedule_basket_id'] ?? $data['admin_basket_id'])->discount,
+                Basket::findOrFail($data['admin_schedule_basket_id'] ?? $data['admin_basket_id'])->delivery_price
             ],
 
             default => [

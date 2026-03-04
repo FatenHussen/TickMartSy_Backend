@@ -387,5 +387,145 @@ return [
     'unlimited' => 'غير محدود',
     'status' => 'الحالة',
     'id' => 'الرقم',
-];
 
+    // Vendor Subscriptions
+    'vendor_subscriptions' => [
+        'title' => 'اشتراكات الموردين',
+        'singular' => 'اشتراك مورد',
+        'vendor' => 'المورد',
+        'package' => 'الباقة',
+        'start_date' => 'تاريخ البدء',
+        'end_date' => 'تاريخ الانتهاء',
+        'status' => 'الحالة',
+        'remaining_orders' => 'الطلبات المتبقية',
+        'remaining_free_deliveries' => 'التوصيلات المجانية المتبقية',
+        'statuses' => [
+            'active' => 'نشط',
+            'expired' => 'منتهي',
+            'cancelled' => 'ملغي',
+        ],
+        'sections' => [
+            'subscription_info' => 'معلومات الاشتراك',
+            'package_details' => 'تفاصيل الباقة',
+            'usage_stats' => 'إحصائيات الاستخدام',
+        ],
+    ],
+
+    // Promotion Requests
+    'promotion_requests' => [
+        'title' => 'طلبات الترويج',
+        'singular' => 'طلب ترويج',
+        'vendor' => 'المورد',
+        'shop' => 'الفرع',
+        'promotion_type' => 'نوع الترويج',
+        'discount_percentage' => 'نسبة الخصم',
+        'start_date' => 'تاريخ البدء',
+        'end_date' => 'تاريخ الانتهاء',
+        'status' => 'الحالة',
+        'admin_notes' => 'ملاحظات الإدارة',
+        'rejection_reason' => 'سبب الرفض',
+        'requested_at' => 'تاريخ الطلب',
+        'reviewed_at' => 'تاريخ المراجعة',
+        'statuses' => [
+            'pending' => 'قيد الانتظار',
+            'approved' => 'موافق عليه',
+            'rejected' => 'مرفوض',
+        ],
+        'types' => [
+            'flash_sale' => 'تخفيضات سريعة',
+            'seasonal' => 'موسمي',
+            'clearance' => 'تصفية',
+            'special_offer' => 'عرض خاص',
+        ],
+        'actions' => [
+            'approve' => 'موافقة',
+            'reject' => 'رفض',
+            'approved' => 'تمت الموافقة على طلب الترويج',
+            'rejected' => 'تم رفض طلب الترويج',
+        ],
+        'sections' => [
+            'request_info' => 'معلومات الطلب',
+            'promotion_details' => 'تفاصيل الترويج',
+            'review_info' => 'معلومات المراجعة',
+        ],
+    ],
+
+    // Roles & Permissions
+    'roles' => [
+        'title' => 'الأدوار',
+        'singular' => 'دور',
+        'name' => 'اسم الدور',
+        'permissions' => 'الصلاحيات',
+        'users_count' => 'عدد المستخدمين',
+        'guard_name' => 'اسم الحارس',
+        'sections' => [
+            'basic_info' => 'المعلومات الأساسية',
+            'permissions' => 'الصلاحيات',
+        ],
+    ],
+
+    'permissions' => [
+        'title' => 'الصلاحيات',
+        'singular' => 'صلاحية',
+        'name' => 'اسم الصلاحية',
+        'guard_name' => 'اسم الحارس',
+        'sections' => [
+            'basic_info' => 'المعلومات الأساسية',
+        ],
+    ],
+
+    // Coupons
+    'coupons' => [
+        'title' => 'الكوبونات',
+        'singular' => 'كوبون',
+        'code' => 'كود الكوبون',
+        'discount_type' => 'نوع الخصم',
+        'discount_value' => 'قيمة الخصم',
+        'max_uses' => 'الحد الأقصى للاستخدام',
+        'used_count' => 'عدد مرات الاستخدام',
+        'start_date' => 'تاريخ البدء',
+        'end_date' => 'تاريخ الانتهاء',
+        'is_active' => 'نشط',
+        'min_order_amount' => 'الحد الأدنى لقيمة الطلب',
+        'discount_types' => [
+            'percent' => 'نسبة مئوية',
+            'fixed' => 'مبلغ ثابت',
+        ],
+        'sections' => [
+            'basic_info' => 'المعلومات الأساسية',
+            'discount_settings' => 'إعدادات الخصم',
+            'usage_limits' => 'حدود الاستخدام',
+            'validity' => 'فترة الصلاحية',
+        ],
+    ],
+
+    'point_rules' => [
+        'plural' => 'قواعد النقاط',
+        'singular' => 'قاعدة نقاط',
+        'code' => 'كود القاعدة',
+        'title' => 'عنوان القاعدة',
+        'type' => 'نوع القاعدة',
+        'value' => 'قيمة النقاط',
+        'min_order_amount' => 'الحد الأدنى لقيمة الطلب',
+        'expires_after_days' => 'تنتهي بعد (أيام)',
+        'is_active' => 'نشط',
+        'types' => [
+            'fixed' => 'ثابت',
+            'percentage' => 'نسبة مئوية',
+        ],
+        'rules' => [
+            'user_registration' => 'مكافأة إنشاء حساب',
+            'first_order' => 'مكافأة أول طلب',
+            'order_completion' => 'نقاط إتمام الطلب',
+            'product_review' => 'نقاط تقييم المنتج',
+            'purchase_amount_threshold' => 'مكافأة قيمة الشراء',
+        ],
+        'descriptions' => [
+            'user_registration' => 'نقاط يحصل عليها المستخدم عند إنشاء حساب جديد',
+            'first_order' => 'نقاط يحصل عليها المستخدم عند إتمام أول طلب',
+            'order_completion' => 'نقاط يحصل عليها المستخدم عند إتمام كل طلب',
+            'product_review' => 'نقاط يحصل عليها المستخدم عند تقييم منتج',
+            'purchase_amount_threshold' => 'نقاط إضافية عند الوصول لقيمة شراء معينة',
+        ],
+    ],
+];

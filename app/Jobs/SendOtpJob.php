@@ -30,7 +30,7 @@ class SendOtpJob implements ShouldQueue
     {
         
         $response = Http::withHeaders([
-            'authorization' => 'c31ee59586cc4ca9ce31b3f50628eda75fcc44b58728f35802ab1ccf0c1d587f',
+            'authorization' => 'a12f1ba8f6e805b2c4d0e8cb1dcc7d19a0e24fa3f97e9f679',
             'Content-Type'  => 'application/json',
         ])->post('https://otp.octopus-software.online/send', [
             'to'      => $this->phone,

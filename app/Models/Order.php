@@ -47,11 +47,17 @@ class Order extends Model
         'used_coupon_exchange_id',
         'used_free_delivery_exchange_id',
         'coupon_discount_from_points',
-        'free_delivery_from_points'
+        'free_delivery_from_points',
+        //subscription
+        'subscription_id',
+        'subscription_discount',
+        'subscription_free_delivery',
+        'subscription_points_bonus',
     ];
 
     protected $casts = [
         'is_instant_delivery' => 'boolean',
+        'subscription_free_delivery' => 'boolean',
     ];
 
     protected $appends = ['affiliate_commission'];
@@ -98,6 +104,16 @@ class Order extends Model
         return $this->belongsTo(Basket::class);
     }
 
+    public function subscription()
+    {
+        return $this->belongsTo(Subscription::class);
+    }
+
+    public function subscriptionUsageLogs()
+    {
+        return $this->hasMany(SubscriptionUsageLog::class);
+    }
+
 
 
     public function basketSchedule()
@@ -115,6 +131,10 @@ class Order extends Model
         return $this->belongsTo(PointExchange::class, 'used_free_delivery_exchange_id');
     }
 
+    public function ratings()
+    {
+        return $this->morphMany(Rating::class, 'rateable');
+    }
 
     protected static function booted()
     {

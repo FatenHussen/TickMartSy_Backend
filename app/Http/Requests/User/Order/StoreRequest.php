@@ -34,12 +34,46 @@ class StoreRequest extends FormRequest
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'recipe_id' => 'nullable|exists:recipes,id',
             'admin_basket_id' => 'nullable|exists:baskets,id',
+            'admin_schedule_basket_id' => 'nullable|exists:baskets,id',
             'coupon' => 'nullable|string',
             'affiliate_id' => 'nullable|string',
 
             // Point exchanges
             'point_coupon_exchange_id' => 'nullable|integer|exists:point_exchanges,id',
             'point_free_delivery_exchange_id' => 'nullable|integer|exists:point_exchanges,id',
+
+            // Subscription benefits (user choice)
+            'use_subscription_discount' => 'nullable|boolean',
+            'use_subscription_free_delivery' => 'nullable|boolean',
         ];
+    }
+
+    /**
+     * Configure the validator instance.
+     */
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $data = $this->all();
+
+            // Validation: Only ONE discount source allowed
+            $discountSources = 0;
+            if (!empty($data['coupon'])) $discountSources++;
+            if (!empty($data['point_coupon_exchange_id'])) $discountSources++;
+            if (!empty($data['use_subscription_discount'])) $discountSources++;
+
+            if ($discountSources > 1) {
+                $validator->errors()->add('discount_conflict', 'يمكن استخدام مصدر خصم واحد فقط: كوبون أو نقاط أو باقة');
+            }
+
+            // Validation: Only ONE free delivery source allowed
+            $freeDeliverySources = 0;
+            if (!empty($data['point_free_delivery_exchange_id'])) $freeDeliverySources++;
+            if (!empty($data['use_subscription_free_delivery'])) $freeDeliverySources++;
+
+            if ($freeDeliverySources > 1) {
+                $validator->errors()->add('free_delivery_conflict', 'يمكن استخدام مصدر توصيل مجاني واحد فقط: نقاط أو باقة');
+            }
+        });
     }
 }

@@ -113,6 +113,17 @@ class AwardPointsListener
             );
 
             Log::info("Order completion points awarded to user {$userId} for order {$order->id}");
+
+            // Award purchase amount threshold bonus if applicable
+            $this->pointService->awardPoints(
+                userId: $userId,
+                ruleCode: 'purchase_amount_threshold',
+                orderAmount: $order->total,
+                referenceType: 'order',
+                referenceId: $order->id
+            );
+
+            Log::info("Points awarded to user {$userId} for order {$order->id}");
         } catch (\Throwable $e) {
             // Don't fail order completion if points fail
             Log::error("Failed to award points for order {$order->id}", [

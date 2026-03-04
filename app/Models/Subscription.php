@@ -35,4 +35,19 @@ class Subscription extends Model
     {
         return $this->status === 'active' && now()->between($this->start_date, $this->end_date);
     }
+
+    public function usageLogs()
+    {
+        return $this->hasMany(SubscriptionUsageLog::class);
+    }
+
+    public function hasRemainingOrders()
+    {
+        return is_null($this->remaining_orders) || $this->remaining_orders > 0;
+    }
+
+    public function hasRemainingFreeDeliveries()
+    {
+        return $this->remaining_free_deliveries > 0;
+    }
 }

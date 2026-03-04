@@ -157,10 +157,13 @@ Route::prefix('user')->group(
             });
         });
 
-        Route::post('/orders/coupon-preview', [OrderController::class, 'couponPreview'])->middleware(['auth:user']);
-        Route::post('/orders/preview', [OrderController::class, 'preview'])->middleware(['auth:user']);
-        Route::get('/orders/active', [OrderController::class, 'activeOrder'])->middleware(['auth:user']);
-        Route::post('/orders/{orderId}/cancel', [OrderController::class, 'cancel'])->middleware(['auth:user']);
+        // Order routes - لازم تكون قبل apiResource
+        Route::middleware(['auth:user'])->group(function () {
+            Route::post('/orders/coupon-preview', [OrderController::class, 'couponPreview']);
+            Route::post('/orders/preview', [OrderController::class, 'preview']);
+            Route::get('/orders/active', [OrderController::class, 'activeOrder']);
+            Route::post('/orders/{orderId}/cancel', [OrderController::class, 'cancel']);
+        });
 
         Route::apiResource('orders', OrderController::class)->middleware(['auth:user']);
 
@@ -225,6 +228,11 @@ Route::prefix('user')->group(
             Route::post('/subscribe', [SubscriptionController::class, 'subscribe']);
             Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
             Route::post('/renew', [SubscriptionController::class, 'renew']);
+        });
+
+        // Subscription benefits
+        Route::middleware(['auth:user'])->group(function () {
+            Route::get('/subscription/benefits', [\App\Http\Controllers\User\Subscription\SubscriptionController::class, 'benefits']);
         });
 
 

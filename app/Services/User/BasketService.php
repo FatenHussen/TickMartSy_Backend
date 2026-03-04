@@ -46,17 +46,8 @@ class BasketService extends BaseService
             $query->where('category_id', $filters['category_id']);
         }
 
-        // Price range filter
-        if (!empty($filters['price_min']) || !empty($filters['price_max'])) {
-            $query->where(function ($q) use ($filters) {
-                if (!empty($filters['price_min'])) {
-                    $q->where('price', '>=', $filters['price_min']);
-                }
-                if (!empty($filters['price_max'])) {
-                    $q->where('price', '<=', $filters['price_max']);
-                }
-            });
-        }
+        // Price range filter - تحويل من عملة اليوزر للدولار
+        $query = $this->applyPriceFilter($query, $filters);
 
         // Rating filter
         if (!empty($filters['rating_min'])) {
@@ -79,7 +70,8 @@ class BasketService extends BaseService
 
         return $query;
     }
- public function query(array $filters)
+
+    public function query(array $filters)
     {
         $query = Basket::query()->latest();
 
@@ -95,17 +87,8 @@ class BasketService extends BaseService
             $query->where('category_id', $filters['category_id']);
         }
 
-        // Price range filter
-        if (!empty($filters['price_min']) || !empty($filters['price_max'])) {
-            $query->where(function ($q) use ($filters) {
-                if (!empty($filters['price_min'])) {
-                    $q->where('price', '>=', $filters['price_min']);
-                }
-                if (!empty($filters['price_max'])) {
-                    $q->where('price', '<=', $filters['price_max']);
-                }
-            });
-        }
+        // Price range filter - تحويل من عملة اليوزر للدولار
+        $query = $this->applyPriceFilter($query, $filters);
 
         // Rating filter
         if (!empty($filters['rating_min'])) {
@@ -138,9 +121,9 @@ class BasketService extends BaseService
             ]);
         }
 
-
         return $query;
     }
+
     protected function applyTypeFilters($query, $type)
     {
         switch ($type) {

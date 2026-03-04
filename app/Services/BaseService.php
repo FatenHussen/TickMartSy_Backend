@@ -345,4 +345,34 @@ abstract class BaseService
             $this->deleteFile('storage', $this->imageFolder, $model->{$this->imageColumn});
         }
     }
+
+    /**
+     * تطبيق فلتر السعر مع تحويل العملة
+     *
+     * @param Builder $query
+     * @param array $filters
+     * @param string $priceColumn اسم عمود السعر (default: 'price')
+     * @return Builder
+     */
+    protected function applyPriceFilter(Builder $query, array $filters, string $priceColumn = 'price'): Builder
+    {
+        if (!empty($filters['price_min']) || !empty($filters['price_max'])) {
+            // تحويل نطاق الأسعار من عملة اليوزر للدولار
+            $priceRange = \App\Helpers\CurrencyHelper::convertPriceRangeToUSD(
+                $filters['price_min'] ?? null,
+                $filters['price_max'] ?? null
+            );
+
+            $query->where(function ($q) use ($priceRange, $priceColumn) {
+                if ($priceRange['min']) {
+                    $q->where($priceColumn, '>=', $priceRange['min']);
+                }
+                if ($priceRange['max']) {
+                    $q->where($priceColumn, '<=', $priceRange['max']);
+                }
+            });
+        }
+
+        return $query;
+    }
 }

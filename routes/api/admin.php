@@ -52,6 +52,7 @@ use App\Http\Controllers\Admin\VendorUser\VendorUserCrudController;
 use App\Http\Controllers\Admin\Schedule\ScheduleCrudController;
 use App\Http\Controllers\Admin\Statistics\StatisticsController;
 use App\Http\Controllers\Admin\Reports\ReportsController;
+use App\Http\Controllers\Admin\PointRuleController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(
@@ -98,6 +99,9 @@ Route::prefix('admin')->group(
                 Route::get('/{userId}', [UserPointController::class, 'show']);
                 Route::get('/{userId}/transactions', [UserPointController::class, 'transactions']);
             });
+
+            // Point Rules Management
+            Route::apiResource('point-rules', PointRuleController::class);
 
             // Statistics & Reports
             Route::prefix('statistics')->group(function () {
@@ -169,6 +173,11 @@ Route::prefix('admin')->group(
                     'product-variants' => ProductVariantController::class,
                     'shop-product-variants' => ShopProductVariantController::class
                 ]);
+
+                // Product Approval routes
+                Route::post('products/{id}/approve', [ProductController::class, 'approve']);
+                Route::post('products/{id}/reject', [ProductController::class, 'reject']);
+
                 //     }
                 // );
                 //  });
@@ -202,6 +211,12 @@ Route::prefix('admin')->group(
                 Route::apiResource('seller-registrations', SellerRegistrationCrudController::class)->only(['index', 'show', 'destroy']);
                 Route::post('seller-registrations/{id}/approve', [SellerRegistrationCrudController::class, 'approve']);
                 Route::post('seller-registrations/{id}/reject', [SellerRegistrationCrudController::class, 'reject']);
+
+                // Promotion Request routes
+                Route::apiResource('promotion-requests', \App\Http\Controllers\Admin\PromotionRequest\PromotionRequestCrudController::class)->only(['index', 'show', 'destroy']);
+                Route::post('promotion-requests/{id}/approve', [\App\Http\Controllers\Admin\PromotionRequest\PromotionRequestCrudController::class, 'approve']);
+                Route::post('promotion-requests/{id}/reject', [\App\Http\Controllers\Admin\PromotionRequest\PromotionRequestCrudController::class, 'reject']);
+                Route::get('promotion-requests/stats/summary', [\App\Http\Controllers\Admin\PromotionRequest\PromotionRequestCrudController::class, 'stats']);
 
                 // Vendor User Management routes (includes shop assignments)
                 Route::apiResource('vendor-users', VendorUserCrudController::class);

@@ -15,7 +15,7 @@ class FilterRequest extends FormRequest
     {
         return [
             'rateable_id' => ['nullable', 'integer'],
-            'rateable_type' => ['nullable', 'string', 'in:product,delivery,basket,schedule_basket,shop,recipe,brand'],
+            'rateable_type' => ['nullable', 'string', 'in:product,delivery,basket,schedule_basket,shop,recipe,brand,order'],
             'rating' => ['nullable', 'integer'],
             'user_id' => ['nullable', 'integer'],
         ];

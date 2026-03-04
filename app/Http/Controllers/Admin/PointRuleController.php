@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\BaseCRUDController;
 use App\Http\Requests\Admin\Point\PointRuleRequest;
+use App\Http\Requests\Admin\Point\UpdatePointRuleRequest;
 use App\Services\Admin\PointRuleService;
 
 class PointRuleController extends BaseCRUDController
@@ -12,6 +13,6 @@ class PointRuleController extends BaseCRUDController
     {
         $this->service = $service;
         $this->createRequest = PointRuleRequest::class;
-        $this->updateRequest = PointRuleRequest::class;
+        $this->updateRequest = UpdatePointRuleRequest::class;
     }
 }

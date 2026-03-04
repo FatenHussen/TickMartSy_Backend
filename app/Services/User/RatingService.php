@@ -5,6 +5,7 @@ namespace App\Services\User;
 use App\Enums\RateableType;
 use App\Models\Rating;
 use App\Services\BaseService;
+use Illuminate\Support\Facades\Log;
 
 class RatingService extends BaseService
 {
@@ -65,16 +66,21 @@ class RatingService extends BaseService
 
         $rating = parent::create($data);
 
+        // Award product review points
         try {
             $pointService = app(\App\Services\PointService::class);
             $pointService->awardPoints(
-                $data['user_id'],
-                'product_review',
-                null,
-                'rating',
-                $rating->id
+                userId: $data['user_id'],
+                ruleCode: 'product_review',
+                referenceType: 'rating',
+                referenceId: $rating->id
             );
         } catch (\Throwable $e) {
+            Log::error('Failed to award review points', [
+                'user_id' => $data['user_id'],
+                'rating_id' => $rating->id,
+                'error' => $e->getMessage()
+            ]);
         }
 
         return true;
@@ -112,6 +118,7 @@ class RatingService extends BaseService
             RateableType::RECIPE->value => \App\Models\Recipe::class,
             RateableType::BASKET->value => \App\Models\Basket::class,
             RateableType::SCHEDULED_BASKET->value => \App\Models\BasketSchedule::class,
+            RateableType::ORDER->value => \App\Models\Order::class,
             default => abort(422, 'Invalid rateable type'),
         };
     }
