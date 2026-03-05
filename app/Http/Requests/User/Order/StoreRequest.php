@@ -23,6 +23,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'address_id' => ['required', 'exists:user_addresses,id'],
+            'payment_method_id' => ['required', 'exists:payment_methods,id'],
             'cart_type' => ['nullable', 'string', 'in:default,recipe,admin_cart,schedule_admin_cart'],
             'is_instant_delivery' => ['required', 'boolean'],
 
@@ -35,6 +36,7 @@ class StoreRequest extends FormRequest
             'recipe_id' => 'nullable|exists:recipes,id',
             'admin_basket_id' => 'nullable|exists:baskets,id',
             'admin_schedule_basket_id' => 'nullable|exists:baskets,id',
+            'basket_schedule_id' => 'nullable|exists:basket_schedules,id',
             'coupon' => 'nullable|string',
             'affiliate_id' => 'nullable|string',
 
@@ -45,6 +47,7 @@ class StoreRequest extends FormRequest
             // Subscription benefits (user choice)
             'use_subscription_discount' => 'nullable|boolean',
             'use_subscription_free_delivery' => 'nullable|boolean',
+            //add schedule
         ];
     }
 

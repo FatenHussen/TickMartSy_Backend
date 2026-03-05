@@ -235,6 +235,11 @@ Route::prefix('user')->group(
             Route::get('/subscription/benefits', [\App\Http\Controllers\User\Subscription\SubscriptionController::class, 'benefits']);
         });
 
+        // Active benefits (point exchanges + subscription)
+        Route::middleware(['auth:user'])->group(function () {
+            Route::get('/active-benefits', [\App\Http\Controllers\User\ActiveBenefitsController::class, 'index']);
+        });
+
 
 
         Route::prefix('markter')->middleware(['auth:user'])->group(function () {

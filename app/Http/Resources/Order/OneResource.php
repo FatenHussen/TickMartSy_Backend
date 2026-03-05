@@ -63,6 +63,10 @@ class OneResource extends JsonResource
             'user' => AllResource::make($this->user),
             'driver' => DriverAllResource::make($this->driver),
             'user_address' => AddressOneResource::make($this->address),
+            'payment_method' => $this->paymentMethod ? [
+                'id' => $this->paymentMethod->id,
+                'name' => $this->paymentMethod->name,
+            ] : null,
             // 'baskes' => $this->basket ? BasketAllResource::make($this->basket) : null,
             // 'basket_schedule' => $this->basket_schedule_id ? BasketScheduleAllResource::make($this->basketSchedule) : null,
             'items' => OrderItemResource::collection(

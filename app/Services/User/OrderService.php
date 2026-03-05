@@ -78,6 +78,7 @@ class OrderService extends BaseService
             $order = Order::create([
                 'user_id'             => $user->id,
                 'user_address_id'     => $address->id,
+                'payment_method_id'   => $data['payment_method_id'],
                 'cart_type'           => $data['cart_type'] ?? CartType::DEFAULT->value,
                 'is_instant_delivery' => $data['is_instant_delivery'] ?? false,
                 'status'        => OrderStatus::PENDING->value,
@@ -536,14 +537,22 @@ class OrderService extends BaseService
 
                 $basket = Basket::findOrFail($basketId);
 
-                // Get the basket schedule discount if exists
-                $basketSchedule = $basket->schedules()->where('is_active', true)->first();
+                // Check if user selected a specific schedule
+                if (!empty($data['basket_schedule_id'])) {
+                    $basketSchedule = $basket->schedules()
+                        ->where('id', $data['basket_schedule_id'])
+                        ->where('is_active', true)
+                        ->first();
 
-                if ($basketSchedule && $basketSchedule->discount_value > 0) {
-                    // Use schedule discount instead of basket discount
-                    $basketDiscount = $basketSchedule->discount_value;
+                    if ($basketSchedule && $basketSchedule->discount_value > 0) {
+                        // Use selected schedule discount
+                        $basketDiscount = $basketSchedule->discount_value;
+                    } else {
+                        // Fallback to basket discount if schedule not found or no discount
+                        $basketDiscount = $basket->discount;
+                    }
                 } else {
-                    // Fallback to basket discount
+                    // No schedule selected, use basket discount only
                     $basketDiscount = $basket->discount;
                 }
 
