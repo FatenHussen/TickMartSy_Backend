@@ -14,33 +14,6 @@ class PointRuleSeeder extends Seeder
     {
         $rules = [
             [
-                'code' => 'participating_stores',
-                'title' => 'Place orders from participating stores',
-                'type' => 'percentage',
-                'value' => 5, // 5% of order value
-                'min_order_amount' => 5.00,
-                'expires_after_days' => 365,
-                'is_active' => true,
-            ],
-            [
-                'code' => 'special_campaigns',
-                'title' => 'Join special campaigns (e.g. 2× points today)',
-                'type' => 'fixed',
-                'value' => 50,
-                'min_order_amount' => null,
-                'expires_after_days' => 365,
-                'is_active' => true,
-            ],
-            [
-                'code' => 'subscription_packages',
-                'title' => 'Use eligible subscription packages',
-                'type' => 'fixed',
-                'value' => 100,
-                'min_order_amount' => null,
-                'expires_after_days' => 365,
-                'is_active' => true,
-            ],
-            [
                 'code' => 'user_registration',
                 'title' => 'User Registration Bonus',
                 'type' => 'fixed',
@@ -54,7 +27,16 @@ class PointRuleSeeder extends Seeder
                 'title' => 'First Order Bonus',
                 'type' => 'fixed',
                 'value' => 50,
-                'min_order_amount' => 10.00,
+                'min_order_amount' => null,
+                'expires_after_days' => 365,
+                'is_active' => true,
+            ],
+            [
+                'code' => 'order_completion',
+                'title' => 'Order Completion Points',
+                'type' => 'fixed',
+                'value' => 100,
+                'min_order_amount' => null,
                 'expires_after_days' => 365,
                 'is_active' => true,
             ],
@@ -67,12 +49,24 @@ class PointRuleSeeder extends Seeder
                 'expires_after_days' => 365,
                 'is_active' => true,
             ],
+            [
+                'code' => 'purchase_amount_threshold',
+                'title' => 'Purchase Amount Threshold Bonus',
+                'type' => 'fixed',
+                'value' => 200,
+                'min_order_amount' => 100.00,
+                'expires_after_days' => 365,
+                'is_active' => true,
+            ],
         ];
 
         foreach ($rules as $rule) {
-            PointRule::create($rule);
+            PointRule::updateOrCreate(
+                ['code' => $rule['code']],
+                $rule
+            );
         }
 
-        $this->command->info('Created ' . count($rules) . ' point rules.');
+        $this->command->info('Created/Updated ' . count($rules) . ' point rules.');
     }
 }

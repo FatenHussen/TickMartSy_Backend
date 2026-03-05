@@ -11,7 +11,7 @@ class SubscriptionService
 {
     public function subscribe(User $user, Package $package, bool $isRenew = false): Subscription
     {
-        DB::transaction(function () use ($user, $package, $isRenew) {
+        return DB::transaction(function () use ($user, $package, $isRenew) {
 
             $current = Subscription::where('user_id', $user->id)
                 ->where('status', 'active')
@@ -43,18 +43,24 @@ class SubscriptionService
                 ]);
             }
 
+            // Award package points bonus
             if ($package->points_bonus > 0) {
-                $wallet = $user->pointWallet()->firstOrCreate([
-                    'user_id' => $user->id
-                ]);
+                $pointService = app(\App\Services\PointService::class);
 
-                $wallet->increment('balance', $package->points_bonus);
-                $wallet->update([
-                    'last_earned_at' => now(),
-                ]);
+                $pointService->addPointsToWallet(
+                    userId: $user->id,
+                    points: $package->points_bonus,
+                    ruleId: null,
+                    source: 'subscription_package',
+                    status: 'earned',
+                    referenceType: 'subscription',
+                    referenceId: $subscription->id,
+                    expiresAfterDays: 365,
+                    reason: "Package subscription bonus: {$package->name}"
+                );
             }
-        });
 
-        return $user->fresh()->subscription;
+            return $subscription;
+        });
     }
 }

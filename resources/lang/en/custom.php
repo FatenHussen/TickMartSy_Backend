@@ -388,4 +388,145 @@ return [
     'unlimited' => 'Unlimited',
     'status' => 'Status',
     'id' => 'ID',
+
+    // Vendor Subscriptions
+    'vendor_subscriptions' => [
+        'title' => 'Vendor Subscriptions',
+        'singular' => 'Vendor Subscription',
+        'vendor' => 'Vendor',
+        'package' => 'Package',
+        'start_date' => 'Start Date',
+        'end_date' => 'End Date',
+        'status' => 'Status',
+        'remaining_orders' => 'Remaining Orders',
+        'remaining_free_deliveries' => 'Remaining Free Deliveries',
+        'statuses' => [
+            'active' => 'Active',
+            'expired' => 'Expired',
+            'cancelled' => 'Cancelled',
+        ],
+        'sections' => [
+            'subscription_info' => 'Subscription Information',
+            'package_details' => 'Package Details',
+            'usage_stats' => 'Usage Statistics',
+        ],
+    ],
+
+    // Promotion Requests
+    'promotion_requests' => [
+        'title' => 'Promotion Requests',
+        'singular' => 'Promotion Request',
+        'vendor' => 'Vendor',
+        'shop' => 'Shop',
+        'promotion_type' => 'Promotion Type',
+        'discount_percentage' => 'Discount Percentage',
+        'start_date' => 'Start Date',
+        'end_date' => 'End Date',
+        'status' => 'Status',
+        'admin_notes' => 'Admin Notes',
+        'rejection_reason' => 'Rejection Reason',
+        'requested_at' => 'Requested At',
+        'reviewed_at' => 'Reviewed At',
+        'statuses' => [
+            'pending' => 'Pending',
+            'approved' => 'Approved',
+            'rejected' => 'Rejected',
+        ],
+        'types' => [
+            'flash_sale' => 'Flash Sale',
+            'seasonal' => 'Seasonal',
+            'clearance' => 'Clearance',
+            'special_offer' => 'Special Offer',
+        ],
+        'actions' => [
+            'approve' => 'Approve',
+            'reject' => 'Reject',
+            'approved' => 'Promotion request approved',
+            'rejected' => 'Promotion request rejected',
+        ],
+        'sections' => [
+            'request_info' => 'Request Information',
+            'promotion_details' => 'Promotion Details',
+            'review_info' => 'Review Information',
+        ],
+    ],
+
+    // Roles & Permissions
+    'roles' => [
+        'title' => 'Roles',
+        'singular' => 'Role',
+        'name' => 'Role Name',
+        'permissions' => 'Permissions',
+        'users_count' => 'Users Count',
+        'guard_name' => 'Guard Name',
+        'sections' => [
+            'basic_info' => 'Basic Information',
+            'permissions' => 'Permissions',
+        ],
+    ],
+
+    'permissions' => [
+        'title' => 'Permissions',
+        'singular' => 'Permission',
+        'name' => 'Permission Name',
+        'guard_name' => 'Guard Name',
+        'sections' => [
+            'basic_info' => 'Basic Information',
+        ],
+    ],
+
+    // Coupons
+    'coupons' => [
+        'title' => 'Coupons',
+        'singular' => 'Coupon',
+        'code' => 'Coupon Code',
+        'discount_type' => 'Discount Type',
+        'discount_value' => 'Discount Value',
+        'max_uses' => 'Maximum Uses',
+        'used_count' => 'Used Count',
+        'start_date' => 'Start Date',
+        'end_date' => 'End Date',
+        'is_active' => 'Active',
+        'min_order_amount' => 'Minimum Order Amount',
+        'discount_types' => [
+            'percent' => 'Percentage',
+            'fixed' => 'Fixed Amount',
+        ],
+        'sections' => [
+            'basic_info' => 'Basic Information',
+            'discount_settings' => 'Discount Settings',
+            'usage_limits' => 'Usage Limits',
+            'validity' => 'Validity Period',
+        ],
+    ],
+
+    'point_rules' => [
+        'plural' => 'Point Rules',
+        'singular' => 'Point Rule',
+        'code' => 'Rule Code',
+        'title' => 'Rule Title',
+        'type' => 'Rule Type',
+        'value' => 'Points Value',
+        'min_order_amount' => 'Minimum Order Amount',
+        'expires_after_days' => 'Expires After (Days)',
+        'is_active' => 'Active',
+        'types' => [
+            'fixed' => 'Fixed',
+            'percentage' => 'Percentage',
+        ],
+        'rules' => [
+            'user_registration' => 'User Registration Bonus',
+            'first_order' => 'First Order Bonus',
+            'order_completion' => 'Order Completion Points',
+            'product_review' => 'Product Review Points',
+            'purchase_amount_threshold' => 'Purchase Amount Threshold Bonus',
+        ],
+        'descriptions' => [
+            'user_registration' => 'Points awarded when user creates a new account',
+            'first_order' => 'Points awarded when user completes first order',
+            'order_completion' => 'Points awarded when user completes any order',
+            'product_review' => 'Points awarded when user reviews a product',
+            'purchase_amount_threshold' => 'Bonus points when purchase reaches certain amount',
+        ],
+    ],
 ];

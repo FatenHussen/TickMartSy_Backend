@@ -87,7 +87,8 @@ class OrderServiceOld extends BaseService
             }
 
             if ($order->cart_type === CartType::SCHEDULE_ADMIN_CART->value) {
-                $basket = Basket::findOrFail($data['admin_schedule_basket_id']);
+                $basketId = $data['admin_schedule_basket_id'] ?? $data['admin_basket_id'];
+                $basket = Basket::findOrFail($basketId);
                 $basketDiscount = $basket->discount;
                 $deliveryPrice  = $basket->delivery_price;
             }

@@ -28,6 +28,19 @@ class AllResource extends JsonResource
             'bought_with'           => $this->bought_with,
             'is_instant_delivery'   => $this->is_instant_delivery,
 
+            'vendor' => $this->vendor ? [
+                'id' => $this->vendor->id,
+                'name' => $this->vendor->name,
+            ] : null,
+
+            'approval_status' => $this->approval_status?->value,
+            'approval_status_label' => match($this->approval_status?->value) {
+                'pending' => 'قيد الانتظار',
+                'approved' => 'مقبول',
+                'rejected' => 'مرفوض',
+                default => null,
+            },
+
             'image'                 => $this->media->first()?->url,
             'images'                => $this->media->pluck('url'),
 

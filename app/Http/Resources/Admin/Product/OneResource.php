@@ -39,6 +39,20 @@ class OneResource extends JsonResource
                 'name' => $this->brand->name,
             ] : null,
 
+            'vendor' => $this->vendor ? [
+                'id' => $this->vendor->id,
+                'name' => $this->vendor->name,
+            ] : null,
+
+            'approval_status' => $this->approval_status?->value,
+            'approval_status_label' => match($this->approval_status?->value) {
+                'pending' => 'قيد الانتظار',
+                'approved' => 'مقبول',
+                'rejected' => 'مرفوض',
+                default => null,
+            },
+            'rejection_reason' => $this->rejection_reason,
+
             'variants' => ($this->variants ?? collect())->map(function ($variant) {
                 return [
                     'id' => $variant->id,

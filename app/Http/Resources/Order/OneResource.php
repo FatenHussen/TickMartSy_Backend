@@ -42,8 +42,13 @@ class OneResource extends JsonResource
             'used_coupon_exchange_id' => $this->used_coupon_exchange_id,
             'used_free_delivery_exchange_id' => $this->used_free_delivery_exchange_id,
 
+            // Subscription benefits used
+
+            'subscription_discount' => $this->subscription_discount ?? 0,
+            'subscription_free_delivery' => $this->subscription_free_delivery ?? false,
+
+
             'created_at' => $this->created_at?->toDateTimeString(),
-            'assigned_by' => $this->assigned_by,
             'affiliate' => [
                 'affiliate_rate' => $this->affiliate_rate,
                 'affiliate_source' => $this->affiliate_source,

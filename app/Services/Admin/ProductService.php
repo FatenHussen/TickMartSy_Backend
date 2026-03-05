@@ -6,6 +6,8 @@ use App\Models\Product;
 use App\Services\BaseService;
 use App\Http\Resources\Admin\Product\OneResource;
 use App\Http\Resources\Admin\Product\AllResource;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ProductService extends BaseService
 {
@@ -193,6 +195,117 @@ class ProductService extends BaseService
                     ]);
                 }
             }
+        }
+    }
+
+    /**
+     * قبول المنتج
+     */
+    public function approve(int $id): Product
+    {
+        return DB::transaction(function () use ($id) {
+            $product = Product::with(['vendor'])->findOrFail($id);
+
+            if ($product->approval_status !== \App\Enums\ProductApprovalStatus::PENDING) {
+                throw new \Exception('يمكن قبول المنتجات المعلقة فقط');
+            }
+
+            $product->update([
+                'approval_status' => \App\Enums\ProductApprovalStatus::APPROVED,
+                'rejection_reason' => null,
+            ]);
+
+            // إرسال إشعار للفيندور
+            $this->sendApprovalNotification($product, 'approved');
+
+            return $product->fresh(['vendor', 'category', 'brand']);
+        });
+    }
+
+    /**
+     * رفض المنتج
+     */
+    public function reject(int $id, string $reason): Product
+    {
+        return DB::transaction(function () use ($id, $reason) {
+            $product = Product::with(['vendor'])->findOrFail($id);
+
+            if ($product->approval_status !== \App\Enums\ProductApprovalStatus::PENDING) {
+                throw new \Exception('يمكن رفض المنتجات المعلقة فقط');
+            }
+
+            if (empty($reason)) {
+                throw new \Exception('يجب إدخال سبب الرفض');
+            }
+
+            $product->update([
+                'approval_status' => \App\Enums\ProductApprovalStatus::REJECTED,
+                'rejection_reason' => $reason,
+            ]);
+
+            // إرسال إشعار للفيندور
+            $this->sendApprovalNotification($product, 'rejected');
+
+            return $product->fresh(['vendor', 'category', 'brand']);
+        });
+    }
+
+    /**
+     * إرسال إشعار للفيندور
+     */
+    protected function sendApprovalNotification(Product $product, string $action): void
+    {
+        try {
+            $vendor = $product->vendor;
+            if (!$vendor) return;
+
+            // جلب جميع مستخدمي الفيندور
+            $vendorUsers = $vendor->users;
+            if ($vendorUsers->isEmpty()) return;
+
+            $title = $action === 'approved'
+                ? 'تم قبول المنتج'
+                : 'تم رفض المنتج';
+
+            $body = $action === 'approved'
+                ? "تم قبول المنتج: {$product->name}"
+                : "تم رفض المنتج: {$product->name}. السبب: {$product->rejection_reason}";
+
+            foreach ($vendorUsers as $user) {
+                // إنشاء إشعار في قاعدة البيانات
+                \App\Models\VendorNotification::create([
+                    'vendor_user_id' => $user->id,
+                    'title' => $title,
+                    'body' => $body,
+                    'type' => 'product_approval',
+                    'data' => [
+                        'product_id' => $product->id,
+                        'approval_status' => $product->approval_status->value,
+                        'action' => $action,
+                    ],
+                ]);
+
+                // إرسال FCM notification
+                $tokens = $user->tokens()->pluck('fcm_token')->filter()->toArray();
+                if (!empty($tokens)) {
+                    $fcmNotification = new \App\Helpers\SendFCMNotification(
+                        $tokens,
+                        $title,
+                        $body,
+                        [
+                            'type' => 'product_approval',
+                            'product_id' => $product->id,
+                            'approval_status' => $product->approval_status->value,
+                        ]
+                    );
+                    $fcmNotification->sendNotification();
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to send product approval notification', [
+                'error' => $e->getMessage(),
+                'product_id' => $product->id,
+            ]);
         }
     }
 }

@@ -110,15 +110,6 @@ class UserService
         } catch (\Throwable $e) {
         }
 
-        // try {
-        //     $pointService = app(\App\Services\PointService::class);
-        //     $pointService->awardPoints(
-        //         $user->id,
-        //         'user_registration'
-        //     );
-        // } catch (\Throwable $e) {
-        // }
-
         return true;
     }
 
@@ -177,16 +168,23 @@ class UserService
         $user->update([$field . '_verified_at' => now()]);
         $verification->update(['verified_at' => now()]);
 
+        // Award registration points on first verification
         try {
             $pointService = app(\App\Services\PointService::class);
-            if (!$pointService->isEventCompleted($user->id, 'account_verification')) {
+            if (!$pointService->isEventCompleted($user->id, 'user_registration')) {
                 $pointService->awardPoints(
-                    $user->id,
-                    'user_registration' // نفس القاعدة أو قاعدة منفصلة
+                    userId: $user->id,
+                    ruleCode: 'user_registration',
+                    referenceType: 'user',
+                    referenceId: $user->id
                 );
-                $pointService->markEventCompleted($user->id, 'account_verification');
+                $pointService->markEventCompleted($user->id, 'user_registration');
             }
         } catch (\Throwable $e) {
+            Log::error('Failed to award registration points', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage()
+            ]);
         }
 
         return new UserResource($user);

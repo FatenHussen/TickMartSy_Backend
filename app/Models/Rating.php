@@ -45,6 +45,7 @@ class Rating extends Model
             'App\Models\Recipe' => RateableType::RECIPE->value,
             'App\Models\Basket' => RateableType::BASKET->value,
             'App\Models\BasketSchedule' => RateableType::SCHEDULED_BASKET->value,
+            'App\Models\Order' => RateableType::ORDER->value,
             default => null,
         };
     }

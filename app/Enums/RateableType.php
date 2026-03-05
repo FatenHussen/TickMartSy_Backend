@@ -11,4 +11,5 @@ enum RateableType: string
     case RECIPE = 'recipe';
     case BASKET = 'basket';
     case SCHEDULED_BASKET = 'scheduled_basket';
+    case ORDER = 'order';
 }

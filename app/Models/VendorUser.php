@@ -32,4 +32,14 @@ class VendorUser extends Authenticatable
             'shop_id'
         );
     }
+
+    public function notifications()
+    {
+        return $this->hasMany(VendorNotification::class);
+    }
+
+    public function unreadNotifications()
+    {
+        return $this->hasMany(VendorNotification::class)->whereNull('read_at');
+    }
 }

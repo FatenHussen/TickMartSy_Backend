@@ -28,6 +28,11 @@ class AllResource extends JsonResource
             'total_quantity' => $this->total_quantity,
             'basket_discount' => $this->basket_discount,
             'coupon_discount' => $this->coupon_discount,
+
+            // Subscription benefits used
+            'subscription_discount' => $this->subscription_discount ?? 0,
+            'subscription_free_delivery' => $this->subscription_free_delivery ?? false,
+
             'created_at' => $this->created_at?->toDateTimeString(),
             'assigned_by' => $this->assigned_by,
             'affiliate_rate' => $this->affiliate_rate,
