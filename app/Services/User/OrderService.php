@@ -4,6 +4,7 @@ namespace App\Services\User;
 
 use App\Enums\CartType;
 use App\Enums\OrderStatus;
+use App\Events\LowStockDetected;
 use App\Events\OrderCreated;
 use App\Events\OrderStatusChanged;
 use App\Exceptions\CustomExceptionWithMessage;
@@ -165,7 +166,6 @@ class OrderService extends BaseService
                 'free_delivery_from_points' => $pointFreeDelivery,
             ]);
 
-
             // =======================
             // تسجيل العمولة في المحفظة
             // =======================
@@ -180,11 +180,22 @@ class OrderService extends BaseService
                 ]);
             }
 
-            // OrderCreated::dispatch($order);
+
+            foreach ($order->items as $item) {
+
+                $variant = ShopProductVariant::find($item->shop_product_variant_id);
+
+                $variant->decrement('quantity', $item->quantity);
+
+                if ($variant->quantity <= 5) {
+
+                    event(new LowStockDetected($variant));
+                }
+            }
 
             OrderStatusChanged::dispatch(
                 $order->fresh('items'),
-                null, // null يعني طلب جديد
+                null,
                 OrderStatus::PENDING->value,
                 'system'
             );
