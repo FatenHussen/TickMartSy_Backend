@@ -17,6 +17,7 @@ class Order extends Model
         'user_id',
         'driver_id',
         'user_address_id',
+        'payment_method_id',
         'basket_id',
         'basket_schedule_id',
         'is_instant_delivery',
@@ -99,6 +100,11 @@ class Order extends Model
         return $this->belongsTo(UserAddress::class, 'user_address_id');
     }
 
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class);
+    }
+
     public function basket()
     {
         return $this->belongsTo(Basket::class);
@@ -152,6 +158,9 @@ class Order extends Model
 
         static::updating(function ($order) {
             if ($order->isDirty('status')) {
+                // Store old status before update
+                $order->_oldStatus = $order->getOriginal('status');
+
                 $timestampsMap = [
                     OrderStatus::PENDING->value      => 'pending_at',
                     OrderStatus::PREPARING->value    => 'preparing_at',
@@ -164,6 +173,19 @@ class Order extends Model
                 if ($field && is_null($order->$field)) {
                     $order->$field = now();
                 }
+            }
+        });
+
+        static::updated(function ($order) {
+            if ($order->wasChanged('status') && isset($order->_oldStatus)) {
+                $oldStatus = $order->_oldStatus;
+                $newStatus = $order->status;
+
+                // Dispatch OrderStatusChanged event only once
+                event(new \App\Events\OrderStatusChanged($order, $oldStatus, $newStatus, 'system'));
+
+                // Clean up temporary property
+                unset($order->_oldStatus);
             }
         });
     }

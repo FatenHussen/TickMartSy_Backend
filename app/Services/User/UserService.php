@@ -172,12 +172,28 @@ class UserService
         try {
             $pointService = app(\App\Services\PointService::class);
             if (!$pointService->isEventCompleted($user->id, 'user_registration')) {
-                $pointService->awardPoints(
+                $transaction = $pointService->awardPoints(
                     userId: $user->id,
                     ruleCode: 'user_registration',
                     referenceType: 'user',
                     referenceId: $user->id
                 );
+
+                if ($transaction) {
+                    // Send notification
+                    $notificationService = app(\App\Services\Base\NotificationService::class);
+                    $notificationService->send(
+                        recipient: $user,
+                        title: '🎉 مرحباً بك!',
+                        body: "تهانينا! حصلت على {$transaction->points} نقطة كمكافأة تسجيل",
+                        data: [
+                            'type' => 'points_earned',
+                            'points' => $transaction->points,
+                            'reason' => 'user_registration'
+                        ]
+                    );
+                }
+
                 $pointService->markEventCompleted($user->id, 'user_registration');
             }
         } catch (\Throwable $e) {

@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Log;
 class PointExchangeService
 {
     public function __construct(
-        private PointService $pointService
+        private PointService $pointService,
+        private \App\Services\Base\NotificationService $notificationService
     ) {}
 
     /**
@@ -127,12 +128,24 @@ class PointExchangeService
                 ],
                 'status' => 'completed',
             ]);
+
+            // Send notification
+            $user = \App\Models\User::find($userId);
+            if ($user) {
+                $this->notificationService->send(
+                    recipient: $user,
+                    title: '🎟️ تم استبدال النقاط!',
+                    body: "تم استبدال {$points} نقطة بكوبون خصم بقيمة {$discountAmount}",
+                    data: [
+                        'type' => 'points_redeemed',
+                        'exchange_type' => 'coupon',
+                        'points_used' => $points,
+                        'discount_amount' => $discountAmount
+                    ]
+                );
+            }
+
             return true;
-            // return [
-            //     'exchange' => $exchange,
-            //     'transaction' => $transaction,
-            //     'discount_amount' => $discountAmount,
-            // ];
         });
     }
 
@@ -170,6 +183,21 @@ class PointExchangeService
                 ],
                 'status' => 'completed',
             ]);
+
+            // Send notification
+            $user = \App\Models\User::find($userId);
+            if ($user) {
+                $this->notificationService->send(
+                    recipient: $user,
+                    title: '🚚 توصيل مجاني!',
+                    body: "تم استبدال {$pointsCost} نقطة بتوصيل مجاني لطلبك القادم",
+                    data: [
+                        'type' => 'points_redeemed',
+                        'exchange_type' => 'free_delivery',
+                        'points_used' => $pointsCost
+                    ]
+                );
+            }
 
             return [
                 'exchange' => $exchange,
@@ -223,6 +251,22 @@ class PointExchangeService
                 ],
                 'status' => 'pending', // Needs admin approval for delivery
             ]);
+
+            // Send notification
+            $user = \App\Models\User::find($userId);
+            if ($user) {
+                $this->notificationService->send(
+                    recipient: $user,
+                    title: '🎁 تم طلب الهدية!',
+                    body: "تم استبدال {$gift->points_required} نقطة بـ {$gift->name}. سيتم التواصل معك قريباً",
+                    data: [
+                        'type' => 'points_redeemed',
+                        'exchange_type' => 'gift',
+                        'points_used' => $gift->points_required,
+                        'gift_name' => $gift->name
+                    ]
+                );
+            }
 
             return [
                 'exchange' => $exchange,
