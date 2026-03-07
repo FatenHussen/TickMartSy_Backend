@@ -81,16 +81,30 @@ class CategoryService extends BaseService
 
             case 'most_popular':
                 // Most popular = categories with most products sold
-                $query->withCount(['products as total_sales' => function ($q) {
-                    $q->join('order_items', 'products.id', '=', 'order_items.product_id')
-                      ->selectRaw('SUM(order_items.quantity)');
-                }])->orderBy('total_sales', 'desc');
+                $query->selectRaw('categories.*, (
+                    SELECT SUM(order_items.quantity)
+                    FROM products
+                    INNER JOIN product_variants ON products.id = product_variants.product_id
+                    INNER JOIN shop_product_variants ON product_variants.id = shop_product_variants.product_variant_id
+                    INNER JOIN order_items ON shop_product_variants.id = order_items.shop_product_variant_id
+                    WHERE products.category_id = categories.id
+                    AND products.deleted_at IS NULL
+                    AND product_variants.deleted_at IS NULL
+                    AND shop_product_variants.deleted_at IS NULL
+                ) as total_sales')
+                    ->orderBy('total_sales', 'desc');
                 break;
 
             case 'top_rated':
                 // Top rated = categories with highest average product rating
-                $query->withAvg('products as avg_rating', 'rating')
-                      ->orderBy('avg_rating', 'desc');
+                $query->selectRaw('categories.*, (
+                    SELECT AVG(ratings.rating)
+                    FROM products
+                    INNER JOIN ratings ON ratings.rateable_id = products.id AND ratings.rateable_type = "App\\\\Models\\\\Product"
+                    WHERE products.category_id = categories.id
+                    AND products.deleted_at IS NULL
+                ) as avg_rating')
+                    ->orderBy('avg_rating', 'desc');
                 break;
         }
     }

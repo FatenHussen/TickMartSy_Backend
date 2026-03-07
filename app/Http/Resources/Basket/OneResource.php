@@ -37,7 +37,7 @@ class OneResource extends JsonResource
             'discount_type'     => $this->discount_type,
             ...$this->withCurrency($this->discount_amount, 'discount_amount'),
             ...$this->withCurrency($this->final_price, 'final_price'),
-            'rating'    => number_format((float) $this->rating, 1),
+            'rating'    => $this->average_rating,
             'num_sold'  => (int) $this->num_sold,
             'is_on_offer' => $this->offer_ends_at && $this->offer_ends_at->isFuture(),
 
