@@ -33,8 +33,12 @@ class CategoryService extends BaseService
             });
         }
 
+        // Remove 'type' from filters as it's handled separately
+        $parentFilters = $filters;
+        unset($parentFilters['type']);
+
         // Now call parent (won't apply search since searchableFields is empty)
-        $query = parent::queryBuilder($query, $filters, $config);
+        $query = parent::queryBuilder($query, $parentFilters, $config);
 
         // Apply name filter
         if (isset($filters['name'])) {

@@ -7,10 +7,14 @@ namespace App\Models;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Translatable\HasTranslations;
 
 class PointRule extends Model
 {
-    use LogsActivity;
+    use LogsActivity, HasTranslations;
+
+    public $translatable = ['title'];
+
     protected $fillable = [
         'code',
         'title',

@@ -5,17 +5,14 @@ namespace App\Http\Resources\Admin\PointRule;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PointRuleResource extends JsonResource
+class PointRuleListResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
             'code' => $this->code,
-            'title' => [
-                'ar' => $this->getTranslation('title', 'ar'),
-                'en' => $this->getTranslation('title', 'en'),
-            ],
+            'title' => $this->title, // Returns translated title based on app locale
             'type' => $this->type,
             'value' => $this->value,
             'min_order_amount' => $this->min_order_amount ? (float) $this->min_order_amount : null,

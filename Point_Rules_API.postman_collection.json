@@ -1,0 +1,380 @@
+{
+	"info": {
+		"_postman_id": "point-rules-api-collection",
+		"name": "Point Rules API",
+		"description": "Collection for Point Rules Management APIs (Admin)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{admin_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000/api/admin",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "YOUR_ADMIN_TOKEN_HERE",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Get All Point Rules",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/point-rules",
+					"host": ["{{base_url}}"],
+					"path": ["point-rules"]
+				},
+				"description": "Get all point rules with pagination"
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/point-rules",
+							"host": ["{{base_url}}"],
+							"path": ["point-rules"]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 1,\n            \"code\": \"user_registration\",\n            \"title\": \"مكافأة إنشاء حساب\",\n            \"type\": \"fixed\",\n            \"value\": 100,\n            \"min_order_amount\": null,\n            \"expires_after_days\": 365,\n            \"is_active\": true,\n            \"created_at\": \"2026-03-05T10:00:00.000000Z\",\n            \"updated_at\": \"2026-03-05T10:00:00.000000Z\"\n        },\n        {\n            \"id\": 2,\n            \"code\": \"first_order\",\n            \"title\": \"مكافأة أول طلب\",\n            \"type\": \"fixed\",\n            \"value\": 50,\n            \"min_order_amount\": null,\n            \"expires_after_days\": 365,\n            \"is_active\": true,\n            \"created_at\": \"2026-03-05T10:00:00.000000Z\",\n            \"updated_at\": \"2026-03-05T10:00:00.000000Z\"\n        }\n    ],\n    \"meta\": {\n        \"current_page\": 1,\n        \"total\": 5\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "2. Get Single Point Rule",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/point-rules/1",
+					"host": ["{{base_url}}"],
+					"path": ["point-rules", "1"]
+				},
+				"description": "Get a single point rule by ID"
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/point-rules/1",
+							"host": ["{{base_url}}"],
+							"path": ["point-rules", "1"]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 1,\n        \"code\": \"user_registration\",\n        \"title\": {\n            \"ar\": \"مكافأة إنشاء حساب\",\n            \"en\": \"User Registration Bonus\"\n        },\n        \"type\": \"fixed\",\n        \"value\": 100,\n        \"min_order_amount\": null,\n        \"expires_after_days\": 365,\n        \"is_active\": true,\n        \"created_at\": \"2026-03-05T10:00:00.000000Z\",\n        \"updated_at\": \"2026-03-05T10:00:00.000000Z\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "3. Update Point Rule",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": {\n        \"ar\": \"مكافأة إنشاء حساب - محدث\",\n        \"en\": \"User Registration Bonus - Updated\"\n    },\n    \"value\": 150,\n    \"min_order_amount\": null,\n    \"is_active\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/point-rules/1",
+					"host": ["{{base_url}}"],
+					"path": ["point-rules", "1"]
+				},
+				"description": "Update a point rule"
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"User Registration Bonus - Updated\",\n    \"type\": \"fixed\",\n    \"value\": 150,\n    \"min_order_amount\": null,\n    \"expires_after_days\": 365,\n    \"is_active\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/point-rules/1",
+							"host": ["{{base_url}}"],
+							"path": ["point-rules", "1"]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Point rule updated successfully\",\n    \"data\": {\n        \"id\": 1,\n        \"code\": \"user_registration\",\n        \"title\": \"User Registration Bonus - Updated\",\n        \"type\": \"fixed\",\n        \"value\": 150,\n        \"min_order_amount\": null,\n        \"expires_after_days\": 365,\n        \"is_active\": true,\n        \"created_at\": \"2026-03-05T10:00:00.000000Z\",\n        \"updated_at\": \"2026-03-05T15:30:00.000000Z\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "4. Update - Registration Bonus (100 points)",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": {\n        \"ar\": \"مكافأة إنشاء حساب\",\n        \"en\": \"User Registration Bonus\"\n    },\n    \"value\": 100,\n    \"min_order_amount\": null,\n    \"is_active\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/point-rules/1",
+					"host": ["{{base_url}}"],
+					"path": ["point-rules", "1"]
+				},
+				"description": "Update user registration bonus rule"
+			}
+		},
+		{
+			"name": "5. Update - First Order Bonus (50 points)",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": {\n        \"ar\": \"مكافأة أول طلب\",\n        \"en\": \"First Order Bonus\"\n    },\n    \"value\": 50,\n    \"min_order_amount\": null,\n    \"is_active\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/point-rules/2",
+					"host": ["{{base_url}}"],
+					"path": ["point-rules", "2"]
+				},
+				"description": "Update first order bonus rule"
+			}
+		},
+		{
+			"name": "6. Update - Order Completion (100 points)",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": {\n        \"ar\": \"نقاط إتمام الطلب\",\n        \"en\": \"Order Completion Points\"\n    },\n    \"value\": 100,\n    \"min_order_amount\": null,\n    \"is_active\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/point-rules/3",
+					"host": ["{{base_url}}"],
+					"path": ["point-rules", "3"]
+				},
+				"description": "Update order completion points rule"
+			}
+		},
+		{
+			"name": "7. Update - Product Review (10 points)",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": {\n        \"ar\": \"نقاط تقييم المنتج\",\n        \"en\": \"Product Review Points\"\n    },\n    \"value\": 10,\n    \"min_order_amount\": null,\n    \"is_active\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/point-rules/4",
+					"host": ["{{base_url}}"],
+					"path": ["point-rules", "4"]
+				},
+				"description": "Update product review points rule"
+			}
+		},
+		{
+			"name": "8. Update - Purchase Threshold (200 points)",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": {\n        \"ar\": \"مكافأة قيمة الشراء\",\n        \"en\": \"Purchase Amount Bonus\"\n    },\n    \"value\": 200,\n    \"min_order_amount\": 100,\n    \"is_active\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/point-rules/5",
+					"host": ["{{base_url}}"],
+					"path": ["point-rules", "5"]
+				},
+				"description": "Update purchase amount threshold bonus rule"
+			}
+		},
+		{
+			"name": "9. Disable Point Rule",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": {\n        \"ar\": \"نقاط تقييم المنتج\",\n        \"en\": \"Product Review Points\"\n    },\n    \"value\": 10,\n    \"min_order_amount\": null,\n    \"is_active\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/point-rules/4",
+					"host": ["{{base_url}}"],
+					"path": ["point-rules", "4"]
+				},
+				"description": "Disable a point rule by setting is_active to false"
+			}
+		}
+	]
+}

@@ -132,7 +132,7 @@ class OrderService extends BaseService
 
             $subscriptionDiscount = $subscriptionBenefits['discount_amount'] ?? 0;
             $subscriptionFreeDelivery = $subscriptionBenefits['free_delivery_applied'] ?? false;
-            $subscriptionPointsBonus = $subscriptionBenefits['points_bonus'] ?? 0;
+             $subscriptionPointsBonus =  0;
 
             // 6️⃣ Calculate totals
             $basketDiscountAmount = $subtotalAfterProductDiscount * ($basketDiscount / 100);
@@ -569,14 +569,14 @@ class OrderService extends BaseService
                 );
 
                 // التحقق من التوصيل المجاني من النقاط
-                try {
-                    $exchangeService = app(\App\Services\PointExchangeService::class);
-                    if ($exchangeService->hasActiveFreeDelivery($user->id)) {
-                        $deliveryPrice = 0;
-                    }
-                } catch (\Throwable $e) {
-                    // تجاهل أخطاء النقاط
-                }
+                // try {
+                //     $exchangeService = app(\App\Services\PointExchangeService::class);
+                //     if ($exchangeService->hasActiveFreeDelivery($user->id)) {
+                //         $deliveryPrice = 0;
+                //     }
+                // } catch (\Throwable $e) {
+                //     // تجاهل أخطاء النقاط
+                // }
                 break;
         }
 
