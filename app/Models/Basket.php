@@ -128,20 +128,16 @@ class Basket extends Model implements Sectionable
             'price_after_discount' => round($this->final_price, 2),
 
             // stats
-            'rating'   => (float) $this->rating,
+            'rating'   => (float) $this->average_rating,
             'num_sold' => (int) $this->num_sold,
             'saving'   => round($this->discount_amount, 2),
-
+            
             // offer
             'is_on_offer' => $this->offer_ends_at && $this->offer_ends_at->isFuture(),
             'offer_ends_at' => $this->offer_ends_at?->format('Y-m-d'),
 
             // delivery
             'next_delivery_date' => $nextDelivery,
-
-            // section ui
-            // 'top_badges' => [],
-            // 'bottom_badges' => [],
             'items_count' => $itemsCount,
             'delivery_price' => $this->delivery_price
 

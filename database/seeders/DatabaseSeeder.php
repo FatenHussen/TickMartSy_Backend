@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             // Basic Setup
             BadgeSeeder::class,
             GovernorateSeeder::class,
+            CountrySeeder::class,
             // CitySeeder::class,
             // AreaSeeder::class,
             // Admin & Permissions

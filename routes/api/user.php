@@ -18,6 +18,7 @@ use App\Http\Controllers\User\Category\CategoryController;
 use App\Http\Controllers\User\SectionController;
 use App\Http\Controllers\User\CityController;
 use App\Http\Controllers\User\ComplaintController;
+use App\Http\Controllers\User\CountryController;
 use App\Http\Controllers\User\FavoriteController;
 use App\Http\Controllers\User\GovernorateController;
 use App\Http\Controllers\User\HelpCenterController;
@@ -42,6 +43,7 @@ Route::prefix('user')->group(
         Route::get('/governorates', [GovernorateController::class, 'index']);
         Route::get('/cities', [CityController::class, 'index']);
         Route::get('/areas', [AreaController::class, 'index']);
+        Route::get('/countries', [CountryController::class, 'index']);
 
         //authetication routes user
         Route::prefix('auth')->group(
