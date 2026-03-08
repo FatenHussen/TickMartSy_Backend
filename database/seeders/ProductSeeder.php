@@ -21,14 +21,14 @@ class ProductSeeder extends Seeder
                 'sku' => 'SKU-' . rand(1000, 9999),
                 'country' => ['en' => 'USA', 'ar' => 'أمريكا'],
                 'model' => 'Model-' . rand(100, 999),
-                'price' => 100,
-                'discount' => 20,
-                'quantity' => 50,
+                'price' => rand(100,1000),
+                'discount' => rand(1,100),
+                'quantity' => rand(1,100),
                 'barcode' => 'BAR' . rand(1000, 9999),
                 'time_prepare' => now()->format('H:i'),
                 'bought_with' => [1,2],
                 'is_instant_delivery' => true,
-                'brand_id' => 1
+                'brand_id' => rand(1,6)
             ]);
 
             $product->badges()->attach([
