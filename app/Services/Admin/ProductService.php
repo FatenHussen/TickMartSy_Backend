@@ -123,6 +123,12 @@ class ProductService extends BaseService
 
     protected function handleRelations($object, array &$data)
     {
+        // Handle icon_ids
+        if (isset($data['icon_ids']) && is_array($data['icon_ids'])) {
+            $object->icons()->sync($data['icon_ids']);
+            unset($data['icon_ids']);
+        }
+
         foreach ($this->syncRelations as $relation => $requestKey) {
             if (in_array($requestKey, ['variants', 'shop_variants'])) {
                 continue;

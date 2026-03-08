@@ -246,6 +246,10 @@ Route::prefix('user')->group(
             Route::get('/active-benefits', [\App\Http\Controllers\User\ActiveBenefitsController::class, 'index']);
         });
 
+        // Profile summary (points, gifts, subscription)
+        Route::middleware(['auth:user'])->group(function () {
+            Route::get('/active-points', \App\Http\Controllers\User\UserProfileSummaryController::class);
+        });
 
 
         Route::prefix('markter')->middleware(['auth:user'])->group(function () {

@@ -104,6 +104,9 @@ Route::prefix('admin')->group(
             // Point Rules Management
             Route::apiResource('point-rules', PointRuleController::class);
 
+            // Icons Management
+            Route::apiResource('icons', \App\Http\Controllers\Admin\IconController::class);
+
             // Statistics & Reports
             Route::prefix('statistics')->group(function () {
                 Route::get('/dashboard', [StatisticsController::class, 'dashboard']);

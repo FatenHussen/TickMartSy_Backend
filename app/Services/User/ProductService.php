@@ -24,6 +24,7 @@ class ProductService extends BaseService
         'extraDetails',
         'variants.shopVariants.shop',
         'favorites',
+        'icons',
     ];
     protected $searchableFields = ['name', 'description', 'country'];
     protected $sortableFields   = ['id', 'price', 'created_at', 'name'];
@@ -137,6 +138,7 @@ class ProductService extends BaseService
             'extraDetails',
             'variants.shopVariants.shop',
             'media',
+            'icons',
         ]);
 
         if (!empty($filters['category_id'])) {
