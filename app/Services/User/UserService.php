@@ -42,7 +42,7 @@ class UserService
     {
         $field = $this->resolveField($data);
 
-        $user = $this->model->where($field, $data[$field])->first();
+        $user = $this->model->where($field, $data[$field])->where('is_active', true)->first();
 
         if (!$user) {
             throw new NotFoundException();
@@ -83,16 +83,7 @@ class UserService
     {
         $field = $this->resolveField($data);
 
-        $existingUser = $this->model
-            ->where($field, $data[$field])
-            ->first();
-
-        if ($existingUser) {
-            if (!$existingUser->{$field . '_verified_at'}) {
-                $verification = $this->createOtp($existingUser, 'verification');
-                $this->sendOtp($existingUser, $verification, $field);
-                throw new InactiveAccountException();
-            }
+        if ($this->model->where($field, $data[$field])->where('is_active', true)->exists()) {
             throw new AccountAlreadyExistsException();
         }
 
@@ -102,6 +93,7 @@ class UserService
             'name'           => $data['name'],
             'city_id'        => $data['city_id'],
             'governorate_id' => $data['governorate_id'],
+            'is_active'      => true,
         ]);
 
         try {
@@ -118,8 +110,12 @@ class UserService
 
     public function login(array $data)
     {
-         $field = $this->resolveField($data);
-        $user  = $this->resolveUser($data);
+        $field = $this->resolveField($data);
+        $user  = $this->model->where($field, $data[$field])->where('is_active', true)->first();
+
+        if (!$user) {
+            throw new CustomExceptionWithMessage('custom.account_not_registered');
+        }
 
         if (!Hash::check($data['password'], $user->password)) {
             throw new CustomExceptionWithMessage('custom.wrong_credential');
@@ -318,7 +314,7 @@ class UserService
     public function deleteAccount(): bool
     {
         $userId = auth('user')->id();
-        $this->model->where('id', $userId)->delete();
+        $this->model->where('id', $userId)->update(['is_active' => false]);
         return true;
     }
     public function get_profile()
@@ -372,8 +368,7 @@ class UserService
     public function delete_account($request)
     {
         $user = auth('user')->id();
-        $delete = User::where('id', $user)->first();
-        $delete->delete();
+        User::where('id', $user)->update(['is_active' => false]);
         return true;
     }
 

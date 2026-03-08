@@ -13,6 +13,8 @@ class OneResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'is_active' => $this->is_active,
+            'is_paused' => $this->isPaused(),
+            'paused_at' => $this->paused_at?->format('Y-m-d H:i:s'),
             'start_date' => $this->start_date?->format('Y-m-d'),
             'next_run_date' => $this->next_run_date?->format('Y-m-d'),
 

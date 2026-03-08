@@ -74,6 +74,7 @@ Route::prefix('user')->group(
                         Route::post('/update_phone', [ProfileController::class, 'update_phone']);
                         Route::post('/verify', [ProfileController::class, 'verify_update']);
                         Route::post('/update-payment-gateway', [ProfileController::class, 'update_payment_gateway']);
+                        Route::post('/delete-account', [ProfileController::class, 'delete_account']);
                     });
                     Route::middleware(['auth:user', 'abilities:reset-password'])->group(function () {
                         Route::post('/reset-password', [AuthController::class, 'resetPassword']);
@@ -165,6 +166,7 @@ Route::prefix('user')->group(
             Route::post('/orders/preview', [OrderController::class, 'preview']);
             Route::get('/orders/active', [OrderController::class, 'activeOrder']);
             Route::post('/orders/{orderId}/cancel', [OrderController::class, 'cancel']);
+            Route::post('/orders/reorder/{orderId}', [OrderController::class, 'reorder']);
         });
 
         Route::apiResource('orders', OrderController::class)->middleware(['auth:user']);
@@ -176,6 +178,8 @@ Route::prefix('user')->group(
             Route::get('scheduled-baskets/{id}', [UserBasketScheduleController::class, 'show'])->name('user.scheduled-baskets.show');
             Route::put('scheduled-baskets/{id}', [UserBasketScheduleController::class, 'update'])->name('user.scheduled-baskets.update');
             Route::delete('scheduled-baskets/{id}', [UserBasketScheduleController::class, 'destroy'])->name('user.scheduled-baskets.destroy');
+            Route::post('scheduled-baskets/{id}/pause', [UserBasketScheduleController::class, 'pause'])->name('user.scheduled-baskets.pause');
+            Route::post('scheduled-baskets/{id}/resume', [UserBasketScheduleController::class, 'resume'])->name('user.scheduled-baskets.resume');
         });
 
         Route::get('/my-baskets', [MyBasketController::class, 'index'])->middleware(['auth:user']);

@@ -26,7 +26,7 @@ class ProductSeeder extends Seeder
                 'quantity' => 50,
                 'barcode' => 'BAR' . rand(1000, 9999),
                 'time_prepare' => now()->format('H:i'),
-                'bought_with' => ['Accessory 1', 'Accessory 2'],
+                'bought_with' => [1,2],
                 'is_instant_delivery' => true,
                 'brand_id' => 1
             ]);

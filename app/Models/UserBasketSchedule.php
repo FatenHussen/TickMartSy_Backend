@@ -21,12 +21,14 @@ class UserBasketSchedule extends Model implements Sectionable
         'is_active',
         'start_date',
         'next_run_date',
+        'paused_at',
     ];
 
     protected $casts = [
         'is_active'     => 'boolean',
         'start_date'    => 'date',
         'next_run_date' => 'date',
+        'paused_at'     => 'datetime',
     ];
 
     // ================= Relations =================
@@ -121,5 +123,32 @@ class UserBasketSchedule extends Model implements Sectionable
             'items_count' => $itemsCount,
 
         ];
+    }
+
+    // ================= Scopes =================
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true)->whereNull('paused_at');
+    }
+
+    public function scopePaused($query)
+    {
+        return $query->whereNotNull('paused_at');
+    }
+
+    // ================= Helpers =================
+    public function isPaused(): bool
+    {
+        return $this->paused_at !== null;
+    }
+
+    public function canResume(): bool
+    {
+        return $this->isPaused();
+    }
+
+    public function canPause(): bool
+    {
+        return !$this->isPaused();
     }
 }

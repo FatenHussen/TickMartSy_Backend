@@ -27,6 +27,7 @@ class User extends Authenticatable
         'area_id',
         'image',
         'preferred_payment_method_id',
+        'is_active',
 
         //markter
         'is_affiliate',
@@ -59,6 +60,7 @@ class User extends Authenticatable
     protected $casts = [
         'is_affiliate' => 'boolean',
         'affiliate_approved' => 'boolean',
+        'is_active' => 'boolean',
         'email_verified_at' => 'datetime',
         'phone_verified_at' => 'datetime',
         'password' => 'hashed'

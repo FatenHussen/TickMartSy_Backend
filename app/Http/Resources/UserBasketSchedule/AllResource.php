@@ -35,6 +35,7 @@ class AllResource extends JsonResource
             'name'            => $this->name,
             'image'           => $this->category?->image_url ?? null,
             'num_varieties'   => $this->items?->count() ?? 0,
+            'is_paused'       => $this->isPaused(),
             ...$this->withCurrency($totalPrice, 'original_price'),
             'discount_value'  => $discountValue,
             'discount_type'   => $discountType,

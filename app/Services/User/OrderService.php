@@ -946,67 +946,77 @@ class OrderService extends BaseService
             ->first();
         return $order ? OneResource::make($order) : null;
     }
+
+    public function reorder($orderId)
+    {
+        $user = auth('user')->user();
+
+        $originalOrder = Order::with('items')->findOrFail($orderId);
+
+        // Ensure the order belongs to the user
+        if ($originalOrder->user_id !== $user->id) {
+            throw new CustomExceptionWithMessage('Order not found', 404);
+        }
+
+        return DB::transaction(function () use ($originalOrder, $user) {
+            // Create new order with same data, but reset some fields
+            $newOrder = Order::create([
+                'user_id' => $user->id,
+                'user_address_id' => $originalOrder->user_address_id,
+                'payment_method_id' => $originalOrder->payment_method_id,
+                'basket_id' => $originalOrder->basket_id,
+                'basket_schedule_id' => $originalOrder->basket_schedule_id,
+                'is_instant_delivery' => $originalOrder->is_instant_delivery,
+                'status' => OrderStatus::PENDING->value,
+                'cart_type' => $originalOrder->cart_type,
+                'delivery_price' => $originalOrder->delivery_price,
+                'total_quantity' => $originalOrder->total_quantity,
+                'total' => $originalOrder->total,
+                'subtotal' => $originalOrder->subtotal,
+                'basket_discount' => $originalOrder->basket_discount,
+                'coupon_discount' => $originalOrder->coupon_discount,
+                'affiliate_id' => $originalOrder->affiliate_id,
+                'affiliate_rate' => $originalOrder->affiliate_rate,
+                'affiliate_source' => $originalOrder->affiliate_source,
+                'coupon_id' => $originalOrder->coupon_id,
+                'used_coupon_exchange_id' => $originalOrder->used_coupon_exchange_id,
+                'used_free_delivery_exchange_id' => $originalOrder->used_free_delivery_exchange_id,
+                'coupon_discount_from_points' => $originalOrder->coupon_discount_from_points,
+                'free_delivery_from_points' => $originalOrder->free_delivery_from_points,
+                'subscription_id' => $originalOrder->subscription_id,
+                'subscription_discount' => $originalOrder->subscription_discount,
+                'subscription_free_delivery' => $originalOrder->subscription_free_delivery,
+                'subscription_points_bonus' => $originalOrder->subscription_points_bonus,
+                // Reset timestamps
+                'pending_at' => now(),
+                'preparing_at' => null,
+                'out_delivery_at' => null,
+                'delivered_at' => null,
+                'driver_id' => null,
+                'assigned_by' => null,
+            ]);
+
+            // Copy order items
+            foreach ($originalOrder->items as $item) {
+                $newOrder->items()->create([
+                    'shop_product_variant_id' => $item->shop_product_variant_id,
+                    'product_name' => $item->product_name,
+                    'variant_attributes' => $item->variant_attributes,
+                    'item_status' => OrderStatus::PENDING->value,
+                    'quantity' => $item->quantity,
+                    'price' => $item->price,
+                    'discount' => $item->discount,
+                    'pending_at' => now(),
+                    'preparing_at' => null,
+                    'out_delivery_at' => null,
+                    'delivered_at' => null,
+                ]);
+            }
+
+            // Generate order code
+            $newOrder->update(['order_code' => 'ORD-' . $newOrder->id]);
+
+            return new OneResource($newOrder->load('items'));
+        });
+    }
 }
-/**
- * Update order status and award points if completed
- */
-    // public function updateOrderStatus(int $orderId, string $status): bool
-    // {
-    //     return DB::transaction(function () use ($orderId, $status) {
-    //         $order = Order::findOrFail($orderId);
-    //         $oldStatus = $order->order_status;
-
-    //         $order->update(['order_status' => $status]);
-
-    //         // منح النقاط عند إتمام الطلب
-    //         if ($status === OrderStatus::COMPLETED->value && $oldStatus !== OrderStatus::COMPLETED->value) {
-    //             try {
-    //                 $pointService = app(\App\Services\PointService::class);
-
-    //                 // نقاط أول طلب
-    //                 if (!$pointService->isEventCompleted($order->user_id, 'first_order')) {
-    //                     $pointService->awardPoints(
-    //                         $order->user_id,
-    //                         'first_order',
-    //                         $order->total,
-    //                         'order',
-    //                         $order->id
-    //                     );
-    //                     $pointService->markEventCompleted($order->user_id, 'first_order');
-    //                 }
-
-    //                 // نقاط إتمام الطلب (لكل طلب)
-    //                 $pointService->awardPoints(
-    //                     $order->user_id,
-    //                     'order_completion',
-    //                     $order->total,
-    //                     'order',
-    //                     $order->id
-    //                 );
-
-    //             } catch (\Throwable $e) {
-    //                 // تجاهل أخطاء النقاط لعدم تعطيل تحديث الطلب
-    //                 Log::error('Points award failed for order: ' . $orderId, ['error' => $e->getMessage()]);
-    //             }
-    //         }
-
-    //         return true;
-    //     });
-    // }
-
-    // /**
-    //  * Override update method to handle status changes
-    //  */
-    // public function update(int $id, array $data)
-    // {
-    //     if (isset($data['order_status'])) {
-    //         $this->updateOrderStatus($id, $data['order_status']);
-    //         unset($data['order_status']);
-    //     }
-
-    //     if (!empty($data)) {
-    //         return parent::update($id, $data);
-    //     }
-
-    //     return $this->show($id);
-    // }

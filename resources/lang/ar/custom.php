@@ -15,6 +15,8 @@ return [
     'invalid_coupon' => 'الكوبون غير صالح',
     'inactive_account' => 'الحساب غير مفعل',
 
+    'account_already_exists' => 'الحساب موجود بالفعل.',
+
 
     'errors' => [
         400 => 'طلب غير صالح.',
@@ -31,6 +33,8 @@ return [
     'custom_error' => 'حدث خطأ ما، يرجى المحاولة لاحقاً.',
 
     'wrong_credential' => 'بيانات تسجيل الدخول غير صحيحة.',
+
+    'account_not_registered' => 'الحساب غير مسجل.',
 
     'wrong_password' => 'كلمة المرور الحالية غير صحيحة.',
 
