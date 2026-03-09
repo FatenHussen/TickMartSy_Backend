@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Driver;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Order\AllResource;
-use App\Http\Resources\Order\OneResource;
+use App\Http\Resources\Order\DriverOneResource as OneResource;
 use App\Services\Driver\OrderService;
 use Illuminate\Http\Request;
 
@@ -27,6 +27,15 @@ class OrderController extends Controller
 
         return $this->sendResponse(
             data: AllResource::collection($res)
+        );
+    }
+
+    public function order($orderId)
+    {
+        $res = $this->service->order($orderId);
+
+        return $this->sendResponse(
+            data: OneResource::make($res)
         );
     }
 

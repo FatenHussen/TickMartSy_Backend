@@ -32,6 +32,18 @@ class OrderService
     }
 
 
+    public function order($orderId)
+    {
+        $driverId = auth('driver')->id();
+
+        $order = Order::find($orderId);
+        //check order to driver
+
+        return $order;
+    }
+
+
+
     public function ordersToAssigned(array $data)
     {
 

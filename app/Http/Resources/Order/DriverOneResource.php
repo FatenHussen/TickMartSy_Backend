@@ -20,7 +20,17 @@ class DriverOneResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-
+        $groupedItems = $this->items->groupBy(function ($item) {
+            return $item->shopProductVariant->shop_id;
+        })->mapWithKeys(function ($items) {
+            $shop = $items->first()->shopProductVariant->shop;
+            return [$shop->name => [
+                'shop' => $shop->name,
+                'lat' => $shop->lat,
+                'lng' => $shop->lng,
+                'items' => OrderItemResource::collection($items)
+            ]];
+        });
         return [
             'id' => $this->id,
             'order_code' => $this->order_code,
@@ -31,36 +41,13 @@ class DriverOneResource extends JsonResource
             'subtotal' => $this->subtotal,
             'total' => $this->total,
             'total_quantity' => $this->total_quantity,
-            'basket_discount' => $this->basket_discount,
-            'coupon_discount' => $this->coupon_discount,
-            'promotion_discount' => $this->promotion_discount,
-            'subscription_discount' => $this->subscription_discount ?? 0,
-            'coupon_discount_from_points' => $this->coupon_discount_from_points ?? 0,
 
             'assigned_by' => $this->assigned_by,
 
-            // Point exchanges used
-            'free_delivery_from_points' => $this->free_delivery_from_points ?? false,
-            'use_coupon_exchange_id' => $this->used_coupon_exchange_id,
-            'use_free_delivery_exchange_id' => $this->used_free_delivery_exchange_id,
-
-            // Subscription benefits used
-
-            'subscription_free_delivery' => $this->subscription_free_delivery ?? false,
 
 
             'created_at' => $this->created_at?->toDateTimeString(),
-            'affiliate' => [
-                'affiliate_rate' => $this->affiliate_rate,
-                'affiliate_source' => $this->affiliate_source,
-                'affiliate_commission' => $this->affiliate_commission,
-            ],
-            'timestamps' => [
-                'pending_at' => $this->pending_at,
-                'preparing_at' => $this->preparing_at,
-                'out_delivery_at' => $this->out_delivery_at,
-                'delivered_at' => $this->delivered_at,
-            ],
+
             'user' => AllResource::make($this->user),
             'driver' => DriverAllResource::make($this->driver),
             'user_address' => AddressOneResource::make($this->address),
@@ -70,9 +57,7 @@ class DriverOneResource extends JsonResource
             ] : null,
             // 'baskes' => $this->basket ? BasketAllResource::make($this->basket) : null,
             // 'basket_schedule' => $this->basket_schedule_id ? BasketScheduleAllResource::make($this->basketSchedule) : null,
-            'items' => OrderItemResource::collection(
-                $this->items
-            ),
+            'items' => $groupedItems
         ];
     }
 }

@@ -117,8 +117,6 @@ class OrderService extends BaseService
             );
 
             $promotionService = app(\App\Services\User\PromotionService::class);
-            Log::info("orderItems");
-            Log::info($orderItems);
             $nonDiscountPromotion = $promotionService
                 ->applyNonDiscountPromotions($order, collect($orderItems));
 
@@ -157,7 +155,6 @@ class OrderService extends BaseService
         );
 
         $externalDiscount = $discounts['total_discount'];
-        $deliveryPrice = $discounts['delivery_price'];
 
         $basketDiscount = $this->calculateBasketDiscount(
             $basketDiscountPercent,
@@ -179,7 +176,6 @@ class OrderService extends BaseService
 
         return [
             'discounts' => $discounts,
-            'delivery' => ['price' => $deliveryPrice],
             'subtotal_before_discount' => $subtotalBeforeDiscount,
             'subtotal_after_product_discount' => $subtotalAfterProductDiscount,
             'total_quantity' => $totalQuantity,
