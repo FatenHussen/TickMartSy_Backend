@@ -115,4 +115,20 @@ class OrderController extends Controller
             message: 'Driver statistics retrieved successfully'
         );
     }
+    public function currentOrder()
+    {
+        $order = $this->service->currentOrder();
+
+        if (! $order) {
+            return $this->sendResponse(
+                message: 'No current order',
+                data: null
+            );
+        }
+
+        return $this->sendResponse(
+            data: OneResource::make($order),
+            message: 'Current order retrieved successfully'
+        );
+    }
 }
