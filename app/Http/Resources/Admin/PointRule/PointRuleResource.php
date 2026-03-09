@@ -12,7 +12,10 @@ class PointRuleResource extends JsonResource
         return [
             'id' => $this->id,
             'code' => $this->code,
-            'title' => $this->title,
+            'title' => [
+                'ar' => $this->getTranslation('title', 'ar'),
+                'en' => $this->getTranslation('title', 'en'),
+            ],
             'type' => $this->type,
             'value' => $this->value,
             'min_order_amount' => $this->min_order_amount ? (float) $this->min_order_amount : null,

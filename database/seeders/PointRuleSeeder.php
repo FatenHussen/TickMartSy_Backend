@@ -15,7 +15,10 @@ class PointRuleSeeder extends Seeder
         $rules = [
             [
                 'code' => 'user_registration',
-                'title' => 'User Registration Bonus',
+                'title' => [
+                    'ar' => 'مكافأة إنشاء حساب',
+                    'en' => 'User Registration Bonus'
+                ],
                 'type' => 'fixed',
                 'value' => 100,
                 'min_order_amount' => null,
@@ -24,7 +27,10 @@ class PointRuleSeeder extends Seeder
             ],
             [
                 'code' => 'first_order',
-                'title' => 'First Order Bonus',
+                'title' => [
+                    'ar' => 'مكافأة أول طلب',
+                    'en' => 'First Order Bonus'
+                ],
                 'type' => 'fixed',
                 'value' => 50,
                 'min_order_amount' => null,
@@ -33,7 +39,10 @@ class PointRuleSeeder extends Seeder
             ],
             [
                 'code' => 'order_completion',
-                'title' => 'Order Completion Points',
+                'title' => [
+                    'ar' => 'نقاط إتمام الطلب',
+                    'en' => 'Order Completion Points'
+                ],
                 'type' => 'fixed',
                 'value' => 100,
                 'min_order_amount' => null,
@@ -42,7 +51,10 @@ class PointRuleSeeder extends Seeder
             ],
             [
                 'code' => 'product_review',
-                'title' => 'Product Review Points',
+                'title' => [
+                    'ar' => 'نقاط تقييم المنتج',
+                    'en' => 'Product Review Points'
+                ],
                 'type' => 'fixed',
                 'value' => 10,
                 'min_order_amount' => null,
@@ -51,7 +63,10 @@ class PointRuleSeeder extends Seeder
             ],
             [
                 'code' => 'purchase_amount_threshold',
-                'title' => 'Purchase Amount Threshold Bonus',
+                'title' => [
+                    'ar' => 'مكافأة قيمة الشراء',
+                    'en' => 'Purchase Amount Threshold Bonus'
+                ],
                 'type' => 'fixed',
                 'value' => 200,
                 'min_order_amount' => 100.00,

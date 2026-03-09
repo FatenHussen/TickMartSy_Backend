@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             // Basic Setup
             BadgeSeeder::class,
             GovernorateSeeder::class,
+            CountrySeeder::class,
             // CitySeeder::class,
             // AreaSeeder::class,
             // Admin & Permissions
@@ -44,7 +45,6 @@ class DatabaseSeeder extends Seeder
             VendorSeeder::class,
             ShopSeeder::class,
             VendorUserSeeder::class,
-            VendorRolePermissionSeeder::class,
             ShopUserSeeder::class,
 
             // Seller Registrations
@@ -109,7 +109,7 @@ class DatabaseSeeder extends Seeder
             // Legal & FAQ
             LegalDocumentSeeder::class,
             FaqSeeder::class,
-
+            IconSeeder::class
 
         ]);
 

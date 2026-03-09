@@ -196,6 +196,12 @@ class Product extends Model implements Sectionable
         return $this->morphMany(Favorite::class, 'favoriteable');
     }
 
+    public function icons()
+    {
+        return $this->belongsToMany(Icon::class, 'icon_product');
+    }
+
+
     public function scopeDeepSearch($query, $search)
     {
         $locale = app()->getLocale();

@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\Complaint\ComplaintController;
 use App\Http\Controllers\Admin\Governorate\AreaCrudController;
 use App\Http\Controllers\Admin\Governorate\CityCrudController;
 use App\Http\Controllers\Admin\Governorate\GovernorateCrudController;
+use App\Http\Controllers\Admin\Country\CountryCrudController;
 use App\Http\Controllers\Admin\Language\LanguageController;
 use App\Http\Controllers\Admin\PageSection\PageSectionCrudController;
 use App\Http\Controllers\Admin\Product\ProductController;
@@ -102,6 +103,9 @@ Route::prefix('admin')->group(
 
             // Point Rules Management
             Route::apiResource('point-rules', PointRuleController::class);
+
+            // Icons Management
+            Route::apiResource('icons', \App\Http\Controllers\Admin\IconController::class);
 
             // Statistics & Reports
             Route::prefix('statistics')->group(function () {
@@ -198,6 +202,7 @@ Route::prefix('admin')->group(
                 Route::apiResource('governorates', GovernorateCrudController::class);
                 Route::apiResource('cities', CityCrudController::class);
                 Route::apiResource('areas', AreaCrudController::class);
+                Route::apiResource('countries', CountryCrudController::class);
                 Route::apiResource('services', ServiceCrudController::class);
                 Route::apiResource('sections', SectionCrudController::class);
                 Route::apiResource('page-sections', PageSectionCrudController::class);

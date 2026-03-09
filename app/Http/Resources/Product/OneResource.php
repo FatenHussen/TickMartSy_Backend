@@ -80,6 +80,9 @@ class OneResource extends JsonResource
                 $this->badges->where('pivot.position', 'bottom')->values()
             ),
 
+            'icons' => \App\Http\Resources\Icon\IconSimpleResource::collection(
+                $this->whenLoaded('icons', $this->icons ?? collect())
+            ),
 
         ];
     }

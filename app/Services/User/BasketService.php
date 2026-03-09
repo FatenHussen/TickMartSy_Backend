@@ -28,6 +28,10 @@ class BasketService extends BaseService
 
     public function queryBuilder($query, $filters = [], $config = [])
     {
+        // Extract type filter before passing to parent
+        $type = $filters['type'] ?? null;
+        unset($filters['type']);
+
         // Apply base query builder first (search, sort, favorites)
         $query = parent::queryBuilder($query, $filters, $config);
 
@@ -64,8 +68,8 @@ class BasketService extends BaseService
         }
 
         // Type filters
-        if (!empty($filters['type'])) {
-            $this->applyTypeFilters($query, $filters['type']);
+        if (!empty($type)) {
+            $this->applyTypeFilters($query, $type);
         }
 
         return $query;

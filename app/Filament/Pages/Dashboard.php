@@ -10,7 +10,6 @@ class Dashboard extends BaseDashboard
     public function getWidgets(): array
     {
         return [
-            // ShopSwitcher::class,
             \App\Filament\Widgets\VendorStatsOverview::class,
             \App\Filament\Widgets\SalesChart::class,
             \App\Filament\Widgets\SalesHeatmap::class,

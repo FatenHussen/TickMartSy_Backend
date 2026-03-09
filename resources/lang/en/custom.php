@@ -14,6 +14,8 @@ return [
     'invalid_verification_code' => 'Invalid verification code',
     'invalid_coupon' => 'invalid coupon',
     'inactive_account' => 'Account is inactive',
+
+    'account_already_exists' => 'Account already exists.',
     // HTTP Status Codes
     'errors' => [
         400 => 'Bad request.',
@@ -30,6 +32,8 @@ return [
     'custom_error' => 'Something went wrong. Please try again later.',
 
     'wrong_credential' => 'Invalid login credentials.',
+
+    'account_not_registered' => 'Account not registered.',
 
     'wrong_password' => 'The current password is incorrect.',
 

@@ -49,6 +49,11 @@ class Handler
         //     ], 405);
         // });
 
+        // BaseException
+        $exceptions->render(function (BaseException $e, $request) {
+            return $e->render();
+        });
+
         // HTTP Exceptions
         // $exceptions->render(function (HttpException $e, $request) {
         //     return response()->json([

@@ -28,7 +28,7 @@ class UserBasketScheduleService extends BaseService
 
     public function getAll($filters = [], $config = [])
     {
-        $query = $this->model::where('user_id', auth('user')->id());
+        $query = $this->model::where('user_id', auth('user')->id())->active();
 
         return parent::getAll($filters, $config, $query);
     }
@@ -127,5 +127,41 @@ class UserBasketScheduleService extends BaseService
         $basket->delete();
 
         return true;
+    }
+
+    /**
+     * Pause a scheduled basket
+     */
+    public function pause($id)
+    {
+        $basket = $this->model::where('user_id', auth('user')->id())->find($id);
+
+        if (!$basket) {
+            throw new NotFoundException();
+        }
+
+        $basket->update(['paused_at' => now()]);
+
+        Log::info('Basket paused', ['id' => $id, 'user_id' => auth('user')->id()]);
+
+        return new $this->resource($basket->load($this->relations));
+    }
+
+    /**
+     * Resume a paused scheduled basket
+     */
+    public function resume($id)
+    {
+        $basket = $this->model::where('user_id', auth('user')->id())->find($id);
+
+        if (!$basket) {
+            throw new NotFoundException();
+        }
+
+        $basket->update(['paused_at' => null]);
+
+        Log::info('Basket resumed', ['id' => $id, 'user_id' => auth('user')->id()]);
+
+        return new $this->resource($basket->load($this->relations));
     }
 }

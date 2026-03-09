@@ -39,6 +39,12 @@ class OrderController extends BaseCRUDController
         return $this->sendResponse();
     }
 
+    public function reorder($orderId)
+    {
+        $order = $this->service->reorder($orderId);
+        return $this->sendResponse(data: $order);
+    }
+
     public function activeOrder()
     {
         $order =  $this->service->activeOrder();

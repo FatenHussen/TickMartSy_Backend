@@ -88,22 +88,38 @@ class RatingService extends BaseService
 
 
     /**
-     * Only owner can update
+     * Only owner can update within 24 hours
      */
     public function update($id, array $data)
     {
+        $rating = Rating::findOrFail($id);
+
+        if ($rating->user_id !== auth('user')->id()) {
+            throw new \App\Exceptions\CustomExceptionWithMessage('You can only update your own ratings');
+        }
+
+        if ($rating->created_at->diffInHours(now()) > 24) {
+            throw new \App\Exceptions\CustomExceptionWithMessage('You can only update ratings within 24 hours');
+        }
+
         parent::update($id, $data);
         return true;
     }
 
     /**
-     * Only owner can delete
+     * Only owner can delete within 24 hours
      */
     public function delete($id): bool
     {
         $rating = Rating::findOrFail($id);
 
-        abort_if($rating->user_id !== auth('user')->id(), 403);
+        if ($rating->user_id !== auth('user')->id()) {
+            throw new \App\Exceptions\CustomExceptionWithMessage('You can only delete your own ratings');
+        }
+
+        if ($rating->created_at->diffInHours(now()) > 24) {
+            throw new \App\Exceptions\CustomExceptionWithMessage('You can only delete ratings within 24 hours');
+        }
 
         return parent::delete($id);
     }
