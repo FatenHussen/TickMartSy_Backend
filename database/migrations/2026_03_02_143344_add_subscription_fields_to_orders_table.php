@@ -16,6 +16,8 @@ return new class extends Migration
             $table->decimal('subscription_discount', 10, 2)->default(0)->after('subscription_id');
             $table->boolean('subscription_free_delivery')->default(false)->after('subscription_discount');
             $table->integer('subscription_points_bonus')->default(0)->after('subscription_free_delivery');
+            $table->foreignId('promotion_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->decimal('promotion_discount', 10, 2)->default(0);
         });
     }
 

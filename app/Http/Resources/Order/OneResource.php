@@ -30,21 +30,22 @@ class OneResource extends JsonResource
             'delivery_price' => $this->delivery_price,
             'subtotal' => $this->subtotal,
             'total' => $this->total,
-            'total_with_delivery' =>  $this->total + $this->delivery_price,
             'total_quantity' => $this->total_quantity,
             'basket_discount' => $this->basket_discount,
             'coupon_discount' => $this->coupon_discount,
+            'promotion_discount' => $this->promotion_discount,
+            'subscription_discount' => $this->subscription_discount ?? 0,
+            'coupon_discount_from_points' => $this->coupon_discount_from_points ?? 0,
+
             'assigned_by' => $this->assigned_by,
 
             // Point exchanges used
-            'coupon_discount_from_points' => $this->coupon_discount_from_points ?? 0,
             'free_delivery_from_points' => $this->free_delivery_from_points ?? false,
-            'used_coupon_exchange_id' => $this->used_coupon_exchange_id,
-            'used_free_delivery_exchange_id' => $this->used_free_delivery_exchange_id,
+            'use_coupon_exchange_id' => $this->used_coupon_exchange_id,
+            'use_free_delivery_exchange_id' => $this->used_free_delivery_exchange_id,
 
             // Subscription benefits used
 
-            'subscription_discount' => $this->subscription_discount ?? 0,
             'subscription_free_delivery' => $this->subscription_free_delivery ?? false,
 
 

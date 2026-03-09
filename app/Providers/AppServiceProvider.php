@@ -27,9 +27,9 @@ class AppServiceProvider extends ServiceProvider
             OrderStatusChanged::class,
             [AwardPointsListener::class, 'handleOrderStatusChanged']
         );
-        LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
-            $switch
-                ->locales(['ar', 'en']); 
-        });
+        // LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
+        //     $switch
+        //         ->locales(['ar', 'en']); 
+        // });
     }
 }

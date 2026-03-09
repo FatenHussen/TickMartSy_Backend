@@ -3,6 +3,7 @@
 namespace App\Http\Requests\User\Order;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Promotion;
 
 class StoreRequest extends FormRequest
 {
@@ -48,34 +49,75 @@ class StoreRequest extends FormRequest
             'use_subscription_discount' => 'nullable|boolean',
             'use_subscription_free_delivery' => 'nullable|boolean',
             //add schedule
+
+            'promotion_id' => 'nullable|exists:promotions,id',
         ];
     }
 
     /**
      * Configure the validator instance.
      */
+
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
+
             $data = $this->all();
 
-            // Validation: Only ONE discount source allowed
+            /** ---------------------------------
+             * 1️⃣ التحقق من تضارب مصادر الخصم
+             * --------------------------------- */
             $discountSources = 0;
-            if (!empty($data['coupon'])) $discountSources++;
-            if (!empty($data['point_coupon_exchange_id'])) $discountSources++;
-            if (!empty($data['use_subscription_discount'])) $discountSources++;
 
-            if ($discountSources > 1) {
-                $validator->errors()->add('discount_conflict', 'يمكن استخدام مصدر خصم واحد فقط: كوبون أو نقاط أو باقة');
+            if (!empty($data['coupon'])) {
+                $discountSources++;
             }
 
-            // Validation: Only ONE free delivery source allowed
+            if (!empty($data['point_coupon_exchange_id'])) {
+                $discountSources++;
+            }
+
+            if (!empty($data['use_subscription_discount'])) {
+                $discountSources++;
+            }
+
+            if (!empty($data['promotion_id'])) {
+
+                $promotion = Promotion::find($data['promotion_id']);
+
+                if ($promotion && in_array($promotion->type, [
+                    'spend_x_discount',
+                    'simple_discount'
+                ])) {
+                    $discountSources++;
+                }
+            }
+
+            if ($discountSources > 1) {
+                $validator->errors()->add(
+                    'discount_conflict',
+                    'يمكن استخدام مصدر خصم واحد فقط: كوبون أو نقاط أو باقة أو عرض'
+                );
+            }
+
+            /** ---------------------------------
+             * 2️⃣ التحقق من تضارب التوصيل المجاني
+             * --------------------------------- */
             $freeDeliverySources = 0;
-            if (!empty($data['point_free_delivery_exchange_id'])) $freeDeliverySources++;
-            if (!empty($data['use_subscription_free_delivery'])) $freeDeliverySources++;
+
+            if (!empty($data['point_free_delivery_exchange_id'])) {
+                $freeDeliverySources++;
+            }
+
+            if (!empty($data['use_subscription_free_delivery'])) {
+                $freeDeliverySources++;
+            }
 
             if ($freeDeliverySources > 1) {
-                $validator->errors()->add('free_delivery_conflict', 'يمكن استخدام مصدر توصيل مجاني واحد فقط: نقاط أو باقة');
+                $validator->errors()->add(
+                    'free_delivery_conflict',
+                    'يمكن استخدام مصدر توصيل مجاني واحد فقط: نقاط أو باقة'
+                );
             }
         });
     }
