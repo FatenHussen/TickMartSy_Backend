@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class VendorSubscription extends Model
 {
     protected $fillable = [
-        'shop_id',
+        'vendor_id',
         'vendor_package_id',
         'starts_at',
         'ends_at',
@@ -24,9 +24,9 @@ class VendorSubscription extends Model
         'notified_at' => 'datetime',
     ];
 
-    public function shop()
+    public function vendor()
     {
-        return $this->belongsTo(Shop::class);
+        return $this->belongsTo(Vendor::class);
     }
 
     public function package()

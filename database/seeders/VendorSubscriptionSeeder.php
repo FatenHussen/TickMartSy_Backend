@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Shop;
+use App\Models\Vendor;
 use App\Models\VendorPackage;
 use App\Models\VendorSubscription;
 use Illuminate\Database\Seeder;
@@ -11,7 +12,7 @@ class VendorSubscriptionSeeder extends Seeder
 {
     public function run(): void
     {
-        $shops = Shop::all();
+        $shops = Vendor::all();
         $packages = VendorPackage::all();
 
         if ($shops->isEmpty() || $packages->isEmpty()) {
@@ -38,7 +39,7 @@ class VendorSubscriptionSeeder extends Seeder
             }
 
             $subscriptions[] = [
-                'shop_id' => $shop->id,
+                'vendor_id' => $shop->id,
                 'vendor_package_id' => $package->id,
                 'starts_at' => $startsAt,
                 'ends_at' => $endsAt,
@@ -51,7 +52,7 @@ class VendorSubscriptionSeeder extends Seeder
         foreach ($subscriptions as $data) {
             VendorSubscription::firstOrCreate(
                 [
-                    'shop_id' => $data['shop_id'],
+                    'vendor_id' => $data['vendor_id'],
                     'vendor_package_id' => $data['vendor_package_id'],
                     'starts_at' => $data['starts_at'],
                 ],
@@ -68,7 +69,7 @@ class VendorSubscriptionSeeder extends Seeder
 
             VendorSubscription::firstOrCreate(
                 [
-                    'shop_id' => $shop->id,
+                    'vendor_id' => $shop->id,
                     'vendor_package_id' => $package->id,
                     'starts_at' => $startsAt,
                 ],

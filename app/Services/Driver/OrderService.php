@@ -258,4 +258,16 @@ class OrderService
             'total_earnings' => round($earnings, 2),
         ];
     }
+    public function currentOrder()
+    {
+        $driverId = auth('driver')->id();
+
+        return Order::with('items')
+            ->where('driver_id', $driverId)
+            ->whereIn('status', [
+                OrderStatus::OUT_DELIVERY->value
+            ])
+            ->latest()
+            ->first();
+    }
 }

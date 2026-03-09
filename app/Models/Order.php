@@ -38,10 +38,13 @@ class Order extends Model
         'subscription_points_bonus',
         'promotion_id',
         'promotion_discount',
+        'pause_at'
+
     ];
     protected $casts = [
         'is_instant_delivery' => 'boolean',
         'subscription_free_delivery' => 'boolean',
+        'pause_at' => 'datetime',
     ];
 
     protected $appends = ['affiliate_commission'];

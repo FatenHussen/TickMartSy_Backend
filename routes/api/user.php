@@ -183,6 +183,8 @@ Route::prefix('user')->group(
         });
 
         Route::get('/my-baskets', [MyBasketController::class, 'index'])->middleware(['auth:user']);
+        Route::post('/my-baskets/{basket}/pause-subscription', [MyBasketController::class, 'pauseSubscription']);
+        Route::post('/my-baskets/{basket}/resume-subscription', [MyBasketController::class, 'resumeSubscription']);
 
         Route::apiResource('addresses', AddressController::class)->middleware(['auth:user']);
 

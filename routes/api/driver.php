@@ -73,6 +73,7 @@ Route::prefix('driver')->group(
                 Route::post('order-out-delivery/{orderId}', [OrderController::class, 'orderOutDelivery']);
                 Route::post('deliver/{orderId}', [OrderController::class, 'deliver']);
                 Route::post('/update-location', [DriverTrackingController::class, 'update']);
+                Route::get('/current', [OrderController::class, 'currentOrder']);
             });
         });
     }

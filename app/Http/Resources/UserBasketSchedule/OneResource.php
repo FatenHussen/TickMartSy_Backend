@@ -17,7 +17,6 @@ class OneResource extends JsonResource
             'paused_at' => $this->paused_at?->format('Y-m-d H:i:s'),
             'start_date' => $this->start_date?->format('Y-m-d'),
             'next_run_date' => $this->next_run_date?->format('Y-m-d'),
-
             'schedule' => new ScheduleResource($this->whenLoaded('schedule')),
             'items' => BasketItemResource::collection($this->whenLoaded('items')),
         ];
