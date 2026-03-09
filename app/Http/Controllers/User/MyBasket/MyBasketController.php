@@ -19,4 +19,24 @@ class MyBasketController extends Controller
         $data = $this->service->getMyBaskets($userId, $type);
         return $this->sendResponse(data: $data);
     }
+    public function pauseSubscription($basketId)
+    {
+        $userId = auth('user')->id();
+
+        $this->service->pauseSubscriptionBasket($userId, $basketId);
+
+        return response()->json([
+            'message' => 'Basket paused successfully'
+        ]);
+    }
+    public function resumeSubscription($basketId)
+    {
+        $userId = auth('user')->id();
+
+        $this->service->resumeSubscriptionBasket($userId, $basketId);
+
+        return response()->json([
+            'message' => 'Basket resumed successfully'
+        ]);
+    }
 }

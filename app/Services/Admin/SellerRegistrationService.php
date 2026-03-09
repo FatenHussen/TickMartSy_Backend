@@ -9,6 +9,8 @@ use App\Models\Vendor;
 use App\Models\Shop;
 use App\Models\VendorUser;
 use App\Mail\VendorCredentialsMail;
+use App\Models\VendorPackage;
+use App\Models\VendorSubscription;
 use App\Services\BaseService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -84,6 +86,18 @@ class SellerRegistrationService extends BaseService
             // Attach shop to vendor user
             $vendorUser->shops()->attach($shop->id);
 
+            $package = VendorPackage::first();
+
+            if ($package) {
+                VendorSubscription::create([
+                    'vendor_id' => $vendor->id,
+                    'vendor_package_id' => $package->id,
+                    'starts_at' => now(),
+                    'ends_at' => now()->addDays($package->duration_days ?? 30),
+                    'auto_renew' => false,
+                    'status' => 'active',
+                ]);
+            }
             // Update registration status
             $registration->update(['status' => 'approved']);
 

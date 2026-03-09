@@ -17,8 +17,6 @@ class BasketService extends BaseService
         'items',
         'items.product',
         'items.variant',
-        // 'items.companies',
-        // 'items.companies.brand',
         'schedules',
         'favorites'
     ];

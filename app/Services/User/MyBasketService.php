@@ -59,6 +59,7 @@ class MyBasketService
                     // Find the selected schedule from order
                     $order = $orders->firstWhere('basket_id', $basket->id);
                     $basket->selected_schedule = $order?->basketSchedule;
+                    $basket->pause_at = $order?->pause_at;
                     return $basket;
                 });
 
@@ -97,5 +98,23 @@ class MyBasketService
                 return (new BasketSummaryResource($basket))->resolve();
             }
         })->values();
+    }
+    public function pauseSubscriptionBasket(int $userId, int $basketId)
+    {
+        Order::where('basket_id', $basketId)
+            ->where('user_id', $userId)
+            ->where('cart_type', CartType::SCHEDULE_ADMIN_CART->value)
+            ->update([
+                'pause_at' => now()
+            ]);
+    }
+    public function resumeSubscriptionBasket(int $userId, int $basketId)
+    {
+        Order::where('basket_id', $basketId)
+            ->where('user_id', $userId)
+            ->where('cart_type', CartType::SCHEDULE_ADMIN_CART->value)
+            ->update([
+                'pause_at' => null
+            ]);
     }
 }

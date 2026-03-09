@@ -114,7 +114,10 @@ class Product extends Model implements Sectionable
     {
         return $this->hasMany(ProductVariant::class);
     }
-
+    public function shopVariants()
+    {
+        return $this->hasMany(ShopProductVariant::class);
+    }
     public function categoryDetails()
     {
         return $this->hasMany(ProductCategoryDetail::class);
