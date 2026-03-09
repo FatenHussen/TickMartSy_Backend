@@ -52,7 +52,7 @@ class VendorSubscriptionSeeder extends Seeder
         foreach ($subscriptions as $data) {
             VendorSubscription::firstOrCreate(
                 [
-                    'vendor_id' => $data['shop_id'],
+                    'vendor_id' => $data['vendor_id'],
                     'vendor_package_id' => $data['vendor_package_id'],
                     'starts_at' => $data['starts_at'],
                 ],
