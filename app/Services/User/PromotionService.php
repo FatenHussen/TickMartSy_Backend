@@ -3,6 +3,7 @@
 namespace App\Services\User;
 
 use App\Models\Promotion;
+use App\Models\ShopProductVariant;
 use Illuminate\Support\Collection;
 
 class PromotionService
@@ -78,7 +79,7 @@ class PromotionService
                 $q->whereNull('ends_at')
                     ->orWhere('ends_at', '>=', now());
             })
-            ->latest('id') // أحدث عرض
+            ->latest('id')
             ->first();
 
         if (!$promotion) {
@@ -87,13 +88,16 @@ class PromotionService
 
         $appliedGifts = $this->calculateBuyXGetY($orderItems, $promotion);
 
-        // إذا كان هناك order حقيقي أضف الهدايا
         if ($orderOrNull && !empty($appliedGifts['free_items'])) {
             foreach ($appliedGifts['free_items'] as $gift) {
+                // جلب بيانات المنتج الأصلي
+                $shopVariant = ShopProductVariant::with('productVariant.product')
+                    ->find($gift['shop_product_variant_id']);
+
                 $orderOrNull->items()->create([
-                    'shop_product_variant_id' => $gift['shop_product_variant_id'],
-                    'product_name' => 'Gift Item',
-                    'variant_attributes' => null,
+                    'shop_product_variant_id' => $shopVariant->id,
+                    'product_name' => $shopVariant->productVariant->product->name . ' Gift',
+                    'variant_attributes' => $shopVariant->productVariant->getAttributesValuesAttribute(),
                     'quantity' => $gift['free_quantity'],
                     'price' => 0,
                     'discount' => 100,

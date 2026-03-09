@@ -46,7 +46,6 @@ class CouponSeeder extends Seeder
         // Coupon 3: مربوط بفئات
         $categoryCoupon = Coupon::create([
             'name' => ['en' => 'Welcome Discount', 'ar' => 'خصم ترحيبي'],
-
             'code'           => 'CAT15',
             'discount_type'  => 'fixed',
             'discount_value' => 15000,
