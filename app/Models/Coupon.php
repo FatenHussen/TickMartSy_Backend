@@ -59,4 +59,21 @@ class Coupon extends Model
     {
         return $this->morphedByMany(Vendor::class, 'couponable');
     }
+    public function calculateDiscount(float $amount): float
+    {
+        if (!$this->isValid()) {
+            return 0;
+        }
+
+        switch ($this->discount_type) {
+            case 'percentage':
+                return round($amount * ($this->discount_value / 100), 2);
+
+            case 'fixed':
+                return round(min($this->discount_value, $amount), 2);
+
+            default:
+                return 0;
+        }
+    }
 }

@@ -57,6 +57,7 @@ class OrderService extends BaseService
         return $query;
     }
 
+
     /** -----------------------------
      * Create Order with Basket + Coupon
      * ----------------------------- */
@@ -64,649 +65,323 @@ class OrderService extends BaseService
     {
         return DB::transaction(function () use ($data) {
 
+            /** @var User */
             $user = auth('user')->user() ?? User::find(1);
 
-            // Get address
-            if ($data['address_id']) {
-                $address = $user->addresses()->findOrFail($data['address_id']);
-            } else {
-                $address = $user->addresses()
-                    ->where('is_default', true)
-                    ->firstOrFail();
-            }
+            // =====================
+            // 1️⃣ Address
+            // =====================
+            $address = $user->addresses()->findOrFail($data['address_id']);
 
+            // =====================
+            // 2️⃣ Create Order
+            // =====================
             $order = Order::create([
-                'user_id'             => $user->id,
-                'user_address_id'     => $address->id,
-                'payment_method_id'   => $data['payment_method_id'],
-                'cart_type'           => $data['cart_type'] ?? CartType::DEFAULT->value,
+                'user_id' => $user->id,
+                'user_address_id' => $address->id,
+                'cart_type' => $data['cart_type'] ?? CartType::DEFAULT->value,
                 'is_instant_delivery' => $data['is_instant_delivery'] ?? false,
-                'status'        => OrderStatus::PENDING->value,
+                'status' => OrderStatus::PENDING->value,
+
+                // النقاط
+                'used_coupon_exchange_id' => $data['point_coupon_exchange_id'] ?? null,
+                'used_free_delivery_exchange_id' => $data['point_free_delivery_exchange_id'] ?? null,
+
+                // الاشتراك
+                'subscription_free_delivery' => $data['use_subscription_free_delivery'] ?? false,
+                'subscription_discount' => 0,
+                'subscription_points_bonus' => 0,
+
+                'promotion_id' => $data['promotion_id'] ?? null,
+                'promotion_discount' => 0,
             ]);
 
-            // 1️⃣ Resolve basket & delivery
-            [$basketDiscount, $deliveryPrice] = $this->resolveBasketAndDelivery($order, $data);
+            // =====================
+            // 3️⃣ Basket + Delivery
+            // =====================
+            [$basketDiscountPercent, $deliveryPrice] = $this->resolveBasketAndDelivery($order, $data);
 
-            // 2️⃣ Add items to order
-            [$subtotalBeforeDiscount, $subtotalAfterProductDiscount, $totalQuantity, $orderItems] =
-                $this->addItemsToOrder($order, $data);
-
-            // 3️⃣ Apply coupon if provided
-            [$couponCode, $couponDiscountAmount, $excludedItems, $coupon] =
-                $this->applyCoupon(
-                    $order,
-                    $orderItems,
-                    $data['coupon'] ?? null,
-                    $basketDiscount
-                );
-
-            // 4️⃣ Apply point exchanges
-            [$pointCouponDiscount, $pointFreeDelivery, $usedCouponExchangeId, $usedFreeDeliveryExchangeId] =
-                $this->applyPointExchanges($user->id, $data, $deliveryPrice);
-
-            // ❗ إذا تم تطبيق كوبون أو نقاط أو باقة → نلغي خصم السلة
-            $hasExternalDiscount = $couponCode !== null
-                || $pointCouponDiscount > 0
-                || !empty($data['use_subscription_discount']);
-
-            if ($hasExternalDiscount) {
-                $basketDiscount = 0;
-            }
-
-            // 5️⃣ Apply Subscription Benefits (only if user explicitly requests)
-            $subscriptionBenefitsService = app(\App\Services\User\SubscriptionBenefitsService::class);
-
-            // نستخدم subtotalBeforeDiscount إذا في خصم خارجي، وإلا subtotalAfterProductDiscount
-            $baseAmountForSubscription = $hasExternalDiscount
-                ? $subtotalBeforeDiscount
-                : $subtotalAfterProductDiscount;
-
-            $subscriptionBenefits = $subscriptionBenefitsService->applyBenefits(
-                $order,
-                $user->id,
-                $baseAmountForSubscription,
-                $deliveryPrice,
-                $data['use_subscription_discount'] ?? false,
-                $data['use_subscription_free_delivery'] ?? false
-            );
-
-            $subscriptionDiscount = $subscriptionBenefits['discount_amount'] ?? 0;
-            $subscriptionFreeDelivery = $subscriptionBenefits['free_delivery_applied'] ?? false;
-            $subscriptionPointsBonus = $subscriptionBenefits['points_bonus'] ?? 0;
-
-            // 6️⃣ Calculate totals
-            $basketDiscountAmount = $subtotalAfterProductDiscount * ($basketDiscount / 100);
-
-            // الـ base amount للحساب النهائي
-            $baseAmount = $hasExternalDiscount ? $subtotalBeforeDiscount : $subtotalAfterProductDiscount;
-
-            $finalTotal = $baseAmount
-                - ($basketDiscountAmount + $couponDiscountAmount + $pointCouponDiscount + $subscriptionDiscount);
-
-            // Apply free delivery from points or subscription
-            if ($pointFreeDelivery || $subscriptionFreeDelivery) {
-                $deliveryPrice = 0;
-            }
-
-            // =======================
-            // Affiliate / Marketer
-            // =======================
-
-            // الافتراضي: من رابط
-            $affiliateId = $data['affiliate_id'] ?? null;
-            $affiliateSource = $affiliateId ? 'link' : null;
-
-            // إذا الكوبون تابع لمسوق → هو الأقوى
-            if ($coupon && $coupon->affiliate_id) {
-                $affiliateId = $coupon->affiliate_id;
-                $affiliateSource = 'coupon';
-            }
-
-            // نجيب نسبة العمولة
-            $affiliateRate = null;
-
-            if ($affiliateId) {
-                $affiliate = User::where('affiliate_id', $affiliateId)->first();
-                $affiliateRate = $affiliate?->affiliate_rate;
-            }
-
-            // =======================
-            // Update Order
-            // =======================
-
-            $order->update([
-                'delivery_price'   => $deliveryPrice,
-                'subtotal'         => round($subtotalBeforeDiscount, 2),
-                'total_quantity'   => $totalQuantity,
-                'basket_discount'  => $basketDiscount,
-                'coupon_code'      => $couponCode,
-                'coupon_discount'  => round($couponDiscountAmount, 2),
-                'total'            => round($finalTotal, 2),
-
-                // Affiliate data
-                'affiliate_id'     => $affiliateId,
-                'affiliate_rate'   => $affiliateRate,
-                'affiliate_source' => $affiliateSource, // link | coupon | null
-
-                // Point exchange data
-                'used_coupon_exchange_id' => $usedCouponExchangeId,
-                'used_free_delivery_exchange_id' => $usedFreeDeliveryExchangeId,
-                'coupon_discount_from_points' => round($pointCouponDiscount, 2),
-                'free_delivery_from_points' => $pointFreeDelivery,
-
-                // Subscription data
-                'subscription_id' => $subscriptionBenefits['subscription_id'] ?? null,
-                'subscription_discount' => round($subscriptionDiscount, 2),
-                'subscription_free_delivery' => $subscriptionFreeDelivery,
-                'subscription_points_bonus' => $subscriptionPointsBonus,
-            ]);
-
-            // =======================
-            // تسجيل العمولة في المحفظة
-            // =======================
-            if ($affiliateId && $affiliateRate) {
-                $commissionAmount = round($finalTotal * ($affiliateRate / 100), 2);
-
-                AffiliateWalletTransaction::create([
-                    'affiliate_id' => $affiliateId,
-                    'type' => 'commission',
-                    'amount' => $commissionAmount,
-                    'order_id' => $order->id,
-                ]);
-            }
-
-
-            foreach ($order->items as $item) {
-
-                $variant = ShopProductVariant::find($item->shop_product_variant_id);
-
-                $variant->decrement('quantity', $item->quantity);
-
-                if ($variant->quantity <= 5) {
-
-                    event(new LowStockDetected($variant));
-                }
-            }
-
-            OrderStatusChanged::dispatch(
-                $order->fresh('items'),
-                null,
-                OrderStatus::PENDING->value,
-                'system'
-            );
-
-            return new $this->resource($order->load('items'));
-        });
-    }
-
-
-    public function preview(array $data)
-    {
-        return DB::transaction(function () use ($data) {
-
-            $user = auth('user')->user() ?? User::find(1);
-
-            // 1️⃣ Basket & delivery
-            [$basketDiscount, $deliveryPrice] = $this->resolveBasketAndDelivery(null, $data);
-
-            // 2️⃣ Items
+            // =====================
+            // 4️⃣ Items
+            // =====================
             [
                 $subtotalBeforeDiscount,
                 $subtotalAfterProductDiscount,
                 $totalQuantity,
                 $orderItems
-            ] = $this->addItemsToOrder(null, $data);
+            ] = $this->addItemsToOrder($order, $data);
 
-            // 3️⃣ Coupon info (default response)
-            $couponInfo = [
-                'provided' => !empty($data['coupon']),
-                'valid' => false,
-                'applied' => false,
-                'code' => $data['coupon'] ?? null,
-                'discount' => 0,
-                'excluded_items' => [],
-                'fail_reasons' => [],
-            ];
+            // =====================
+            // 5️⃣ Non Discount Promotions (buy_x_get_y)
+            // =====================
+            $promotionService = app(PromotionService::class);
+            $nonDiscountPromotions = $promotionService->applyNonDiscountPromotions($order, $orderItems);
 
-            $couponDiscountAmount = 0;
+            // =====================
+            // 6️⃣ External Discounts
+            // =====================
+            $externalDiscountAmount = 0;
+            $couponDiscount = 0;
+            $couponDiscountFromPoints = 0;
+            $subscriptionDiscount = 0;
+            $promotionDiscount = 0;
+            $freeDeliveryFromPoints = 0;
 
+            /** Coupon */
             if (!empty($data['coupon'])) {
 
-                $coupon = Coupon::where('code', $data['coupon'])->first();
-
-                if (!$coupon) {
-                    $couponInfo['fail_reasons'][] = 'Coupon not found';
-                } elseif (!$coupon->isValid()) {
-                    if (!$coupon->is_active) {
-                        $couponInfo['fail_reasons'][] = 'Coupon is not active';
-                    }
-                    if ($coupon->isExpired()) {
-                        $couponInfo['fail_reasons'][] = 'Coupon has expired';
-                    }
-                    if ($coupon->used_count >= $coupon->max_uses) {
-                        $couponInfo['fail_reasons'][] = 'Coupon usage limit reached';
-                    }
-                } else {
-                    $couponInfo['valid'] = true;
-
-                    [
-                        $appliedCode,
-                        $couponDiscountAmount,
-                        $excludedItems
-                    ] = $this->applyCoupon(
-                        null,
-                        $orderItems,
-                        $data['coupon'],
-                        $basketDiscount
-                    );
-
-                    $couponInfo['excluded_items'] = $excludedItems;
-
-                    if ($appliedCode) {
-                        $couponInfo['applied'] = true;
-                        $couponInfo['discount'] = round($couponDiscountAmount, 2);
-                        $couponInfo['code'] = $appliedCode;
-
-                        // cancel basket discount if coupon applied
-                        $basketDiscount = 0;
-                    } else {
-                        $couponInfo['fail_reasons'][] = 'Coupon conditions not met';
-                    }
+                [$appliedCode, $couponDiscount, $excludedItems, $coupon] = $this->applyCoupon($order, $orderItems, $data['coupon'], 0);
+                if ($appliedCode) {
+                    $order->update([
+                        'coupon_id' => $coupon->id,
+                        'coupon_discount' => round($couponDiscount, 2)
+                    ]);
+                    $externalDiscountAmount += $couponDiscount;
                 }
-            } else {
-                $couponInfo['fail_reasons'][] = 'No coupon provided';
             }
 
-            // 4️⃣ Check Point Exchanges (without modifying them)
-            $pointExchangesInfo = $this->checkPointExchanges($user->id, $data, $deliveryPrice);
+            /** Points */
+            [$pointsDiscount, $pointsFreeDelivery] = $this->applyPointExchanges($user->id, $data, $deliveryPrice);
+            $couponDiscountFromPoints = $pointsDiscount;
+            $freeDeliveryFromPoints = $pointsFreeDelivery;
+            $externalDiscountAmount += $pointsDiscount;
+            if ($pointsFreeDelivery) $deliveryPrice = 0;
 
-            // تحديد إذا في خصم خارجي
-            $hasExternalDiscount = $couponInfo['applied']
-                || $pointExchangesInfo['coupon_discount'] > 0
-                || !empty($data['use_subscription_discount']);
+            /** Subscription */
+            if (!empty($data['use_subscription_discount']) || !empty($data['use_subscription_free_delivery'])) {
+                $subscriptionResult = app(SubscriptionBenefitsService::class)->applyBenefits(
+                    $order,
+                    $user->id,
+                    $subtotalBeforeDiscount,
+                    $deliveryPrice,
+                    !empty($data['use_subscription_discount']),
+                    !empty($data['use_subscription_free_delivery'])
+                );
 
-            // إذا في خصم خارجي → نلغي خصم السلة
-            if ($hasExternalDiscount) {
-                $basketDiscount = 0;
+                $subscriptionDiscount = $subscriptionResult['discount_amount'] ?? 0;
+                $externalDiscountAmount += $subscriptionDiscount;
+
+                if (!empty($data['use_subscription_free_delivery']) && ($subscriptionResult['free_delivery_applied'] ?? false)) {
+                    $deliveryPrice = 0;
+                }
             }
 
-            // 5️⃣ Preview Subscription Benefits (check if user wants to use them)
-            $subscriptionBenefitsService = app(\App\Services\User\SubscriptionBenefitsService::class);
+            /** Promotion (financial) */
+            if (!empty($data['promotion_id'])) {
+                $promotionDiscount = $promotionService->applyDiscountPromotion(
+                    $order,
+                    $data['promotion_id'],
+                    $subtotalBeforeDiscount
+                );
+                $externalDiscountAmount += $promotionDiscount;
+            }
 
-            // نستخدم subtotalBeforeDiscount إذا في خصم خارجي
-            $baseAmountForSubscription = $hasExternalDiscount
-                ? $subtotalBeforeDiscount
-                : $subtotalAfterProductDiscount;
+            // =====================
+            // 7️⃣ Basket Discount
+            // =====================
+            $hasExternalDiscount = $externalDiscountAmount > 0;
+            $basketDiscountAmount = !$hasExternalDiscount && $basketDiscountPercent > 0
+                ? $subtotalBeforeDiscount * $basketDiscountPercent / 100
+                : 0;
 
-            $subscriptionInfo = $subscriptionBenefitsService->previewBenefits(
-                $user->id,
-                $baseAmountForSubscription,
-                $deliveryPrice
+            // =====================
+            // 8️⃣ Final Total
+            // =====================
+            $finalTotal = $subtotalBeforeDiscount
+                - $basketDiscountAmount
+                - $externalDiscountAmount
+                + $deliveryPrice;
+
+            // =====================
+            // 9️⃣ Update Order
+            // =====================
+            $order->update([
+                'subtotal' => $subtotalBeforeDiscount,
+                'basket_discount' => round($basketDiscountAmount, 2),
+                'coupon_discount' => round($couponDiscount, 2),
+                'coupon_discount_from_points' => round($couponDiscountFromPoints, 2),
+                'free_delivery_from_points' => $freeDeliveryFromPoints,
+                'subscription_discount' => round($subscriptionDiscount, 2),
+                'promotion_discount' => round($promotionDiscount, 2),
+                'delivery_price' => $deliveryPrice,
+                'total_quantity' => $totalQuantity,
+                'total' => round($finalTotal, 2),
+            ]);
+
+            // =====================
+            // 🔟 Event
+            // =====================
+            OrderStatusChanged::dispatch(
+                $order->fresh('items'),
+                null,
+                OrderStatus::PENDING->value,
+                'user'
             );
 
-            // Apply subscription discount ONLY if user explicitly requests it
-            $subscriptionDiscount = 0;
-            $subscriptionFreeDelivery = false;
-
-            if (!empty($data['use_subscription_discount']) && $subscriptionInfo['has_subscription']) {
-                $subscriptionDiscount = $subscriptionInfo['discount_amount'] ?? 0;
-            }
-
-            if (!empty($data['use_subscription_free_delivery']) && $subscriptionInfo['has_subscription']) {
-                $subscriptionFreeDelivery = $subscriptionInfo['free_delivery_applicable'] ?? false;
-            }
-
-            // 6️⃣ Totals
-            $basketDiscountAmount = $subtotalAfterProductDiscount * ($basketDiscount / 100);
-
-            // الـ base amount للحساب النهائي
-            $baseAmount = $hasExternalDiscount ? $subtotalBeforeDiscount : $subtotalAfterProductDiscount;
-
-            $finalSubtotal = $baseAmount
-                - ($basketDiscountAmount + $couponDiscountAmount + $pointExchangesInfo['coupon_discount'] + $subscriptionDiscount);
-
-            // Apply free delivery from points OR subscription (based on user choice)
-            $freeDeliveryApplied = $pointExchangesInfo['free_delivery_applicable'] || $subscriptionFreeDelivery;
-            $finalDeliveryPrice = $freeDeliveryApplied ? 0 : $deliveryPrice;
-            $total = $finalSubtotal + $finalDeliveryPrice;
-
-            return [
-                'subtotal_before_discount' => round($subtotalBeforeDiscount, 2),
-                'subtotal_after_product_discount' => round($subtotalAfterProductDiscount, 2),
-
-                'basket_discount_percent' => $basketDiscount,
-                'basket_discount_amount' => round($basketDiscountAmount, 2),
-
-                'coupon' => $couponInfo,
-
-                'point_exchanges' => $pointExchangesInfo,
-
-                'subscription' => array_merge($subscriptionInfo, [
-                    'discount_applied' => $subscriptionDiscount > 0,
-                    'discount_amount_applied' => round($subscriptionDiscount, 2),
-                    'free_delivery_applied' => $subscriptionFreeDelivery,
-                ]),
-
-                'delivery_price' => round($finalDeliveryPrice, 2),
-
-                'total_quantity' => $totalQuantity,
-                'subtotal' => round($finalSubtotal, 2),
-                'total' => round($total, 2),
-
-                // 'items' => $orderItems,
-            ];
+            return new OneResource($order->fresh('items'));
         });
     }
 
-    /** -----------------------------
-     * Coupon Preview (without creating order)
-     * ----------------------------- */
-    public function couponPreview(array $data)
+    public function preview(array $data): array
     {
         $user = auth('user')->user() ?? User::find(1);
 
+        [$basketDiscountPercent, $deliveryPrice] = $this->resolveBasketAndDelivery(null, $data);
 
-        [$basketDiscount, $deliveryPrice] = $this->resolveBasketAndDelivery(null, $data);
+        [
+            $subtotalBeforeDiscount,
+            $subtotalAfterProductDiscount,
+            $totalQuantity,
+            $orderItems
+        ] = $this->addItemsToOrder(null, $data);
 
-        // Build basket items collection
-        $basketItemsCollection = collect();
-        foreach ($data['items'] as $item) {
-            $shopVariant = ShopProductVariant::with('productVariant.product')->findOrFail($item['shop_product_variant_id']);
-            $product = $shopVariant->productVariant->product;
-            $price = $shopVariant->price;
-            $quantity = $item['quantity'];
+        $externalDiscountAmount = 0;
+        $couponDiscount = 0;
+        $subscriptionDiscount = 0;
+        $subscriptionResult = [];
+        $freeDeliveryApplied = false;
 
-            $priceAfterDiscount = ($data['cart_type'] ?? 'default') === CartType::DEFAULT->value
-                ? $price * (1 - ($product->discount / 100))
-                : $price;
-
-            $basketItemsCollection->push([
-                'shop_product_variant_id' => $shopVariant->id,
-                'product' => $product,
-                'quantity' => $quantity,
-                'price' => $price,
-                'price_after_discount' => $priceAfterDiscount,
-            ]);
-        }
-
-        $subtotalAfterProductDiscount = $basketItemsCollection->sum(fn($i) => $i['price_after_discount'] * $i['quantity']);
-
-        $reason = []; // لسبب عدم تطبيق الكوبون
-        [$couponCode, $couponDiscountAmount, $excludedItems] = [null, 0, []];
-
+        // =====================
+        // 1️⃣ Coupon
+        // =====================
         if (!empty($data['coupon'])) {
             $coupon = Coupon::where('code', $data['coupon'])->first();
-
-            if (!$coupon) {
-                $reason[] = 'Coupon not found';
-            } elseif (!$coupon->isValid()) {
-                if (!$coupon->is_active) $reason[] = 'Coupon is not active';
-                if ($coupon->isExpired()) $reason[] = 'Coupon has expired';
-                if ($coupon->used_count >= $coupon->max_uses) $reason[] = 'Coupon usage limit reached';
-            } else {
-                // تحقق من السلة
-                $cartType = $data['cart_type'] ?? 'default';
-                if ($cartType !== CartType::DEFAULT->value && !config('settings.allow_coupons_on_basket')) {
-                    $reason[] = 'Coupons not allowed on this basket type';
-                } else {
-                    $couponCode = $coupon->code;
-
-                    // تحقق من المنتجات والفئات والبائعين
-                    foreach ($basketItemsCollection as $item) {
-                        $product = $item['product'];
-                        $allowed = true;
-                        if ($coupon->products()->exists() && !$coupon->products->contains($product->id)) $allowed = false;
-                        if ($coupon->categories()->exists() && !$coupon->categories->contains($product->category_id)) $allowed = false;
-                        if ($coupon->vendors()->exists() && !$coupon->vendors->contains($product->vendor_id)) $allowed = false;
-
-                        if (!$allowed) $excludedItems[] = $item['shop_product_variant_id'];
-                    }
-
-                    $eligibleSubtotal = $subtotalAfterProductDiscount;
-                    if (!empty($excludedItems)) {
-                        $eligibleSubtotal = $basketItemsCollection
-                            ->whereNotIn('shop_product_variant_id', (array) $excludedItems)
-                            ->sum(fn($i) => $i['price_after_discount'] * $i['quantity']);
-                        $reason[] = 'Some items are excluded from coupon: ' . implode(',', array_map('strval', $excludedItems));
-                    }
-
-                    if ($eligibleSubtotal > 0) {
-                        $couponDiscountAmount = $coupon->discount_type === 'percent'
-                            ? $eligibleSubtotal * ($coupon->discount_value / 100)
-                            : min($coupon->discount_value, $eligibleSubtotal);
-                    } else {
-                        $couponCode = null; // لا يوجد عناصر مؤهلة
-                        $reason[] = 'No eligible items for coupon';
-                    }
-                }
+            if ($coupon) {
+                $couponDiscount = $coupon->discount_value;
+                $externalDiscountAmount += $couponDiscount;
             }
-        } else {
-            $reason[] = 'No coupon provided';
         }
 
-        $basketDiscountAmount = $subtotalAfterProductDiscount * ($basketDiscount / 100);
-        $finalTotal = $subtotalAfterProductDiscount - ($basketDiscountAmount + $couponDiscountAmount);
+        // =====================
+        // 2️⃣ Points (Preview)
+        // =====================
+        $pointsResult = $this->checkPointExchanges($user->id, $data, $deliveryPrice);
+
+        $pointDiscount = $pointsResult['coupon_discount'] ?? 0;
+        $pointsFreeDelivery = $pointsResult['free_delivery_applicable'] ?? false;
+
+        if ($pointDiscount > 0) {
+            $externalDiscountAmount += $pointDiscount;
+        }
+
+        if ($pointsFreeDelivery) {
+            $deliveryPrice = 0;
+        }
+
+        // =====================
+        // 2️⃣ Subscription
+        // =====================
+        if (!empty($data['use_subscription_discount']) || !empty($data['use_subscription_free_delivery'])) {
+            $subscriptionService = app(SubscriptionBenefitsService::class);
+            $subscriptionResult = $subscriptionService->previewBenefits(
+                $user->id,
+                $subtotalBeforeDiscount,
+                $deliveryPrice
+            );
+
+            if (!empty($data['use_subscription_discount'])) {
+                $subscriptionDiscount = $subscriptionResult['discount_amount'] ?? 0;
+                $externalDiscountAmount += $subscriptionDiscount;
+            }
+
+            if (!empty($data['use_subscription_free_delivery']) && ($subscriptionResult['free_delivery_applicable'] ?? false)) {
+                $deliveryPrice = 0;
+                $freeDeliveryApplied = true;
+            }
+        }
+
+
+
+        // =====================
+        // 3️⃣ Promotions
+        // =====================
+        $promotionService = app(\App\Services\User\PromotionService::class);
+
+
+        // العروض القابلة للاختيار
+        $availablePromotions = $promotionService->getAvailablePromotions($subtotalBeforeDiscount, $orderItems);
+
+        $promotionDiscount = 0;
+        $nonDiscountPromotions = [];
+        $freeItems = [];
+
+        if (!empty($data['promotion_id'])) {
+            // خصم مالي إذا كان financial promotion
+            $promotionDiscount = $promotionService->applyDiscountPromotion(
+                null,
+                $data['promotion_id'],
+                $subtotalBeforeDiscount
+            );
+
+
+            $externalDiscountAmount += $promotionDiscount;
+        }
+
+        // الهدايا إذا buy_x_get_y
+        $appliedNonDiscount = $promotionService->applyNonDiscountPromotions(
+            null,
+            $orderItems,
+        );
+
+        $nonDiscountPromotions = $appliedNonDiscount;
+
+
+        // =====================
+        // 4️⃣ Basket Discount
+        // =====================
+        $hasExternalDiscount = $externalDiscountAmount > 0;
+        $basketDiscountAmount = !$hasExternalDiscount && $basketDiscountPercent > 0
+            ? $subtotalBeforeDiscount * $basketDiscountPercent / 100
+            : 0;
+
+        // =====================
+        // 5️⃣ Final Totals
+        // =====================
+        $finalTotal = $subtotalBeforeDiscount - $basketDiscountAmount - $externalDiscountAmount + $deliveryPrice;
+
+        // تصحيح products_total_after_all_discounts
+        $productsTotalAfterAllDiscounts = $hasExternalDiscount
+            ? $subtotalBeforeDiscount - $externalDiscountAmount
+            : $subtotalAfterProductDiscount - $basketDiscountAmount;
 
         return [
-            'subtotal_before_coupon' => round($subtotalAfterProductDiscount, 2),
-            'basket_discount' => $basketDiscount,
-            'coupon_applied' => !is_null($couponCode),
-            'coupon_discount' => round($couponDiscountAmount, 2),
-            'subtotal_after_coupon' => round($finalTotal, 2),
-            'excluded_items' => $excludedItems,
-            'delivery_price' => round($deliveryPrice, 2),
-            'total_estimate' => round($finalTotal + $deliveryPrice, 2),
-            'coupon_code' => $couponCode,
-            'coupon_fail_reasons' => $reason,
-        ];
-    }
-
-
-    /** -----------------------------
-     * Resolve basket discount & delivery price
-     * ----------------------------- */
-    protected function resolveBasketAndDelivery($orderOrNull, $data)
-    {
-        //admin basket id
-        //scedule id
-        $cartType = $data['cart_type'] ?? CartType::DEFAULT->value;
-        $basketDiscount = 0;
-        $deliveryPrice = 0;
-        $user = auth('user')->user() ?? User::find(1);
-
-        switch ($cartType) {
-            case CartType::RECIPE->value:
-                $basket = Recipe::findOrFail($data['recipe_id']);
-                $basketDiscount = $basket->discount;
-                $deliveryPrice  = $basket->delivery_price;
-                break;
-
-            case CartType::ADMIN_CART->value:
-                $basket = Basket::findOrFail($data['admin_basket_id']);
-                $basketDiscount = $basket->discount;
-                $deliveryPrice  = $basket->delivery_price;
-                break;
-
-            case CartType::SCHEDULE_ADMIN_CART->value:
-                // Support both admin_schedule_basket_id and admin_basket_id for backward compatibility
-                $basketId = $data['admin_schedule_basket_id'] ?? $data['admin_basket_id'] ?? null;
-
-                if (!$basketId) {
-                    throw new Exception('Basket ID is required for scheduled admin cart');
-                }
-
-                $basket = Basket::findOrFail($basketId);
-
-                // Check if user selected a specific schedule
-                if (!empty($data['basket_schedule_id'])) {
-                    $basketSchedule = $basket->schedules()
-                        ->where('id', $data['basket_schedule_id'])
-                        ->where('is_active', true)
-                        ->first();
-
-                    if ($basketSchedule && $basketSchedule->discount_value > 0) {
-                        // Use selected schedule discount
-                        $basketDiscount = $basketSchedule->discount_value;
-                    } else {
-                        // Fallback to basket discount if schedule not found or no discount
-                        $basketDiscount = $basket->discount;
-                    }
-                } else {
-                    // No schedule selected, use basket discount only
-                    $basketDiscount = $basket->discount;
-                }
-
-                $deliveryPrice = $basket->delivery_price;
-                break;
-
-            case CartType::DEFAULT->value:
-            default:
-                $variantIds = collect($data['items'])->pluck('shop_product_variant_id')->values()->toArray();
-                $deliveryPrice = CalculateDeliveryPriceService::handle(
-                    user: $user,
-                    items: $variantIds,
-                    addressId: $data['address_id'] ?? null
-                );
-
-                // التحقق من التوصيل المجاني من النقاط
-                try {
-                    $exchangeService = app(\App\Services\PointExchangeService::class);
-                    if ($exchangeService->hasActiveFreeDelivery($user->id)) {
-                        $deliveryPrice = 0;
-                    }
-                } catch (\Throwable $e) {
-                    // تجاهل أخطاء النقاط
-                }
-                break;
-        }
-
-        return [$basketDiscount, $deliveryPrice];
-    }
-
-    /** -----------------------------
-     * Add items to order
-     * ----------------------------- */
-    protected function addItemsToOrder($order, $data)
-    {
-        $subtotalBeforeDiscount = 0;
-        $subtotalAfterProductDiscount = 0;
-        $totalQuantity = 0;
-        $orderItems = collect();
-
-        // تحديد إذا في خصم خارجي (كوبون، نقاط، باقة)
-        $hasExternalDiscount = !empty($data['coupon'])
-            || !empty($data['point_coupon_exchange_id'])
-            || !empty($data['use_subscription_discount']);
-
-        // تحديد إذا في سلة (basket/recipe/schedule)
-        $cartType = $data['cart_type'] ?? 'default';
-        $hasBasket = $cartType !== CartType::DEFAULT->value;
-
-        foreach ($data['items'] as $item) {
-            $shopVariant = ShopProductVariant::with('productVariant.product')
-                ->lockForUpdate()
-                ->findOrFail($item['shop_product_variant_id']);
-
-            if (!is_null($shopVariant->quantity) && $shopVariant->quantity < $item['quantity']) {
-                throw new Exception('Insufficient stock for ' . $shopVariant->productVariant->product->name);
-            }
-
-            $product = $shopVariant->productVariant->product;
-            $price = $shopVariant->price;
-            $quantity = $item['quantity'];
-
-            // تطبيق خصم المنتج فقط إذا:
-            // 1. ما في خصم خارجي (كوبون/نقاط/باقة)
-            // 2. ما في سلة (basket/recipe/schedule)
-            // 3. cart_type = default
-            $productDiscount = 0;
-            if (!$hasExternalDiscount && !$hasBasket && $cartType === CartType::DEFAULT->value) {
-                $productDiscount = $product->discount;
-            }
-
-            $priceAfterDiscount = $price * (1 - ($productDiscount / 100));
-
-            if ($order) {
-                $order->items()->create([
-                    'shop_product_variant_id' => $shopVariant->id,
-                    'product_name' => $product->name,
-                    'variant_attributes' => $shopVariant->productVariant->getAttributesValuesAttribute(),
-                    'quantity' => $quantity,
-                    'price' => $price,
-                    'discount' => $productDiscount,
-                ]);
-                if (!is_null($shopVariant->quantity)) {
-                    $shopVariant->decrement('quantity', $quantity);
-                }
-            }
-
-            $subtotalBeforeDiscount += $price * $quantity;
-            $subtotalAfterProductDiscount += $priceAfterDiscount * $quantity;
-            $totalQuantity += $quantity;
-
-            $orderItems->push([
-                'shop_product_variant_id' => $shopVariant->id,
-                'product' => $product,
-                'quantity' => $quantity,
-                'price_after_discount' => $priceAfterDiscount,
-            ]);
-        }
-
-        return [$subtotalBeforeDiscount, $subtotalAfterProductDiscount, $totalQuantity, $orderItems];
-    }
-
-    /** -----------------------------
-     * Apply Coupon Logic
-     * ----------------------------- */
-    protected function applyCoupon($orderOrNull, $basketItemsCollection, $couponCode, $basketDiscount)
-    {
-        $couponDiscountAmount = 0;
-        $couponApplied = null;
-        $excludedItems = [];
-
-        if (!$couponCode) return [null, 0, [], null];
-
-        $coupon = Coupon::where('code', $couponCode)->first();
-        if (!$coupon || !$coupon->isValid()) return [null, 0, [], null];
-
-        $cartType = $orderOrNull ? $orderOrNull->cart_type : 'default';
-        $canApplyCoupon = $cartType === CartType::DEFAULT->value
-            || config('settings.allow_coupons_on_basket');
-
-        if (!$canApplyCoupon) return [null, 0, [], null];
-
-        if ($cartType !== CartType::DEFAULT->value) {
-            $basketDiscount = 0; // cancel basket discount if coupon applied
-        }
-
-        // Check excluded items
-        foreach ($basketItemsCollection as $item) {
-            $product = $item['product'];
-            $allowed = true;
-
-            if ($coupon->products()->exists() && !$coupon->products->contains($product->id)) $allowed = false;
-            if ($coupon->categories()->exists() && !$coupon->categories->contains($product->category_id)) $allowed = false;
-            if ($coupon->vendors()->exists() && !$coupon->vendors->contains($product->vendor_id)) $allowed = false;
-
-            if (!$allowed) $excludedItems[] = $product->id;
-        }
-
-        // Eligible subtotal
-        $eligibleSubtotal = collect($basketItemsCollection)
-            ->whereNotIn('shop_product_variant_id', $excludedItems)
-            ->sum(fn($i) => $i['price_after_discount'] * $i['quantity']);
-
-        $couponDiscountAmount = $coupon->discount_type === 'percent'
-            ? $eligibleSubtotal * ($coupon->discount_value / 100)
-            : min($coupon->discount_value, $eligibleSubtotal);
-
-        $couponApplied = $coupon->code;
-
-        return [
-            $coupon->code,
-            $couponDiscountAmount,
-            $excludedItems,
-            $coupon
+            'discounts' => [
+                'basket' => [
+                    'percent' => $basketDiscountPercent,
+                    'amount'  => round($basketDiscountAmount, 2),
+                ],
+                'external' => [
+                    'amount' => round($externalDiscountAmount, 2),
+                    'source' => $couponDiscount > 0 ? 'coupon'
+                        : (!empty($subscriptionDiscount) ? 'subscription' : (!empty($promotionDiscount) ? 'promotion' : null)),
+                ],
+                'coupon' => [
+                    'provided' => !empty($data['coupon']),
+                    'applied'  => $couponDiscount > 0,
+                    'code'     => $data['coupon'] ?? null,
+                    'discount' => $couponDiscount,
+                ],
+                'points' => [
+                    'coupon_discount'       => $pointDiscount ?? 0,
+                    'free_delivery_applied' => $freeDeliveryApplied ?? false,
+                ],
+                'subscription' => $subscriptionResult ?? ['has_subscription' => false],
+                'promotion' => [
+                    'id' => $data['promotion_id'] ?? null,
+                    'discount_amount' => $promotionDiscount,
+                ],
+            ],
+            'delivery' => [
+                'price' => $deliveryPrice,
+            ],
+            'subtotal_before_discount' => $subtotalBeforeDiscount,
+            'subtotal_after_product_discount' => $subtotalAfterProductDiscount,
+            'products_total_after_all_discounts' => round($productsTotalAfterAllDiscounts, 2),
+            'total_quantity' => $totalQuantity,
+            'total' => round($finalTotal, 2),
+            'non_discount_promotions' => $nonDiscountPromotions,
+            'available_promotions' => $availablePromotions,
+            // 'all_promotions' => $allPromotions, // ممكن تستخدمها لعرض كل العروض في البريفيو
         ];
     }
 
@@ -816,42 +491,6 @@ class OrderService extends BaseService
         return [$pointCouponDiscount, $pointFreeDelivery, $usedCouponExchangeId, $usedFreeDeliveryExchangeId];
     }
 
-    public function cancel(int $orderId)
-    {
-        $userId = auth('user')->id();
-
-        $order = Order::with('items')->where('id', $orderId)
-            ->where('user_id', $userId)
-            ->firstOrFail();
-
-        if ($order->status !== OrderStatus::PENDING->value) {
-            throw new CustomExceptionWithMessage('Order cannot be cancelled');
-        }
-
-        foreach ($order->items as $item) {
-            if ($item->item_status !== OrderStatus::PENDING->value) {
-                throw new CustomExceptionWithMessage('Some items cannot be cancelled');
-            }
-        }
-        $oldStatus = $order->status;
-
-        $order->update([
-            'status' => OrderStatus::CANCELLED->value
-        ]);
-
-        foreach ($order->items as $item) {
-            $item->update([
-                'status' => OrderStatus::CANCELLED->value
-            ]);
-        }
-
-        event(new OrderStatusChanged(
-            order: $order,
-            from: $oldStatus,
-            to: OrderStatus::CANCELLED->value,
-            changedBy: 'user'
-        ));
-    }
     /** -----------------------------
      * Check Point Exchanges (Preview Only - No Modifications)
      * ----------------------------- */
@@ -933,6 +572,287 @@ class OrderService extends BaseService
         return $result;
     }
 
+
+    /** -----------------------------
+     * Resolve basket discount & delivery price
+     * ----------------------------- */
+    protected function resolveBasketAndDelivery($orderOrNull, $data)
+    {
+        //admin basket id
+        //scedule id
+        $cartType = $data['cart_type'] ?? CartType::DEFAULT->value;
+        $basketDiscount = 0;
+        $deliveryPrice = 0;
+        $user = auth('user')->user() ?? User::find(1);
+
+        switch ($cartType) {
+            case CartType::RECIPE->value:
+                $basket = Recipe::findOrFail($data['recipe_id']);
+                $basketDiscount = $basket->discount;
+                $deliveryPrice  = $basket->delivery_price;
+                break;
+
+            case CartType::ADMIN_CART->value:
+                $basket = Basket::findOrFail($data['admin_basket_id']);
+                $basketDiscount = $basket->discount;
+                $deliveryPrice  = $basket->delivery_price;
+                break;
+
+            case CartType::SCHEDULE_ADMIN_CART->value:
+                // Support both admin_schedule_basket_id and admin_basket_id for backward compatibility
+                $basketId = $data['admin_schedule_basket_id'] ?? $data['admin_basket_id'] ?? null;
+
+                if (!$basketId) {
+                    throw new Exception('Basket ID is required for scheduled admin cart');
+                }
+
+                $basket = Basket::findOrFail($basketId);
+
+                // Check if user selected a specific schedule
+                if (!empty($data['basket_schedule_id'])) {
+                    $basketSchedule = $basket->schedules()
+                        ->where('id', $data['basket_schedule_id'])
+                        ->where('is_active', true)
+                        ->first();
+
+                    if ($basketSchedule && $basketSchedule->discount_value > 0) {
+                        // Use selected schedule discount
+                        $basketDiscount = $basketSchedule->discount_value;
+                    } else {
+                        // Fallback to basket discount if schedule not found or no discount
+                        $basketDiscount = $basket->discount;
+                    }
+                } else {
+                    // No schedule selected, use basket discount only
+                    $basketDiscount = $basket->discount;
+                }
+
+                $deliveryPrice = $basket->delivery_price;
+                break;
+
+            case CartType::DEFAULT->value:
+            default:
+                $variantIds = collect($data['items'])->pluck('shop_product_variant_id')->values()->toArray();
+                $deliveryPrice = CalculateDeliveryPriceService::handle(
+                    user: $user,
+                    items: $variantIds,
+                    addressId: $data['address_id'] ?? null
+                );
+
+                // التحقق من التوصيل المجاني من النقاط
+                try {
+                    $exchangeService = app(\App\Services\PointExchangeService::class);
+                    if ($exchangeService->hasActiveFreeDelivery($user->id)) {
+                        $deliveryPrice = 0;
+                    }
+                } catch (\Throwable $e) {
+                    // تجاهل أخطاء النقاط
+                }
+                break;
+        }
+
+        return [$basketDiscount, $deliveryPrice];
+    }
+
+    /** -----------------------------
+     * Add items to order / preview
+     * ----------------------------- */
+    protected function addItemsToOrder($order, $data)
+    {
+        $subtotalBeforeDiscount = 0;
+        $subtotalAfterProductDiscount = 0;
+        $totalQuantity = 0;
+        $orderItems = collect();
+
+        $isPreview = !$order;
+
+        Log::info('ADD ITEMS START', [
+            'mode' => $isPreview ? 'preview' : 'create'
+        ]);
+
+        // تحديد إذا في خصم خارجي
+        $hasExternalDiscount = !empty($data['coupon'])
+            || !empty($data['point_coupon_exchange_id'])
+            || !empty($data['use_subscription_discount']);
+
+        // تحديد نوع السلة
+        $cartType = $data['cart_type'] ?? 'default';
+        $hasBasket = $cartType !== CartType::DEFAULT->value;
+
+        foreach ($data['items'] as $item) {
+
+            $shopVariant = ShopProductVariant::with('productVariant.product')
+                ->when(!$isPreview, fn($q) => $q->lockForUpdate())
+                ->findOrFail($item['shop_product_variant_id']);
+
+            if (!is_null($shopVariant->quantity) && $shopVariant->quantity < $item['quantity']) {
+                throw new Exception(
+                    'Insufficient stock for ' . $shopVariant->productVariant->product->name
+                );
+            }
+
+            $product = $shopVariant->productVariant->product;
+            $price = $shopVariant->price;
+            $quantity = $item['quantity'];
+
+            // تطبيق خصم المنتج فقط في حالة عدم وجود خصم خارجي
+            $productDiscount = 0;
+
+            if (!$hasExternalDiscount && !$hasBasket && $cartType === CartType::DEFAULT->value) {
+                $productDiscount = $product->discount;
+            }
+
+            $priceAfterDiscount = $price * (1 - ($productDiscount / 100));
+
+            Log::info('ITEM CALCULATION', [
+                'product' => $product->name,
+                'price' => $price,
+                'quantity' => $quantity,
+                'product_discount' => $productDiscount,
+                'price_after_discount' => $priceAfterDiscount
+            ]);
+
+            /**
+             * حفظ في قاعدة البيانات فقط إذا كان order موجود
+             */
+            if ($order) {
+
+                $order->items()->create([
+                    'shop_product_variant_id' => $shopVariant->id,
+                    'product_name' => $product->name,
+                    'variant_attributes' => $shopVariant->productVariant->getAttributesValuesAttribute(),
+                    'quantity' => $quantity,
+                    'price' => $price,
+                    'discount' => $productDiscount,
+                ]);
+
+                if (!is_null($shopVariant->quantity)) {
+                    $shopVariant->decrement('quantity', $quantity);
+                }
+            }
+
+            $subtotalBeforeDiscount += $price * $quantity;
+            $subtotalAfterProductDiscount += $priceAfterDiscount * $quantity;
+            $totalQuantity += $quantity;
+
+            $orderItems->push([
+                'shop_product_variant_id' => $shopVariant->id,
+                'product_name' => $product->name,
+                'quantity' => $quantity,
+                'price' => $price,
+                'product_discount' => $productDiscount,
+                'price_after_discount' => $priceAfterDiscount,
+                'product' => $product,
+
+            ]);
+        }
+
+        Log::info('ITEMS RESULT', [
+            'subtotal_before_discount' => $subtotalBeforeDiscount,
+            'subtotal_after_product_discount' => $subtotalAfterProductDiscount,
+            'total_quantity' => $totalQuantity
+        ]);
+
+        return [
+            $subtotalBeforeDiscount,
+            $subtotalAfterProductDiscount,
+            $totalQuantity,
+            $orderItems
+        ];
+    }
+    /** -----------------------------
+     * Apply Coupon Logic
+     * ----------------------------- */
+    protected function applyCoupon($orderOrNull, $basketItemsCollection, $couponCode, $basketDiscount)
+    {
+        $couponDiscountAmount = 0;
+        $couponApplied = null;
+        $excludedItems = [];
+
+        if (!$couponCode) return [null, 0, [], null];
+
+        $coupon = Coupon::where('code', $couponCode)->first();
+        if (!$coupon || !$coupon->isValid()) return [null, 0, [], null];
+
+        // $cartType = $orderOrNull ? $orderOrNull->cart_type : 'default';
+        // $canApplyCoupon = $cartType === CartType::DEFAULT->value
+        //     || config('settings.allow_coupons_on_basket');
+
+        // if (!$canApplyCoupon) return [null, 0, [], null];
+
+        // if ($cartType !== CartType::DEFAULT->value) {
+        //     $basketDiscount = 0; // cancel basket discount if coupon applied
+        // }
+
+        // Check excluded items
+        foreach ($basketItemsCollection as $item) {
+            $product = $item['product'];
+            $allowed = true;
+
+            if ($coupon->products()->exists() && !$coupon->products->contains($product->id)) $allowed = false;
+            if ($coupon->categories()->exists() && !$coupon->categories->contains($product->category_id)) $allowed = false;
+            if ($coupon->vendors()->exists() && !$coupon->vendors->contains($product->vendor_id)) $allowed = false;
+
+            if (!$allowed) $excludedItems[] = $product->id;
+        }
+
+        // Eligible subtotal
+        $eligibleSubtotal = collect($basketItemsCollection)
+            ->whereNotIn('shop_product_variant_id', $excludedItems)
+            ->sum(fn($i) => $i['price_after_discount'] * $i['quantity']);
+
+        $couponDiscountAmount = $coupon->discount_type === 'percent'
+            ? $eligibleSubtotal * ($coupon->discount_value / 100)
+            : min($coupon->discount_value, $eligibleSubtotal);
+
+        $couponApplied = $coupon->code;
+
+        return [
+            $coupon->code,
+            $couponDiscountAmount,
+            $excludedItems,
+            $coupon
+        ];
+    }
+
+
+    public function cancel(int $orderId)
+    {
+        $userId = auth('user')->id();
+
+        $order = Order::with('items')->where('id', $orderId)
+            ->where('user_id', $userId)
+            ->firstOrFail();
+
+        if ($order->status !== OrderStatus::PENDING->value) {
+            throw new CustomExceptionWithMessage('Order cannot be cancelled');
+        }
+
+        foreach ($order->items as $item) {
+            if ($item->item_status !== OrderStatus::PENDING->value) {
+                throw new CustomExceptionWithMessage('Some items cannot be cancelled');
+            }
+        }
+        $oldStatus = $order->status;
+
+        $order->update([
+            'status' => OrderStatus::CANCELLED->value
+        ]);
+
+        foreach ($order->items as $item) {
+            $item->update([
+                'status' => OrderStatus::CANCELLED->value
+            ]);
+        }
+
+        event(new OrderStatusChanged(
+            order: $order,
+            from: $oldStatus,
+            to: OrderStatus::CANCELLED->value,
+            changedBy: 'user'
+        ));
+    }
+
     public function activeOrder()
     {
         $userId = auth('user')->id();
@@ -947,66 +867,3 @@ class OrderService extends BaseService
         return $order ? OneResource::make($order) : null;
     }
 }
-/**
- * Update order status and award points if completed
- */
-    // public function updateOrderStatus(int $orderId, string $status): bool
-    // {
-    //     return DB::transaction(function () use ($orderId, $status) {
-    //         $order = Order::findOrFail($orderId);
-    //         $oldStatus = $order->order_status;
-
-    //         $order->update(['order_status' => $status]);
-
-    //         // منح النقاط عند إتمام الطلب
-    //         if ($status === OrderStatus::COMPLETED->value && $oldStatus !== OrderStatus::COMPLETED->value) {
-    //             try {
-    //                 $pointService = app(\App\Services\PointService::class);
-
-    //                 // نقاط أول طلب
-    //                 if (!$pointService->isEventCompleted($order->user_id, 'first_order')) {
-    //                     $pointService->awardPoints(
-    //                         $order->user_id,
-    //                         'first_order',
-    //                         $order->total,
-    //                         'order',
-    //                         $order->id
-    //                     );
-    //                     $pointService->markEventCompleted($order->user_id, 'first_order');
-    //                 }
-
-    //                 // نقاط إتمام الطلب (لكل طلب)
-    //                 $pointService->awardPoints(
-    //                     $order->user_id,
-    //                     'order_completion',
-    //                     $order->total,
-    //                     'order',
-    //                     $order->id
-    //                 );
-
-    //             } catch (\Throwable $e) {
-    //                 // تجاهل أخطاء النقاط لعدم تعطيل تحديث الطلب
-    //                 Log::error('Points award failed for order: ' . $orderId, ['error' => $e->getMessage()]);
-    //             }
-    //         }
-
-    //         return true;
-    //     });
-    // }
-
-    // /**
-    //  * Override update method to handle status changes
-    //  */
-    // public function update(int $id, array $data)
-    // {
-    //     if (isset($data['order_status'])) {
-    //         $this->updateOrderStatus($id, $data['order_status']);
-    //         unset($data['order_status']);
-    //     }
-
-    //     if (!empty($data)) {
-    //         return parent::update($id, $data);
-    //     }
-
-    //     return $this->show($id);
-    // }

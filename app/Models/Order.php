@@ -27,35 +27,18 @@ class Order extends Model
         'total_quantity',
         'total',
         'subtotal',
-        'basket_discount',
-        'cart_type',
-        'coupon_discount',
-        'order_code',
-        //markter
-        'affiliate_id',
-        'affiliate_rate',
-        'affiliate_source',
-        //timestamps
-        'pending_at',
-        'preparing_at',
-        'out_delivery_at',
-        'delivered_at',
-        //driver
-        'driver_id',
-        'assigned_by',
+        'basket_discount',            // خصم السلة
+        'coupon_discount',            // خصم الكوبون
+        'coupon_discount_from_points', // خصم نقاط من الكوبون
+        'free_delivery_from_points',  // توصيل مجاني من النقاط
         'coupon_id',
-        //point exchanges
-        'used_coupon_exchange_id',
-        'used_free_delivery_exchange_id',
-        'coupon_discount_from_points',
-        'free_delivery_from_points',
-        //subscription
-        'subscription_id',
+        'coupon_code',
         'subscription_discount',
         'subscription_free_delivery',
         'subscription_points_bonus',
+        'promotion_id',
+        'promotion_discount',
     ];
-
     protected $casts = [
         'is_instant_delivery' => 'boolean',
         'subscription_free_delivery' => 'boolean',
@@ -120,8 +103,6 @@ class Order extends Model
         return $this->hasMany(SubscriptionUsageLog::class);
     }
 
-
-
     public function basketSchedule()
     {
         return $this->belongsTo(BasketSchedule::class);
@@ -173,19 +154,6 @@ class Order extends Model
                 if ($field && is_null($order->$field)) {
                     $order->$field = now();
                 }
-            }
-        });
-
-        static::updated(function ($order) {
-            if ($order->wasChanged('status') && isset($order->_oldStatus)) {
-                $oldStatus = $order->_oldStatus;
-                $newStatus = $order->status;
-
-                // Dispatch OrderStatusChanged event only once
-                event(new \App\Events\OrderStatusChanged($order, $oldStatus, $newStatus, 'system'));
-
-                // Clean up temporary property
-                unset($order->_oldStatus);
             }
         });
     }

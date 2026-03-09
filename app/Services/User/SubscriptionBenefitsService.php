@@ -173,8 +173,8 @@ class SubscriptionBenefitsService
             'discount_percentage' => $package->discount_percentage,
             'discount_amount' => round($discountAmount, 2),
             'free_delivery_applicable' => $freeDeliveryApplicable,
-            'remaining_orders' => $subscription->remaining_orders,
-            'remaining_free_deliveries' => $subscription->remaining_free_deliveries,
+            // 'remaining_orders' => $subscription->remaining_orders,
+            // 'remaining_free_deliveries' => $subscription->remaining_free_deliveries,
         ];
     }
 
