@@ -804,7 +804,7 @@ class OrderService extends BaseService
             }
 
             // Generate order code
-            $newOrder->update(['order_code' => 'ORD-' . $newOrder->id]);
+            // $newOrder->update(['order_code' => 'ORD-' . $newOrder->id]);
 
             return new OneResource($newOrder->load('items'));
         });

@@ -143,7 +143,7 @@ class Order extends Model
         static::updating(function ($order) {
             if ($order->isDirty('status')) {
                 // Store old status before update
-                $order->_oldStatus = $order->getOriginal('status');
+                // $order->_oldStatus = $order->getOriginal('status');
 
                 $timestampsMap = [
                     OrderStatus::PENDING->value      => 'pending_at',
