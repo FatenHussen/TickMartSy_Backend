@@ -10,9 +10,9 @@ class OneResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'shop' => [
-                'id' => $this->shop?->id,
-                'name' => $this->shop?->name,
+            'vendor' => [
+                'id' => $this->vendor?->id,
+                'name' => $this->vendor?->name,
             ],
             'package' => $this->package ? [
                 'id' => $this->package->id,

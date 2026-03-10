@@ -131,6 +131,70 @@ class ProductForm
                                 ])
                                 ->collapsible(),
 
+                            Section::make('تفاصيل التصنيف')
+                                ->schema([
+                                    Forms\Components\Repeater::make('categoryDetails')
+                                        ->label('')
+                                        ->relationship('categoryDetails')
+                                        ->schema([
+                                            Forms\Components\Select::make('category_detail_id')
+                                                ->label('المواصفة')
+                                                ->options(function (callable $get) {
+                                                    $categoryId = $get('../../category_id');
+                                                    if (!$categoryId) {
+                                                        return [];
+                                                    }
+                                                    return \App\Models\CategoryDetail::where('category_id', $categoryId)
+                                                        ->pluck('name', 'id');
+                                                })
+                                                ->required()
+                                                ->searchable()
+                                                ->native(false),
+
+                                            Forms\Components\TextInput::make('detail_value.ar')
+                                                ->label('القيمة (عربي)')
+                                                ->maxLength(255),
+
+                                            Forms\Components\TextInput::make('detail_value.en')
+                                                ->label('القيمة (انجليزي)')
+                                                ->maxLength(255),
+                                        ])
+                                        ->columns(3)
+                                        ->defaultItems(0)
+                                        ->addActionLabel('إضافة تفصيل')
+                                        ->collapsible(),
+                                ])
+                                ->collapsible(),
+
+                            Section::make('تفاصيل إضافية')
+                                ->schema([
+                                    Forms\Components\Repeater::make('extraDetails')
+                                        ->label('')
+                                        ->relationship('extraDetails')
+                                        ->schema([
+                                            Forms\Components\TextInput::make('detail_key.ar')
+                                                ->label('العنوان (عربي)')
+                                                ->maxLength(255),
+
+                                            Forms\Components\TextInput::make('detail_key.en')
+                                                ->label('العنوان (انجليزي)')
+                                                ->maxLength(255),
+
+                                            Forms\Components\TextInput::make('detail_value.ar')
+                                                ->label('القيمة (عربي)')
+                                                ->maxLength(255),
+
+                                            Forms\Components\TextInput::make('detail_value.en')
+                                                ->label('القيمة (انجليزي)')
+                                                ->maxLength(255),
+                                        ])
+                                        ->columns(2)
+                                        ->defaultItems(0)
+                                        ->addActionLabel('إضافة تفصيل إضافي')
+                                        ->collapsible(),
+                                ])
+                                ->collapsible(),
+
                             Section::make('المنتجات المشتراة معاً')
                                 ->schema([
                                     Forms\Components\Select::make('bought_with')

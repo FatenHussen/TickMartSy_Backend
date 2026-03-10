@@ -67,7 +67,7 @@ class VendorSubscriptionQuotaService
         $canCreateBanner = $canCreateCampaign && (bool) $package->has_banner_ad;
 
         $daysLeft = $subscription->ends_at
-            ? max(0, now()->diffInDays($subscription->ends_at, false))
+            ? (int) max(0, ceil(now()->diffInDays($subscription->ends_at->endOfDay(), false)))
             : null;
 
         return [

@@ -10,6 +10,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 class VendorSubscriptionResource extends Resource
 {
@@ -42,11 +43,12 @@ class VendorSubscriptionResource extends Resource
             return parent::getEloquentQuery()->whereRaw('1 = 0');
         }
 
-        // Get shops that belong to this vendor user
-        $shopIds = \App\Models\Shop::where('vendor_id', $user->vendor_id)->pluck('id');
+        if (!Schema::hasColumn('vendor_subscriptions', 'vendor_id')) {
+            return parent::getEloquentQuery()->whereRaw('1 = 0');
+        }
 
         return parent::getEloquentQuery()
-            ->whereIn('shop_id', $shopIds)
+            ->where('vendor_id', $user->vendor_id)
             ->with('package', 'vendor');
     }
 

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use App\Http\Resources\Shop\AllResource;
 use App\Traits\LogsActivity;
+use Illuminate\Support\Facades\Schema;
 
 class Shop extends Model implements Sectionable
 {
@@ -173,11 +174,20 @@ class Shop extends Model implements Sectionable
 
     public function subscriptions()
     {
-        return $this->hasMany(VendorSubscription::class, 'shop_id');
+        if (Schema::hasColumn('vendor_subscriptions', 'vendor_id')) {
+            return $this->hasMany(VendorSubscription::class, 'vendor_id', 'vendor_id');
+        }
+
+        return $this->hasMany(VendorSubscription::class, 'id', 'id')
+            ->whereRaw('1 = 0');
     }
 
     public function activeSubscription(): ?VendorSubscription
     {
+        if (!Schema::hasColumn('vendor_subscriptions', 'vendor_id')) {
+            return null;
+        }
+
         return $this->subscriptions()
             ->where('status', 'active')
             ->where('ends_at', '>=', now()->toDateString())

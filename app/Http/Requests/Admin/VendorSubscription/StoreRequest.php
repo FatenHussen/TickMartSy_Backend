@@ -14,7 +14,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'shop_id' => 'required|exists:shops,id',
+            'vendor_id' => 'required|exists:vendors,id',
             'vendor_package_id' => 'required|exists:vendor_packages,id',
             'starts_at' => 'required|date',
             'ends_at' => 'required|date|after_or_equal:starts_at',
