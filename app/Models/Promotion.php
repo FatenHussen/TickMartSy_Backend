@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Translatable\HasTranslations;
 
 class Promotion extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
 
     protected $fillable = [
         'name',
@@ -24,11 +25,13 @@ class Promotion extends Model
         'gift_product_ids',
     ];
 
+    public $translatable = ['name', 'description'];
+
     protected $casts = [
         'is_active' => 'boolean',
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
-        'gift_product_ids' => 'array',
+        // 'gift_product_ids' => 'array',
         'min_spend' => 'decimal:2',
         'discount_value' => 'decimal:2',
     ];

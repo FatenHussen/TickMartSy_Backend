@@ -54,6 +54,7 @@ use App\Http\Controllers\Admin\Schedule\ScheduleCrudController;
 use App\Http\Controllers\Admin\Statistics\StatisticsController;
 use App\Http\Controllers\Admin\Reports\ReportsController;
 use App\Http\Controllers\Admin\PointRuleController;
+use App\Http\Controllers\Admin\PromotionController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(
@@ -211,6 +212,7 @@ Route::prefix('admin')->group(
                 Route::apiResource('recipes', RecipeCrudController::class);
                 Route::apiResource('faqs', FaqController::class);
                 Route::apiResource('badges', BadgeController::class);
+                Route::apiResource('promotions', PromotionController::class);
 
                 // Seller Registration routes
                 Route::apiResource('seller-registrations', SellerRegistrationCrudController::class)->only(['index', 'show', 'destroy']);
