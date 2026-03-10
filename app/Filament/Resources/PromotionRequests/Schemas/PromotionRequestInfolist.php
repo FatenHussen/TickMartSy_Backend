@@ -17,14 +17,14 @@ class PromotionRequestInfolist
         return $schema->columns(1)->schema([
             Tabs::make('promotion_info_tabs')
                 ->tabs([
-                    // Tab 1: المعلومات الأساسية
-                    Tab::make('المعلومات الأساسية')
+
+                    Tab::make(__('custom.basic_information'))
                         ->icon('heroicon-o-information-circle')
                         ->schema([
-                            Section::make('معلومات عامة')
+                            Section::make(__('custom.general_info'))
                                 ->schema([
                                     Infolists\Components\TextEntry::make('shop.name')
-                                        ->label('المتجر')
+                                        ->label(__('custom.shop'))
                                         ->formatStateUsing(fn($record) => $record->shop?->getTranslation('name', app()->getLocale()) ?? '-')
                                         ->badge()
                                         ->color('info')
@@ -33,11 +33,11 @@ class PromotionRequestInfolist
                                         ->weight('bold'),
 
                                     Infolists\Components\TextEntry::make('type')
-                                        ->label('نوع الترويج')
+                                        ->label(__('custom.promotion_type'))
                                         ->badge()
                                         ->formatStateUsing(fn($state) => match ($state) {
-                                            PromotionType::OFFER => '🏷️ عرض',
-                                            PromotionType::BANNER => '📢 بنر إعلاني',
+                                            PromotionType::OFFER => __('custom.offer'),
+                                            PromotionType::BANNER => __('custom.banner'),
                                             default => $state->value ?? $state,
                                         })
                                         ->color(fn($state) => match ($state) {
@@ -48,13 +48,13 @@ class PromotionRequestInfolist
                                         ->size('lg'),
 
                                     Infolists\Components\TextEntry::make('status')
-                                        ->label('الحالة')
+                                        ->label(__('custom.status'))
                                         ->badge()
                                         ->formatStateUsing(fn($state) => match ($state) {
-                                            PromotionStatus::PENDING => '⏳ قيد المراجعة',
-                                            PromotionStatus::APPROVED => '✅ موافق عليه',
-                                            PromotionStatus::REJECTED => '❌ مرفوض',
-                                            PromotionStatus::EXPIRED => '⌛ منتهي',
+                                            PromotionStatus::PENDING => __('custom.pending'),
+                                            PromotionStatus::APPROVED => __('custom.approved'),
+                                            PromotionStatus::REJECTED => __('custom.rejected'),
+                                            PromotionStatus::EXPIRED => __('custom.expired'),
                                             default => $state->value ?? $state,
                                         })
                                         ->color(fn($state) => match ($state) {
@@ -69,10 +69,10 @@ class PromotionRequestInfolist
                                 ->columns(3)
                                 ->collapsible(),
 
-                            Section::make('التفاصيل')
+                            Section::make(__('custom.details'))
                                 ->schema([
                                     Infolists\Components\TextEntry::make('title')
-                                        ->label('العنوان')
+                                        ->label(__('custom.title'))
                                         ->formatStateUsing(fn($record) => $record->getTranslation('title', app()->getLocale()))
                                         ->weight('bold')
                                         ->size('lg')
@@ -80,7 +80,7 @@ class PromotionRequestInfolist
                                         ->columnSpanFull(),
 
                                     Infolists\Components\TextEntry::make('description')
-                                        ->label('الوصف')
+                                        ->label(__('custom.description'))
                                         ->formatStateUsing(fn($record) => $record->getTranslation('description', app()->getLocale()) ?: '-')
                                         ->columnSpanFull()
                                         ->prose(),
@@ -88,12 +88,11 @@ class PromotionRequestInfolist
                                 ->collapsible(),
                         ]),
 
-                    // Tab 2: الصور
-                    Tab::make('الصور')
+                    Tab::make(__('custom.images'))
                         ->icon('heroicon-o-photo')
                         ->badge(fn($record) => !empty($record->images) ? count($record->images) : null)
                         ->schema([
-                            Section::make('صور الترويج')
+                            Section::make(__('custom.promotion_images'))
                                 ->schema([
                                     Infolists\Components\ImageEntry::make('images')
                                         ->label('')
@@ -105,7 +104,7 @@ class PromotionRequestInfolist
 
                                     Infolists\Components\TextEntry::make('no_images')
                                         ->label('')
-                                        ->default('لا توجد صور')
+                                        ->default(__('custom.no_images'))
                                         ->color('gray')
                                         ->icon('heroicon-o-photo')
                                         ->columnSpanFull()
@@ -114,15 +113,14 @@ class PromotionRequestInfolist
                                 ->collapsible(false),
                         ]),
 
-                    // Tab 3: تفاصيل العرض
-                    Tab::make('تفاصيل العرض')
+                    Tab::make(__('custom.offer_details'))
                         ->icon('heroicon-o-tag')
                         ->visible(fn($record) => $record->type === PromotionType::OFFER)
                         ->schema([
-                            Section::make('معلومات العرض')
+                            Section::make(__('custom.offer_information'))
                                 ->schema([
                                     Infolists\Components\TextEntry::make('discount_percentage')
-                                        ->label('نسبة الخصم')
+                                        ->label(__('custom.discount_percentage'))
                                         ->suffix('%')
                                         ->badge()
                                         ->color('danger')
@@ -131,62 +129,38 @@ class PromotionRequestInfolist
                                         ->icon('heroicon-o-receipt-percent'),
 
                                     Infolists\Components\TextEntry::make('offer_starts_at')
-                                        ->label('تاريخ بداية العرض')
+                                        ->label(__('custom.offer_starts_at'))
                                         ->date('Y-m-d')
                                         ->badge()
                                         ->color('success')
                                         ->icon('heroicon-o-calendar'),
 
                                     Infolists\Components\TextEntry::make('offer_ends_at')
-                                        ->label('تاريخ انتهاء العرض')
+                                        ->label(__('custom.offer_ends_at'))
                                         ->date('Y-m-d')
                                         ->badge()
                                         ->color(fn($record) => $record->isExpired() ? 'danger' : 'success')
                                         ->icon(fn($record) => $record->isExpired() ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle'),
 
-                                    Infolists\Components\TextEntry::make('duration')
-                                        ->label('مدة العرض')
-                                        ->formatStateUsing(function ($record) {
-                                            if (!$record->offer_starts_at || !$record->offer_ends_at) {
-                                                return '-';
-                                            }
-                                            $days = $record->offer_starts_at->diffInDays($record->offer_ends_at);
-                                            return $days . ' يوم';
-                                        })
-                                        ->badge()
-                                        ->color('info')
-                                        ->icon('heroicon-o-clock'),
                                 ])
                                 ->columns(4)
                                 ->collapsible(),
-
-                            Section::make('حالة العرض')
-                                ->schema([
-                                    Infolists\Components\TextEntry::make('is_expired')
-                                        ->label('حالة العرض')
-                                        ->formatStateUsing(fn($record) => $record->isExpired() ? '⌛ منتهي' : '✅ نشط')
-                                        ->badge()
-                                        ->color(fn($record) => $record->isExpired() ? 'danger' : 'success')
-                                        ->size('lg'),
-                                ])
-                                ->collapsible(),
                         ]),
 
-                    // Tab 4: تفاصيل البنر
-                    Tab::make('تفاصيل البنر')
+                    Tab::make(__('custom.banner_details'))
                         ->icon('heroicon-o-rectangle-stack')
                         ->visible(fn($record) => $record->type === PromotionType::BANNER)
                         ->schema([
-                            Section::make('معلومات البنر الإعلاني')
+                            Section::make(__('custom.banner_information'))
                                 ->schema([
                                     Infolists\Components\TextEntry::make('banner_position')
-                                        ->label('موقع البنر')
+                                        ->label(__('custom.banner_position'))
                                         ->formatStateUsing(fn($state) => match ($state) {
-                                            'home_top' => '🏠 الصفحة الرئيسية - أعلى',
-                                            'home_middle' => '🏠 الصفحة الرئيسية - وسط',
-                                            'home_bottom' => '🏠 الصفحة الرئيسية - أسفل',
-                                            'category_top' => '📂 صفحة الفئات - أعلى',
-                                            'product_sidebar' => '📦 صفحة المنتج - جانبي',
+                                            'home_top' => __('custom.home_top'),
+                                            'home_middle' => __('custom.home_middle'),
+                                            'home_bottom' => __('custom.home_bottom'),
+                                            'category_top' => __('custom.category_top'),
+                                            'product_sidebar' => __('custom.product_sidebar'),
                                             default => $state,
                                         })
                                         ->badge()
@@ -195,38 +169,36 @@ class PromotionRequestInfolist
                                         ->columnSpan(2),
 
                                     Infolists\Components\TextEntry::make('link_url')
-                                        ->label('رابط البنر')
+                                        ->label(__('custom.banner_link'))
                                         ->url(fn($state) => $state)
                                         ->openUrlInNewTab()
-                                        ->placeholder('لا يوجد رابط')
+                                        ->placeholder(__('custom.no_link'))
                                         ->icon('heroicon-o-link')
                                         ->color('primary')
                                         ->copyable()
-                                        ->copyMessage('تم نسخ الرابط')
+                                        ->copyMessage(__('custom.link_copied'))
                                         ->columnSpan(2),
 
                                     Infolists\Components\TextEntry::make('banner_starts_at')
-                                        ->label('تاريخ بداية البنر')
+                                        ->label(__('custom.banner_starts_at'))
                                         ->date('Y-m-d')
                                         ->badge()
                                         ->color('success')
                                         ->icon('heroicon-o-calendar'),
 
                                     Infolists\Components\TextEntry::make('banner_ends_at')
-                                        ->label('تاريخ انتهاء البنر')
+                                        ->label(__('custom.banner_ends_at'))
                                         ->date('Y-m-d')
                                         ->badge()
                                         ->color(fn($record) => $record->isExpired() ? 'danger' : 'success')
                                         ->icon(fn($record) => $record->isExpired() ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle'),
 
                                     Infolists\Components\TextEntry::make('duration')
-                                        ->label('مدة البنر')
+                                        ->label(__('custom.duration'))
                                         ->formatStateUsing(function ($record) {
-                                            if (!$record->banner_starts_at || !$record->banner_ends_at) {
-                                                return '-';
-                                            }
+                                            if (!$record->banner_starts_at || !$record->banner_ends_at) return '-';
                                             $days = $record->banner_starts_at->diffInDays($record->banner_ends_at);
-                                            return $days . ' يوم';
+                                            return $days . ' ' . __('custom.days');
                                         })
                                         ->badge()
                                         ->color('info')
@@ -235,11 +207,11 @@ class PromotionRequestInfolist
                                 ->columns(4)
                                 ->collapsible(),
 
-                            Section::make('حالة البنر')
+                            Section::make(__('custom.banner_status'))
                                 ->schema([
                                     Infolists\Components\TextEntry::make('is_expired')
-                                        ->label('حالة البنر')
-                                        ->formatStateUsing(fn($record) => $record->isExpired() ? '⌛ منتهي' : '✅ نشط')
+                                        ->label(__('custom.banner_status'))
+                                        ->formatStateUsing(fn($record) => $record->isExpired() ? __('custom.expired') : __('custom.active'))
                                         ->badge()
                                         ->color(fn($record) => $record->isExpired() ? 'danger' : 'success')
                                         ->size('lg'),
@@ -247,22 +219,21 @@ class PromotionRequestInfolist
                                 ->collapsible(),
                         ]),
 
-                    // Tab 5: معلومات الموافقة
-                    Tab::make('معلومات الموافقة')
+                    Tab::make(__('custom.approval_info'))
                         ->icon('heroicon-o-clipboard-document-check')
                         ->badge(fn($record) => $record->status !== PromotionStatus::PENDING ? '✓' : null)
                         ->schema([
-                            Section::make('تفاصيل الموافقة')
+                            Section::make(__('custom.approval_details'))
                                 ->schema([
                                     Infolists\Components\TextEntry::make('admin_notes')
-                                        ->label('ملاحظات الإدارة')
-                                        ->placeholder('لا توجد ملاحظات')
+                                        ->label(__('custom.admin_notes'))
+                                        ->placeholder(__('custom.no_notes'))
                                         ->columnSpanFull()
                                         ->prose()
                                         ->color(fn($record) => $record->status === PromotionStatus::REJECTED ? 'danger' : 'gray'),
 
                                     Infolists\Components\TextEntry::make('approved_at')
-                                        ->label('تاريخ الموافقة')
+                                        ->label(__('custom.approved_at'))
                                         ->dateTime('Y-m-d H:i')
                                         ->placeholder('-')
                                         ->badge()
@@ -271,7 +242,7 @@ class PromotionRequestInfolist
                                         ->visible(fn($record) => $record->approved_at !== null),
 
                                     Infolists\Components\TextEntry::make('approvedBy.name')
-                                        ->label('تمت الموافقة بواسطة')
+                                        ->label(__('custom.approved_by'))
                                         ->placeholder('-')
                                         ->badge()
                                         ->color('info')
@@ -282,11 +253,11 @@ class PromotionRequestInfolist
                                 ->collapsible()
                                 ->visible(fn($record) => $record->status !== PromotionStatus::PENDING),
 
-                            Section::make('حالة الطلب')
+                            Section::make(__('custom.pending_message'))
                                 ->schema([
                                     Infolists\Components\TextEntry::make('pending_message')
                                         ->label('')
-                                        ->default('⏳ الطلب قيد المراجعة من قبل الإدارة')
+                                        ->default(__('custom.pending_message'))
                                         ->color('warning')
                                         ->size('lg')
                                         ->columnSpanFull(),
@@ -294,14 +265,13 @@ class PromotionRequestInfolist
                                 ->visible(fn($record) => $record->status === PromotionStatus::PENDING),
                         ]),
 
-                    // Tab 6: معلومات النظام
-                    Tab::make('معلومات النظام')
+                    Tab::make(__('custom.system_info'))
                         ->icon('heroicon-o-information-circle')
                         ->schema([
-                            Section::make('التواريخ')
+                            Section::make(__('custom.dates'))
                                 ->schema([
                                     Infolists\Components\TextEntry::make('created_at')
-                                        ->label('تاريخ الإنشاء')
+                                        ->label(__('custom.created_at'))
                                         ->dateTime('Y-m-d H:i')
                                         ->badge()
                                         ->color('gray')
@@ -309,7 +279,7 @@ class PromotionRequestInfolist
                                         ->since(),
 
                                     Infolists\Components\TextEntry::make('updated_at')
-                                        ->label('آخر تحديث')
+                                        ->label(__('custom.updated_at'))
                                         ->dateTime('Y-m-d H:i')
                                         ->badge()
                                         ->color('gray')
@@ -317,14 +287,14 @@ class PromotionRequestInfolist
                                         ->since(),
 
                                     Infolists\Components\TextEntry::make('id')
-                                        ->label('رقم الطلب')
+                                        ->label(__('custom.request_id'))
                                         ->badge()
                                         ->color('info')
                                         ->copyable()
-                                        ->copyMessage('تم نسخ رقم الطلب'),
+                                        ->copyMessage(__('custom.id_copied')),
 
                                     Infolists\Components\TextEntry::make('vendor.name')
-                                        ->label('البائع')
+                                        ->label(__('custom.vendor'))
                                         ->badge()
                                         ->color('warning')
                                         ->icon('heroicon-o-building-office'),

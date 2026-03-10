@@ -9,13 +9,5 @@ class ListVendorSubscriptions extends ListRecords
 {
     protected static string $resource = VendorSubscriptionResource::class;
 
-    public function getTitle(): string
-    {
-        return 'اشتراكاتي';
-    }
-
-    public function getSubheading(): ?string
-    {
-        return 'عرض حالة اشتراكك الحالي والاشتراكات السابقة';
-    }
+    
 }

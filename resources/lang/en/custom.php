@@ -72,7 +72,7 @@ return [
     'updated_at' => 'Updated At',
 
     // Shops
-   'shops' => [
+    'shops' => [
         'title' => 'Shops',
         'singular' => 'Shop',
         'logo' => 'Logo',
@@ -133,7 +133,7 @@ return [
 
 
     // Products
-  'products' => [
+    'products' => [
         'title' => 'Products',
         'singular' => 'Product',
         'image' => 'Image',
@@ -204,6 +204,7 @@ return [
             'category_details' => 'Category Details',
             'extra_details' => 'Extra Details',
         ],
+        'images' => 'Images',
         'variants' => [
             'title' => 'Variants',
             'description' => 'Add product variants like different colors and sizes',
@@ -533,4 +534,238 @@ return [
             'purchase_amount_threshold' => 'Bonus points when purchase reaches certain amount',
         ],
     ],
+    'promotion_navigation_label' => 'Promotion Requests (Offers & Banners)',
+    'promotion_model_label' => 'Promotion Request (Offers & Banners)',
+    'promotion_plural_model_label' => 'Promotion Requests (Offers & Banners)',
+    'id' => 'ID',
+    'shop_name' => 'Shop',
+    'type' => 'Type',
+    'offer' => 'Offer',
+    'banner' => 'Banner',
+    'title' => 'Title',
+    'status' => 'Status',
+    'pending' => 'Pending',
+    'approved' => 'Approved',
+    'rejected' => 'Rejected',
+    'expired' => 'Expired',
+    'discount_percentage' => 'Discount %',
+    'offer_starts_at' => 'Offer Starts At',
+    'offer_ends_at' => 'Offer Ends At',
+    'banner_position' => 'Banner Position',
+    'banner_starts_at' => 'Banner Starts At',
+    'banner_ends_at' => 'Banner Ends At',
+    'created_at' => 'Created At',
+    'basic_information' => 'Basic Information',
+    'basic_information_section' => 'Basic Info',
+    'shop' => 'Shop',
+    'promotion_type' => 'Promotion Type',
+    'offer' => 'Offer',
+    'banner' => 'Banner',
+    'details_section' => 'Details',
+    'title_ar' => 'Title (Arabic)',
+    'title_en' => 'Title (English)',
+    'description_ar' => 'Description (Arabic)',
+    'description_en' => 'Description (English)',
+    'images' => 'Images',
+    'promotion_images' => 'Promotion Images',
+    'upload_images' => 'Drag & drop or click to upload images',
+    'max_5_images' => 'You can upload up to 5 images',
+    'offer_details' => 'Offer Details',
+    'offer_information' => 'Offer Information',
+    'discount_percentage' => 'Discount Percentage (%)',
+    'offer_starts_at' => 'Offer Start Date',
+    'offer_ends_at' => 'Offer End Date',
+    'banner_details' => 'Banner Details',
+    'banner_information' => 'Banner Information',
+    'banner_position' => 'Banner Position',
+    'home_top' => 'Home - Top',
+    'home_middle' => 'Home - Middle',
+    'home_bottom' => 'Home - Bottom',
+    'category_top' => 'Category Page - Top',
+    'product_sidebar' => 'Product Page - Sidebar',
+    'banner_link' => 'Banner Link',
+    'banner_link_helper' => 'The URL to navigate when clicking the banner',
+    'banner_starts_at' => 'Banner Start Date',
+    'banner_ends_at' => 'Banner End Date',
+    'order_status' => 'Order Status',
+    'status' => 'Status',
+    'pending' => '⏳ Pending',
+    'approved' => '✅ Approved',
+    'rejected' => '❌ Rejected',
+    'expired' => '⌛ Expired',
+    'approved_at' => 'Approved At',
+    'approved_by' => 'Approved By',
+    'admin_notes' => 'Admin Notes',
+    'no_notes' => 'No notes',
+
+    // Tabs
+    'basic_information' => 'Basic Information',
+    'images' => 'Images',
+    'offer_details' => 'Offer Details',
+    'banner_details' => 'Banner Details',
+    'approval_info' => 'Approval Info',
+    'system_info' => 'System Info',
+
+    // Sections
+    'general_info' => 'General Info',
+    'details' => 'Details',
+    'promotion_images' => 'Promotion Images',
+    'offer_information' => 'Offer Information',
+    'offer_status' => 'Offer Status',
+    'banner_information' => 'Banner Information',
+    'banner_status' => 'Banner Status',
+    'approval_details' => 'Approval Details',
+    'dates' => 'Dates',
+    'location' => 'Location & Contact',
+    // Labels
+    'shop' => 'Shop',
+    'promotion_type' => 'Promotion Type',
+    'status' => 'Status',
+    'title' => 'Title',
+    'description' => 'Description',
+    'discount_percentage' => 'Discount Percentage',
+    'offer_starts_at' => 'Offer Starts At',
+    'offer_ends_at' => 'Offer Ends At',
+    'duration' => 'Duration',
+    'banner_position' => 'Banner Position',
+    'banner_link' => 'Banner Link',
+    'banner_starts_at' => 'Banner Starts At',
+    'banner_ends_at' => 'Banner Ends At',
+    'admin_notes' => 'Admin Notes',
+    'approved_at' => 'Approved At',
+    'approved_by' => 'Approved By',
+    'request_id' => 'Request ID',
+    'vendor' => 'Vendor',
+
+    // Status / Values
+    'pending' => '⏳ Pending',
+    'approved' => '✅ Approved',
+    'rejected' => '❌ Rejected',
+    'expired' => '⌛ Expired',
+    'active' => '✅ Active',
+    'no_images' => 'No images',
+    'no_notes' => 'No notes',
+    'no_link' => 'No link',
+    'link_copied' => 'Link copied',
+    'id_copied' => 'Request ID copied',
+    'days' => 'days',
+    'pending_message' => '⏳ The request is under review by admin',
+
+    // Promotion types
+    'offer' => '🏷️ Offer',
+    'banner' => '📢 Banner',
+
+    // Banner positions
+    'home_top' => '🏠 Home - Top',
+    'home_middle' => '🏠 Home - Middle',
+    'home_bottom' => '🏠 Home - Bottom',
+    'category_top' => '📂 Category Page - Top',
+    'product_sidebar' => '📦 Product Page - Sidebar',
+    'seller_packages_navigation_label' => 'Seller Packages',
+    'seller_package_model_label' => 'Package',
+    'seller_packages_plural_model_label' => 'Seller Packages',
+    'package_name' => 'Package Name',
+    'price' => 'Price',
+    'duration_days' => 'Duration (Days)',
+    'max_products' => 'Max Products',
+    'is_featured' => 'Featured',
+    'has_premium_badge' => 'Premium Badge',
+    'has_analytics' => 'Analytics',
+    'commission_rate' => 'Commission Rate',
+    'is_active' => 'Active',
+    'created_at' => 'Created At',
+
+    'active_filter' => 'Active',
+    'featured_filter' => 'Featured',
+    'all' => 'All',
+    'active_only' => 'Active Only',
+    'inactive_only' => 'Inactive Only',
+    'featured_only' => 'Featured Only',
+    'normal_only' => 'Normal Only',
+
+    'subscribe' => 'Subscribe',
+    'confirm_subscription' => 'Confirm Subscription',
+    'confirm' => 'Confirm Subscription',
+    'cancel' => 'Cancel',
+    'subscription_error_login' => 'You must be logged in first',
+    'subscription_error_no_shop' => 'No shop is linked to your account',
+    'subscription_warning_active' => 'You already have an active subscription. Ends on :date',
+    'subscription_success' => 'Subscription Successful',
+    'subscription_success_body' => 'Subscribed to :package. Subscription ends on :date',
+
+    // Basic package info
+    'basic_package_info' => 'Basic Package Info',
+    'package_name' => 'Package Name',
+    'price' => 'Price',
+    'subscription_duration' => 'Subscription Duration (Days)',
+    'is_active' => 'Active',
+    'my_subscription_navigation_label' => 'My Subscriptions', // العربية: اشتراكي
+    'my_subscription_model_label' => 'Subscription',           // العربية: اشتراك
+    'my_subscription_plural_model_label' => 'My Subscriptions', // العربية: اشتراكاتي
+    // Description
+    'description' => 'Description',
+
+    // Product features
+    'product_features' => 'Product Features',
+    'max_products' => 'Max Products',
+    'unlimited' => 'Unlimited',
+    'featured_products' => 'Featured Products',
+    'premium_badge' => 'Premium Badge',
+    'search_priority' => 'Search Priority',
+
+    // Marketing features
+    'marketing_features' => 'Marketing Features',
+    'max_campaigns' => 'Max Campaigns',
+    'banner_ads' => 'Banner Ads',
+
+    // Reports & Analytics
+    'reports_analytics' => 'Reports & Analytics',
+    'sales_reports' => 'Sales Reports',
+    'analytics' => 'Analytics',
+    'report_level' => 'Report Level',
+
+    // Orders & Delivery
+    'orders_delivery_features' => 'Orders & Delivery Features',
+    'order_priority' => 'Order Priority',
+    'set_prep_time' => 'Set Preparation Time',
+    'custom_shipping_options' => 'Custom Shipping Options',
+    'vendor_delivery' => 'Vendor Delivery',
+
+    // Commissions & Fees
+    'commissions_fees' => 'Commissions & Fees',
+    'commission_rate' => 'Commission Rate',
+    'commission_per_order' => 'Commission Per Order',
+    'activation_fee_waived' => 'Activation Fee Waived',
+    'services' => 'Services',
+    'service' => 'Service ',
+    'working_hours' => 'working hours',
+    // Navigation & Resource Labels
+    'subscription_navigation_label' => 'My Subscription',
+    'subscription_model_label' => 'Subscription',
+    'subscription_plural_model_label' => 'My Subscriptions',
+
+    // Table Columns
+    'subscription_package' => 'Package',
+    'subscription_starts_at' => 'Start Date',
+    'subscription_ends_at' => 'End Date',
+    'subscription_status' => 'Status',
+    'subscription_auto_renew' => 'Auto Renew',
+
+    // Status Options
+    'status_active' => 'Active',
+    'status_expired' => 'Expired',
+    'status_cancelled' => 'Cancelled',
+    'status_pending' => 'Pending',
+
+    // Filters
+    'filter_status_label' => 'Status',
+    'filter_status_active' => 'Active Only',
+    'filter_status_expired' => 'Expired Only',
+    'filter_status_cancelled' => 'Cancelled Only',
+    'filter_status_pending' => 'Pending Only',
+
+    // Pagination
+    'pagination_showing' => 'Showing',
+    'pagination_of' => 'of',
+
 ];

@@ -14,103 +14,102 @@ class VendorPackagesTable
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('اسم الباقة')
+                    ->label(__('custom.package_name'))
                     ->formatStateUsing(fn($record) => $record->getTranslation('name', app()->getLocale()))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('price')
-                    ->label('السعر')
+                    ->label(__('custom.price'))
                     ->money('USD')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('duration_days')
-                    ->label('المدة (أيام)')
-                    ->suffix(' يوم')
+                    ->label(__('custom.duration_days'))
+                    ->suffix(' ' . __('custom.all')) // يمكنك وضع "يوم" هنا بالعربية أو Days بالإنجليزية
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('max_products')
-                    ->label('عدد المنتجات')
+                    ->label(__('custom.max_products'))
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_featured')
-                    ->label('مميزة')
+                    ->label(__('custom.is_featured'))
                     ->boolean(),
 
                 Tables\Columns\IconColumn::make('has_premium_badge')
-                    ->label('شارة مميزة')
+                    ->label(__('custom.has_premium_badge'))
                     ->boolean(),
 
                 Tables\Columns\IconColumn::make('has_analytics')
-                    ->label('تحليلات')
+                    ->label(__('custom.has_analytics'))
                     ->boolean(),
 
                 Tables\Columns\TextColumn::make('commission_rate')
-                    ->label('نسبة العمولة')
+                    ->label(__('custom.commission_rate'))
                     ->suffix('%')
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_active')
-                    ->label('نشطة')
+                    ->label(__('custom.is_active'))
                     ->boolean(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('تاريخ الإنشاء')
+                    ->label(__('custom.created_at'))
                     ->dateTime('Y-m-d')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('نشطة')
-                    ->placeholder('الكل')
-                    ->trueLabel('نشطة فقط')
-                    ->falseLabel('غير نشطة فقط'),
+                    ->label(__('custom.active_filter'))
+                    ->placeholder(__('custom.all'))
+                    ->trueLabel(__('custom.active_only'))
+                    ->falseLabel(__('custom.inactive_only')),
 
                 Tables\Filters\TernaryFilter::make('is_featured')
-                    ->label('مميزة')
-     ->placeholder('الكل')
-                    ->trueLabel('مميزة فقط')
-                    ->falseLabel('عادية فقط'),
+                    ->label(__('custom.featured_filter'))
+                    ->placeholder(__('custom.all'))
+                    ->trueLabel(__('custom.featured_only'))
+                    ->falseLabel(__('custom.normal_only')),
             ])
             ->actions([
                 ViewAction::make(),
                 \Filament\Actions\Action::make('subscribe')
-                    ->label('اشتراك')
+                    ->label(__('custom.subscribe'))
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->requiresConfirmation()
-                    ->modalHeading('تأكيد الاشتراك')
-                    ->modalDescription(fn($record) => "هل تريد الاشتراك في باقة {$record->name} بسعر {$record->price} دولار")
-                    ->modalSubmitActionLabel('تأكيد الاشتراك')
-                    ->modalCancelActionLabel('إلغاء')
+                    ->modalHeading(__('custom.confirm_subscription'))
+                    ->modalDescription(fn($record) => __("custom.subscription_success_body", [
+                        'package' => $record->name,
+                        'date' => now()->addDays($record->duration_days)->format('Y-m-d'),
+                    ]))
+                    ->modalSubmitActionLabel(__('custom.confirm'))
+                    ->modalCancelActionLabel(__('custom.cancel'))
                     ->action(function ($record) {
-                        $user = \Illuminate\Support\Facades\Auth::guard('vendor-user')->user();
+                        $user = Auth::guard('vendor-user')->user();
 
                         if (!$user) {
                             \Filament\Notifications\Notification::make()
-                                ->title('خطأ')
-                                ->body('يجب تسجيل الدخول أولاً')
+                                ->title(__('custom.subscription_error_login'))
                                 ->danger()
                                 ->send();
                             return;
                         }
 
-                        // Get user's shops through pivot table
                         $shop = \App\Models\Shop::whereHas('vendorUsers', function ($query) use ($user) {
                             $query->where('vendor_users.id', $user->id);
                         })->first();
 
                         if (!$shop) {
                             \Filament\Notifications\Notification::make()
-                                ->title('خطأ')
-                                ->body('لا يوجد متجر مرتبط بحسابك')
+                                ->title(__('custom.subscription_error_no_shop'))
                                 ->danger()
                                 ->send();
                             return;
                         }
 
-                        // Check if there's an active subscription
                         $activeSubscription = $shop->subscriptions()
                             ->where('status', 'active')
                             ->where('ends_at', '>=', now()->toDateString())
@@ -118,14 +117,14 @@ class VendorPackagesTable
 
                         if ($activeSubscription) {
                             \Filament\Notifications\Notification::make()
-                                ->title('تنبيه')
-                                ->body('لديك اشتراك نشط بالفعل. سينتهي في ' . $activeSubscription->ends_at->format('Y-m-d'))
+                                ->title(__('custom.subscription_warning_active', [
+                                    'date' => $activeSubscription->ends_at->format('Y-m-d'),
+                                ]))
                                 ->warning()
                                 ->send();
                             return;
                         }
 
-                        // Create new subscription
                         $subscription = \App\Models\VendorSubscription::create([
                             'shop_id' => $shop->id,
                             'vendor_package_id' => $record->id,
@@ -136,14 +135,16 @@ class VendorPackagesTable
                         ]);
 
                         \Filament\Notifications\Notification::make()
-                            ->title('تم الاشتراك بنجاح')
-                            ->body("تم الاشتراك في باقة {$record->name}. ينتهي الاشتراك في {$subscription->ends_at->format('Y-m-d')}")
+                            ->title(__('custom.subscription_success'))
+                            ->body(__('custom.subscription_success_body', [
+                                'package' => $record->name,
+                                'date' => $subscription->ends_at->format('Y-m-d'),
+                            ]))
                             ->success()
                             ->send();
                     })
-                    ->visible(fn() => \Illuminate\Support\Facades\Auth::guard('vendor-user')->check()),
+                    ->visible(fn() => Auth::guard('vendor-user')->check()),
             ])
             ->defaultSort('price', 'asc');
     }
 }
-

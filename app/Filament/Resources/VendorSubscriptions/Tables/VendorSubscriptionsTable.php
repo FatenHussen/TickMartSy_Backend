@@ -11,69 +11,29 @@ class VendorSubscriptionsTable
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('shop.name')
-                    ->label('المتجر')
-                    ->formatStateUsing(fn($record) => $record->shop?->getTranslation('name', app()->getLocale()) ?? '-')
-                    ->searchable()
-                    ->sortable(),
-
-          Tables\Columns\TextColumn::make('package.name')
-                    ->label('الباقة')
-                    ->formatStateUsing(fn($record) => $record->package?->getTranslation('name', app()->getLocale()) ?? '-')
-                    ->searchable(),
-
+                Tables\Columns\TextColumn::make('package.name')
+                    ->label(__('custom.subscription_package')),
                 Tables\Columns\TextColumn::make('starts_at')
-                    ->label('تاريخ البداية')
-                    ->date('Y-m-d')
-                    ->sortable(),
+                    ->label(__('custom.subscription_starts_at')),
 
                 Tables\Columns\TextColumn::make('ends_at')
-                    ->label('تاريخ الانتهاء')
-                    ->date('Y-m-d')
-                    ->sortable()
-                    ->color(fn($record) => $record->isExpiringSoon(7) ? 'warning' : 'gray'),
+                    ->label(__('custom.subscription_ends_at')),
 
                 Tables\Columns\TextColumn::make('status')
-                    ->label('الحالة')
-                    ->badge()
+                    ->label(__('custom.subscription_status'))
                     ->formatStateUsing(fn($state) => match ($state) {
-                        'active' => 'نشط',
-                        'expired' => 'منتهي',
-                        'cancelled' => 'ملغي',
-                        'pending' => 'قيد الانتظار',
+                        'active' => __('custom.status_active'),
+                        'expired' => __('custom.status_expired'),
+                        'cancelled' => __('custom.status_cancelled'),
+                        'pending' => __('custom.status_pending'),
                         default => $state,
-                    })
-                    ->color(fn($state) => match ($state) {
-                        'active' => 'success',
-                        'expired' => 'gray',
-                        'cancelled' => 'danger',
-                        'pending' => 'warning',
-                        default => 'gray',
-                    })
-                    ->sortable(),
+                    }),
 
                 Tables\Columns\IconColumn::make('auto_renew')
-                    ->label('تجديد تلقائي')
-                    ->boolean(),
-            ])
-            ->filters([
-              Tables\Filters\SelectFilter::make('status')
-                    ->label('الحالة')
-                    ->options([
-                        'active' => 'نشط',
-                        'expired' => 'منتهي',
-                        'cancelled' => 'ملغي',
-                        'pending' => 'قيد الانتظار',
-                    ]),
+                    ->label(__('custom.subscription_auto_renew')),
 
-                Tables\Filters\SelectFilter::make('shop_id')
-                    ->label('المتجر')
-                    ->relationship('shop', 'name')
-                    ->searchable()
-                    ->preload(),
             ])
             ->defaultSort('created_at', 'desc')
             ->paginated([10, 25, 50]);
     }
 }
-

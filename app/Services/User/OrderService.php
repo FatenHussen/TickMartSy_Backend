@@ -8,7 +8,7 @@ use App\Events\LowStockDetected;
 use App\Events\OrderCreated;
 use App\Events\OrderStatusChanged;
 use App\Exceptions\CustomExceptionWithMessage;
-use App\Http\Resources\Order\OneResource;
+use App\Http\Resources\Order\DriverOneResource as OneResource;
 use App\Http\Resources\Order\AllResource;
 use App\Models\AffiliateWalletTransaction;
 use App\Models\Basket;
@@ -207,6 +207,7 @@ class OrderService extends BaseService
             'cart_type' => $data['cart_type'] ?? CartType::DEFAULT->value,
             'is_instant_delivery' => $data['is_instant_delivery'] ?? false,
             'status' => OrderStatus::PENDING->value,
+            'payment_method_id' => $data['payment_method_id']
         ]);
     }
 

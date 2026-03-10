@@ -19,12 +19,26 @@ class PromotionRequestResource extends Resource
     protected static ?string $model = PromotionRequest::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Megaphone;
+    protected static ?string $navigationLabel = null;
 
-    protected static ?string $navigationLabel = 'طلبات الترويج(عروض وحملات إعلانية)';
+    protected static ?string $modelLabel = null;
 
-    protected static ?string $modelLabel = 'طلب ترويج';
+    protected static ?string $pluralModelLabel = null;
 
-    protected static ?string $pluralModelLabel = 'طلبات الترويج';
+    public static function getNavigationLabel(): string
+    {
+        return __('custom.promotion_navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('custom.promotion_model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('custom.promotion_plural_model_label');
+    }
 
     protected static ?int $navigationSort = 5;
 

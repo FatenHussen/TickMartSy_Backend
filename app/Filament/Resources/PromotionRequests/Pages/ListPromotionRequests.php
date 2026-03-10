@@ -13,8 +13,7 @@ class ListPromotionRequests extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
-                ->label('طلب ترويج جديد'),
+            Actions\CreateAction::make(),
         ];
     }
 }

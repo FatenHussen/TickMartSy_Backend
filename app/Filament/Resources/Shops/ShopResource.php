@@ -86,9 +86,4 @@ class ShopResource extends Resource
             'view' => Pages\ViewShop::route('/{record}'),
         ];
     }
-
-    public static function canCreate(): bool
-    {
-        return false; // Vendors can't create shops, only admin can
-    }
 }

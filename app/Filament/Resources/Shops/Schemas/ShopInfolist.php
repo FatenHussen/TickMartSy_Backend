@@ -15,7 +15,6 @@ class ShopInfolist
         return $infolist->columns(1)->schema([
             Tabs::make('shop_info_tabs')
                 ->tabs([
-                    // Tab 1: المعلومات الأساسية
                     Tab::make(__('custom.shops.sections.basic_info'))
                         ->icon('heroicon-o-information-circle')
                         ->schema([
@@ -54,7 +53,7 @@ class ShopInfolist
                                 ->columns(4)
                                 ->collapsible(),
 
-                            Section::make('صور الغلاف')
+                            Section::make(__('custom.images'))
                                 ->schema([
                                     Infolists\Components\ImageEntry::make('coverImages')
                                         ->label('')
@@ -66,7 +65,6 @@ class ShopInfolist
 
                                     Infolists\Components\TextEntry::make('no_cover_images')
                                         ->label('')
-                                        ->default('📷 لا توجد صور غلاف')
                                         ->color('gray')
                                         ->columnSpanFull()
                                         ->visible(fn($record) => $record->coverImages()?->count() === 0 || !$record->coverImages()),
@@ -75,7 +73,7 @@ class ShopInfolist
                         ]),
 
                     // Tab 2: معلومات الاتصال والموقع
-                    Tab::make('معلومات الاتصال والموقع')
+                    Tab::make(__('custom.location'))
                         ->icon('heroicon-o-phone')
                         ->schema([
                             Section::make(__('custom.shops.sections.contact_info'))
@@ -83,20 +81,17 @@ class ShopInfolist
                                     Infolists\Components\TextEntry::make('phone')
                                         ->label(__('custom.shops.phone'))
                                         ->icon('heroicon-o-phone')
-                                        ->copyable()
-                                        ->copyMessage('تم نسخ رقم الهاتف'),
+                                        ->copyable(),
 
                                     Infolists\Components\TextEntry::make('mobile')
                                         ->label(__('custom.shops.mobile'))
                                         ->icon('heroicon-o-device-phone-mobile')
-                                        ->copyable()
-                                        ->copyMessage('تم نسخ رقم الموبايل'),
+                                        ->copyable(),
 
                                     Infolists\Components\TextEntry::make('email')
                                         ->label(__('custom.shops.email'))
                                         ->icon('heroicon-o-envelope')
-                                        ->copyable()
-                                        ->copyMessage('تم نسخ البريد الإلكتروني'),
+                                        ->copyable(),
                                 ])
                                 ->columns(3)
                                 ->collapsible(),
@@ -168,11 +163,11 @@ class ShopInfolist
                         ]),
 
                     // Tab 4: أوقات العمل
-                    Tab::make('أوقات العمل')
+                    Tab::make(__('custom.working_hours'))
                         ->icon('heroicon-o-clock')
                         ->badge(fn($record) => !empty($record->working_hours) ? count($record->working_hours) : null)
                         ->schema([
-                            Section::make('أوقات العمل')
+                            Section::make(__('custom.working_hours'))
                                 ->schema([
                                     Infolists\Components\ViewEntry::make('working_hours')
                                         ->label('')
@@ -183,23 +178,23 @@ class ShopInfolist
                         ]),
 
                     // Tab 5: الخدمات
-                    Tab::make('الخدمات')
+                    Tab::make(__('custom.services'))
                         ->icon('heroicon-o-wrench-screwdriver')
                         ->badge(fn($record) => $record->services?->count() > 0 ? $record->services->count() : null)
                         ->schema([
-                            Section::make('الخدمات')
+                            Section::make(__('custom.services'))
                                 ->schema([
                                     Infolists\Components\RepeatableEntry::make('services')
                                         ->label('')
                                         ->schema([
                                             Infolists\Components\TextEntry::make('name')
-                                                ->label('اسم الخدمة')
+                                                ->label('custom.service')
                                                 ->weight('bold')
                                                 ->icon('heroicon-o-wrench-screwdriver')
                                                 ->color('primary'),
 
                                             Infolists\Components\TextEntry::make('description')
-                                                ->label('الوصف')
+                                                ->label('custom.description')
                                                 ->columnSpanFull(),
                                         ])
                                         ->columns(1)
@@ -208,16 +203,7 @@ class ShopInfolist
                                 ->visible(fn($record) => $record->services?->count() > 0)
                                 ->collapsible(false),
 
-                            Section::make('لا توجد خدمات')
-                                ->schema([
-                                    Infolists\Components\TextEntry::make('no_services')
-                                        ->label('')
-                                        ->default('🔧 لا توجد خدمات محددة')
-                                        ->color('gray')
-                                        ->columnSpanFull(),
-                                ])
-                                ->visible(fn($record) => $record->services?->count() === 0 || !$record->services),
-                        ]),
+                            ]),
                 ])
                 ->columnSpanFull(),
         ]);
