@@ -60,7 +60,7 @@ class NotificationService
     ): void {
         Log::info("sendDatabase Notification");
         $recipient->notify(
-            new MessageNotification($title, $body)
+            new MessageNotification($title, $body, $data)
         );
     }
 

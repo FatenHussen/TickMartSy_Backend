@@ -346,6 +346,28 @@ class PageSectionSeeder extends Seeder
             ]
         ]);
 
+        //   $suggestedSection = Section::create([
+        //     'name' => ['en' => 'Suggested', 'ar' => 'المقترحات'],
+        //     'type' => 'api',
+        //     'api_method' => 'suggested',
+        //     'filters' => [
+        //         'type' => [
+        //             'type' => 'select',
+        //             'items' => [
+        //                 'prodocts',
+        //                 'baskets',
+        //                 'shops',
+        //             ]
+        //         ],
+        //     ],
+        //     'see_more' => true,
+        //     'see_more_slug' => 'products',
+        //     'details_slug'  => 'product_details',
+        //     'manual_model' => 'product'
+        // ]);
+
+
+
         $shopSection = Section::create([
             'name' => ['en' => 'Shops', 'ar' => 'المتاجر'],
             'type' => 'api',
@@ -377,6 +399,70 @@ class PageSectionSeeder extends Seeder
             'filters' => [
                 'type' => 'nearby',
             ]
+        ]);
+
+
+        $suggestedShopSection = Section::create([
+            'name' => ['en' => 'Suggested Shops', 'ar' => 'المتاجر المقترحة لك'],
+            'type' => 'api',
+            'api_method' => 'suggested_shops',
+            'filters' => [],
+            'see_more' => true,
+            'see_more_slug' => 'shops',
+            'details_slug'  => 'shop_details',
+            'manual_model' => 'shop'
+        ]);
+
+        PageSection::create([
+            'name' => ['en' => 'Suggested Shops', 'ar' => 'المتاجر المقترحة لك'],
+            'page_id' => $homePage->id,
+            'section_id' => $suggestedShopSection->id,
+            'display_type_id' => $shopDisplayType->id,
+            'position' => 'after',
+            'order' => 9,
+            'filters' => []
+        ]);
+
+        $suggestedProductSection = Section::create([
+            'name' => ['en' => 'Suggested Products', 'ar' => 'المنتجات المقترحة لك'],
+            'type' => 'api',
+            'api_method' => 'suggested_products',
+            'filters' => [],
+            'see_more' => true,
+            'see_more_slug' => 'products',
+            'details_slug'  => 'product_details',
+            'manual_model' => 'product'
+        ]);
+
+        PageSection::create([
+            'name' => ['en' => 'Suggested Products', 'ar' => 'المنتجات المقترحة لك'],
+            'page_id' => $homePage->id,
+            'section_id' => $suggestedProductSection->id,
+            'display_type_id' => $productDisplayType->id,
+            'position' => 'after',
+            'order' => 10,
+            'filters' => []
+        ]);
+
+        $suggestedBasketSection = Section::create([
+            'name' => ['en' => 'Suggested Baskets', 'ar' => 'السلات المقترحة لك'],
+            'type' => 'api',
+            'api_method' => 'suggested_baskets',
+            'filters' => [],
+            'see_more' => true,
+            'see_more_slug' => 'baskets',
+            'details_slug'  => 'basket_details',
+            'manual_model' => 'basket'
+        ]);
+
+        PageSection::create([
+            'name' => ['en' => 'Suggested Baskets', 'ar' => 'السلات المقترحة لك'],
+            'page_id' => $homePage->id,
+            'section_id' => $suggestedBasketSection->id,
+            'display_type_id' => $basketsDisplayType->id,
+            'position' => 'after',
+            'order' => 11,
+            'filters' => []
         ]);
     }
 }

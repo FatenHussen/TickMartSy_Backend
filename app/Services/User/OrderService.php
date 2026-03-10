@@ -24,6 +24,7 @@ use App\Services\User\CalculateDeliveryPriceService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Exception;
+use App\Services\InventoryService;
 
 class OrderService extends BaseService
 {
@@ -526,9 +527,8 @@ class OrderService extends BaseService
                     'discount' => $productDiscount,
                 ]);
 
-                if (!is_null($shopVariant->quantity)) {
-                    $shopVariant->decrement('quantity', $quantity);
-                }
+                app(InventoryService::class)
+                    ->decreaseStock($shopVariant->id, $quantity);
             }
 
             $subtotalBeforeDiscount += $price * $quantity;
@@ -698,7 +698,15 @@ class OrderService extends BaseService
             'status' => OrderStatus::CANCELLED->value
         ]);
 
+        $inventory = app(InventoryService::class);
+
         foreach ($order->items as $item) {
+
+            $inventory->increaseStock(
+                $item->shop_product_variant_id,
+                $item->quantity
+            );
+
             $item->update([
                 'status' => OrderStatus::CANCELLED->value
             ]);

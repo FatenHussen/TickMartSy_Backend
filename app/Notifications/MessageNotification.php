@@ -13,13 +13,16 @@ class MessageNotification extends Notification
 
     private $title;
     private $body;
+    private $data;
+
     /**
      * Create a new notification instance.
      */
-    public function __construct(string $title, string $body)
+    public function __construct(string $title, string $body, array $data)
     {
         $this->title = $title;
         $this->body  = $body;
+        $this->data = $data;
     }
 
     /**
@@ -50,6 +53,7 @@ class MessageNotification extends Notification
         return [
             'title' => $this->title,
             'body'  => $this->body,
+            'data' => $this->data
         ];
     }
 }

@@ -17,7 +17,8 @@ class StoreRequest extends FormRequest
         return [
             'title' => 'required',
             'body'  => 'required',
-            'type'  => 'required|in:all,driver,user,vendor'
+            'type'  => 'required|in:all,driver,user,vendor',
+            'is_fixed' => 'nullable|in:0,1'
         ];
     }
 }

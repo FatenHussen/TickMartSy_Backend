@@ -34,6 +34,10 @@ class Shop extends Model implements Sectionable
         'is_free_delivery',
         'logo'
     ];
+    public function vendor()
+    {
+        return $this->belongsTo(Vendor::class);
+    }
     public function area()
     {
         return $this->belongsTo(Area::class);
@@ -57,10 +61,7 @@ class Shop extends Model implements Sectionable
         'ratings_sum'       => 'integer',
     ];
 
-    public function vendor()
-    {
-        return $this->belongsTo(Vendor::class);
-    }
+
 
     public function vendorUsers()
     {

@@ -11,7 +11,7 @@ use App\Http\Resources\SectionItem\AllResource as SectionItemAllResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class DriverOneResource extends JsonResource
+class OneResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

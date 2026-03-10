@@ -31,7 +31,6 @@ class OrderService
             ->get();
     }
 
-
     public function order($orderId)
     {
         $driverId = auth('driver')->id();
@@ -41,8 +40,6 @@ class OrderService
 
         return $order;
     }
-
-
 
     public function ordersToAssigned(array $data)
     {
@@ -116,9 +113,9 @@ class OrderService
             }
 
             // ✅ تحقق أن الطلب فوري
-            if (! $order->is_instant_delivery) {
-                throw new CustomExceptionWithMessage('This item is not for instant delivery');
-            }
+            // if (! $order->is_instant_delivery) {
+            //     throw new CustomExceptionWithMessage('This item is not for instant delivery');
+            // }
 
             // ✅ تحقق أن العنصر جاهز للتحرك
             if ($item->item_status !== OrderStatus::PREPARING->value) {
@@ -163,9 +160,9 @@ class OrderService
             }
 
             // ✅ تحقق أن الطلب غير فوري
-            if ($order->is_instant_delivery) {
-                throw new CustomExceptionWithMessage('This order is instant delivery, use itemOutDelivery instead');
-            }
+            // if ($order->is_instant_delivery) {
+            //     throw new CustomExceptionWithMessage('This order is instant delivery, use itemOutDelivery instead');
+            // }
 
             // ✅ تحقق أن الحالة صحيحة للتحويل
             $allowedStatuses = [

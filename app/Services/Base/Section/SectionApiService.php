@@ -49,7 +49,11 @@ class SectionApiService
             'baskets' => BasketService::class,
             'schedule-basket' => ScheduleBasketService::class,
             'products' => ProductService::class,
-            'shops' => ShopService::class
+            'shops' => ShopService::class,
+            'suggested_products' => SuggestedProductsService::class,
+            'suggested_baskets' => SuggestedBasketsService::class,
+            'suggested_shops' => SuggestedShopsService::class,
+
         ];
 
         return $map[$method] ?? null;

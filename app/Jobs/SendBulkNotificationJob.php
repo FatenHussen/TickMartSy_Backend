@@ -19,12 +19,14 @@ class SendBulkNotificationJob implements ShouldQueue
     public string $title;
     public string $body;
     public string $type;
+    public string $is_fixed;
 
-    public function __construct(string $title, string $body, string $type)
+    public function __construct(string $title, string $body, string $type, $is_fixed = false)
     {
         $this->title = $title;
         $this->body  = $body;
         $this->type  = $type;
+        $this->is_fixed  = $is_fixed;
     }
 
     public function handle(NotificationService $notificationService)
@@ -33,7 +35,8 @@ class SendBulkNotificationJob implements ShouldQueue
             User::chunk(100, function ($users) use ($notificationService) {
                 foreach ($users as $user) {
                     $notificationService->send($user, $this->title, $this->body, [
-                        'type' => 'admin'
+                        'type' => 'admin',
+                        'is_fixed' => $this->is_fixed
                     ]);
                 }
             });
@@ -43,7 +46,7 @@ class SendBulkNotificationJob implements ShouldQueue
             Driver::chunk(100, function ($drivers) use ($notificationService) {
                 foreach ($drivers as $driver) {
                     $notificationService->send($driver, $this->title, $this->body, [
-                        'type' => 'admin'
+                        'type' => 'admin',
                     ]);
                 }
             });
