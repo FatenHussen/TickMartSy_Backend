@@ -13,27 +13,27 @@ class VendorPackageInfolist
         return $infolist->columns(1)
             ->schema([
 
-                Section::make('معلومات الباقة الأساسية')
+                Section::make(__('custom.basic_package_info'))
                     ->schema([
                         Infolists\Components\TextEntry::make('name')
-                            ->label('اسم الباقة')
+                            ->label(__('custom.package_name'))
                             ->weight('bold')
                             ->size('lg'),
 
                         Infolists\Components\TextEntry::make('price')
-                            ->label('السعر')
+                            ->label(__('custom.price'))
                             ->money('USD')
                             ->weight('bold')
                             ->size('lg')
                             ->color('success'),
 
                         Infolists\Components\TextEntry::make('duration_days')
-                            ->label('مدة الاشتراك (أيام)')
+                            ->label(__('custom.subscription_duration'))
                             ->badge()
                             ->color('info'),
 
                         Infolists\Components\IconEntry::make('is_active')
-                            ->label('نشط')
+                            ->label(__('custom.is_active'))
                             ->boolean(),
                     ])
                     ->columns([
@@ -42,66 +42,66 @@ class VendorPackageInfolist
                     ])
                     ->collapsible(),
 
-                Section::make('الوصف')
+                Section::make(__('custom.description'))
                     ->schema([
                         Infolists\Components\TextEntry::make('description')
-                            ->label('الوصف')
+                            ->label(__('custom.description'))
                             ->columnSpanFull()
                             ->markdown(),
                     ])
                     ->collapsible(),
 
-                Section::make('ميزات المنتجات')
+                Section::make(__('custom.product_features'))
                     ->schema([
                         Infolists\Components\TextEntry::make('max_products')
-                            ->label('الحد الأقصى للمنتجات')
+                            ->label(__('custom.max_products'))
                             ->badge()
                             ->color('primary')
-                            ->default('غير محدود'),
+                            ->default(__('custom.unlimited')),
 
                         Infolists\Components\IconEntry::make('is_featured')
-                            ->label('منتجات مميزة')
+                            ->label(__('custom.featured_products'))
                             ->boolean(),
 
                         Infolists\Components\IconEntry::make('has_premium_badge')
-                            ->label('شارة مميزة')
+                            ->label(__('custom.premium_badge'))
                             ->boolean(),
 
                         Infolists\Components\TextEntry::make('search_priority')
-                            ->label('أولوية البحث')
+                            ->label(__('custom.search_priority'))
                             ->badge()
                             ->default('-'),
                     ])
                     ->columns(4)
                     ->collapsible(),
 
-                Section::make('ميزات التسويق')
+                Section::make(__('custom.marketing_features'))
                     ->schema([
                         Infolists\Components\TextEntry::make('max_campaigns')
-                            ->label('الحد الأقصى للحملات')
+                            ->label(__('custom.max_campaigns'))
                             ->badge()
                             ->color('warning')
-                            ->default('غير محدود'),
+                            ->default(__('custom.unlimited')),
 
                         Infolists\Components\IconEntry::make('has_banner_ad')
-                            ->label('إعلانات بانر')
+                            ->label(__('custom.banner_ads'))
                             ->boolean(),
                     ])
                     ->columns(2)
                     ->collapsible(),
 
-                Section::make('التقارير والتحليلات')
+                Section::make(__('custom.reports_analytics'))
                     ->schema([
                         Infolists\Components\IconEntry::make('has_sales_reports')
-                            ->label('تقارير المبيعات')
+                            ->label(__('custom.sales_reports'))
                             ->boolean(),
 
                         Infolists\Components\IconEntry::make('has_analytics')
-                            ->label('التحليلات')
+                            ->label(__('custom.analytics'))
                             ->boolean(),
 
                         Infolists\Components\TextEntry::make('report_level')
-                            ->label('مستوى التقارير')
+                            ->label(__('custom.report_level'))
                             ->badge()
                             ->color('info')
                             ->default('-'),
@@ -109,45 +109,45 @@ class VendorPackageInfolist
                     ->columns(3)
                     ->collapsible(),
 
-                Section::make('ميزات الطلبات والتوصيل')
+                Section::make(__('custom.orders_delivery_features'))
                     ->schema([
                         Infolists\Components\TextEntry::make('order_priority')
-                            ->label('أولوية الطلبات')
+                            ->label(__('custom.order_priority'))
                             ->badge()
                             ->default('-'),
 
                         Infolists\Components\IconEntry::make('can_set_prep_time')
-                            ->label('تحديد وقت التحضير')
+                            ->label(__('custom.set_prep_time'))
                             ->boolean(),
 
                         Infolists\Components\IconEntry::make('custom_shipping_options')
-                            ->label('خيارات شحن مخصصة')
+                            ->label(__('custom.custom_shipping_options'))
                             ->boolean(),
 
                         Infolists\Components\IconEntry::make('has_vendor_delivery')
-                            ->label('توصيل البائع')
+                            ->label(__('custom.vendor_delivery'))
                             ->boolean(),
                     ])
                     ->columns(4)
                     ->collapsible(),
 
-                Section::make('العمولات والرسوم')
+                Section::make(__('custom.commissions_fees'))
                     ->schema([
                         Infolists\Components\TextEntry::make('commission_rate')
-                            ->label('نسبة العمولة')
+                            ->label(__('custom.commission_rate'))
                             ->suffix('%')
                             ->badge()
                             ->color('danger')
                             ->default('-'),
 
                         Infolists\Components\TextEntry::make('commission_per_order')
-                            ->label('عمولة لكل طلب')
+                            ->label(__('custom.commission_per_order'))
                             ->money('USD')
                             ->color('danger')
                             ->default('-'),
 
                         Infolists\Components\IconEntry::make('activation_fee_waived')
-                            ->label('إعفاء من رسوم التفعيل')
+                            ->label(__('custom.activation_fee_waived'))
                             ->boolean(),
                     ])
                     ->columns(3)
@@ -156,4 +156,3 @@ class VendorPackageInfolist
             ]);
     }
 }
-

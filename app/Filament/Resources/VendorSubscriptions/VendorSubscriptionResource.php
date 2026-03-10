@@ -15,9 +15,24 @@ class VendorSubscriptionResource extends Resource
 {
     protected static ?string $model = VendorSubscription::class;
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Cube;
-    protected static ?string $navigationLabel = 'اشتراكي';
-    protected static ?string $modelLabel = 'اشتراك';
-    protected static ?string $pluralModelLabel = 'اشتراكاتي';
+    protected static ?string $navigationLabel = null;
+    protected static ?string $modelLabel = null;
+    protected static ?string $pluralModelLabel = null;
+
+    public static function getNavigationLabel(): string
+    {
+        return __('custom.my_subscription_navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('custom.my_subscription_model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('custom.my_subscription_plural_model_label');
+    }
     protected static ?int $navigationSort = 91;
 
     public static function getEloquentQuery(): Builder
@@ -32,7 +47,7 @@ class VendorSubscriptionResource extends Resource
 
         return parent::getEloquentQuery()
             ->whereIn('shop_id', $shopIds)
-            ->with('package', 'shop');
+            ->with('package', 'vendor');
     }
 
     public static function table(Table $table): Table

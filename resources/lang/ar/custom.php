@@ -31,7 +31,9 @@ return [
         503 => 'الخدمة غير متوفرة حالياً.',
     ],
     'custom_error' => 'حدث خطأ ما، يرجى المحاولة لاحقاً.',
-
+    'my_subscription_navigation_label' => 'اشتراكي', // 'My Subscriptions'
+    'my_subscription_model_label' => 'اشتراك',       // 'Subscription'
+    'my_subscription_plural_model_label' => 'اشتراكاتي', // 'My Subscriptions'
     'wrong_credential' => 'بيانات تسجيل الدخول غير صحيحة.',
 
     'account_not_registered' => 'الحساب غير مسجل.',
@@ -74,7 +76,7 @@ return [
     'updated_at' => 'تاريخ التحديث',
 
     // Shops
-     'shops' => [
+    'shops' => [
         'title' => 'الفروع',
         'singular' => 'فرع',
         'logo' => 'الشعار',
@@ -134,7 +136,7 @@ return [
     ],
 
     // Products
-      'products' => [
+    'products' => [
         'title' => 'المنتجات',
         'singular' => 'منتج',
         'image' => 'الصورة',
@@ -532,4 +534,219 @@ return [
             'purchase_amount_threshold' => 'نقاط إضافية عند الوصول لقيمة شراء معينة',
         ],
     ],
+    'promotion_navigation_label' => 'طلبات الترويج (عروض & بانرات)',
+    'promotion_model_label' => 'طلب ترويج (عروض & بانرات)',
+    'promotion_plural_model_label' => 'طلبات الترويج (عروض & بانرات)',
+    'promotion_model_label' => 'طلب ترويج',
+    'id' => 'الرقم',
+    'shop_name' => 'المتجر',
+    'type' => 'النوع',
+    'offer' => 'عرض',
+    'banner' => 'بنر إعلاني',
+    'title' => 'العنوان',
+    'status' => 'الحالة',
+    'pending' => 'قيد المراجعة',
+    'approved' => 'موافق عليه',
+    'rejected' => 'مرفوض',
+    'expired' => 'منتهي',
+    'discount_percentage' => 'نسبة الخصم',
+    'offer_starts_at' => 'تاريخ البداية',
+    'offer_ends_at' => 'تاريخ الانتهاء',
+    'banner_position' => 'موقع البنر',
+    'banner_starts_at' => 'تاريخ البداية',
+    'banner_ends_at' => 'تاريخ الانتهاء',
+    'created_at' => 'تاريخ الإنشاء',
+    'basic_information' => 'المعلومات الأساسية',
+    'basic_information_section' => 'معلومات أساسية',
+    'shop' => 'المتجر',
+    'promotion_type' => 'نوع الترويج',
+    'offer' => 'عرض',
+    'banner' => 'بنر إعلاني',
+    'details_section' => 'التفاصيل',
+    'title_ar' => 'العنوان (عربي)',
+    'title_en' => 'العنوان (English)',
+    'description_ar' => 'الوصف (عربي)',
+    'description_en' => 'الوصف (English)',
+    'images' => 'الصور',
+    'promotion_images' => 'صور الترويج',
+    'upload_images' => 'اسحب وأفلت أو انقر لتحميل الصور',
+    'max_5_images' => 'يمكنك تحميل حتى 5 صور',
+    'offer_details' => 'تفاصيل العرض',
+    'offer_information' => 'معلومات العرض',
+    'discount_percentage' => 'نسبة الخصم (%)',
+    'offer_starts_at' => 'تاريخ بداية العرض',
+    'offer_ends_at' => 'تاريخ نهاية العرض',
+    'banner_details' => 'تفاصيل البنر',
+    'banner_information' => 'معلومات البنر الإعلاني',
+    'banner_position' => 'موقع البنر',
+    'home_top' => 'الصفحة الرئيسية - أعلى',
+    'home_middle' => 'الصفحة الرئيسية - وسط',
+    'home_bottom' => 'الصفحة الرئيسية - أسفل',
+    'category_top' => 'صفحة الفئات - أعلى',
+    'product_sidebar' => 'صفحة المنتج - جانبي',
+    'banner_link' => 'رابط البنر',
+    'banner_link_helper' => 'الرابط الذي سيتم التوجيه إليه عند النقر على البنر',
+    'banner_starts_at' => 'تاريخ بداية البنر',
+    'banner_ends_at' => 'تاريخ نهاية البنر',
+    'order_status' => 'حالة الطلب',
+    'status' => 'الحالة',
+    'pending' => '⏳ قيد المراجعة',
+    'approved' => '✅ موافق عليه',
+    'rejected' => '❌ مرفوض',
+    'expired' => '⌛ منتهي',
+    'approved_at' => 'تاريخ الموافقة',
+    'approved_by' => 'تمت الموافقة بواسطة',
+    'admin_notes' => 'ملاحظات الإدارة',
+    'no_notes' => 'لا توجد ملاحظات',
+
+    // Tabs
+    'basic_information' => 'المعلومات الأساسية',
+    'images' => 'الصور',
+    'offer_details' => 'تفاصيل العرض',
+    'banner_details' => 'تفاصيل البنر',
+    'approval_info' => 'معلومات الموافقة',
+    'system_info' => 'معلومات النظام',
+
+    // Sections
+    'general_info' => 'معلومات عامة',
+    'details' => 'التفاصيل',
+    'promotion_images' => 'صور الترويج',
+    'offer_information' => 'معلومات العرض',
+    'offer_status' => 'حالة العرض',
+    'banner_information' => 'معلومات البنر الإعلاني',
+    'banner_status' => 'حالة البنر',
+    'approval_details' => 'تفاصيل الموافقة',
+    'dates' => 'التواريخ',
+
+    // Labels
+    'shop' => 'المتجر',
+    'promotion_type' => 'نوع الترويج',
+    'status' => 'الحالة',
+    'title' => 'العنوان',
+    'description' => 'الوصف',
+    'discount_percentage' => 'نسبة الخصم',
+    'offer_starts_at' => 'تاريخ بداية العرض',
+    'offer_ends_at' => 'تاريخ انتهاء العرض',
+    'duration' => 'المدة',
+    'banner_position' => 'موقع البنر',
+    'banner_link' => 'رابط البنر',
+    'banner_starts_at' => 'تاريخ بداية البنر',
+    'banner_ends_at' => 'تاريخ انتهاء البنر',
+    'admin_notes' => 'ملاحظات الإدارة',
+    'approved_at' => 'تاريخ الموافقة',
+    'approved_by' => 'تمت الموافقة بواسطة',
+    'request_id' => 'رقم الطلب',
+    'vendor' => 'البائع',
+
+    // Status / Values
+    'pending' => '⏳ قيد المراجعة',
+    'approved' => '✅ موافق عليه',
+    'rejected' => '❌ مرفوض',
+    'expired' => '⌛ منتهي',
+    'active' => '✅ نشط',
+    'no_images' => 'لا توجد صور',
+    'no_notes' => 'لا توجد ملاحظات',
+    'no_link' => 'لا يوجد رابط',
+    'link_copied' => 'تم نسخ الرابط',
+    'id_copied' => 'تم نسخ رقم الطلب',
+    'days' => 'يوم',
+    'pending_message' => '⏳ الطلب قيد المراجعة من قبل الإدارة',
+
+    // Promotion types
+    'offer' => '🏷️ عرض',
+    'banner' => '📢 بنر إعلاني',
+
+    // Banner positions
+    'home_top' => '🏠 الصفحة الرئيسية - أعلى',
+    'home_middle' => '🏠 الصفحة الرئيسية - وسط',
+    'home_bottom' => '🏠 الصفحة الرئيسية - أسفل',
+    'category_top' => '📂 صفحة الفئات - أعلى',
+    'product_sidebar' => '📦 صفحة المنتج - جانبي',
+    'seller_packages_navigation_label' => 'باقات البائعين',
+    'seller_package_model_label' => 'باقة',
+    'seller_packages_plural_model_label' => 'باقات البائعين',
+    'package_name' => 'اسم الباقة',
+    'price' => 'السعر',
+    'duration_days' => 'المدة (أيام)',
+    'max_products' => 'عدد المنتجات',
+    'is_featured' => 'مميزة',
+    'has_premium_badge' => 'شارة مميزة',
+    'has_analytics' => 'تحليلات',
+    'commission_rate' => 'نسبة العمولة',
+    'is_active' => 'نشطة',
+    'created_at' => 'تاريخ الإنشاء',
+
+    'active_filter' => 'نشطة',
+    'featured_filter' => 'مميزة',
+    'all' => 'الكل',
+    'active_only' => 'نشطة فقط',
+    'inactive_only' => 'غير نشطة فقط',
+    'featured_only' => 'مميزة فقط',
+    'normal_only' => 'عادية فقط',
+
+    'subscribe' => 'اشتراك',
+    'confirm_subscription' => 'تأكيد الاشتراك',
+    'confirm' => 'تأكيد الاشتراك',
+    'cancel' => 'إلغاء',
+    'subscription_error_login' => 'يجب تسجيل الدخول أولاً',
+    'subscription_error_no_shop' => 'لا يوجد متجر مرتبط بحسابك',
+    'subscription_warning_active' => 'لديك اشتراك نشط بالفعل. سينتهي في :date',
+    'subscription_success' => 'تم الاشتراك بنجاح',
+    'subscription_success_body' => 'تم الاشتراك في باقة :package. ينتهي الاشتراك في :date',
+
+    // Basic package info
+    'basic_package_info' => 'معلومات الباقة الأساسية',
+    'package_name' => 'اسم الباقة',
+    'price' => 'السعر',
+    'subscription_duration' => 'مدة الاشتراك (أيام)',
+    'is_active' => 'نشط',
+
+    // Description
+    'description' => 'الوصف',
+    'location' => 'الموقع والاتصال',
+    'services' => 'الخدمات',
+    'service' => 'الخدمة ',
+    'working_hours' =>'أوقات العمل ',
+    // Product features
+    'product_features' => 'ميزات المنتجات',
+    'max_products' => 'الحد الأقصى للمنتجات',
+    'unlimited' => 'غير محدود',
+    'featured_products' => 'منتجات مميزة',
+    'premium_badge' => 'شارة مميزة',
+    'search_priority' => 'أولوية البحث',
+
+    // Marketing features
+    'marketing_features' => 'ميزات التسويق',
+    'max_campaigns' => 'الحد الأقصى للحملات',
+    'banner_ads' => 'إعلانات بانر',
+
+    // Reports & Analytics
+    'reports_analytics' => 'التقارير والتحليلات',
+    'sales_reports' => 'تقارير المبيعات',
+    'analytics' => 'التحليلات',
+    'report_level' => 'مستوى التقارير',
+
+    // Orders & Delivery
+    'orders_delivery_features' => 'ميزات الطلبات والتوصيل',
+    'order_priority' => 'أولوية الطلبات',
+    'set_prep_time' => 'تحديد وقت التحضير',
+    'custom_shipping_options' => 'خيارات شحن مخصصة',
+    'vendor_delivery' => 'توصيل البائع',
+
+    // Commissions & Fees
+    'commissions_fees' => 'العمولات والرسوم',
+    'commission_rate' => 'نسبة العمولة',
+    'commission_per_order' => 'عمولة لكل طلب',
+    'activation_fee_waived' => 'إعفاء من رسوم التفعيل',
+    'subscription_package' => 'الباقة',                // English: 'Package'
+    'subscription_starts_at' => 'تاريخ البداية',       // English: 'Start Date'
+    'subscription_ends_at' => 'تاريخ الانتهاء',       // English: 'End Date'
+    'subscription_status' => 'الحالة',               // English: 'Status'
+    'subscription_auto_renew' => 'تجديد تلقائي',     // English: 'Auto Renew'
+
+    // Status options
+    'status_active' => 'نشط',                        // English: 'Active'
+    'status_expired' => 'منتهي',                     // English: 'Expired'
+    'status_cancelled' => 'ملغي',                    // English: 'Cancelled'
+    'status_pending' => 'قيد الانتظار',
 ];

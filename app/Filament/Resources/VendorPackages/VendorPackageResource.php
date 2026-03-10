@@ -16,11 +16,24 @@ class VendorPackageResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::CubeTransparent;
 
-    protected static ?string $navigationLabel = 'باقات البائعين';
+    protected static ?string $navigationLabel = null;
+    protected static ?string $modelLabel = null;
+    protected static ?string $pluralModelLabel = null;
 
-    protected static ?string $modelLabel = 'باقة';
+    public static function getNavigationLabel(): string
+    {
+        return __('custom.seller_packages_navigation_label');
+    }
 
-    protected static ?string $pluralModelLabel = 'باقات البائعين';
+    public static function getModelLabel(): string
+    {
+        return __('custom.seller_package_model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('custom.seller_packages_plural_model_label');
+    }
 
     protected static ?int $navigationSort = 90;
 

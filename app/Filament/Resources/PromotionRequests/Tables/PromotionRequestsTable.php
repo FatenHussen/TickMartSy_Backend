@@ -18,107 +18,55 @@ class PromotionRequestsTable
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                    ->label('الرقم')
-                    ->sortable(),
+                    ->label(__('custom.id')),
 
                 Tables\Columns\TextColumn::make('shop.name')
-                    ->label('المتجر')
-                    ->formatStateUsing(fn($record) => $record->shop?->getTranslation('name', app()->getLocale()) ?? '-')
-                    ->searchable()
-                    ->sortable(),
+                    ->label(__('custom.shop_name')),
 
                 Tables\Columns\TextColumn::make('type')
-                    ->label('النوع')
+                    ->label(__('custom.type'))
                     ->badge()
                     ->formatStateUsing(fn($state) => match ($state) {
-                        PromotionType::OFFER => 'عرض',
-                        PromotionType::BANNER => 'بنر إعلاني',
+                        PromotionType::OFFER => __('custom.offer'),
+                        PromotionType::BANNER => __('custom.banner'),
                         default => $state->value ?? $state,
-                    })
-                    ->color(fn($state) => match ($state) {
-                        PromotionType::OFFER => 'success',
-                        PromotionType::BANNER => 'info',
-                        default => 'gray',
                     }),
 
                 Tables\Columns\TextColumn::make('title')
-                    ->label('العنوان')
-                    ->formatStateUsing(fn($record) => $record->getTranslation('title', app()->getLocale()))
-                    ->limit(30)
-                    ->searchable(),
+                    ->label(__('custom.title')),
 
                 Tables\Columns\TextColumn::make('status')
-                    ->label('الحالة')
+                    ->label(__('custom.status'))
                     ->badge()
                     ->formatStateUsing(fn($state) => match ($state) {
-                        PromotionStatus::PENDING => 'قيد المراجعة',
-                        PromotionStatus::APPROVED => 'موافق عليه',
-                        PromotionStatus::REJECTED => 'مرفوض',
-                        PromotionStatus::EXPIRED => 'منتهي',
+                        PromotionStatus::PENDING => __('custom.pending'),
+                        PromotionStatus::APPROVED => __('custom.approved'),
+                        PromotionStatus::REJECTED => __('custom.rejected'),
+                        PromotionStatus::EXPIRED => __('custom.expired'),
                         default => $state->value ?? $state,
-                    })
-                    ->color(fn($state) => match ($state) {
-                        PromotionStatus::PENDING => 'warning',
-                        PromotionStatus::APPROVED => 'success',
-                        PromotionStatus::REJECTED => 'danger',
-                        PromotionStatus::EXPIRED => 'gray',
-                        default => 'gray',
                     }),
 
                 Tables\Columns\TextColumn::make('discount_percentage')
-                    ->label('نسبة الخصم')
-                    ->suffix('%')
-                    ->sortable()
-                    ->toggleable()
-                    ->visible(fn($record) => $record?->type === PromotionType::OFFER),
+                    ->label(__('custom.discount_percentage')),
 
                 Tables\Columns\TextColumn::make('offer_starts_at')
-                    ->label('تاريخ البداية')
-                    ->date('Y-m-d')
-                    ->sortable()
-                    ->toggleable()
-                    ->visible(fn($record) => $record?->type === PromotionType::OFFER),
+                    ->label(__('custom.offer_starts_at')),
 
                 Tables\Columns\TextColumn::make('offer_ends_at')
-                    ->label('تاريخ الانتهاء')
-                    ->date('Y-m-d')
-                    ->sortable()
-                    ->toggleable()
-                    ->visible(fn($record) => $record?->type === PromotionType::OFFER),
+                    ->label(__('custom.offer_ends_at')),
 
                 Tables\Columns\TextColumn::make('banner_position')
-                    ->label('موقع البنر')
-                    ->formatStateUsing(fn($state) => match ($state) {
-                        'home_top' => 'الصفحة الرئيسية - أعلى',
-                        'home_middle' => 'الصفحة الرئيسية - وسط',
-                        'home_bottom' => 'الصفحة الرئيسية - أسفل',
-                        'category_top' => 'صفحة الفئات - أعلى',
-                        'product_sidebar' => 'صفحة المنتج - جانبي',
-                        default => $state,
-                    })
-                    ->sortable()
-                    ->toggleable()
-                    ->visible(fn($record) => $record?->type === PromotionType::BANNER),
+                    ->label(__('custom.banner_position')),
 
                 Tables\Columns\TextColumn::make('banner_starts_at')
-                    ->label('تاريخ البداية')
-                    ->date('Y-m-d')
-                    ->sortable()
-                    ->toggleable()
-                    ->visible(fn($record) => $record?->type === PromotionType::BANNER),
+                    ->label(__('custom.banner_starts_at')),
 
                 Tables\Columns\TextColumn::make('banner_ends_at')
-                    ->label('تاريخ الانتهاء')
-                    ->date('Y-m-d')
-                    ->sortable()
-                    ->toggleable()
-                    ->visible(fn($record) => $record?->type === PromotionType::BANNER),
+                    ->label(__('custom.banner_ends_at')),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('تاريخ الإنشاء')
-                    ->dateTime('Y-m-d H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->label(__('custom.created_at')),
+
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
@@ -156,4 +104,3 @@ class PromotionRequestsTable
             ->defaultSort('created_at', 'desc');
     }
 }
-
