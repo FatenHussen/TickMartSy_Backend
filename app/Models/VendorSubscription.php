@@ -8,6 +8,7 @@ class VendorSubscription extends Model
 {
     protected $fillable = [
         'vendor_id',
+        'shop_id',
         'vendor_package_id',
         'starts_at',
         'ends_at',

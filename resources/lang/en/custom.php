@@ -298,6 +298,8 @@ return [
         'actions' => [
             'start_preparing' => 'Change to Start Preparing',
             'ready_for_delivery' => 'Change to Ready for Delivery',
+            'update_item_status' => 'Update Item Status',
+            'update_items_status' => 'Update Vendor Items Status',
             'status_updated' => 'Order status updated',
             'ready_notification' => 'Order is ready for delivery',
         ],
@@ -767,5 +769,24 @@ return [
     // Pagination
     'pagination_showing' => 'Showing',
     'pagination_of' => 'of',
+
+    // Vendor Subscription Quotas
+    'subscription_no_active_title' => 'No Active Subscription',
+    'subscription_no_active_body' => 'Your subscription is inactive or expired. Please renew to add items.',
+    'subscription_limit_products_title' => 'Product Limit Reached',
+    'subscription_limit_products_body' => 'You have reached the maximum products for your package.',
+    'subscription_limit_campaigns_title' => 'Campaign Limit Reached',
+    'subscription_limit_campaigns_body' => 'You have reached the maximum campaigns for your package.',
+    'subscription_remaining_products_title' => 'Remaining Products',
+    'subscription_remaining_products_body' => 'Remaining products: :count',
+    'subscription_remaining_campaigns_title' => 'Remaining Campaigns',
+    'subscription_remaining_campaigns_body' => 'Remaining campaigns: :count',
+    'subscription_remaining_campaigns_hint' => 'Remaining campaigns: :count',
+    'subscription_remaining_products_dashboard' => 'Available products',
+    'subscription_remaining_campaigns_dashboard' => 'Available campaigns',
+    'subscription_days_left_title' => 'Days Left',
+    'subscription_days_left_dashboard' => 'Until subscription ends',
+    'subscription_status_title' => 'Subscription Status',
+    'subscription_status_inactive' => 'Inactive',
 
 ];

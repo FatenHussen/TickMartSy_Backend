@@ -8,6 +8,7 @@ use App\Filament\Resources\Products\Schemas\ProductInfolist;
 use App\Filament\Resources\Products\Tables\ProductsTable;
 use App\Models\Product;
 use App\Models\VendorUser;
+use App\Services\Vendor\VendorSubscriptionQuotaService;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -90,7 +91,12 @@ class ProductResource extends Resource
 
     public static function canCreate(): bool
     {
-        return true;
+        /** @var VendorUser|null $user */
+        $user = Auth::guard('vendor-user')->user();
+
+        $quota = app(VendorSubscriptionQuotaService::class)->getUsageSnapshot($user);
+
+        return $quota['has_active'] && $quota['can_create_product'];
     }
 
     public static function canEdit($record): bool

@@ -288,7 +288,9 @@ class ProductForm
                                                                 ->live(onBlur: true)
                                                                 ->required()
                                                                 ->searchable()
-                                                                ->afterStateUpdated(fn(callable $set) => $set('value_id', null)),
+                                                                ->afterStateUpdated(function (callable $set) {
+                                                                    $set('value_id', null);
+                                                                }),
 
                                                             Forms\Components\Select::make('value_id')
                                                                 ->label('القيمة')
@@ -298,12 +300,22 @@ class ProductForm
                                                                         return [];
                                                                     }
 
+                                                                    if (static::isColorAttribute($attributeId)) {
+                                                                        return static::getColorOptions($attributeId);
+                                                                    }
+
                                                                     $values = \App\Models\AttributeValue::where('category_attribute_id', $attributeId)->get();
                                                                     return $values->mapWithKeys(fn($v) => [$v->id => $v->getTranslation('name', app()->getLocale())])->toArray();
                                                                 })
                                                                 ->required()
                                                                 ->searchable()
-                                                                ->native(false),
+                                                                ->native(false)
+                                                                ->allowHtml()
+                                                                ->extraAttributes(function (callable $get) {
+                                                                    return static::isColorAttribute($get('attribute_id'))
+                                                                        ? ['class' => 'color-swatch-select']
+                                                                        : [];
+                                                                }),
                                                         ])
                                                         ->columns(2)
                                                         ->defaultItems(1)
@@ -465,5 +477,70 @@ class ProductForm
                 ])
                 ->columnSpanFull(),
         ]);
+    }
+
+    private static function isColorAttribute($attributeId): bool
+    {
+        if (!$attributeId || $attributeId === '_placeholder') {
+            return false;
+        }
+
+        return \App\Models\CategoryAttribute::where('id', $attributeId)
+            ->value('type') === 'color';
+    }
+
+    private static function getAttributeValueHexById(int $valueId): ?string
+    {
+        $value = \App\Models\AttributeValue::find($valueId);
+        if (!$value) {
+            return null;
+        }
+
+        $hex = $value->getTranslation('name', app()->getLocale(), false);
+        if (!$hex) {
+            $hex = $value->getTranslation('name', 'en', false)
+                ?: $value->getTranslation('name', 'ar', false);
+        }
+
+        return is_string($hex) && $hex !== '' ? $hex : null;
+    }
+
+    private static function getColorOptions(int $attributeId): array
+    {
+        $values = \App\Models\AttributeValue::where('category_attribute_id', $attributeId)->get();
+
+        $options = [];
+        foreach ($values as $value) {
+            $hex = static::getAttributeValueHexById($value->id);
+            if (!$hex) {
+                continue;
+            }
+            $options[$value->id] = static::renderColorSwatch($hex);
+        }
+
+        return $options;
+    }
+
+    private static function renderColorSwatch(string $hex): string
+    {
+        $hexSafe = e($hex);
+
+        return '<span style="display:inline-flex;align-items:center;gap:8px;">' .
+            '<span style="display:inline-block;width:18px;height:18px;border-radius:9999px;background:' . $hexSafe . ';border:1px solid #d1d5db;"></span>' .
+            '</span>';
+    }
+
+    private static function getAttributeValueIdByHex(int $attributeId, string $hex): ?int
+    {
+        $query = \App\Models\AttributeValue::where('category_attribute_id', $attributeId)
+            ->where(function ($q) use ($hex) {
+                $q->where('name->en', $hex)
+                    ->orWhere('name->ar', $hex)
+                    ->orWhere('name', $hex);
+            })
+            ->select('id')
+            ->first();
+
+        return $query?->id;
     }
 }

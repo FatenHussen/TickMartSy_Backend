@@ -4,6 +4,7 @@ namespace App\Filament\Resources\PromotionRequests\Schemas;
 
 use App\Enums\PromotionType;
 use App\Models\Shop;
+use App\Services\Vendor\VendorSubscriptionQuotaService;
 use Filament\Forms;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
@@ -19,6 +20,10 @@ class PromotionRequestForm
     {
         $user = Auth::guard('vendor-user')->user();
         $shopIds = Shop::where('vendor_id', $user?->vendor_id)->pluck('id', 'id')->toArray();
+        $quota = app(VendorSubscriptionQuotaService::class)->getUsageSnapshot($user);
+        $canBanner = $quota['has_active'] && $quota['can_create_banner'];
+        $remainingCampaigns = $quota['remaining_campaigns'];
+        $remainingCampaignsLabel = $remainingCampaigns === null ? __('custom.unlimited') : (string) $remainingCampaigns;
 
         return $schema->columns(1)->schema([
             Tabs::make('promotion_tabs')
@@ -30,13 +35,16 @@ class PromotionRequestForm
                                 ->schema([
                                     Forms\Components\Select::make('type')
                                         ->label(__('custom.promotion_type'))
-                                        ->options([
+                                        ->options(array_filter([
                                             'offer' => __('custom.offer'),
-                                            'banner' => __('custom.banner'),
-                                        ])
+                                            'banner' => $canBanner ? __('custom.banner') : null,
+                                        ]))
                                         ->required()
                                         ->native(false)
                                         ->live()
+                                        ->helperText(__('custom.subscription_remaining_campaigns_hint', [
+                                            'count' => $remainingCampaignsLabel,
+                                        ]))
                                         ->afterStateUpdated(function ($state, Set $set) {
                                             if ($state === 'offer') {
                                                 $set('banner_position', null);

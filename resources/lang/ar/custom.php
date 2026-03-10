@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
 
@@ -297,8 +297,10 @@ return [
             'normal' => 'عادي',
         ],
         'actions' => [
-            'start_preparing' => 'تغيير الحالة لبدء التحضير',
-            'ready_for_delivery' => 'تغير الحالة لجاهز للتوصيل',
+            'start_preparing' => 'تغيير الحالة إلى بدء التحضير',
+            'ready_for_delivery' => 'تغيير الحالة إلى جاهز للتوصيل',
+            'update_item_status' => 'تغيير حالة عنصر',
+            'update_items_status' => 'تغيير حالة عناصر الفيندور',
             'status_updated' => 'تم تحديث حالة الطلب',
             'ready_notification' => 'الطلب جاهز للتوصيل',
         ],
@@ -455,7 +457,6 @@ return [
             'review_info' => 'معلومات المراجعة',
         ],
     ],
-
     // Roles & Permissions
     'roles' => [
         'title' => 'الأدوار',
@@ -465,8 +466,8 @@ return [
         'users_count' => 'عدد المستخدمين',
         'guard_name' => 'اسم الحارس',
         'sections' => [
-            'basic_info' => 'المعلومات الأساسية',
-            'permissions' => 'الصلاحيات',
+        'sections' => [
+        ],
         ],
     ],
 
@@ -476,7 +477,7 @@ return [
         'name' => 'اسم الصلاحية',
         'guard_name' => 'اسم الحارس',
         'sections' => [
-            'basic_info' => 'المعلومات الأساسية',
+        'sections' => [
         ],
     ],
 
@@ -494,8 +495,7 @@ return [
         'is_active' => 'نشط',
         'min_order_amount' => 'الحد الأدنى لقيمة الطلب',
         'discount_types' => [
-            'percent' => 'نسبة مئوية',
-            'fixed' => 'مبلغ ثابت',
+        ],
         ],
         'sections' => [
             'basic_info' => 'المعلومات الأساسية',
@@ -749,4 +749,23 @@ return [
     'status_expired' => 'منتهي',                     // English: 'Expired'
     'status_cancelled' => 'ملغي',                    // English: 'Cancelled'
     'status_pending' => 'قيد الانتظار',
+
+    // Vendor Subscription Quotas
+    'subscription_no_active_title' => 'لا يوجد اشتراك نشط',
+    'subscription_no_active_body' => 'اشتراكك غير نشط أو منتهي. يرجى التجديد لإضافة العناصر.',
+    'subscription_limit_products_title' => 'تم الوصول لحد المنتجات',
+    'subscription_limit_products_body' => 'لقد وصلت إلى الحد الأقصى للمنتجات في باقتك.',
+    'subscription_limit_campaigns_title' => 'تم الوصول لحد الحملات',
+    'subscription_limit_campaigns_body' => 'لقد وصلت إلى الحد الأقصى للحملات في باقتك.',
+    'subscription_remaining_products_title' => 'المنتجات المتبقية',
+    'subscription_remaining_products_body' => 'المنتجات المتبقية: :count',
+    'subscription_remaining_campaigns_title' => 'الحملات المتبقية',
+    'subscription_remaining_campaigns_body' => 'الحملات المتبقية: :count',
+    'subscription_remaining_campaigns_hint' => 'الحملات المتبقية: :count',
+    'subscription_remaining_products_dashboard' => 'المنتجات المتاحة',
+    'subscription_remaining_campaigns_dashboard' => 'الحملات المتاحة',
+    'subscription_days_left_title' => 'الأيام المتبقية',
+    'subscription_days_left_dashboard' => 'حتى نهاية الاشتراك',
+    'subscription_status_title' => 'حالة الاشتراك',
+    'subscription_status_inactive' => 'غير نشط',
 ];
