@@ -93,7 +93,7 @@ class EditProduct extends EditRecord
             if (!empty($mainImageFile)) {
                 $product->media()->create([
                     'path' => $mainImageFile,
-                    'collection' => 'main',
+                    'collection' => 'product',
                     'order' => 0,
                 ]);
             }

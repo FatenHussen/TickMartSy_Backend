@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Products\Pages;
 
 use App\Filament\Resources\Products\ProductResource;
+use App\Services\Vendor\VendorSubscriptionQuotaService;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -11,38 +13,63 @@ class CreateProduct extends CreateRecord
 {
     protected static string $resource = ProductResource::class;
 
-    protected $variantMediaMap = [];
+    protected $variantMediaBySignature = [];
+    protected $variantMediaByIndex = [];
+    protected $productMediaPaths = [];
     protected $mainImagePath = null;
+
+    public function mount(): void
+    {
+        parent::mount();
+
+        $this->guardSubscription();
+    }
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         /** @var \App\Models\VendorUser|null $user */
         $user = Auth::guard('vendor-user')->user();
 
-        if ($user) {
-            $data['vendor_id'] = $user->shops()->first()?->vendor_id;
+        if ($user && empty($data['vendor_id'])) {
+            $data['vendor_id'] = $user->vendor_id ?? $user->shops()->first()?->vendor_id;
         }
 
         Log::info('=== mutateFormDataBeforeCreate ===');
         Log::info('main_image in data:', ['main_image' => $data['main_image'] ?? 'NOT SET']);
         Log::info('media in data:', ['media' => $data['media'] ?? 'NOT SET']);
 
+        $formState = $this->form->getState();
+
         // Store main_image before Filament processes it
-        if (isset($data['main_image'])) {
-            $this->mainImagePath = $data['main_image'];
+        if (isset($formState['main_image'])) {
+            $this->mainImagePath = $formState['main_image'];
             Log::info('Stored main_image:', ['path' => $this->mainImagePath]);
         }
 
+        // Store product media before Filament processes it
+        if (isset($formState['media']) && is_array($formState['media'])) {
+            $this->productMediaPaths = $formState['media'];
+        }
+
         // Extract and store variant_media before Filament processes the data
-        if (isset($data['variants']) && is_array($data['variants'])) {
-            foreach ($data['variants'] as $key => $variantData) {
+        if (isset($formState['variants']) && is_array($formState['variants'])) {
+            foreach ($formState['variants'] as $key => $variantData) {
                 if (isset($variantData['variant_media'])) {
-                    $this->variantMediaMap[$key] = $variantData['variant_media'];
+                    $signature = $this->buildVariantSignature(
+                        $variantData['attributes_values_ids'] ?? null
+                    );
+
+                    if ($signature) {
+                        $this->variantMediaBySignature[$signature] = $variantData['variant_media'];
+                    } else {
+                        $this->variantMediaByIndex[$key] = $variantData['variant_media'];
+                    }
                 }
             }
         }
 
-        Log::info('variantMediaMap in mutate:', $this->variantMediaMap);
+        Log::info('variantMediaBySignature in mutate:', $this->variantMediaBySignature);
+        Log::info('variantMediaByIndex in mutate:', $this->variantMediaByIndex);
 
         return $data;
     }
@@ -61,7 +88,7 @@ class CreateProduct extends CreateRecord
         if ($this->mainImagePath) {
             $product->media()->create([
                 'path' => $this->mainImagePath,
-                'collection' => 'main',
+                'collection' => 'product',
                 'order' => 0,
             ]);
             Log::info('Main image saved from property:', ['path' => $this->mainImagePath]);
@@ -78,30 +105,42 @@ class CreateProduct extends CreateRecord
         }
 
         // Handle product media (additional images)
-        if (isset($formData['media']) && is_array($formData['media'])) {
-            foreach ($formData['media'] as $index => $filePath) {
+        $mediaPaths = $this->productMediaPaths;
+        if (empty($mediaPaths) && isset($formData['media']) && is_array($formData['media'])) {
+            $mediaPaths = $formData['media'];
+        }
+        if (!empty($mediaPaths)) {
+            foreach ($mediaPaths as $index => $filePath) {
                 $product->media()->create([
                     'path' => $filePath,
                     'collection' => 'product',
                     'order' => $index,
                 ]);
             }
-            Log::info('Product media saved:', ['count' => count($formData['media'])]);
+            Log::info('Product media saved:', ['count' => count($mediaPaths)]);
         }
 
-        // Handle variant media using the stored map
-        if (!empty($this->variantMediaMap)) {
+        // Handle variant media using stored maps
+        if (!empty($this->variantMediaBySignature) || !empty($this->variantMediaByIndex)) {
             $product->load('variants');
             Log::info('Variants in DB:', $product->variants->count());
-            Log::info('variantMediaMap:', $this->variantMediaMap);
+            Log::info('variantMediaBySignature:', $this->variantMediaBySignature);
+            Log::info('variantMediaByIndex:', $this->variantMediaByIndex);
 
             $variantIndex = 0;
             foreach ($product->variants as $variant) {
-                // Try to find media for this variant by index
-                if (isset($this->variantMediaMap[$variantIndex])) {
-                    $mediaPaths = $this->variantMediaMap[$variantIndex];
-                    Log::info("Saving media for variant {$variant->id} (index $variantIndex)");
+                $signature = $this->buildVariantSignature($variant->attributes_values_ids ?? null);
+                $mediaPaths = null;
 
+                if ($signature && isset($this->variantMediaBySignature[$signature])) {
+                    $mediaPaths = $this->variantMediaBySignature[$signature];
+                    Log::info("Saving media for variant {$variant->id} (signature $signature)");
+                } elseif (isset($this->variantMediaByIndex[$variantIndex])) {
+                    $mediaPaths = $this->variantMediaByIndex[$variantIndex];
+                    Log::info("Saving media for variant {$variant->id} (index $variantIndex)");
+                }
+
+                if (is_array($mediaPaths)) {
                     foreach ($mediaPaths as $index => $filePath) {
                         $variant->media()->create([
                             'path' => $filePath,
@@ -114,6 +153,70 @@ class CreateProduct extends CreateRecord
             }
         }
 
+        $this->notifyRemainingQuota();
+
         Log::info('=== afterCreate END ===');
+    }
+
+    private function guardSubscription(): void
+    {
+        $user = Auth::guard('vendor-user')->user();
+        $quota = app(VendorSubscriptionQuotaService::class)->getUsageSnapshot($user);
+
+        if (!$quota['has_active']) {
+            Notification::make()
+                ->title(__('custom.subscription_no_active_title'))
+                ->body(__('custom.subscription_no_active_body'))
+                ->danger()
+                ->send();
+
+            $this->redirect($this->getResource()::getUrl('index'));
+            return;
+        }
+
+        if (!$quota['can_create_product']) {
+            Notification::make()
+                ->title(__('custom.subscription_limit_products_title'))
+                ->body(__('custom.subscription_limit_products_body'))
+                ->danger()
+                ->send();
+
+            $this->redirect($this->getResource()::getUrl('index'));
+        }
+    }
+
+    private function notifyRemainingQuota(): void
+    {
+        $user = Auth::guard('vendor-user')->user();
+        $quota = app(VendorSubscriptionQuotaService::class)->getUsageSnapshot($user);
+
+        if (!$quota['has_active']) {
+            return;
+        }
+
+        $remaining = $quota['remaining_products'];
+        $remainingLabel = $remaining === null ? __('custom.unlimited') : (string) $remaining;
+
+        Notification::make()
+            ->title(__('custom.subscription_remaining_products_title'))
+            ->body(__('custom.subscription_remaining_products_body', ['count' => $remainingLabel]))
+            ->success()
+            ->send();
+    }
+
+    private function buildVariantSignature($attributesValuesIds): ?string
+    {
+        if (!is_array($attributesValuesIds) || empty($attributesValuesIds)) {
+            return null;
+        }
+
+        $values = array_values(array_filter($attributesValuesIds));
+        sort($values);
+
+        if (empty($values)) {
+            return null;
+        }
+
+        return 'attr:' . implode(',', $values);
     }
 }

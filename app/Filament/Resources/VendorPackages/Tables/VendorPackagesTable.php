@@ -126,6 +126,7 @@ class VendorPackagesTable
                         }
 
                         $subscription = \App\Models\VendorSubscription::create([
+                            'vendor_id' => $user->vendor_id,
                             'shop_id' => $shop->id,
                             'vendor_package_id' => $record->id,
                             'starts_at' => now()->toDateString(),

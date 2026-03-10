@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Orders\Tables;
 use App\Enums\OrderStatus;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
+use Illuminate\Support\Facades\Auth;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -89,12 +90,13 @@ class OrdersTable
                     ->icon('heroicon-o-clock')
                     ->color('info')
                     ->requiresConfirmation()
-                    ->visible(fn($record) => $record->status === OrderStatus::PENDING->value)
+                    ->visible(fn($record) => $record->status === OrderStatus::PENDING->value && static::isFullVendorOrder($record))
                     ->action(function ($record) {
                         $record->update([
                             'status' => OrderStatus::PREPARING->value,
                             'preparing_at' => now(),
                         ]);
+                        $record->items()->update(['item_status' => OrderStatus::PREPARING->value]);
 
                         \Filament\Notifications\Notification::make()
                             ->title(__('custom.orders.actions.status_updated'))
@@ -107,12 +109,13 @@ class OrdersTable
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->requiresConfirmation()
-                    ->visible(fn($record) => $record->status === OrderStatus::PREPARING->value)
+                    ->visible(fn($record) => $record->status === OrderStatus::PREPARING->value && static::isFullVendorOrder($record))
                     ->action(function ($record) {
                         $record->update([
                             'status' => OrderStatus::OUT_DELIVERY->value,
                             'out_delivery_at' => now(),
                         ]);
+                        $record->items()->update(['item_status' => OrderStatus::OUT_DELIVERY->value]);
 
                         \Filament\Notifications\Notification::make()
                             ->title(__('custom.orders.actions.ready_notification'))
@@ -121,5 +124,35 @@ class OrdersTable
                     }),
             ])
             ->defaultSort('created_at', 'desc');
+    }
+
+    protected static function getVendorShopIds(): array
+    {
+        $user = Auth::guard('vendor-user')->user();
+        if (!$user) {
+            return [];
+        }
+
+        return $user->shops()->pluck('shops.id')->toArray();
+    }
+
+    protected static function isFullVendorOrder($record): bool
+    {
+        $shopIds = static::getVendorShopIds();
+        if (empty($shopIds)) {
+            return false;
+        }
+
+        $items = $record->items ?? $record->items()->get();
+        if ($items->isEmpty()) {
+            return false;
+        }
+
+        $vendorItemCount = $items->filter(function ($item) use ($shopIds) {
+            $shopId = $item->shopProductVariant?->shop_id;
+            return $shopId && in_array($shopId, $shopIds);
+        })->count();
+
+        return $vendorItemCount === $items->count();
     }
 }

@@ -71,7 +71,7 @@ class OrderResource extends Resource
             ->whereHas('items.shopProductVariant', function ($query) use ($shopIds) {
                 $query->whereIn('shop_id', $shopIds);
             })
-            ->with(['user', 'driver', 'address', 'items']);
+            ->with(['user', 'driver', 'address', 'items.shopProductVariant']);
     }
 
     public static function getPages(): array

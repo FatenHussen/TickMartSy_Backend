@@ -143,6 +143,16 @@ class Product extends Model implements Sectionable
             ->orderBy('order');
     }
 
+    public function productMedia()
+    {
+        return $this->media()->where('collection', ProductMedia::COLLECTION_PRODUCT);
+    }
+
+    public function mainMedia()
+    {
+        return $this->media()->where('collection', 'product')->first();
+    }
+
     public function badges()
     {
         return $this->morphToMany(Badge::class, 'badgeable')->withPivot('position');
@@ -258,6 +268,11 @@ class Product extends Model implements Sectionable
 
     public function getImageUrlAttribute()
     {
-        return $this->media->first()?->url;
+        $main = $this->mainMedia()->first();
+        if ($main) {
+            return $main->url;
+        }
+
+        return $this->productMedia()->first()?->url;
     }
 }

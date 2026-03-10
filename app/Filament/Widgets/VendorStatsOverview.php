@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\VendorUser;
+use App\Services\Vendor\VendorSubscriptionQuotaService;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\Auth;
@@ -76,7 +77,7 @@ class VendorStatsOverview extends BaseWidget
             ? (($thisMonthRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100
             : 0;
 
-        return [
+        $stats = [
             Stat::make(__('custom.stats.total_revenue'), '$' . number_format($totalRevenue, 2))
                 ->description($revenueChange >= 0
                     ? '+' . number_format($revenueChange, 1) . '% ' . __('custom.stats.from_last_month')
@@ -100,5 +101,38 @@ class VendorStatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-clock')
                 ->color('warning'),
         ];
+
+        $quota = app(VendorSubscriptionQuotaService::class)->getUsageSnapshot($user);
+
+        if (!$quota['has_active']) {
+            $stats[] = Stat::make(__('custom.subscription_status_title'), __('custom.subscription_status_inactive'))
+                ->description(__('custom.subscription_no_active_body'))
+                ->descriptionIcon('heroicon-m-x-circle')
+                ->color('danger');
+        } else {
+            $remainingProducts = $quota['remaining_products'];
+            $remainingCampaigns = $quota['remaining_campaigns'];
+
+            $remainingProductsLabel = $remainingProducts === null ? __('custom.unlimited') : (string) $remainingProducts;
+            $remainingCampaignsLabel = $remainingCampaigns === null ? __('custom.unlimited') : (string) $remainingCampaigns;
+            $daysLeftLabel = $quota['days_left'] === null ? '-' : (string) $quota['days_left'];
+
+            $stats[] = Stat::make(__('custom.subscription_remaining_products_title'), $remainingProductsLabel)
+                ->description(__('custom.subscription_remaining_products_dashboard'))
+                ->descriptionIcon('heroicon-m-shopping-bag')
+                ->color('info');
+
+            $stats[] = Stat::make(__('custom.subscription_remaining_campaigns_title'), $remainingCampaignsLabel)
+                ->description(__('custom.subscription_remaining_campaigns_dashboard'))
+                ->descriptionIcon('heroicon-m-megaphone')
+                ->color('primary');
+
+            $stats[] = Stat::make(__('custom.subscription_days_left_title'), $daysLeftLabel)
+                ->description(__('custom.subscription_days_left_dashboard'))
+                ->descriptionIcon('heroicon-m-calendar')
+                ->color('success');
+        }
+
+        return $stats;
     }
 }

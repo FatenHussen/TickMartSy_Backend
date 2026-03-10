@@ -50,16 +50,14 @@ class ProductInfolist
                                         ->badge()
                                         ->color('gray')
                                         ->icon('heroicon-o-hashtag')
-                                        ->copyable()
-                                        ->copyMessage('تم نسخ SKU'),
+                                        ->copyable(),
 
                                     Infolists\Components\TextEntry::make('barcode')
                                         ->label(__('custom.products.barcode'))
                                         ->badge()
                                         ->color('gray')
                                         ->icon('heroicon-o-qr-code')
-                                        ->copyable()
-                                        ->copyMessage('تم نسخ الباركود'),
+                                        ->copyable(),
 
                                     Infolists\Components\TextEntry::make('model')
                                         ->label(__('custom.products.model'))
@@ -212,7 +210,6 @@ class ProductInfolist
 
                                     Infolists\Components\TextEntry::make('no_images')
                                         ->label('')
-                                        ->default('📷 لا توجد صور')
                                         ->color('gray')
                                         ->size('lg')
                                         ->columnSpanFull()
@@ -311,7 +308,6 @@ class ProductInfolist
                                 ->schema([
                                     Infolists\Components\TextEntry::make('no_variants')
                                         ->label('')
-                                        ->default('📦 لا توجد متغيرات لهذا المنتج')
                                         ->color('gray')
                                         ->size('lg')
                                         ->columnSpanFull(),
@@ -320,7 +316,7 @@ class ProductInfolist
                         ]),
 
                     // Tab 5: التفاصيل الإضافية
-                    Tab::make('التفاصيل الإضافية')
+                    Tab::make(__('custom.products.category_details'))
                         ->icon('heroicon-o-list-bullet')
                         ->badge(fn($record) => ($record->categoryDetails->count() + $record->extraDetails->count()) > 0 ? ($record->categoryDetails->count() + $record->extraDetails->count()) : null)
                         ->schema([
@@ -370,7 +366,6 @@ class ProductInfolist
                                 ->schema([
                                     Infolists\Components\TextEntry::make('no_details')
                                         ->label('')
-                                        ->default('📋 لا توجد تفاصيل إضافية لهذا المنتج')
                                         ->color('gray')
                                         ->size('lg')
                                         ->columnSpanFull(),
@@ -436,7 +431,6 @@ class ProductInfolist
                                 ->schema([
                                     Infolists\Components\TextEntry::make('no_bought_with')
                                         ->label('')
-                                        ->default('🛍️ لا توجد منتجات مشتراة معاً')
                                         ->color('gray')
                                         ->size('lg')
                                         ->columnSpanFull(),

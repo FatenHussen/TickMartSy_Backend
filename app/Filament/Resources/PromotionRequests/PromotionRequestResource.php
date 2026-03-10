@@ -6,6 +6,7 @@ use App\Filament\Resources\PromotionRequests\Pages;
 use App\Filament\Resources\PromotionRequests\Tables\PromotionRequestsTable;
 use App\Models\PromotionRequest;
 use App\Enums\PromotionStatus;
+use App\Services\Vendor\VendorSubscriptionQuotaService;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -85,7 +86,11 @@ class PromotionRequestResource extends Resource
 
     public static function canCreate(): bool
     {
-        return true;
+        $user = Auth::guard('vendor-user')->user();
+
+        $quota = app(VendorSubscriptionQuotaService::class)->getUsageSnapshot($user);
+
+        return $quota['has_active'] && $quota['can_create_campaign'];
     }
 
     public static function canEdit($record): bool
