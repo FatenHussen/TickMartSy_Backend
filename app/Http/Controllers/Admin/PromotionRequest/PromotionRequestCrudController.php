@@ -14,7 +14,7 @@ class PromotionRequestCrudController extends BaseCRUDController
     public function __construct(PromotionRequestService $service)
     {
         $this->service = $service;
-        $this->indexRequest = FilterRequest::class;
+        $this->filterRequest = FilterRequest::class;
     }
 
     /**

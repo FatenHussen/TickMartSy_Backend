@@ -17,6 +17,7 @@ class FilterRequest extends FormRequest
             'governorate_id' => ['nullable', 'exists:governorates,id'],
             'category_id' => ['nullable', 'exists:categories,id'],
             'search' => ['nullable', 'string', 'max:255'],
+            'sort_by' => ['nullable', 'in:newest,oldest,rating_desc,rating_asc'],
         ];
     }
 }

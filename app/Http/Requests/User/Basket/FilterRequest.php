@@ -30,6 +30,7 @@ class FilterRequest extends FormRequest
             'items_count_min' => 'nullable|integer|min:0',
             'items_count_max' => 'nullable|integer|min:0',
             'type' => 'nullable|in:new,best_selling,top_rated',
+            'sort_by' => 'nullable|in:price_desc,price_asc,newest,oldest,rating_desc,rating_asc',
         ];
     }
 }

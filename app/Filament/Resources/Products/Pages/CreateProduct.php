@@ -30,6 +30,29 @@ class CreateProduct extends CreateRecord
         /** @var \App\Models\VendorUser|null $user */
         $user = Auth::guard('vendor-user')->user();
 
+        // Check subscription status before creating
+        $quota = app(VendorSubscriptionQuotaService::class)->getUsageSnapshot($user);
+
+        if (!$quota['has_active']) {
+            Notification::make()
+                ->title(__('custom.subscription_no_active_title'))
+                ->body(__('custom.subscription_no_active_body'))
+                ->danger()
+                ->send();
+
+            $this->halt();
+        }
+
+        if (!$quota['can_create_product']) {
+            Notification::make()
+                ->title(__('custom.subscription_limit_products_title'))
+                ->body(__('custom.subscription_limit_products_body'))
+                ->danger()
+                ->send();
+
+            $this->halt();
+        }
+
         if ($user && empty($data['vendor_id'])) {
             $data['vendor_id'] = $user->vendor_id ?? $user->shops()->first()?->vendor_id;
         }
@@ -175,20 +198,26 @@ class CreateProduct extends CreateRecord
                 ->title(__('custom.subscription_no_active_title'))
                 ->body(__('custom.subscription_no_active_body'))
                 ->danger()
+                ->persistent()
                 ->send();
 
-            $this->redirect($this->getResource()::getUrl('index'));
+            $this->redirect($this->getResource()::getUrl('index'), navigate: true);
             return;
         }
 
         if (!$quota['can_create_product']) {
+            $remaining = $quota['remaining_products'];
+            $remainingLabel = $remaining === null ? __('custom.unlimited') : (string) $remaining;
+
             Notification::make()
                 ->title(__('custom.subscription_limit_products_title'))
                 ->body(__('custom.subscription_limit_products_body'))
-                ->danger()
+                ->warning()
+                ->persistent()
                 ->send();
 
-            $this->redirect($this->getResource()::getUrl('index'));
+            $this->redirect($this->getResource()::getUrl('index'), navigate: true);
+            return;
         }
     }
 

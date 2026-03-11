@@ -44,7 +44,17 @@ class Recipe extends Model implements Sectionable
     {
         return $this->hasMany(RecipeItem::class);
     }
-
+    public function variants()
+    {
+        return $this->hasManyThrough(
+            ShopProductVariant::class,
+            RecipeItem::class,
+            'recipe_id',              // FK في recipe_items
+            'id',                     // PK في shop_product_variants
+            'id',                     // PK في recipes
+            'shop_product_variant_id' // FK في recipe_items
+        );
+    }
     public function steps()
     {
         return $this->hasMany(RecipeStep::class)->orderBy('step_number');

@@ -36,6 +36,7 @@ class CategoryService extends BaseService
         // Remove 'type' from filters as it's handled separately
         $parentFilters = $filters;
         unset($parentFilters['type']);
+        unset($parentFilters['sort_by']);
 
         // Now call parent (won't apply search since searchableFields is empty)
         $query = parent::queryBuilder($query, $parentFilters, $config);
@@ -67,6 +68,10 @@ class CategoryService extends BaseService
         // Type filters
         if (!empty($filters['type'])) {
             $this->applyTypeFilters($query, $filters['type']);
+        }
+
+        if (!empty($filters['sort_by'])) {
+            $this->applySortBy($query, $filters['sort_by']);
         }
 
         return $query;
@@ -107,5 +112,16 @@ class CategoryService extends BaseService
                     ->orderBy('avg_rating', 'desc');
                 break;
         }
+    }
+
+    protected function applySortBy($query, string $sortBy): void
+    {
+        $query->reorder();
+
+        match ($sortBy) {
+            'newest' => $query->orderBy('created_at', 'desc'),
+            'oldest' => $query->orderBy('created_at', 'asc'),
+            default => null,
+        };
     }
 }

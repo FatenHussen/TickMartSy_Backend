@@ -19,6 +19,7 @@ class FilterRequest extends FormRequest
             'discount_max' => ['nullable', 'numeric', 'min:0'],
             'serves' => ['nullable', 'string', 'max:50'],
             'prepare_time' => ['nullable', 'string', 'max:50'],
+            'sort_by' => ['nullable', 'in:newest,oldest,price_asc,price_desc'],
         ];
     }
 }

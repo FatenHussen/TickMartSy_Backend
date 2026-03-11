@@ -27,6 +27,7 @@ class FilterRequest extends FormRequest
             'is_free_delivery' => ['nullable', 'boolean'],
             'on_sale' => ['nullable', 'boolean'],
             'in_stock_only' => ['nullable', 'boolean'],
+            'sort_by' => ['nullable', 'in:price_desc,price_asc,newest,oldest,rating_desc,rating_asc'],
 
             // Attribute filters
             'attribute_values' => ['nullable', 'array'],
