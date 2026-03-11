@@ -53,6 +53,7 @@ class VendorPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
                 \App\Http\Middleware\FilamentAutoLogout::class,
+                \App\Http\Middleware\SaveVendorFcmToken::class,
             ])
             ->authMiddleware([
                 Authenticate::class,
