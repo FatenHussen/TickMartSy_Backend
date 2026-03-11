@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Log;
 
 class Dashboard extends BaseDashboard
 {
-    public function __construct()
+    public function mount(): void
     {
-        parent::__construct();
+        parent::mount();
 
         // احفظ FCM token عند تحميل الـ Dashboard
         $this->saveFcmToken();
@@ -59,25 +59,12 @@ class Dashboard extends BaseDashboard
     public function getWidgets(): array
     {
         return [
-            // \App\Filament\Widgets\VendorNotificationsWidget::class,
             \App\Filament\Widgets\VendorStatsOverview::class,
             \App\Filament\Widgets\SalesChart::class,
             \App\Filament\Widgets\SalesHeatmap::class,
             \App\Filament\Widgets\TopProductsChart::class,
             \App\Filament\Widgets\OrdersStatusChart::class,
             \App\Filament\Widgets\LowStockProducts::class,
-        ];
-    }
-
-    protected function getHeaderActions(): array
-    {
-        return [];
-    }
-
-    public function getViewData(): array
-    {
-        return [
-            'fcmComponent' => \App\Livewire\SaveFcmToken::class,
         ];
     }
 }
