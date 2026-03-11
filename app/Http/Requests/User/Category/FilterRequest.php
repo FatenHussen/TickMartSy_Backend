@@ -39,6 +39,7 @@ class FilterRequest extends FormRequest
             'search' => 'nullable|string',
             'shop_id' => 'nullable|integer|exists:shops,id',
             'type' => 'nullable|in:new,most_popular,top_rated',
+            'sort_by' => 'nullable|in:newest,oldest',
         ];
     }
 }

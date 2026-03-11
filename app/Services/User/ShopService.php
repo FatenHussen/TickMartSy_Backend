@@ -35,6 +35,9 @@ class ShopService extends BaseService
 
         $this->applyGeographicalFilters($query, $filters);
         $this->applyTypeFilters($query, $filters);
+        if (!empty($filters['sort_by'])) {
+            $this->applySortBy($query, $filters['sort_by']);
+        }
 
         /* ================= FAVORITES ================= */
         if (
@@ -148,6 +151,17 @@ class ShopService extends BaseService
     protected function filterActive(Builder $query)
     {
         $query->where('is_active', true);
+    }
+
+    protected function applySortBy(Builder $query, string $sortBy): void
+    {
+        $query->reorder();
+
+        match ($sortBy) {
+            'newest' => $query->orderBy('created_at', 'desc'),
+            'oldest' => $query->orderBy('created_at', 'asc'),
+            default => null,
+        };
     }
 
     public function query(array $filters = [])

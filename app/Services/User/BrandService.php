@@ -67,6 +67,9 @@ class BrandService extends BaseService
         if (!empty($filters['type'])) {
             $this->applyTypeFilters($query, $filters['type']);
         }
+        if (!empty($filters['sort_by'])) {
+            $this->applySortBy($query, $filters['sort_by']);
+        }
         /* ================= FAVORITES ================= */
         if (
             auth('user')->check() &&
@@ -95,5 +98,16 @@ class BrandService extends BaseService
 
 
         return $query;
+    }
+
+    protected function applySortBy($query, string $sortBy): void
+    {
+        $query->reorder();
+
+        match ($sortBy) {
+            'newest' => $query->orderBy('created_at', 'desc'),
+            'oldest' => $query->orderBy('created_at', 'asc'),
+            default => null,
+        };
     }
 }

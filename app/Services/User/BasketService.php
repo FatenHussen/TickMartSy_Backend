@@ -70,6 +70,10 @@ class BasketService extends BaseService
             $this->applyTypeFilters($query, $type);
         }
 
+        if (!empty($filters['sort_by'])) {
+            $this->applySortBy($query, $filters['sort_by']);
+        }
+
         return $query;
     }
     public function query(array $filters)
@@ -109,5 +113,18 @@ class BasketService extends BaseService
                 $query->orderBy('rating', 'desc');
                 break;
         }
+    }
+
+    protected function applySortBy($query, string $sortBy): void
+    {
+        $query->reorder();
+
+        match ($sortBy) {
+            'price_desc' => $query->orderBy('price', 'desc'),
+            'price_asc' => $query->orderBy('price', 'asc'),
+            'newest' => $query->orderBy('created_at', 'desc'),
+            'oldest' => $query->orderBy('created_at', 'asc'),
+            default => null,
+        };
     }
 }

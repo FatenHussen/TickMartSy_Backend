@@ -140,6 +140,7 @@ class ProductService extends BaseService
             'media',
             'icons',
         ]);
+        $query->where('approval_status', \App\Enums\ProductApprovalStatus::APPROVED->value);
 
         if (!empty($filters['category_id'])) {
             $category = Category::find($filters['category_id']);
@@ -241,6 +242,10 @@ class ProductService extends BaseService
             $this->applyTypeFilters($query, $filters);
         }
 
+        if (!empty($filters['sort_by'])) {
+            $this->applySortBy($query, $filters['sort_by']);
+        }
+
         /* ================= FAVORITES ================= */
         if (
             auth('user')->check() &&
@@ -263,5 +268,18 @@ class ProductService extends BaseService
         $query = Product::query();
         $query =  $this->queryBuilder($query, $filters);
         return $query;
+    }
+
+    protected function applySortBy($query, string $sortBy): void
+    {
+        $query->reorder();
+
+        match ($sortBy) {
+            'price_desc' => $query->orderBy('price', 'desc'),
+            'price_asc' => $query->orderBy('price', 'asc'),
+            'newest' => $query->orderBy('created_at', 'desc'),
+            'oldest' => $query->orderBy('created_at', 'asc'),
+            default => null,
+        };
     }
 }

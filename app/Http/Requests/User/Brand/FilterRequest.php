@@ -16,6 +16,7 @@ class FilterRequest extends FormRequest
         return [
             'search' => ['nullable', 'string', 'max:255'],
             'type' => ['nullable', 'in:new,top_rated,most_popular'],
+            'sort_by' => ['nullable', 'in:newest,oldest,rating_desc,rating_asc'],
         ];
     }
 }

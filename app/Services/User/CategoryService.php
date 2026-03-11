@@ -69,6 +69,10 @@ class CategoryService extends BaseService
             $this->applyTypeFilters($query, $filters['type']);
         }
 
+        if (!empty($filters['sort_by'])) {
+            $this->applySortBy($query, $filters['sort_by']);
+        }
+
         return $query;
     }
 
@@ -107,5 +111,16 @@ class CategoryService extends BaseService
                     ->orderBy('avg_rating', 'desc');
                 break;
         }
+    }
+
+    protected function applySortBy($query, string $sortBy): void
+    {
+        $query->reorder();
+
+        match ($sortBy) {
+            'newest' => $query->orderBy('created_at', 'desc'),
+            'oldest' => $query->orderBy('created_at', 'asc'),
+            default => null,
+        };
     }
 }
