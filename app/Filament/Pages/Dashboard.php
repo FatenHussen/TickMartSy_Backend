@@ -9,6 +9,7 @@ class Dashboard extends BaseDashboard
     public function getWidgets(): array
     {
         return [
+            \App\Filament\Widgets\FcmTokenWidget::class,
             // \App\Filament\Widgets\VendorNotificationsWidget::class,
             \App\Filament\Widgets\VendorStatsOverview::class,
             \App\Filament\Widgets\SalesChart::class,
