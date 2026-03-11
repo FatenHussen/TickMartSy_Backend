@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class VendorNotification extends Model
 {
+    use HasUuids;
+
     protected $fillable = [
         'vendor_user_id',
         'title',
@@ -19,6 +22,9 @@ class VendorNotification extends Model
         'data' => 'array',
         'read_at' => 'datetime',
     ];
+
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     public function vendorUser()
     {

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('vendor_notifications', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->foreignId('vendor_user_id')->constrained()->cascadeOnDelete();
             $table->string('title');
             $table->text('body');
