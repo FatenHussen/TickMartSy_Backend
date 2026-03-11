@@ -35,16 +35,25 @@ class VendorNotificationService
             $vendorUsers = VendorUser::where('vendor_id', $vendorId)->get();
 
             foreach ($vendorUsers as $user) {
-                // استخدمي NotificationService - بترسل FCM + Database معاً
-                $this->notificationService->send(
-                    $user,
-                    $title,
-                    $body,
-                    array_merge($data, ['type' => $type])
-                );
+                // احفظ الإشعار مباشرة في الـ database
+                \App\Models\VendorNotification::create([
+                    'vendor_user_id' => $user->id,
+                    'title' => $title,
+                    'type' => $type,
+                    'data' => json_encode([
+                        'title' => $title,
+                        'body' => $body,
+                        'data' => $data,
+                    ]),
+                ]);
+
+                Log::info('Vendor notification saved to database', [
+                    'vendor_user_id' => $user->id,
+                    'type' => $type,
+                ]);
             }
 
-            // أرسلي FCM للـ Vendor (مو للـ VendorUser)
+            // أرسلي FCM للـ Vendor
             $this->sendFcmToVendor($vendorId, $title, $body, $data);
         } catch (\Exception $e) {
             Log::error('Failed to send vendor notification', [
