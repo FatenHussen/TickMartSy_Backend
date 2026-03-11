@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 class AddFcmScriptToFilament
 {
+    
     public function handle(Request $request, Closure $next)
     {
         $response = $next($request);
