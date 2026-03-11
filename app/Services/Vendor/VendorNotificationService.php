@@ -39,6 +39,7 @@ class VendorNotificationService
                 \App\Models\VendorNotification::create([
                     'vendor_user_id' => $user->id,
                     'title' => $title,
+                    'body' => $body,
                     'type' => $type,
                     'data' => json_encode([
                         'title' => $title,
