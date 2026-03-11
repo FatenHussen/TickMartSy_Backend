@@ -28,7 +28,8 @@ class ProductSeeder extends Seeder
                 'time_prepare' => now()->format('H:i'),
                 'bought_with' => [1,2],
                 'is_instant_delivery' => true,
-                'brand_id' => rand(1,6)
+                'brand_id' => rand(1,6),
+                'approval_status'=> 'approved'
             ]);
 
             $product->badges()->attach([
