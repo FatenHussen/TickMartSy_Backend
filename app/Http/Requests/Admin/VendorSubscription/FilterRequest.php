@@ -14,7 +14,7 @@ class FilterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'shop_id' => 'nullable|exists:shops,id',
+            'vendor_id' => 'nullable|exists:vendors,id',
             'vendor_package_id' => 'nullable|exists:vendor_packages,id',
             'status' => 'nullable|in:active,pending,expired,cancelled',
             'expiring_soon' => 'nullable|boolean',

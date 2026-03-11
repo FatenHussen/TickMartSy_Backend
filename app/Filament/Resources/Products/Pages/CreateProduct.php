@@ -38,33 +38,40 @@ class CreateProduct extends CreateRecord
         Log::info('main_image in data:', ['main_image' => $data['main_image'] ?? 'NOT SET']);
         Log::info('media in data:', ['media' => $data['media'] ?? 'NOT SET']);
 
-        $formState = $this->form->getState();
+        $formState = method_exists($this->form, 'getRawState')
+            ? $this->form->getRawState()
+            : $this->form->getState();
 
         // Store main_image before Filament processes it
         if (isset($formState['main_image'])) {
-            $this->mainImagePath = $formState['main_image'];
+            $mainImages = $this->normalizeUploadState($formState['main_image']);
+            $this->mainImagePath = $mainImages[0] ?? null;
             Log::info('Stored main_image:', ['path' => $this->mainImagePath]);
         }
 
         // Store product media before Filament processes it
         if (isset($formState['media']) && is_array($formState['media'])) {
-            $this->productMediaPaths = $formState['media'];
+            $this->productMediaPaths = $this->normalizeUploadState($formState['media']);
         }
 
         // Extract and store variant_media before Filament processes the data
         if (isset($formState['variants']) && is_array($formState['variants'])) {
-            foreach ($formState['variants'] as $key => $variantData) {
+            $variantIndex = 0;
+            foreach ($formState['variants'] as $variantData) {
                 if (isset($variantData['variant_media'])) {
                     $signature = $this->buildVariantSignature(
                         $variantData['attributes_values_ids'] ?? null
                     );
 
+                    $variantMedia = $this->normalizeUploadState($variantData['variant_media']);
+
                     if ($signature) {
-                        $this->variantMediaBySignature[$signature] = $variantData['variant_media'];
+                        $this->variantMediaBySignature[$signature] = $variantMedia;
                     } else {
-                        $this->variantMediaByIndex[$key] = $variantData['variant_media'];
+                        $this->variantMediaByIndex[$variantIndex] = $variantMedia;
                     }
                 }
+                $variantIndex++;
             }
         }
 
@@ -88,7 +95,7 @@ class CreateProduct extends CreateRecord
         if ($this->mainImagePath) {
             $product->media()->create([
                 'path' => $this->mainImagePath,
-                'collection' => 'product',
+                'collection' => 'main',
                 'order' => 0,
             ]);
             Log::info('Main image saved from property:', ['path' => $this->mainImagePath]);
@@ -123,7 +130,7 @@ class CreateProduct extends CreateRecord
         // Handle variant media using stored maps
         if (!empty($this->variantMediaBySignature) || !empty($this->variantMediaByIndex)) {
             $product->load('variants');
-            Log::info('Variants in DB:', $product->variants->count());
+            Log::info('Variants in DB:', ['count' => $product->variants->count()]);
             Log::info('variantMediaBySignature:', $this->variantMediaBySignature);
             Log::info('variantMediaByIndex:', $this->variantMediaByIndex);
 
@@ -218,5 +225,27 @@ class CreateProduct extends CreateRecord
         }
 
         return 'attr:' . implode(',', $values);
+    }
+
+    private function normalizeUploadState($state): array
+    {
+        if (is_string($state)) {
+            return [$state];
+        }
+
+        if (!is_array($state)) {
+            return [];
+        }
+
+        $paths = [];
+
+        $iterator = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($state));
+        foreach ($iterator as $value) {
+            if (is_string($value) && $value !== '') {
+                $paths[] = $value;
+            }
+        }
+
+        return array_values(array_unique($paths));
     }
 }

@@ -12,14 +12,14 @@ class VendorSubscriptionService extends BaseService
     protected $model = VendorSubscription::class;
     protected $resource = OneResource::class;
     protected $collection = AllResource::class;
-    protected $relations = ['shop', 'package'];
+    protected $relations = ['vendor', 'package'];
     protected $searchableFields = ['id'];
     protected $sortableFields = ['id', 'starts_at', 'ends_at', 'status', 'created_at'];
 
     public function queryBuilder($query, $filters = [], $config = [])
     {
-        if (!empty($filters['shop_id'])) {
-            $query->where('shop_id', $filters['shop_id']);
+        if (!empty($filters['vendor_id'])) {
+            $query->where('vendor_id', $filters['vendor_id']);
         }
         if (!empty($filters['vendor_package_id'])) {
             $query->where('vendor_package_id', $filters['vendor_package_id']);

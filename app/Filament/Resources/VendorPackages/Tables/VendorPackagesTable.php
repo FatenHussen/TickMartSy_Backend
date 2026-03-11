@@ -98,20 +98,9 @@ class VendorPackagesTable
                             return;
                         }
 
-                        $shop = \App\Models\Shop::whereHas('vendorUsers', function ($query) use ($user) {
-                            $query->where('vendor_users.id', $user->id);
-                        })->first();
-
-                        if (!$shop) {
-                            \Filament\Notifications\Notification::make()
-                                ->title(__('custom.subscription_error_no_shop'))
-                                ->danger()
-                                ->send();
-                            return;
-                        }
-
-                        $activeSubscription = $shop->subscriptions()
-                            ->where('status', 'active')
+                        $activeSubscription = \App\Models\VendorSubscription::query()
+                            ->where('vendor_id', $user->vendor_id)
+                            ->whereIn('status', ['active', 'pending'])
                             ->where('ends_at', '>=', now()->toDateString())
                             ->first();
 
@@ -127,7 +116,6 @@ class VendorPackagesTable
 
                         $subscription = \App\Models\VendorSubscription::create([
                             'vendor_id' => $user->vendor_id,
-                            'shop_id' => $shop->id,
                             'vendor_package_id' => $record->id,
                             'starts_at' => now()->toDateString(),
                             'ends_at' => now()->addDays($record->duration_days)->toDateString(),

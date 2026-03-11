@@ -150,7 +150,7 @@ class Product extends Model implements Sectionable
 
     public function mainMedia()
     {
-        return $this->media()->where('collection', 'product')->first();
+        return $this->media()->where('collection', 'main')->first();
     }
 
     public function badges()
@@ -268,7 +268,7 @@ class Product extends Model implements Sectionable
 
     public function getImageUrlAttribute()
     {
-        $main = $this->mainMedia()->first();
+        $main = $this->mainMedia();
         if ($main) {
             return $main->url;
         }

@@ -10,8 +10,8 @@ class AllResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'shop_id' => $this->shop_id,
-            'shop_name' => $this->shop?->name,
+            'vendor_id' => $this->vendor_id,
+            'vendor_name' => $this->vendor?->name,
             'package' => [
                 'id' => $this->package?->id,
                 'name' => $this->package?->name,
