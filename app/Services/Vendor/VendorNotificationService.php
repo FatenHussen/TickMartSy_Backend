@@ -2,13 +2,21 @@
 
 namespace App\Services\Vendor;
 
-use App\Models\VendorNotification;
+use App\Jobs\SendFcmNotificationJob;
+use App\Jobs\SendVendorFcmNotificationJob;
 use App\Models\VendorUser;
-use App\Notifications\VendorNotificationNotification;
+use App\Services\Base\NotificationService;
 use Illuminate\Support\Facades\Log;
 
 class VendorNotificationService
 {
+    private NotificationService $notificationService;
+
+    public function __construct()
+    {
+        $this->notificationService = app(NotificationService::class);
+    }
+
     /**
      * Send notification to vendor users
      */
@@ -24,17 +32,20 @@ class VendorNotificationService
         }
 
         try {
-            // Get all vendor users
             $vendorUsers = VendorUser::where('vendor_id', $vendorId)->get();
 
             foreach ($vendorUsers as $user) {
-                $user->notify(new VendorNotificationNotification(
+                // استخدمي NotificationService - بترسل FCM + Database معاً
+                $this->notificationService->send(
+                    $user,
                     $title,
                     $body,
-                    $type,
-                    array_merge($data, ['format' => 'filament'])
-                ));
+                    array_merge($data, ['type' => $type])
+                );
             }
+
+            // أرسلي FCM للـ Vendor (مو للـ VendorUser)
+            $this->sendFcmToVendor($vendorId, $title, $body, $data);
         } catch (\Exception $e) {
             Log::error('Failed to send vendor notification', [
                 'vendor_id' => $vendorId,
@@ -231,5 +242,44 @@ class VendorNotificationService
             ]
         );
     }
-}
 
+    /**
+     * Send FCM notification to all vendor devices
+     */
+    private function sendFcmToVendor(int $vendorId, string $title, string $body, array $data): void
+    {
+        try {
+            // احصل على جميع VendorUsers للـ Vendor
+            $vendorUsers = VendorUser::where('vendor_id', $vendorId)->get();
+
+            foreach ($vendorUsers as $user) {
+                // احصل على جميع FCM tokens للـ VendorUser
+                $tokens = $user->fcmTokens()
+                    ->pluck('fcm_token')
+                    ->filter()
+                    ->values()
+                    ->toArray();
+
+                if (!empty($tokens)) {
+                    SendVendorFcmNotificationJob::dispatch(
+                        $tokens,
+                        $title,
+                        $body,
+                        $data
+                    );
+
+                    Log::info("FCM notification sent to vendor user", [
+                        'vendor_id' => $vendorId,
+                        'vendor_user_id' => $user->id,
+                        'token_count' => count($tokens),
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to send FCM to vendor', [
+                'vendor_id' => $vendorId,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+}

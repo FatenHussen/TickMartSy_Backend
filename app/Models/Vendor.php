@@ -160,4 +160,9 @@ class Vendor extends Model
             ->map(fn($media) => $media->path)
             ->toArray();
     }
+
+    public function fcmTokens()
+    {
+        return $this->hasMany(VendorFcmToken::class);
+    }
 }

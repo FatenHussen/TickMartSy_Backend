@@ -45,4 +45,9 @@ class VendorUser extends Authenticatable
     {
         return $this->hasMany(VendorNotification::class)->whereNull('read_at');
     }
+
+    public function fcmTokens()
+    {
+        return $this->hasMany(VendorFcmToken::class, 'vendor_user_id');
+    }
 }
