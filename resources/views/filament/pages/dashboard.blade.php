@@ -7,116 +7,69 @@
 @endsection
 
 @push('scripts')
-<script>
-    console.log('🚀 FCM Script loaded');
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging.js"></script>
 
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('🚀 Dashboard loaded - DOMContentLoaded');
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaWSRgKaqd0P__owf8MtZLhdInskytXKo",
+            authDomain: "tikmool-app-3241.firebaseapp.com",
+            projectId: "tikmool-app-3241",
+            storageBucket: "tikmool-app-3241.firebasestorage.app",
+            messagingSenderId: "786190897596",
+            appId: "1:786190897596:web:5a3eaba811e0f45141dbb9",
+            measurementId: "G-BFM25BQN9N"
+        };
 
-        // تسجيل Service Worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/service-worker.js')
-                .then(registration => {
-                    console.log('✅ Service Worker registered successfully');
+        firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging();
 
-                    // اطلب إذن الإشعارات
-                    if ('Notification' in window) {
-                        if (Notification.permission === 'default') {
+        document.addEventListener('DOMContentLoaded', function() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        if ('Notification' in window && Notification.permission === 'default') {
                             Notification.requestPermission().then(permission => {
-                                console.log('Notification permission:', permission);
+                                if (permission === 'granted') {
+                                    saveFcmToken();
+                                }
                             });
                         } else if (Notification.permission === 'granted') {
-                            console.log('✅ Notifications already permitted');
+                            saveFcmToken();
                         }
-                    }
+                    });
+            }
+        });
 
-                    // احفظ FCM Token
-                    saveFcmToken();
+        function saveFcmToken() {
+            messaging.getToken({
+                    vapidKey: "{{ env('FIREBASE_VAPID_KEY') }}"
                 })
-                .catch(error => console.error('❌ Service Worker registration failed:', error));
-        } else {
-            console.warn('⚠️ Service Workers not supported in this browser');
+                .then(token => {
+                    if (token) {
+                        fetch('/api/vendor/fcm-token', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ||
+                                    '',
+                            },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                                token: token
+                            })
+                        });
+                    }
+                });
         }
-    });
 
-    /**
-     * حفظ FCM Token للـ Vendor User
-     */
-    function saveFcmToken() {
-        const token = generateUniqueToken();
-        console.log('📤 Attempting to save FCM token:', token);
-
-        // احصل على CSRF token
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-        console.log('🔐 CSRF Token:', csrfToken ? 'Present' : 'Missing');
-
-        fetch('/api/vendor/fcm-token', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken || '',
-                'Accept': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({
-                token: token
-            })
-        })
-        .then(response => {
-            console.log('📨 Response status:', response.status);
-            if (!response.ok) {
-                return response.json().then(data => {
-                    throw new Error(`HTTP ${response.status}: ${JSON.stringify(data)}`);
+        messaging.onMessage((payload) => {
+            if (Notification.permission === 'granted') {
+                new Notification(payload.notification.title, {
+                    body: payload.notification.body,
+                    icon: payload.notification.icon,
                 });
             }
-            return response.json();
-        })
-        .then(data => {
-            console.log('✅ FCM Token saved successfully:', data);
-            localStorage.setItem('fcm_token', token);
-        })
-        .catch(error => {
-            console.error('❌ Error saving FCM token:', error);
-            // حاول مرة أخرى بعد 2 ثانية
-            setTimeout(() => {
-                console.log('🔄 Retrying to save FCM token...');
-                saveFcmToken();
-            }, 2000);
         });
-    }
-
-    /**
-     * توليد token فريد للمتصفح
-     */
-    function generateUniqueToken() {
-        const stored = localStorage.getItem('fcm_token');
-        if (stored) {
-            console.log('📦 Using stored token from localStorage');
-            return stored;
-        }
-
-        const token = 'web_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('fcm_token', token);
-        console.log('🆕 Generated new token:', token);
-        return token;
-    }
-
-    /**
-     * اختبار الإشعارات (للتطوير فقط)
-     */
-    window.testNotification = function() {
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-            navigator.serviceWorker.controller.postMessage({
-                type: 'SHOW_NOTIFICATION',
-                title: 'إشعار اختبار',
-                options: {
-                    body: 'هذا إشعار اختبار من الـ Dashboard',
-                    icon: '/images/notification-icon.png',
-                    badge: '/images/notification-badge.png',
-                    tag: 'test-notification'
-                }
-            });
-        }
-    };
-</script>
+    </script>
 @endpush
