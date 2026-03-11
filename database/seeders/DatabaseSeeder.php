@@ -71,7 +71,7 @@ class DatabaseSeeder extends Seeder
             // Users
             UserSeeder::class,
             UserAddressSeeder::class,
-            UserTokenSeeder::class, // FCM tokens for push notifications
+            // UserTokenSeeder::class, // FCM tokens for push notifications
 
             // Schedules
             ScheduleSeeder::class,

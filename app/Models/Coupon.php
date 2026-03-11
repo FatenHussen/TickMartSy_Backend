@@ -23,6 +23,7 @@ class Coupon extends Model
         'city_id',
         'user_id',
         'is_active',
+        'affiliate_id'
     ];
 
     protected $casts = [
@@ -44,6 +45,13 @@ class Coupon extends Model
             && $this->used_count < $this->max_uses;
     }
 
+    public function scopeValid($query)
+    {
+        return $query->where('is_active', true)
+            ->where('start_at', '<=', now())
+            ->where('end_at', '>=', now())
+            ->whereColumn('used_count', '<', 'max_uses');
+    }
     // Morph relations
     public function products()
     {
@@ -75,5 +83,10 @@ class Coupon extends Model
             default:
                 return 0;
         }
+    }
+
+    public function markter()
+    {
+        return $this->belongsTo(User::class, 'affiliate_id', 'affiliate_id');
     }
 }

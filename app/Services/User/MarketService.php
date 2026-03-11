@@ -8,6 +8,7 @@ use App\Models\AffiliateWalletTransaction;
 use App\Models\AffiliateWithdrawRequest;
 use App\Models\Coupon;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
@@ -50,7 +51,7 @@ class MarketService
             'pending_earnings'  => round($pendingCommission, 2),
             'withdrawn'         => round($totalWithdrawn, 2),
             'available_balance' => round($earnedCommission - $totalWithdrawn, 2),
-
+            'top_products' => $this->getTopProducts($affiliateId, 10)
         ];
     }
 
@@ -71,10 +72,7 @@ class MarketService
         }
 
         $activeCoupon = Coupon::where('affiliate_id', $affiliateId)
-            ->where('is_active', true)
-            ->where('start_at', '<=', now())
-            ->where('end_at', '>=', now())
-            ->whereColumn('used_count', '<', 'max_uses')
+            ->valid()
             ->first();
 
         return [
@@ -313,5 +311,29 @@ class MarketService
             'year' => $year,
             'monthly_performance' => $monthlyPerformance,
         ];
+    }
+    public function getTopProducts(string $affiliateId, int $limit = 10): array
+    {
+        $locale = app()->getLocale();
+
+        $topProducts = OrderItem::query()
+            ->selectRaw('products.id as product_id, products.name, SUM(order_items.quantity) as total_quantity, SUM(order_items.price * order_items.quantity) as total_sales')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->join('shop_product_variants', 'order_items.shop_product_variant_id', '=', 'shop_product_variants.id')
+            ->join('product_variants', 'shop_product_variants.product_variant_id', '=', 'product_variants.id')
+            ->join('products', 'product_variants.product_id', '=', 'products.id')
+            ->where('orders.affiliate_id', $affiliateId)
+            ->where('orders.status', \App\Enums\OrderStatus::DELIVERED->value)
+            ->groupBy('products.id', 'products.name')
+            ->orderByDesc('total_sales')
+            ->limit($limit)
+            ->get();
+
+        return $topProducts->map(fn($p) => [
+            'product_id' => $p->product_id,
+            'product_name' => json_decode($p->name)->{$locale} ?? $p->name,
+            'total_quantity_sold' => (int)$p->total_quantity,
+            'total_sales_amount' => round($p->total_sales, 2),
+        ])->toArray();
     }
 }

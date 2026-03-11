@@ -33,7 +33,6 @@ return new class extends Migration
             // Location (optional)
             $table->foreignId('city_id')->nullable()->constrained();
 
-            // المسوق (optional)
             $table->unsignedBigInteger('affiliate_id')->nullable();
             // Status
             $table->boolean('is_active')->default(true);

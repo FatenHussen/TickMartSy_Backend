@@ -21,7 +21,7 @@ class SendBulkNotificationJob implements ShouldQueue
     public string $type;
     public string $is_fixed;
 
-    public function __construct(string $title, string $body, string $type, $is_fixed = false)
+    public function __construct(string $title, string $body, string $type, $is_fixed = 0)
     {
         $this->title = $title;
         $this->body  = $body;

@@ -35,10 +35,10 @@ class StoreRequest extends FormRequest
                 'numeric',
                 'min:0',
             ],
-
             'start_at' => [
                 'required',
                 'date',
+                'after:now',
             ],
 
             'end_at' => [
