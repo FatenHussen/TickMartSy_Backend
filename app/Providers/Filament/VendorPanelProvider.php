@@ -37,7 +37,6 @@ class VendorPanelProvider extends PanelProvider
                 CustomDashboard::class,
             ])
             ->databaseNotifications()
-            ->databaseNotificationsModel(\App\Models\VendorNotification::class)
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 AccountWidget::class,
