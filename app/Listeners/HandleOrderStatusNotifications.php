@@ -30,6 +30,9 @@ class HandleOrderStatusNotifications implements ShouldQueue
         $this->notifyUser($order, $event->to);
         $this->notifyAdmins($order, $event);
         $this->notifyDrivers($order, $event);
+        if ($event->from === null && $event->to === OrderStatus::PENDING->value) {
+            $this->notifyAffiliate($order);
+        }
     }
 
     /*
@@ -205,5 +208,33 @@ class HandleOrderStatusNotifications implements ShouldQueue
                 }
             });
         }
+    }
+
+    private function notifyAffiliate($order): void
+    {
+        // تحقق من وجود ماركتر
+        if (!$order->affiliate_id) {
+            return;
+        }
+
+        $affiliate = \App\Models\User::where('affiliate_id', $order->affiliate_id)
+            ->where('is_affiliate', true)
+            ->where('affiliate_approved', true)
+            ->first();
+
+        if (!$affiliate) {
+            return;
+        }
+
+        // إرسال الإشعار
+        $this->notificationService->send(
+            $affiliate,
+            'طلب جديد من خلال رابطك 🛒',
+            "تم إنشاء طلب جديد رقم {$order->order_code} عن طريق رابطك التسويقي.",
+            [
+                'order_id' => (string) $order->id,
+                'type' => 'affiliate_order',
+            ]
+        );
     }
 }

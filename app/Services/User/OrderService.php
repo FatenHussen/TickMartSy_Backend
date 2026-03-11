@@ -563,22 +563,32 @@ class OrderService extends BaseService
     }
     protected function applyCoupon($orderOrNull, $basketItemsCollection, $couponCode, $basketDiscount)
     {
-        $couponDiscountAmount = 0;
-        $couponApplied = null;
-        $excludedItems = [];
-
         if (!$couponCode) return [null, 0, [], null];
 
-        $coupon = Coupon::where('code', $couponCode)->first();
-        if (!$coupon || !$coupon->isValid()) return [null, 0, [], null];
+        $coupon = Coupon::valid()
+            ->with(['products', 'categories', 'vendors'])
+            ->where('code', $couponCode)
+            ->first();
+
+        if (!$coupon) return [null, 0, [], null];
+
+        $excludedItems = [];
 
         foreach ($basketItemsCollection as $item) {
             $product = $item['product'];
             $allowed = true;
 
-            if ($coupon->products()->exists() && !$coupon->products->contains($product->id)) $allowed = false;
-            if ($coupon->categories()->exists() && !$coupon->categories->contains($product->category_id)) $allowed = false;
-            if ($coupon->vendors()->exists() && !$coupon->vendors->contains($product->vendor_id)) $allowed = false;
+            if ($coupon->products->isNotEmpty() && !$coupon->products->contains('id', $product->id)) {
+                $allowed = false;
+            }
+
+            if ($coupon->categories->isNotEmpty() && !$coupon->categories->contains('id', $product->category_id)) {
+                $allowed = false;
+            }
+
+            if ($coupon->vendors->isNotEmpty() && !$coupon->vendors->contains('id', $product->vendor_id)) {
+                $allowed = false;
+            }
 
             if (!$allowed) {
                 $excludedItems[] = $item['shop_product_variant_id'];
@@ -589,11 +599,7 @@ class OrderService extends BaseService
             ->whereNotIn('shop_product_variant_id', $excludedItems)
             ->sum(fn($i) => $i['price_after_discount'] * $i['quantity']);
 
-        $couponDiscountAmount = $coupon->discount_type === 'percentage'
-            ? $eligibleSubtotal * ($coupon->discount_value / 100)
-            : min($coupon->discount_value, $eligibleSubtotal);
-
-        $couponApplied = $coupon->code;
+        $couponDiscountAmount = $coupon->calculateDiscount($eligibleSubtotal);
 
         return [
             $coupon->code,

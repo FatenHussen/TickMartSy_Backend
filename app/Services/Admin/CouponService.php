@@ -7,8 +7,10 @@ use App\Http\Resources\Coupon\AllResource;
 use App\Http\Resources\Coupon\OneResource;
 use App\Models\Coupon;
 use App\Models\Vendor;
+use App\Services\Base\NotificationService;
 use App\Services\BaseService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CouponService extends BaseService
 {
@@ -46,6 +48,19 @@ class CouponService extends BaseService
             throw new CustomExceptionWithMessage('This affiliate already has an active coupon.');
         }
 
-        return parent::create($data);
+        $object = parent::create($data);
+
+        $notificationService = app(\App\Services\Base\NotificationService::class);
+
+        $notificationService->send(
+            recipient: $object->markter,
+            title: 'كوبون جديد',
+            body: "لقد حصلت على كوبون جديد تم اسناده من قبل الادمن",
+            data: [
+                'type' => 'coupon',
+            ]
+        );
+
+        return $object;
     }
 }

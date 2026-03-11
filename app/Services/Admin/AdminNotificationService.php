@@ -25,7 +25,8 @@ class AdminNotificationService extends BaseService
         SendBulkNotificationJob::dispatch(
             $object->title,
             $object->body,
-            $object->type
+            $object->type,
+            $data['is_fixed']
         );
 
         return $object;
