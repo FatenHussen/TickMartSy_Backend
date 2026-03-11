@@ -18,4 +18,17 @@ class Dashboard extends BaseDashboard
             \App\Filament\Widgets\LowStockProducts::class,
         ];
     }
+
+    protected function getHeaderActions(): array
+    {
+        return [];
+    }
+
+
+    public function getViewData(): array
+    {
+        return [
+            'fcmComponent' => \App\Livewire\SaveFcmToken::class,
+        ];
+    }
 }
