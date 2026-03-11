@@ -15,13 +15,14 @@ class FirebaseConfigHelper
         $cred = json_decode(file_get_contents($credPath), true);
 
         return [
-            'projectId' => $cred['project_id'] ?? null,
-            'apiKey' => env('FIREBASE_API_KEY', 'AIzaSyDummyKeyForWeb'), // هذا يحتاج يكون من Firebase Console
-            'authDomain' => $cred['project_id'] . '.firebaseapp.com',
-            'storageBucket' => $cred['project_id'] . '.appspot.com',
-            'messagingSenderId' => $cred['client_id'] ?? null,
-            'appId' => env('FIREBASE_APP_ID', '1:' . ($cred['client_id'] ?? '') . ':web:dummy'),
             'vapidKey' => env('FIREBASE_VAPID_KEY', ''),
+            'apiKey' => "AIzaSyCaWSRgKaqd0P__owf8MtZLhdInskytXKo",
+            'authDomain' => "tikmool-app-3241.firebaseapp.com",
+            'projectId' => "tikmool-app-3241",
+            'storageBucket' => "tikmool-app-3241.firebasestorage.app",
+            'messagingSenderId' => "786190897596",
+            'appId' => "1:786190897596:web:5a3eaba811e0f45141dbb9",
+            'measurementId' => "G-BFM25BQN9N"
         ];
     }
 
