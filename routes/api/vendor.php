@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Vendor\VendorFcmTokenController;
+use App\Http\Controllers\VendorFcmTokenController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:vendor-user')->group(function () {

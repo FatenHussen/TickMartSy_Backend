@@ -8,8 +8,8 @@ class VendorFcmToken extends Model
 {
     protected $fillable = ['vendor_user_id', 'fcm_token', 'device_name', 'device_type'];
 
-    public function vendor()
+    public function vendorUser()
     {
-        return $this->belongsTo(Vendor::class);
+        return $this->belongsTo(VendorUser::class);
     }
 }

@@ -14,13 +14,14 @@ return new class extends Migration
         Schema::create('vendor_fcm_tokens', function (Blueprint $table) {
             $table->id();
             $table->foreignId('vendor_user_id')->constrained('vendor_users')->onDelete('cascade');
-            $table->text('fcm_token');
+            $table->string('fcm_token', 500); // استخدم string بدل text
             $table->string('device_name')->nullable();
             $table->string('device_type')->default('web'); // web, mobile, tablet
             $table->timestamps();
 
             // منع التكرار
             $table->unique(['vendor_user_id', 'fcm_token']);
+            $table->index('vendor_user_id');
         });
     }
 
