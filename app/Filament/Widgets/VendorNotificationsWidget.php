@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class VendorNotificationsWidget extends Widget
 {
-    protected static string $view = 'filament.widgets.vendor-notifications-widget';
+    protected string $view = 'filament.widgets.vendor-notifications-widget';
 
     protected static ?int $sort = -1;
 
