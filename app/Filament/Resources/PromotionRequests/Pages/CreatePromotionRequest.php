@@ -32,23 +32,23 @@ class CreatePromotionRequest extends CreateRecord
 
         // Check subscription status
         if (!$quota['has_active']) {
-            Notification::make()
-                ->title(__('custom.subscription_no_active_title'))
-                ->body(__('custom.subscription_no_active_body'))
-                ->danger()
-                ->send();
-
+            $this->createAndNotifyVendor(
+                $user,
+                __('custom.subscription_no_active_title'),
+                __('custom.subscription_no_active_body'),
+                'subscription_error'
+            );
             $this->halt();
         }
 
         // Check campaign quota
         if (!$quota['can_create_campaign']) {
-            Notification::make()
-                ->title(__('custom.subscription_limit_campaigns_title'))
-                ->body(__('custom.subscription_limit_campaigns_body'))
-                ->danger()
-                ->send();
-
+            $this->createAndNotifyVendor(
+                $user,
+                __('custom.subscription_limit_campaigns_title'),
+                __('custom.subscription_limit_campaigns_body'),
+                'subscription_error'
+            );
             $this->halt();
         }
 
@@ -61,6 +61,7 @@ class CreatePromotionRequest extends CreateRecord
     protected function afterCreate(): void
     {
         $this->notifyRemainingQuota();
+        $this->notifyPromotionCreated();
     }
 
     protected function getCreatedNotificationTitle(): ?string
@@ -74,27 +75,24 @@ class CreatePromotionRequest extends CreateRecord
         $quota = app(VendorSubscriptionQuotaService::class)->getUsageSnapshot($user);
 
         if (!$quota['has_active']) {
-            Notification::make()
-                ->title(__('custom.subscription_no_active_title'))
-                ->body(__('custom.subscription_no_active_body'))
-                ->danger()
-                ->persistent()
-                ->send();
+            $this->createAndNotifyVendor(
+                $user,
+                __('custom.subscription_no_active_title'),
+                __('custom.subscription_no_active_body'),
+                'subscription_error'
+            );
 
             $this->redirect($this->getResource()::getUrl('index'), navigate: true);
             return;
         }
 
         if (!$quota['can_create_campaign']) {
-            $remaining = $quota['remaining_campaigns'];
-            $remainingLabel = $remaining === null ? __('custom.unlimited') : (string) $remaining;
-
-            Notification::make()
-                ->title(__('custom.subscription_limit_campaigns_title'))
-                ->body(__('custom.subscription_limit_campaigns_body'))
-                ->warning()
-                ->persistent()
-                ->send();
+            $this->createAndNotifyVendor(
+                $user,
+                __('custom.subscription_limit_campaigns_title'),
+                __('custom.subscription_limit_campaigns_body'),
+                'subscription_error'
+            );
 
             $this->redirect($this->getResource()::getUrl('index'), navigate: true);
             return;
@@ -117,6 +115,52 @@ class CreatePromotionRequest extends CreateRecord
             ->title(__('custom.subscription_remaining_campaigns_title'))
             ->body(__('custom.subscription_remaining_campaigns_body', ['count' => $remainingLabel]))
             ->success()
+            ->send();
+    }
+
+    private function notifyPromotionCreated(): void
+    {
+        $user = Auth::guard('vendor-user')->user();
+        if (!$user) {
+            return;
+        }
+
+        $notificationService = app(\App\Services\Vendor\VendorNotificationService::class);
+        $notificationService->notifyVendor(
+            $user->vendor_id,
+            'تم إنشاء طلب ترويج جديد',
+            "تم إنشاء طلب ترويج جديد: {$this->record->title}",
+            'promotion_created',
+            [
+                'promotion_request_id' => $this->record->id,
+                'title' => $this->record->title,
+            ]
+        );
+    }
+
+    private function createAndNotifyVendor($user, $title, $body, $type): void
+    {
+        if (!$user) {
+            return;
+        }
+
+        // Create database notification
+        \App\Models\VendorNotification::create([
+            'vendor_user_id' => $user->id,
+            'title' => $title,
+            'body' => $body,
+            'type' => $type,
+            'data' => [
+                'format' => 'filament',
+            ],
+        ]);
+
+        // Also show Filament notification for immediate feedback
+        Notification::make()
+            ->title($title)
+            ->body($body)
+            ->danger()
+            ->persistent()
             ->send();
     }
 }

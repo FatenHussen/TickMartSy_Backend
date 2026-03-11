@@ -31,6 +31,11 @@ class VendorNotification extends Model
         return $this->belongsTo(VendorUser::class);
     }
 
+    public function getRecipients()
+    {
+        return collect([$this->vendorUser]);
+    }
+
     public function markAsRead()
     {
         $this->update(['read_at' => now()]);

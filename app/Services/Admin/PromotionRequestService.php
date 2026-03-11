@@ -114,50 +114,12 @@ class PromotionRequestService extends BaseService
     protected function sendNotificationToVendor(PromotionRequest $request, string $action): void
     {
         try {
-            $vendor = $request->vendor;
-            if (!$vendor) return;
+            $notificationService = app(\App\Services\Vendor\VendorNotificationService::class);
 
-            // جلب جميع مستخدمي الفيندور
-            $vendorUsers = $vendor->users;
-            if ($vendorUsers->isEmpty()) return;
-
-            $title = $action === 'approved'
-                ? 'تم قبول طلب الترويج'
-                : 'تم رفض طلب الترويج';
-
-            $body = $action === 'approved'
-                ? "تم قبول طلب الترويج: {$request->title}"
-                : "تم رفض طلب الترويج: {$request->title}. السبب: {$request->admin_notes}";
-
-            foreach ($vendorUsers as $user) {
-                // إنشاء إشعار في قاعدة البيانات
-                \App\Models\VendorNotification::create([
-                    'vendor_user_id' => $user->id,
-                    'title' => $title,
-                    'body' => $body,
-                    'type' => 'promotion_request',
-                    'data' => [
-                        'promotion_request_id' => $request->id,
-                        'status' => $request->status->value,
-                        'action' => $action,
-                    ],
-                ]);
-
-                // إرسال FCM notification
-                $tokens = $user->tokens()->pluck('fcm_token')->filter()->toArray();
-                if (!empty($tokens)) {
-                    $fcmNotification = new SendFCMNotification(
-                        $tokens,
-                        $title,
-                        $body,
-                        [
-                            'type' => 'promotion_request',
-                            'promotion_request_id' => $request->id,
-                            'status' => $request->status->value,
-                        ]
-                    );
-                    $fcmNotification->sendNotification();
-                }
+            if ($action === 'approved') {
+                $notificationService->notifyPromotionApproved($request);
+            } elseif ($action === 'rejected') {
+                $notificationService->notifyPromotionRejected($request);
             }
         } catch (\Exception $e) {
             \Log::error('Failed to send promotion request notification', [
