@@ -122,8 +122,8 @@ class BasketService extends BaseService
         $query->reorder();
 
         match ($sortBy) {
-            'price_desc' => $query->orderBy('price', 'desc'),
-            'price_asc' => $query->orderBy('price', 'asc'),
+            'price_desc' => $query->orderBy('original_price', 'desc'),
+            'price_asc' => $query->orderBy('original_price', 'asc'),
             'newest' => $query->orderBy('created_at', 'desc'),
             'oldest' => $query->orderBy('created_at', 'asc'),
             default => null,
