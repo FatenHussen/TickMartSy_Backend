@@ -73,32 +73,31 @@ class RecipeService extends BaseService
     {
         $query->with($this->relations);
 
-        // Search filter
+        // نحسب أقل سعر داخل الوصفة
+        $query->withMin('items.shopProductVariant', 'price');
+
         if (!empty($filters['search'])) {
             $search = strtolower($filters['search']);
             $locale = app()->getLocale();
+
             $query->where(function (Builder $q) use ($search, $locale) {
                 $q->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.{$locale}'))) LIKE ?", ["%{$search}%"])
                     ->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(description, '$.{$locale}'))) LIKE ?", ["%{$search}%"]);
             });
         }
 
-        // Discount filter
-        if (!empty($filters['discount_min']) || !empty($filters['discount_max'])) {
-            if (!empty($filters['discount_min'])) {
-                $query->where('discount', '>=', $filters['discount_min']);
-            }
-            if (!empty($filters['discount_max'])) {
-                $query->where('discount', '<=', $filters['discount_max']);
-            }
+        if (!empty($filters['discount_min'])) {
+            $query->where('discount', '>=', $filters['discount_min']);
         }
 
-        // Serves filter
+        if (!empty($filters['discount_max'])) {
+            $query->where('discount', '<=', $filters['discount_max']);
+        }
+
         if (!empty($filters['serves'])) {
             $query->where('serves', $filters['serves']);
         }
 
-        // Prepare time filter
         if (!empty($filters['prepare_time'])) {
             $query->where('prepare_time', $filters['prepare_time']);
         }
@@ -115,11 +114,11 @@ class RecipeService extends BaseService
         $query->reorder();
 
         match ($sortBy) {
-            'newest' => $query->orderBy('created_at', 'desc'),
-            'oldest' => $query->orderBy('created_at', 'asc'),
-            'price_desc' => $query->orderBy('price', 'desc'),
-            'price_asc' => $query->orderBy('price', 'asc'),
-            default => null,
+            'newest'     => $query->orderBy('created_at', 'desc'),
+            'oldest'     => $query->orderBy('created_at', 'asc'),
+            'price_desc' => $query->orderBy('items_shop_product_variant_min_price', 'desc'),
+            'price_asc'  => $query->orderBy('items_shop_product_variant_min_price', 'asc'),
+            default      => null,
         };
     }
 }
