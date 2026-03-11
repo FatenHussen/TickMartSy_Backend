@@ -29,6 +29,7 @@ class BasketService extends BaseService
         // Extract type filter before passing to parent
         $type = $filters['type'] ?? null;
         unset($filters['type']);
+        unset($filters['sort_by']);
 
         // Apply base query builder first (search, sort, favorites)
         $query = parent::queryBuilder($query, $filters, $config);
