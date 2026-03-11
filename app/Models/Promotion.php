@@ -31,7 +31,9 @@ class Promotion extends Model
         'is_active' => 'boolean',
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
-        // 'gift_product_ids' => 'array',
+        'gift_product_ids' => 'array',
+        // 'name' => 'array',
+        // 'description' => 'array',
         'min_spend' => 'decimal:2',
         'discount_value' => 'decimal:2',
     ];
