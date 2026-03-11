@@ -48,6 +48,9 @@ class SendVendorFcmNotification
         $failureCount = 0;
         $responses = [];
 
+        // حول الـ data لـ flat strings (FCM ما بتقبل nested objects)
+        $flatData = $this->flattenData($this->data);
+
         foreach ($this->fcmTokens as $token) {
             $data = [
                 "message" => [
@@ -56,12 +59,12 @@ class SendVendorFcmNotification
                         "title" => $this->title,
                         "body" => $this->body,
                     ],
-                    "data" => $this->data,
+                    "data" => $flatData,
                     "webpush" => [
                         "headers" => [
                             "TTL" => "86400"
                         ],
-                        "data" => $this->data,
+                        "data" => $flatData,
                         "notification" => [
                             "title" => $this->title,
                             "body" => $this->body,
@@ -118,5 +121,25 @@ class SendVendorFcmNotification
             'failure' => $failureCount,
             'responses' => $responses,
         ]);
+    }
+
+    /**
+     * حول الـ nested arrays لـ flat strings
+     */
+    private function flattenData(array $data, string $prefix = ''): array
+    {
+        $result = [];
+
+        foreach ($data as $key => $value) {
+            $newKey = $prefix ? "{$prefix}_{$key}" : $key;
+
+            if (is_array($value)) {
+                $result = array_merge($result, $this->flattenData($value, $newKey));
+            } else {
+                $result[$newKey] = (string) $value;
+            }
+        }
+
+        return $result;
     }
 }
