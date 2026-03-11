@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::table('vendor_notifications', function (Blueprint $table) {
             // أضف body إذا ما كان موجود
-            if (!Schema::hasColumn('vendor_notifications', 'body')) {
-                $table->text('body')->nullable()->after('title');
+            if (!Schema::hasColumns('vendor_notifications', ['body','title'])) {
+                $table->text('title')->nullable();
+
+                $table->text('body')->nullable();
             }
 
             // أضف vendor_user_id فقط إذا ما كان موجود
