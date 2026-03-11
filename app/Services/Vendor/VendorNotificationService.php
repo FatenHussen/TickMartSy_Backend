@@ -256,40 +256,87 @@ class VendorNotificationService
     /**
      * Send FCM notification to all vendor devices
      */
+    // private function sendFcmToVendor(int $vendorId, string $title, string $body, array $data): void
+    // {
+    //     try {
+    //         // احصل على جميع VendorUsers للـ Vendor
+    //         $vendorUsers = VendorUser::where('vendor_id', $vendorId)->get();
+
+    //         foreach ($vendorUsers as $user) {
+    //             // احصل على جميع FCM tokens للـ VendorUser
+    //             $tokens = $user->fcmTokens()
+    //                 ->pluck('fcm_token')
+    //                 ->filter()
+    //                 ->values()
+    //                 ->toArray();
+
+    //             if (!empty($tokens)) {
+    //                 SendVendorFcmNotificationJob::dispatch(
+    //                     $tokens,
+    //                     $title,
+    //                     $body,
+    //                     $data
+    //                 );
+
+    //                 Log::info("FCM notification sent to vendor user", [
+    //                     'vendor_id' => $vendorId,
+    //                     'vendor_user_id' => $user->id,
+    //                     'token_count' => count($tokens),
+    //                 ]);
+    //             }
+    //         }
+    //     } catch (\Exception $e) {
+    //         Log::error('Failed to send FCM to vendor', [
+    //             'vendor_id' => $vendorId,
+    //             'error' => $e->getMessage(),
+    //         ]);
+    //     }
+    // }
     private function sendFcmToVendor(int $vendorId, string $title, string $body, array $data): void
-    {
-        try {
-            // احصل على جميع VendorUsers للـ Vendor
-            $vendorUsers = VendorUser::where('vendor_id', $vendorId)->get();
+{
+    try {
 
-            foreach ($vendorUsers as $user) {
-                // احصل على جميع FCM tokens للـ VendorUser
-                $tokens = $user->fcmTokens()
-                    ->pluck('fcm_token')
-                    ->filter()
-                    ->values()
-                    ->toArray();
-
-                if (!empty($tokens)) {
-                    SendVendorFcmNotificationJob::dispatch(
-                        $tokens,
-                        $title,
-                        $body,
-                        $data
-                    );
-
-                    Log::info("FCM notification sent to vendor user", [
-                        'vendor_id' => $vendorId,
-                        'vendor_user_id' => $user->id,
-                        'token_count' => count($tokens),
-                    ]);
-                }
+        // تحويل كل القيم إلى string
+        $data = collect($data)->map(function ($value) {
+            if (is_array($value) || is_object($value)) {
+                return json_encode($value);
             }
-        } catch (\Exception $e) {
-            Log::error('Failed to send FCM to vendor', [
-                'vendor_id' => $vendorId,
-                'error' => $e->getMessage(),
-            ]);
+            return (string) $value;
+        })->toArray();
+
+        $vendorUsers = VendorUser::where('vendor_id', $vendorId)->get();
+
+        foreach ($vendorUsers as $user) {
+
+            $tokens = $user->fcmTokens()
+                ->pluck('fcm_token')
+                ->filter()
+                ->values()
+                ->toArray();
+
+            if (!empty($tokens)) {
+
+                SendVendorFcmNotificationJob::dispatch(
+                    $tokens,
+                    $title,
+                    $body,
+                    $data
+                );
+
+                Log::info("FCM notification sent to vendor user", [
+                    'vendor_id' => $vendorId,
+                    'vendor_user_id' => $user->id,
+                    'token_count' => count($tokens),
+                ]);
+            }
         }
+
+    } catch (\Exception $e) {
+
+        Log::error('Failed to send FCM to vendor', [
+            'vendor_id' => $vendorId,
+            'error' => $e->getMessage(),
+        ]);
     }
+}
 }
