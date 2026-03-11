@@ -86,11 +86,9 @@ class PromotionRequestResource extends Resource
 
     public static function canCreate(): bool
     {
-        $user = Auth::guard('vendor-user')->user();
-
-        $quota = app(VendorSubscriptionQuotaService::class)->getUsageSnapshot($user);
-
-        return $quota['has_active'] && $quota['can_create_campaign'];
+        // Allow access to the create page - actual quota checks happen in CreatePromotionRequest::mount()
+        // This prevents 403 errors and allows proper notification display
+        return true;
     }
 
     public static function canEdit($record): bool
