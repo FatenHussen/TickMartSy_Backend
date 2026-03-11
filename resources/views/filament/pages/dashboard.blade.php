@@ -7,6 +7,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Dashboard loaded');
+
             // تسجيل Service Worker
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/service-worker.js')
@@ -47,29 +49,54 @@
             // توليد token فريد للمتصفح
             const token = generateUniqueToken();
 
+            console.log('📤 Attempting to save FCM token:', token);
+
+            saveFcmTokenViaFetch(token);
+        }
+
+        /**
+         * حفظ FCM Token عبر Fetch
+         */
+        function saveFcmTokenViaFetch(token) {
+            // احصل على CSRF token من الـ page
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ||
+                            document.querySelector('input[name="_token"]')?.value ||
+                            document.querySelector('[data-csrf-token]')?.getAttribute('data-csrf-token');
+
+            console.log('🔐 CSRF Token:', csrfToken ? 'Present' : 'Missing');
+
             fetch('/api/vendor/fcm-token', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
-                    'Accept': 'application/json'
+                    'X-CSRF-TOKEN': csrfToken || '',
+                    'Accept': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                     token: token
                 })
             })
             .then(response => {
+                console.log('📨 Response status:', response.status);
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    return response.json().then(data => {
+                        throw new Error(`HTTP ${response.status}: ${JSON.stringify(data)}`);
+                    });
                 }
                 return response.json();
             })
             .then(data => {
-                console.log('✅ FCM Token saved:', data);
+                console.log('✅ FCM Token saved successfully:', data);
                 localStorage.setItem('fcm_token', token);
             })
             .catch(error => {
                 console.error('❌ Error saving FCM token:', error);
+                // حاول مرة أخرى بعد 2 ثانية
+                setTimeout(() => {
+                    console.log('🔄 Retrying to save FCM token...');
+                    saveFcmTokenViaFetch(token);
+                }, 2000);
             });
         }
 
