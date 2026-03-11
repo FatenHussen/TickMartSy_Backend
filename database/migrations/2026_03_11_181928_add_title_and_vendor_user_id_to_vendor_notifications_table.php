@@ -12,8 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('vendor_notifications', function (Blueprint $table) {
-            $table->string('title')->nullable()->after('type');
-            $table->foreignId('vendor_user_id')->nullable()->constrained('vendor_users')->onDelete('cascade')->after('notifiable_id');
+            // أضف body إذا ما كان موجود
+            if (!Schema::hasColumn('vendor_notifications', 'body')) {
+                $table->text('body')->nullable()->after('title');
+            }
+
+            // أضف vendor_user_id فقط إذا ما كان موجود
+            if (!Schema::hasColumn('vendor_notifications', 'vendor_user_id')) {
+                $table->foreignId('vendor_user_id')->nullable()->constrained('vendor_users')->onDelete('cascade')->after('notifiable_id');
+            }
         });
     }
 
@@ -23,9 +30,14 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('vendor_notifications', function (Blueprint $table) {
-            $table->dropColumn('title');
-            $table->dropForeignIdFor('vendor_user_id');
-            $table->dropColumn('vendor_user_id');
+            if (Schema::hasColumn('vendor_notifications', 'body')) {
+                $table->dropColumn('body');
+            }
+
+            if (Schema::hasColumn('vendor_notifications', 'vendor_user_id')) {
+                $table->dropForeignIdFor('vendor_user_id');
+                $table->dropColumn('vendor_user_id');
+            }
         });
     }
 };
