@@ -29,6 +29,7 @@ class BasketService extends BaseService
         // Extract type filter before passing to parent
         $type = $filters['type'] ?? null;
         unset($filters['type']);
+        $sort= $filters['sort_by'] ?? null;
         unset($filters['sort_by']);
 
         // Apply base query builder first (search, sort, favorites)
@@ -71,8 +72,8 @@ class BasketService extends BaseService
             $this->applyTypeFilters($query, $type);
         }
 
-        if (!empty($filters['sort_by'])) {
-            $this->applySortBy($query, $filters['sort_by']);
+        if (!empty($sort)) {
+            $this->applySortBy($query, $sort);
         }
 
         return $query;
