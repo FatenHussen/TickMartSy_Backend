@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Notifications\Notifiable;
 
 class VendorUser extends Authenticatable
 {
-    use HasApiTokens, HasRoles;
+    use HasApiTokens, HasRoles, Notifiable;
     public $table = "vendor_users";
     protected $guard_name = 'vendor-user';
     protected $fillable = [
@@ -19,10 +20,12 @@ class VendorUser extends Authenticatable
         'is_active',
         'vendor_id'
     ];
+
     public function vendor()
     {
         return $this->belongsTo(Vendor::class);
     }
+
     public function shops()
     {
         return $this->belongsToMany(

@@ -4,6 +4,7 @@ namespace App\Services\Vendor;
 
 use App\Models\VendorNotification;
 use App\Models\VendorUser;
+use App\Notifications\VendorNotificationNotification;
 use Illuminate\Support\Facades\Log;
 
 class VendorNotificationService
@@ -27,13 +28,12 @@ class VendorNotificationService
             $vendorUsers = VendorUser::where('vendor_id', $vendorId)->get();
 
             foreach ($vendorUsers as $user) {
-                VendorNotification::create([
-                    'vendor_user_id' => $user->id,
-                    'title' => $title,
-                    'body' => $body,
-                    'type' => $type,
-                    'data' => array_merge($data, ['format' => 'filament']),
-                ]);
+                $user->notify(new VendorNotificationNotification(
+                    $title,
+                    $body,
+                    $type,
+                    array_merge($data, ['format' => 'filament'])
+                ));
             }
         } catch (\Exception $e) {
             Log::error('Failed to send vendor notification', [

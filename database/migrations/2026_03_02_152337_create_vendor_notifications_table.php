@@ -13,15 +13,14 @@ return new class extends Migration
     {
         Schema::create('vendor_notifications', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignId('vendor_user_id')->constrained()->cascadeOnDelete();
-            $table->string('title');
-            $table->text('body');
-            $table->string('type')->nullable(); // promotion_request, order, product, etc.
-            $table->json('data')->nullable();
+            $table->string('notifiable_type');
+            $table->unsignedBigInteger('notifiable_id');
+            $table->string('type');
+            $table->longText('data');
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
 
-            $table->index(['vendor_user_id', 'read_at']);
+            $table->index(['notifiable_type', 'notifiable_id']);
         });
     }
 
