@@ -9,6 +9,7 @@ use App\Http\Resources\Admin\PromotionRequest\AllResource;
 use App\Http\Resources\Admin\PromotionRequest\OneResource;
 use App\Helpers\SendFCMNotification;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PromotionRequestService extends BaseService
 {
@@ -122,7 +123,7 @@ class PromotionRequestService extends BaseService
                 $notificationService->notifyPromotionRejected($request);
             }
         } catch (\Exception $e) {
-            \Log::error('Failed to send promotion request notification', [
+            Log::error('Failed to send promotion request notification', [
                 'error' => $e->getMessage(),
                 'request_id' => $request->id,
             ]);

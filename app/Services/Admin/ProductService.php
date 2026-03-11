@@ -262,50 +262,12 @@ class ProductService extends BaseService
     protected function sendApprovalNotification(Product $product, string $action): void
     {
         try {
-            $vendor = $product->vendor;
-            if (!$vendor) return;
+            $notificationService = app(\App\Services\Vendor\VendorNotificationService::class);
 
-            // جلب جميع مستخدمي الفيندور
-            $vendorUsers = $vendor->users;
-            if ($vendorUsers->isEmpty()) return;
-
-            $title = $action === 'approved'
-                ? 'تم قبول المنتج'
-                : 'تم رفض المنتج';
-
-            $body = $action === 'approved'
-                ? "تم قبول المنتج: {$product->name}"
-                : "تم رفض المنتج: {$product->name}. السبب: {$product->rejection_reason}";
-
-            foreach ($vendorUsers as $user) {
-                // إنشاء إشعار في قاعدة البيانات
-                \App\Models\VendorNotification::create([
-                    'vendor_user_id' => $user->id,
-                    'title' => $title,
-                    'body' => $body,
-                    'type' => 'product_approval',
-                    'data' => [
-                        'product_id' => $product->id,
-                        'approval_status' => $product->approval_status->value,
-                        'action' => $action,
-                    ],
-                ]);
-
-                // إرسال FCM notification
-                $tokens = $user->tokens()->pluck('fcm_token')->filter()->toArray();
-                if (!empty($tokens)) {
-                    $fcmNotification = new \App\Helpers\SendFCMNotification(
-                        $tokens,
-                        $title,
-                        $body,
-                        [
-                            'type' => 'product_approval',
-                            'product_id' => $product->id,
-                            'approval_status' => $product->approval_status->value,
-                        ]
-                    );
-                    $fcmNotification->sendNotification();
-                }
+            if ($action === 'approved') {
+                $notificationService->notifyProductApproved($product);
+            } elseif ($action === 'rejected') {
+                $notificationService->notifyProductRejected($product, $product->rejection_reason ?? '');
             }
         } catch (\Exception $e) {
             Log::error('Failed to send product approval notification', [
