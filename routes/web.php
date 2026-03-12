@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\VendorFcmTokenController;
 use App\Http\Middleware\CheckIfBlocked;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Support\Facades\Artisan;
@@ -27,23 +28,24 @@ Route::get('/cache', function () {
     Artisan::call('view:cache');
     return '✅ Laravel caches rebuilt successfully!';
 });
-Route::post('/vendor/fcm-token', function (Request $request) {
+Route::post('/vendor/fcm-token',[VendorFcmTokenController::class, 'store']);
+//  function (Request $request) {
 
-    $user = Auth::guard('vendor-user')->user();
+//     $user = Auth::guard('vendor-user')->user();
 
-    if (!$user) {
-        return response()->json(['error' => 'Unauthenticated'], 401);
-    }
+//     if (!$user) {
+//         return response()->json(['error' => 'Unauthenticated'], 401);
+//     }
 
-    VendorFcmToken::updateOrCreate(
-        [
-            'vendor_user_id' => $user->id,
-            'fcm_token' => $request->token
-        ],
-        [
-            'device_type' => 'web'
-        ]
-    );
+//     VendorFcmToken::updateOrCreate(
+//         [
+//             'vendor_user_id' => $user->id,
+//             'fcm_token' => $request->token
+//         ],
+//         [
+//             'device_type' => 'web'
+//         ]
+//     );
 
-    return response()->json(['success' => true]);
-});
+//     return response()->json(['success' => true]);
+// });
