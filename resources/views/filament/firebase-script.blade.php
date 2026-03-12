@@ -51,3 +51,23 @@ onMessage(messaging, (payload) => {
 });
 
 </script>
+<script>
+console.log("🔥 Firebase script loaded");
+
+// تسجيل Service Worker
+if ('serviceWorker' in navigator) {
+
+    navigator.serviceWorker.register('/firebase-messaging-sw.js')
+        .then(function (registration) {
+
+            console.log("✅ Service Worker registered:", registration);
+
+        })
+        .catch(function (error) {
+
+            console.error("❌ Service Worker registration failed:", error);
+
+        });
+
+}
+</script>
