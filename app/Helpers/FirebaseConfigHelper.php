@@ -15,7 +15,7 @@ class FirebaseConfigHelper
         $cred = json_decode(file_get_contents($credPath), true);
 
         return [
-            'vapidKey' => env('FIREBASE_VAPID_KEY', ''),
+            'vapidKey' => 'BCMDGVeweEPiu0hfisL2YH2Nzwlmr6P6sEsxfKibl20AmWdgVg2DfmzjWGPm8g-tI2sLMbPls1bMjsItYvF3R88',
             'apiKey' => "AIzaSyCaWSRgKaqd0P__owf8MtZLhdInskytXKo",
             'authDomain' => "tikmool-app-3241.firebaseapp.com",
             'projectId' => "tikmool-app-3241",
