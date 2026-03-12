@@ -38,16 +38,12 @@ class VendorUser extends Authenticatable
     public function notifications()
     {
         return $this->morphMany(VendorNotification::class, 'notifiable')
-            ->where('notifiable_id', $this->id)
-            ->where('notifiable_type', self::class)
             ->orderBy('created_at', 'desc');
     }
 
     public function unreadNotifications()
     {
         return $this->morphMany(VendorNotification::class, 'notifiable')
-            ->where('notifiable_id', $this->id)
-            ->where('notifiable_type', self::class)
             ->whereNull('read_at')
             ->orderBy('created_at', 'desc');
     }
@@ -55,8 +51,6 @@ class VendorUser extends Authenticatable
     public function readNotifications()
     {
         return $this->morphMany(VendorNotification::class, 'notifiable')
-            ->where('notifiable_id', $this->id)
-            ->where('notifiable_type', self::class)
             ->whereNotNull('read_at')
             ->orderBy('created_at', 'desc');
     }
