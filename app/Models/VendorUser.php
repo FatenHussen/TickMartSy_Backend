@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
@@ -50,4 +51,8 @@ class VendorUser extends Authenticatable
     {
         return $this->hasMany(VendorFcmToken::class, 'vendor_user_id');
     }
+    // public function fcmTokens(): MorphMany
+    // {
+    //     return $this->morphMany(UserToken::class, 'tokenable');
+    // }
 }
