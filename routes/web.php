@@ -4,7 +4,9 @@ use App\Http\Middleware\CheckIfBlocked;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\VendorFcmToken;
 Route::get('/', function () {
     return view('welcome');
 })->middleware([CheckIfBlocked::class, SetLocale::class]);
