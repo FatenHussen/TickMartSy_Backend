@@ -54,33 +54,15 @@ class SendBulkNotificationJob implements ShouldQueue
         }
 
         if ($this->type === 'vendor' || $this->type === 'all') {
-            VendorUser::chunk(100, function ($vendors) use ($notificationService) {
-                foreach ($vendors as $vendor) {
-
-                    // جلب كل FCM tokens الخاصة بالفيندور
-                    $tokens = VendorFcmToken::where('vendor_user_id', $vendor->id)
-                        ->pluck('fcm_token')
-                        ->toArray();
-
-                    foreach ($tokens as $token) {
-                        $notificationService->send(
-                            $token,
-                            $this->title,
-                            $this->body,
-                            [
-                                'type' => 'admin',
-                                'is_fixed' => $this->is_fixed,
-                            ]
-                        );
-                    }
-
-                    // لو تريد أيضًا حفظ الإشعار في قاعدة البيانات
-                    $notificationService->send($vendor, $this->title, $this->body, [
-                        'type' => 'admin',
-                        'is_fixed' => $this->is_fixed,
-                    ]);
-                }
-            });
+          VendorUser::chunk(100, function ($vendors) use ($notificationService) {
+    foreach ($vendors as $vendor) {
+        // تمرير الموديل للفانكشن send
+        $notificationService->send($vendor, $this->title, $this->body, [
+            'type' => 'admin',
+            'is_fixed' => $this->is_fixed,
+        ]);
+    }
+});
         }
     }
 }
