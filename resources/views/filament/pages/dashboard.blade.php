@@ -76,7 +76,7 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
 import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging.js";
-
+console.log('test');
 const firebaseConfig = {
     apiKey: "AIzaSyCaWSRgKaqd0P__owf8MtZLhdInskytXKo",
     authDomain: "tikmool-app-3241.firebaseapp.com",
@@ -103,7 +103,7 @@ async function initFCM() {
 
     console.log("FCM TOKEN:", token);
 
-    await fetch("/api/vendor/fcm-token", {
+    await fetch("/vendor/fcm-token", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
