@@ -25,3 +25,23 @@ Route::get('/cache', function () {
     Artisan::call('view:cache');
     return '✅ Laravel caches rebuilt successfully!';
 });
+Route::post('/vendor/fcm-token', function (Request $request) {
+
+    $user = Auth::guard('vendor-user')->user();
+
+    if (!$user) {
+        return response()->json(['error' => 'Unauthenticated'], 401);
+    }
+
+    VendorFcmToken::updateOrCreate(
+        [
+            'vendor_user_id' => $user->id,
+            'fcm_token' => $request->token
+        ],
+        [
+            'device_type' => 'web'
+        ]
+    );
+
+    return response()->json(['success' => true]);
+});
