@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Models\Driver;
+use App\Models\VendorFcmToken;
 use App\Models\VendorUser;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -55,8 +56,28 @@ class SendBulkNotificationJob implements ShouldQueue
         if ($this->type === 'vendor' || $this->type === 'all') {
             VendorUser::chunk(100, function ($vendors) use ($notificationService) {
                 foreach ($vendors as $vendor) {
+
+                    // جلب كل FCM tokens الخاصة بالفيندور
+                    $tokens = VendorFcmToken::where('vendor_user_id', $vendor->id)
+                        ->pluck('fcm_token')
+                        ->toArray();
+
+                    foreach ($tokens as $token) {
+                        $notificationService->send(
+                            $token,
+                            $this->title,
+                            $this->body,
+                            [
+                                'type' => 'admin',
+                                'is_fixed' => $this->is_fixed,
+                            ]
+                        );
+                    }
+
+                    // لو تريد أيضًا حفظ الإشعار في قاعدة البيانات
                     $notificationService->send($vendor, $this->title, $this->body, [
-                        'type' => 'admin'
+                        'type' => 'admin',
+                        'is_fixed' => $this->is_fixed,
                     ]);
                 }
             });
