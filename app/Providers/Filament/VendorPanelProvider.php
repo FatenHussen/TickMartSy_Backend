@@ -58,6 +58,7 @@ class VendorPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->authGuard('vendor-user');
+            ->authGuard('vendor-user')
+            ->databaseNotificationsPolling('30s');
     }
 }

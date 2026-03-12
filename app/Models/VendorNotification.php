@@ -35,10 +35,10 @@ class VendorNotification extends DatabaseNotification
         return $this->belongsTo(VendorUser::class, 'vendor_user_id');
     }
 
-    // Override notifiable relationship to use vendor_user_id
+    // Override notifiable relationship for polymorphic
     public function notifiable()
     {
-        return $this->belongsTo(VendorUser::class, 'vendor_user_id');
+        return $this->morphTo();
     }
 
     public function markAsRead()
