@@ -60,14 +60,4 @@ class VendorPanelProvider extends PanelProvider
             ])
             ->authGuard('vendor-user');
     }
-
-    public function boot(): void
-    {
-        parent::boot();
-
-        // Override notification retrieval for vendor panel
-        \Filament\Notifications\Notification::configureUsing(function (\Filament\Notifications\Notification $notification) {
-            // Custom configuration if needed
-        });
-    }
 }
