@@ -20,4 +20,6 @@ require base_path('routes/api/user.php');
 
 require base_path('routes/api/driver.php');
 
+require base_path('routes/api/vendor.php');
+
 Route::prefix('socket')->group(base_path('routes/api/socket.php'));

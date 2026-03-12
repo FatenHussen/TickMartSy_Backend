@@ -15,8 +15,14 @@ class PromotionSeeder extends Seeder
     {
         // Example: simple discount promotion
         Promotion::create([
-            'name' => '10% Off Everything',
-            'description' => 'Get 10% off on all products.',
+            'name' => [
+                'en' => '10% Off Everything',
+                'ar' => 'خصم 10% على كل شيء'
+            ],
+            'description' => [
+                'en' => 'Get 10% off on all products.',
+                'ar' => 'احصل على خصم 10% على جميع المنتجات.'
+            ],
             'type' => 'simple_discount',
             'is_active' => true,
             'starts_at' => Carbon::now()->subDays(1),
@@ -31,8 +37,14 @@ class PromotionSeeder extends Seeder
 
         // Example: spend X discount
         Promotion::create([
-            'name' => 'Spend 200 Get 20 Off',
-            'description' => 'Get $20 off when spending $200 or more.',
+            'name' => [
+                'en' => 'Spend 200 Get 20 Off',
+                'ar' => 'اصرف 200 واحصل على خصم 20'
+            ],
+            'description' => [
+                'en' => 'Get $20 off when spending $200 or more.',
+                'ar' => 'احصل على خصم 20 دولار عند الشراء بـ 200 دولار أو أكثر.'
+            ],
             'type' => 'spend_x_discount',
             'is_active' => true,
             'starts_at' => Carbon::now()->subDays(1),
@@ -47,8 +59,14 @@ class PromotionSeeder extends Seeder
 
         // Example: buy X get Y free promotion
         Promotion::create([
-            'name' => 'Buy 2 Get 1 Free',
-            'description' => 'Buy 2 products and get 1 free.',
+            'name' => [
+                'en' => 'Buy 2 Get 1 Free',
+                'ar' => 'اشتري 2 واحصل على 1 مجاناً'
+            ],
+            'description' => [
+                'en' => 'Buy 2 products and get 1 free.',
+                'ar' => 'اشتري منتجين واحصل على واحد مجاناً.'
+            ],
             'type' => 'buy_x_get_y',
             'is_active' => true,
             'starts_at' => Carbon::now()->subDays(1),

@@ -32,32 +32,59 @@ class SendBulkNotificationJob implements ShouldQueue
     public function handle(NotificationService $notificationService)
     {
         if ($this->type === 'user' || $this->type === 'all') {
-            User::chunk(100, function ($users) use ($notificationService) {
-                foreach ($users as $user) {
-                    $notificationService->send($user, $this->title, $this->body, [
-                        'type' => 'admin',
-                        'is_fixed' => $this->is_fixed
-                    ]);
-                }
+            User::query()->each(function (User $user) use ($notificationService) {
+                $notificationService->send($user, $this->title, $this->body, [
+                    'type' => 'admin',
+                    'is_fixed' => $this->is_fixed
+                ]);
             });
         }
 
         if ($this->type === 'driver' || $this->type === 'all') {
-            Driver::chunk(100, function ($drivers) use ($notificationService) {
-                foreach ($drivers as $driver) {
-                    $notificationService->send($driver, $this->title, $this->body, [
-                        'type' => 'admin',
-                    ]);
-                }
+            Driver::query()->each(function (Driver $driver) use ($notificationService) {
+                $notificationService->send($driver, $this->title, $this->body, [
+                    'type' => 'admin',
+                ]);
             });
         }
 
         if ($this->type === 'vendor' || $this->type === 'all') {
-            VendorUser::chunk(100, function ($vendors) use ($notificationService) {
-                foreach ($vendors as $vendor) {
-                    $notificationService->send($vendor, $this->title, $this->body, [
-                        'type' => 'admin'
-                    ]);
+            VendorUser::query()->each(function (VendorUser $vendor) {
+                // حفظ الإشعار في قاعدة البيانات مع notifiable fields
+                \App\Models\VendorNotification::create([
+                    'vendor_user_id' => $vendor->id,
+                    'notifiable_type' => VendorUser::class,
+                    'notifiable_id' => $vendor->id,
+                    'title' => $this->title,
+                    'body' => $this->body,
+                    'type' => 'admin',
+                    'data' => json_encode([
+                        'type' => 'admin',
+                        'is_fixed' => $this->is_fixed,
+                        'title' => $this->title,
+                        'body' => $this->body,
+                    ]),
+                ]);
+
+                // إرسال Filament notification (سيظهر كـ toast)
+                \Filament\Notifications\Notification::make()
+                    ->title($this->title)
+                    ->body($this->body)
+                    ->success()
+                    ->sendToDatabase($vendor);
+
+                // إرسال FCM
+                $tokens = $vendor->fcmTokens()->pluck('fcm_token')->filter()->values()->toArray();
+                if (!empty($tokens)) {
+                    \App\Jobs\SendVendorFcmNotificationJob::dispatch(
+                        $tokens,
+                        $this->title,
+                        $this->body,
+                        [
+                            'type' => 'admin',
+                            'is_fixed' => (string) $this->is_fixed,
+                        ]
+                    );
                 }
             });
         }

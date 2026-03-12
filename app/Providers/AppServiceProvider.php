@@ -23,13 +23,29 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Filament::registerRenderHook(
+            'panels::body.end',
+            fn() => view('filament.firebase-script')
+        );
         // Register event listeners
         Event::listen(
             OrderStatusChanged::class,
             [AwardPointsListener::class, 'handleOrderStatusChanged']
         );
+
+        // Vendor notifications
+        Event::listen(
+            OrderStatusChanged::class,
+            [\App\Listeners\NotifyVendorOrderStatusChanged::class, 'handle']
+        );
+
+        Event::listen(
+            \App\Events\OrderCreated::class,
+            [\App\Listeners\NotifyVendorNewOrder::class, 'handle']
+        );
+
         LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
-            $switch->locales(['ar', 'en']); 
+            $switch->locales(['ar', 'en']);
         });
     }
 }
