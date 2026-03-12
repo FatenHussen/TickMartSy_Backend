@@ -27,7 +27,7 @@ class VendorPanelProvider extends PanelProvider
             ->default()
             ->id('vendor')
             ->path('vendor')
-            ->login() // Temporarily disabled for testing
+            ->login()
             ->colors([
                 'primary' => Color::hex("#00aed1"),
             ])
@@ -42,7 +42,6 @@ class VendorPanelProvider extends PanelProvider
             ->widgets([
                 AccountWidget::class,
                 FilamentInfoWidget::class,
-                // ShopSwitcher removed from global widgets - will be added to Dashboard only
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -58,7 +57,17 @@ class VendorPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ])->authGuard('vendor-user');
+            ])
+            ->authGuard('vendor-user');
     }
 
+    public function boot(): void
+    {
+        parent::boot();
+
+        // Override notification retrieval for vendor panel
+        \Filament\Notifications\Notification::configureUsing(function (\Filament\Notifications\Notification $notification) {
+            // Custom configuration if needed
+        });
+    }
 }
