@@ -26,7 +26,7 @@ class AdminNotificationService extends BaseService
             $object->title,
             $object->body,
             $object->type,
-            $data['is_fixed']
+            $data['is_fixed'] ?? false
         );
 
         return $object;
