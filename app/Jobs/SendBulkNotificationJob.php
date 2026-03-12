@@ -53,7 +53,7 @@ class SendBulkNotificationJob implements ShouldQueue
                 // حفظ الإشعار في قاعدة البيانات مع notifiable fields
                 \App\Models\VendorNotification::create([
                     'vendor_user_id' => $vendor->id,
-                    'notifiable_type' => \App\Models\VendorUser::class,
+                    'notifiable_type' => VendorUser::class,
                     'notifiable_id' => $vendor->id,
                     'title' => $this->title,
                     'body' => $this->body,
@@ -61,8 +61,17 @@ class SendBulkNotificationJob implements ShouldQueue
                     'data' => json_encode([
                         'type' => 'admin',
                         'is_fixed' => $this->is_fixed,
+                        'title' => $this->title,
+                        'body' => $this->body,
                     ]),
                 ]);
+
+                // إرسال Filament notification (سيظهر كـ toast)
+                \Filament\Notifications\Notification::make()
+                    ->title($this->title)
+                    ->body($this->body)
+                    ->success()
+                    ->sendToDatabase($vendor);
 
                 // إرسال FCM
                 $tokens = $vendor->fcmTokens()->pluck('fcm_token')->filter()->values()->toArray();
