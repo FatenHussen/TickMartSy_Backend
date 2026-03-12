@@ -23,6 +23,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Filament::registerRenderHook(
+            'panels::body.end',
+            fn() => view('filament.firebase-script')
+        );
         // Register event listeners
         Event::listen(
             OrderStatusChanged::class,
