@@ -18,6 +18,8 @@ class VendorNotification extends DatabaseNotification
         'type',
         'data',
         'read_at',
+        'notifiable_type',
+        'notifiable_id',
     ];
 
     protected $casts = [
@@ -30,7 +32,13 @@ class VendorNotification extends DatabaseNotification
 
     public function vendorUser()
     {
-        return $this->belongsTo(VendorUser::class);
+        return $this->belongsTo(VendorUser::class, 'vendor_user_id');
+    }
+
+    // Override notifiable relationship to use vendor_user_id
+    public function notifiable()
+    {
+        return $this->belongsTo(VendorUser::class, 'vendor_user_id');
     }
 
     public function markAsRead()
@@ -41,6 +49,22 @@ class VendorNotification extends DatabaseNotification
     public function scopeUnread($query)
     {
         return $query->whereNull('read_at');
+    }
+
+    // Override to ensure vendor_user_id is set
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($notification) {
+            if (!$notification->vendor_user_id && $notification->notifiable_id) {
+                $notification->vendor_user_id = $notification->notifiable_id;
+            }
+            if (!$notification->notifiable_id && $notification->vendor_user_id) {
+                $notification->notifiable_id = $notification->vendor_user_id;
+                $notification->notifiable_type = VendorUser::class;
+            }
+        });
     }
 }
 

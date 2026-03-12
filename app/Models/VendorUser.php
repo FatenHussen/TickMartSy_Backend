@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
@@ -39,12 +37,22 @@ class VendorUser extends Authenticatable
 
     public function notifications()
     {
-        return $this->hasMany(VendorNotification::class);
+        return $this->hasMany(VendorNotification::class, 'vendor_user_id')
+            ->orderBy('created_at', 'desc');
     }
 
     public function unreadNotifications()
     {
-        return $this->hasMany(VendorNotification::class)->whereNull('read_at');
+        return $this->hasMany(VendorNotification::class, 'vendor_user_id')
+            ->whereNull('read_at')
+            ->orderBy('created_at', 'desc');
+    }
+
+    public function readNotifications()
+    {
+        return $this->hasMany(VendorNotification::class, 'vendor_user_id')
+            ->whereNotNull('read_at')
+            ->orderBy('created_at', 'desc');
     }
 
     public function fcmTokens()
