@@ -55,22 +55,17 @@ class SendVendorFcmNotification
             $data = [
                 "message" => [
                     "token" => $token,
-                    "notification" => [
-                        "title" => $this->title,
-                        "body" => $this->body,
-                    ],
                     "data" => $flatData,
                     "webpush" => [
                         "headers" => [
                             "TTL" => "86400"
                         ],
-                        "data" => $flatData,
                         "notification" => [
                             "title" => $this->title,
                             "body" => $this->body,
                             "icon" => asset('images/notification-icon.png'),
                             "badge" => asset('images/notification-badge.png'),
-                            "tag" => "vendor-notification",
+                            "tag" => "vendor-notification-" . time(),
                             "requireInteraction" => true,
                         ]
                     ]

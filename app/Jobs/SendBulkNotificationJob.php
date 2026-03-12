@@ -50,9 +50,11 @@ class SendBulkNotificationJob implements ShouldQueue
 
         if ($this->type === 'vendor' || $this->type === 'all') {
             VendorUser::query()->each(function (VendorUser $vendor) {
-                // حفظ الإشعار في قاعدة البيانات
+                // حفظ الإشعار في قاعدة البيانات مع notifiable fields
                 \App\Models\VendorNotification::create([
                     'vendor_user_id' => $vendor->id,
+                    'notifiable_type' => \App\Models\VendorUser::class,
+                    'notifiable_id' => $vendor->id,
                     'title' => $this->title,
                     'body' => $this->body,
                     'type' => 'admin',
