@@ -130,9 +130,29 @@ class ProductInfolist
                                         ->color('success')
                                         ->icon('heroicon-o-banknotes'),
 
+                                    Infolists\Components\TextEntry::make('cost_price')
+                                        ->label(__('custom.products.cost_price'))
+                                        ->money('USD')
+                                        ->badge()
+                                        ->color('gray')
+                                        ->icon('heroicon-o-calculator')
+                                        ->default('-'),
+
+                                    Infolists\Components\TextEntry::make('discount_type')
+                                        ->label(__('custom.products.discount_type'))
+                                        ->badge()
+                                        ->color('info')
+                                        ->formatStateUsing(fn($state) => match($state) {
+                                            'none' => __('custom.products.form.no_discount'),
+                                            'percentage' => __('custom.products.form.percentage'),
+                                            'fixed' => __('custom.products.form.fixed_amount'),
+                                            default => '-'
+                                        })
+                                        ->default('-'),
+
                                     Infolists\Components\TextEntry::make('discount')
                                         ->label(__('custom.products.discount'))
-                                        ->suffix('%')
+                                        ->suffix(fn($record) => $record->discount_type === 'percentage' ? '%' : '')
                                         ->badge()
                                         ->size('lg')
                                         ->color('danger')
@@ -154,6 +174,29 @@ class ProductInfolist
                                         ->color(fn($state) => $state > 10 ? 'success' : ($state > 0 ? 'warning' : 'danger'))
                                         ->icon(fn($state) => $state > 10 ? 'heroicon-o-check-circle' : ($state > 0 ? 'heroicon-o-exclamation-triangle' : 'heroicon-o-x-circle'))
                                         ->default('-'),
+
+                                    Infolists\Components\TextEntry::make('unit')
+                                        ->label(__('custom.products.unit'))
+                                        ->badge()
+                                        ->color('gray')
+                                        ->icon('heroicon-o-scale')
+                                        ->default('-'),
+
+                                    Infolists\Components\TextEntry::make('warranty_period')
+                                        ->label(__('custom.products.warranty_period'))
+                                        ->badge()
+                                        ->color('info')
+                                        ->icon('heroicon-o-shield-check')
+                                        ->suffix(' ' . __('custom.products.form.warranty_months'))
+                                        ->default('-'),
+
+                                    Infolists\Components\IconEntry::make('is_visible')
+                                        ->label(__('custom.products.is_visible'))
+                                        ->boolean()
+                                        ->trueIcon('heroicon-o-eye')
+                                        ->falseIcon('heroicon-o-eye-slash')
+                                        ->trueColor('success')
+                                        ->falseColor('danger'),
                                 ])
                                 ->columns(4)
                                 ->collapsible(),
@@ -194,6 +237,25 @@ class ProductInfolist
                         ->icon('heroicon-o-photo')
                         ->badge(fn($record) => $record->media->count() > 0 ? $record->media->count() : null)
                         ->schema([
+                            Section::make(__('custom.products.sections.thumbnail'))
+                                ->schema([
+                                    Infolists\Components\ImageEntry::make('thumbnail')
+                                        ->label(__('custom.products.thumbnail'))
+                                        ->disk('public')
+                                        ->size(200)
+                                        ->extraAttributes(['class' => 'rounded-xl'])
+                                        ->visible(fn($record) => $record->thumbnail)
+                                        ->columnSpanFull(),
+
+                                    Infolists\Components\TextEntry::make('no_thumbnail')
+                                        ->label(__('custom.products.thumbnail'))
+                                        ->default('-')
+                                        ->color('gray')
+                                        ->visible(fn($record) => !$record->thumbnail)
+                                        ->columnSpanFull(),
+                                ])
+                                ->collapsible(),
+
                             Section::make(__('custom.products.sections.images'))
                                 ->schema([
                                     Infolists\Components\ImageEntry::make('media')

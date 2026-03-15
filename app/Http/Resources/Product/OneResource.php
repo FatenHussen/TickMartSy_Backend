@@ -26,8 +26,13 @@ class OneResource extends JsonResource
             'full_description' => $this->full_description,
             'country' => $this->country,
             ...$this->withCurrency($this->price, 'price'),
+            ...$this->withCurrency($this->cost_price, 'cost_price'),
             ...$this->withCurrency($this->price_after_discount, 'price_after_discount'),
             'quantity' => $this->quantity,
+            'unit' => $this->unit,
+            'warranty_period' => $this->warranty_period,
+            'is_visible' => $this->is_visible,
+            'discount_type' => $this->discount_type,
 
             'sku' => $this->sku,
             'model' => $this->model,
@@ -37,6 +42,8 @@ class OneResource extends JsonResource
             'is_instant_delivery' => $this->is_instant_delivery,
             'rating' => $this->average_rating ?? 0,
             'rating_breakdown' => $this->getRatingBreakdown() ?? [],
+
+            'thumbnail' => $this->thumbnail ? asset('storage/' . $this->thumbnail) : null,
 
             'category' => [
                 'id' => $this->category?->id,

@@ -20,17 +20,25 @@ class VendorPerformanceExport implements FromCollection, WithHeadings, WithTitle
 
     public function collection()
     {
+        // Handle both string and array formats for vendor_name
+        $vendorName = 'N/A';
+        if (isset($this->data['vendor_name'])) {
+            $vendorName = is_array($this->data['vendor_name'])
+                ? ($this->data['vendor_name']['ar'] ?? $this->data['vendor_name']['en'] ?? 'N/A')
+                : $this->data['vendor_name'];
+        }
+
         return collect([
-            ['Vendor ID', $this->data['vendor_id']],
-            ['Vendor Name', $this->data['vendor_name']['ar'] ?? $this->data['vendor_name']['en'] ?? 'N/A'],
-            ['Total Sales', number_format($this->data['total_sales'], 2)],
-            ['Total Orders', $this->data['total_orders']],
-            ['Average Order Value', number_format($this->data['average_order_value'], 2)],
-            ['Total Shops', $this->data['total_shops']],
-            ['Active Shops', $this->data['active_shops']],
-            ['Average Rating', number_format($this->data['average_rating'], 2)],
-            ['Total Ratings', $this->data['total_ratings']],
-            ['Customer Satisfaction', number_format($this->data['customer_satisfaction'], 2) . '%'],
+            ['Vendor ID', $this->data['vendor_id'] ?? 'N/A'],
+            ['Vendor Name', $vendorName],
+            ['Total Sales', number_format($this->data['total_sales'] ?? 0, 2)],
+            ['Total Orders', $this->data['total_orders'] ?? 0],
+            ['Average Order Value', number_format($this->data['average_order_value'] ?? 0, 2)],
+            ['Total Shops', $this->data['total_shops'] ?? 0],
+            ['Active Shops', $this->data['active_shops'] ?? 0],
+            ['Average Rating', number_format($this->data['average_rating'] ?? 0, 2)],
+            ['Total Ratings', $this->data['total_ratings'] ?? 0],
+            ['Customer Satisfaction', number_format($this->data['customer_satisfaction'] ?? 0, 2) . '%'],
         ]);
     }
 

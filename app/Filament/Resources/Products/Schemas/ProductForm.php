@@ -223,14 +223,15 @@ class ProductForm
                                             'fixed' => __('custom.products.form.fixed_amount'),
                                         ])
                                         ->default('none')
+                                        ->live()
                                         ->columnSpan(1),
 
                                     Forms\Components\TextInput::make('discount')
                                         ->label(__('custom.products.form.discount_label'))
                                         ->numeric()
                                         ->minValue(0)
-                                        ->maxValue(100)
-                                        ->suffix('%')
+                                        ->suffix(fn(callable $get) => $get('discount_type') === 'percentage' ? '%' : '')
+                                        ->visible(fn(callable $get) => $get('discount_type') !== 'none')
                                         ->columnSpan(1),
                                 ])
                                 ->columns(2)
@@ -246,13 +247,96 @@ class ProductForm
                                         ->minValue(0)
                                         ->columnSpan(1),
 
+                                    Forms\Components\TextInput::make('cost_price')
+                                        ->label(__('custom.products.form.cost_price'))
+                                        ->numeric()
+                                        ->prefix('$')
+                                        ->minValue(0)
+                                        ->helperText(__('custom.products.form.cost_price_help'))
+                                        ->columnSpan(1),
+
                                     Forms\Components\TextInput::make('quantity')
                                         ->label(__('custom.products.form.quantity_label'))
                                         ->numeric()
                                         ->minValue(0)
                                         ->columnSpan(1),
+
+                                    Forms\Components\TextInput::make('unit')
+                                        ->label(__('custom.products.form.unit'))
+                                        ->placeholder(__('custom.products.form.unit_placeholder'))
+                                        ->helperText(__('custom.products.form.unit_help'))
+                                        ->maxLength(50)
+                                        ->columnSpan(1),
+
+                                    Forms\Components\TextInput::make('warranty_period')
+                                        ->label(__('custom.products.form.warranty_period'))
+                                        ->numeric()
+                                        ->minValue(0)
+                                        ->suffix(__('custom.products.form.warranty_months'))
+                                        ->helperText(__('custom.products.form.warranty_period_help'))
+                                        ->columnSpan(1),
                                 ])
                                 ->columns(2)
+                                ->collapsible(),
+
+                            Section::make(__('custom.products.sections.visibility'))
+                                ->schema([
+                                    Forms\Components\Toggle::make('is_visible')
+                                        ->label(__('custom.products.form.is_visible'))
+                                        ->helperText(__('custom.products.form.is_visible_help'))
+                                        ->default(true),
+                                ])
+                                ->collapsible(),
+
+                            Section::make(__('custom.products.sections.icons_badges'))
+                                ->schema([
+                                    Forms\Components\Select::make('icon_ids')
+                                        ->label(__('custom.products.form.icons'))
+                                        ->relationship('icons', 'name')
+                                        ->multiple()
+                                        ->searchable()
+                                        ->preload()
+                                        ->helperText(__('custom.products.form.icons_help'))
+                                        ->columnSpanFull(),
+
+                                    Forms\Components\Repeater::make('badges')
+                                        ->label(__('custom.products.form.badges'))
+                                        ->schema([
+                                            Forms\Components\Select::make('id')
+                                                ->label(__('custom.products.form.badge'))
+                                                ->options(\App\Models\Badge::pluck('name', 'id'))
+                                                ->required()
+                                                ->searchable()
+                                                ->distinct()
+                                                ->columnSpan(1),
+
+                                            Forms\Components\Select::make('position')
+                                                ->label(__('custom.products.form.badge_position'))
+                                                ->options([
+                                                    'top' => __('custom.products.form.badge_top'),
+                                                    'bottom' => __('custom.products.form.badge_bottom'),
+                                                ])
+                                                ->required()
+                                                ->native(false)
+                                                ->columnSpan(1),
+                                        ])
+                                        ->columns(2)
+                                        ->defaultItems(0)
+                                        ->addActionLabel(__('custom.products.form.add_badge'))
+                                        ->collapsible()
+                                        ->columnSpanFull()
+                                        ->afterStateHydrated(function ($component, $state, $record) {
+                                            if ($record && $record->badges) {
+                                                $badges = $record->badges->map(function ($badge) {
+                                                    return [
+                                                        'id' => $badge->id,
+                                                        'position' => $badge->pivot->position,
+                                                    ];
+                                                })->toArray();
+                                                $component->state($badges);
+                                            }
+                                        }),
+                                ])
                                 ->collapsible(),
 
                             Section::make(__('custom.products.sections.delivery_settings'))
@@ -273,7 +357,20 @@ class ProductForm
                     Tab::make(__('custom.products.tabs.images'))
                         ->icon('heroicon-o-photo')
                         ->schema([
-                            Section::make(__('custom.products.sections.images'))
+                            Section::make(__('custom.products.sections.thumbnail'))
+                                ->schema([
+                                    Forms\Components\FileUpload::make('thumbnail')
+                                        ->label(__('custom.products.form.thumbnail'))
+                                        ->image()
+                                        ->disk('public')
+                                        ->directory('product/thumbnails')
+                                        ->imageEditor()
+                                        ->helperText(__('custom.products.form.thumbnail_help'))
+                                        ->columnSpanFull(),
+                                ])
+                                ->collapsible(),
+
+                            Section::make(__('custom.products.sections.main_image'))
                                 ->schema([
                                     Forms\Components\FileUpload::make('main_image')
                                         ->label(__('custom.products.form.main_image_label'))

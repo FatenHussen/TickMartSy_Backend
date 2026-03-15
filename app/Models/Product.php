@@ -24,16 +24,22 @@ class Product extends Model implements Sectionable
         'country',
         'model',
         'price',
+        'cost_price',
         'quantity',
+        'unit',
+        'warranty_period',
         'barcode',
         'time_prepare',
         'bought_with',
         'is_instant_delivery',
         'vendor_id',
         'discount',
+        'discount_type',
         'brand_id',
         'approval_status',
         'rejection_reason',
+        'is_visible',
+        'thumbnail',
         'seo_title',
         'seo_description',
         'seo_keywords',
@@ -54,12 +60,20 @@ class Product extends Model implements Sectionable
         'bought_with' => 'array',
         'time_prepare' => 'datetime:H:i',
         'approval_status' => \App\Enums\ProductApprovalStatus::class,
+        'is_visible' => 'boolean',
     ];
     public function getPriceAfterDiscountAttribute()
     {
-        if ($this->discount && $this->price) {
-            return round($this->price - ($this->price * $this->discount / 100), 2);
+        if (!$this->discount || !$this->price) {
+            return $this->price;
         }
+
+        if ($this->discount_type === 'percentage') {
+            return round($this->price - ($this->price * $this->discount / 100), 2);
+        } elseif ($this->discount_type === 'fixed') {
+            return max(0, round($this->price - $this->discount, 2));
+        }
+
         return $this->price;
     }
     public function ratings()
