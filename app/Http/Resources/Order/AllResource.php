@@ -24,7 +24,7 @@ class AllResource extends JsonResource
             'delivery_price' => $this->delivery_price,
             'total' => $this->total,
             'subtotal' => $this->subtotal,
-            'total_with_delivery' =>  $this->total + $this->delivery_price,
+            // 'total_with_delivery' =>  $this->total + $this->delivery_price,
             'total_quantity' => $this->total_quantity,
             'basket_discount' => $this->basket_discount,
             'coupon_discount' => $this->coupon_discount,

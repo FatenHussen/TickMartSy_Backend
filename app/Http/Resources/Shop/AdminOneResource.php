@@ -25,6 +25,7 @@ class AdminOneResource extends JsonResource
             'phone'                 => $this->phone,
             'mobile'                => $this->mobile,
             'email'                 => $this->email,
+            'vendor_id'             => $this->vendor_id,
             'working_hours'         => $this->working_hours,
             // 'cover_images_urls'      => $this->getCoverImagesUrls(),
             'is_active'             => $this->is_active,
