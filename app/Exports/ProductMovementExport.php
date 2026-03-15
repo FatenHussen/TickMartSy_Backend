@@ -43,11 +43,19 @@ class TopSellingSheet implements FromCollection, WithHeadings, WithTitle, Should
     public function collection()
     {
         return collect($this->data)->map(function ($item) {
+            // Handle both string and array formats for name
+            $name = 'N/A';
+            if (isset($item['product_name'])) {
+                $name = is_array($item['product_name'])
+                    ? ($item['product_name']['ar'] ?? $item['product_name']['en'] ?? 'N/A')
+                    : $item['product_name'];
+            }
+
             return [
-                $item['product_id'],
-                $item['name']['ar'] ?? $item['name']['en'] ?? 'N/A',
-                $item['total_sold'],
-                number_format($item['total_revenue'], 2),
+                $item['product_id'] ?? 'N/A',
+                $name,
+                $item['total_sold'] ?? 0,
+                number_format($item['total_revenue'] ?? 0, 2),
             ];
         });
     }
@@ -75,11 +83,19 @@ class LeastSellingSheet implements FromCollection, WithHeadings, WithTitle, Shou
     public function collection()
     {
         return collect($this->data)->map(function ($item) {
+            // Handle both string and array formats for name
+            $name = 'N/A';
+            if (isset($item['product_name'])) {
+                $name = is_array($item['product_name'])
+                    ? ($item['product_name']['ar'] ?? $item['product_name']['en'] ?? 'N/A')
+                    : $item['product_name'];
+            }
+
             return [
-                $item['product_id'],
-                $item['name']['ar'] ?? $item['name']['en'] ?? 'N/A',
-                $item['total_sold'],
-                number_format($item['total_revenue'], 2),
+                $item['product_id'] ?? 'N/A',
+                $name,
+                $item['total_sold'] ?? 0,
+                number_format($item['total_revenue'] ?? 0, 2),
             ];
         });
     }
@@ -107,11 +123,26 @@ class InactiveProductsSheet implements FromCollection, WithHeadings, WithTitle, 
     public function collection()
     {
         return collect($this->data)->map(function ($item) {
+            // Handle both string and array formats for name and category
+            $name = 'N/A';
+            if (isset($item['name'])) {
+                $name = is_array($item['name'])
+                    ? ($item['name']['ar'] ?? $item['name']['en'] ?? 'N/A')
+                    : $item['name'];
+            }
+
+            $category = 'N/A';
+            if (isset($item['category'])) {
+                $category = is_array($item['category'])
+                    ? ($item['category']['ar'] ?? $item['category']['en'] ?? 'N/A')
+                    : $item['category'];
+            }
+
             return [
-                $item['id'],
-                $item['name']['ar'] ?? $item['name']['en'] ?? 'N/A',
-                $item['sku'],
-                $item['category']['ar'] ?? $item['category']['en'] ?? 'N/A',
+                $item['id'] ?? 'N/A',
+                $name,
+                $item['sku'] ?? 'N/A',
+                $category,
             ];
         });
     }

@@ -21,14 +21,14 @@ class DriverPerformanceExport implements FromCollection, WithHeadings, WithTitle
     public function collection()
     {
         return collect([
-            ['Driver ID', $this->data['driver_id']],
-            ['Driver Name', $this->data['driver_name']],
-            ['Total Orders', $this->data['total_orders']],
-            ['Total Earnings', number_format($this->data['total_earnings'], 2)],
-            ['Average Delivery Time (minutes)', number_format($this->data['average_delivery_time_minutes'], 2)],
-            ['Average Rating', number_format($this->data['average_rating'], 2)],
-            ['Total Ratings', $this->data['total_ratings']],
-            ['Total Complaints', $this->data['total_complaints']],
+            ['Driver ID', $this->data['driver_id'] ?? 'N/A'],
+            ['Driver Name', $this->data['driver_name'] ?? 'N/A'],
+            ['Total Orders', $this->data['total_orders'] ?? 0],
+            ['Total Earnings', number_format($this->data['total_earnings'] ?? 0, 2)],
+            ['Average Delivery Time (minutes)', number_format($this->data['average_delivery_time_minutes'] ?? 0, 2)],
+            ['Average Rating', number_format($this->data['average_rating'] ?? 0, 2)],
+            ['Total Ratings', $this->data['total_ratings'] ?? 0],
+            ['Total Complaints', $this->data['total_complaints'] ?? 0],
         ]);
     }
 

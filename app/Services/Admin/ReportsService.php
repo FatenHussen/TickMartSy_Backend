@@ -156,7 +156,7 @@ class ReportsService
                 $product = $item->shopProductVariant->productVariant->product ?? null;
                 return [
                     'product_id' => $product->id ?? null,
-                    'product_name' => $product->name ?? 'N/A',
+                    'product_name' => $product ? $product->getTranslations('name') : 'N/A',
                     'total_sold' => $item->total_sold,
                     'total_revenue' => $item->total_revenue,
                 ];
@@ -165,7 +165,7 @@ class ReportsService
                 $product = $item->shopProductVariant->productVariant->product ?? null;
                 return [
                     'product_id' => $product->id ?? null,
-                    'product_name' => $product->name ?? 'N/A',
+                    'product_name' => $product ? $product->getTranslations('name') : 'N/A',
                     'total_sold' => $item->total_sold,
                     'total_revenue' => $item->total_revenue,
                 ];
@@ -173,9 +173,9 @@ class ReportsService
             'inactive_products' => $inactiveProducts->map(function ($product) {
                 return [
                     'id' => $product->id,
-                    'name' => $product->name,
+                    'name' => $product->getTranslations('name'),
                     'sku' => $product->sku,
-                    'category' => $product->category->name ?? 'N/A',
+                    'category' => $product->category ? $product->category->getTranslations('name') : 'N/A',
                 ];
             }),
         ];
@@ -211,7 +211,7 @@ class ReportsService
 
         return [
             'vendor_id' => $vendor->id,
-            'vendor_name' => $vendor->name,
+            'vendor_name' => $vendor->getTranslations('name'),
             'total_sales' => $orders->sum('total'),
             'total_orders' => $orders->count(),
             'average_order_value' => $orders->avg('total'),
