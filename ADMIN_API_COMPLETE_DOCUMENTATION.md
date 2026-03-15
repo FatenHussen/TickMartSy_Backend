@@ -20,8 +20,9 @@
 9. [Countries | البلدان](#countries)
 10. [Promotion Requests | طلبات العروض](#promotion-requests)
 11. [Point Rules | قواعد النقاط](#point-rules)
-12. [Schedules | الجدولات](#schedules)
+12. [User Subscriptions | اشتراكات المستخدمين](#user-subscriptions)
 13. [Vendor Subscriptions | اشتراكات الموردين](#vendor-subscriptions)
+14. [Schedules | الجدولات](#schedules)
 
 ---
 
@@ -532,7 +533,7 @@ DELETE /api/admin/{resource}/{id}      - Delete item (soft delete)
 ---
 
 <a name="schedules"></a>
-## 10. Schedules | الجدولات
+## 13. Schedules | الجدولات
 
 ### Routes | المسارات
 
@@ -572,7 +573,136 @@ DELETE /api/admin/{resource}/{id}      - Delete item (soft delete)
 ---
 
 <a name="vendor-subscriptions"></a>
-## 11. Vendor Subscriptions | اشتراكات الموردين
+## 11. User Subscriptions | اشتراكات المستخدمين
+
+### Packages Routes | مسارات الباقات
+
+| Method | Endpoint | Description | الوصف |
+|--------|----------|-------------|--------|
+| GET | `/api/admin/packages` | List all packages | عرض جميع الباقات |
+| GET | `/api/admin/packages/{id}` | Get single package | عرض باقة واحدة |
+| POST | `/api/admin/packages` | Create package | إنشاء باقة جديدة |
+| PUT | `/api/admin/packages/{id}` | Update package | تحديث باقة |
+| DELETE | `/api/admin/packages/{id}` | Delete package | حذف باقة |
+
+### Subscriptions Routes | مسارات الاشتراكات
+
+| Method | Endpoint | Description | الوصف |
+|--------|----------|-------------|--------|
+| GET | `/api/admin/subscriptions` | List all subscriptions | عرض جميع الاشتراكات |
+| GET | `/api/admin/subscriptions/{id}` | Get single subscription | عرض اشتراك واحد |
+| POST | `/api/admin/subscriptions` | Create subscription | إنشاء اشتراك جديد |
+| PUT | `/api/admin/subscriptions/{id}` | Update subscription | تحديث اشتراك |
+| DELETE | `/api/admin/subscriptions/{id}` | Delete subscription | حذف اشتراك |
+
+### Architecture | البنية
+
+#### Packages
+- **Controller:** `App\Http\Controllers\Admin\Package\PackageController`
+- **Service:** `App\Services\Admin\PackageService`
+- **Model:** `App\Models\Package`
+
+#### Subscriptions
+- **Controller:** `App\Http\Controllers\Admin\Subscription\SubscriptionController`
+- **Service:** `App\Services\Admin\SubscriptionService`
+- **Model:** `App\Models\Subscription`
+
+### Request Body | بيانات الطلب
+
+#### Create Package
+
+```json
+{
+  "name": {
+    "ar": "الباقة الذهبية",
+    "en": "Gold Package"
+  },
+  "price": 299.00,
+  "duration_days": 30,
+  "monthly_orders_limit": 50,
+  "free_delivery_count": 10,
+  "discount_percentage": 15,
+  "points_bonus": 500,
+  "is_active": true
+}
+```
+
+#### Create Subscription
+
+```json
+{
+  "user_id": 1,
+  "package_id": 2,
+  "start_date": "2024-01-01",
+  "end_date": "2024-01-31",
+  "status": "active",
+  "remaining_orders": 50,
+  "remaining_free_deliveries": 10
+}
+```
+
+### Response | الاستجابة
+
+#### Package Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "name": {"ar": "الباقة الذهبية", "en": "Gold Package"},
+    "price": 299.00,
+    "duration_days": 30,
+    "monthly_orders_limit": 50,
+    "free_delivery_count": 10,
+    "discount_percentage": 15,
+    "points_bonus": 500,
+    "is_active": true,
+    "active_subscriptions_count": 25
+  }
+}
+```
+
+#### Subscription Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "user": {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com"
+    },
+    "package": {
+      "id": 2,
+      "name": "Gold Package",
+      "price": 299.00
+    },
+    "start_date": "2024-01-01",
+    "end_date": "2024-01-31",
+    "status": "active",
+    "remaining_orders": 45,
+    "remaining_free_deliveries": 8,
+    "is_active": true,
+    "days_remaining": 15
+  }
+}
+```
+
+### Subscription Status | حالات الاشتراك
+
+| Status | Description | الوصف |
+|--------|-------------|--------|
+| `active` | Active subscription | اشتراك نشط |
+| `expired` | Expired subscription | اشتراك منتهي |
+| `cancelled` | Cancelled subscription | اشتراك ملغى |
+| `pending` | Pending payment | بانتظار الدفع |
+
+---
+
+## 12. Vendor Subscriptions | اشتراكات الموردين
 
 ### Vendor Packages Routes | مسارات باقات الموردين
 
@@ -584,7 +714,7 @@ DELETE /api/admin/{resource}/{id}      - Delete item (soft delete)
 | PUT | `/api/admin/vendor-packages/{id}` | Update | تحديث |
 | DELETE | `/api/admin/vendor-packages/{id}` | Delete | حذف |
 
-### Vendor Subscriptions Routes | مسارات الاشتراكات
+### Vendor Subscriptions Routes | مسارات اشتراكات الموردين
 
 | Method | Endpoint | Description | الوصف |
 |--------|----------|-------------|--------|
@@ -596,15 +726,49 @@ DELETE /api/admin/{resource}/{id}      - Delete item (soft delete)
 
 ### Architecture | البنية
 
-- **Packages:** `VendorPackageController`, `VendorPackageService`
-- **Subscriptions:** `VendorSubscriptionController`, `VendorSubscriptionService`
+- **Packages:** `VendorPackageController`, `VendorPackageService`, `VendorPackage`
+- **Subscriptions:** `VendorSubscriptionController`, `VendorSubscriptionService`, `VendorSubscription`
 
-### Subscription Status | حالات الاشتراك
+### Request Body | بيانات الطلب
 
-- `active` - اشتراك نشط
-- `expired` - اشتراك منتهي
-- `cancelled` - اشتراك ملغى
-- `pending` - بانتظار الدفع
+#### Create Vendor Package
+
+```json
+{
+  "name": {
+    "ar": "باقة المطاعم الذهبية",
+    "en": "Restaurant Gold Package"
+  },
+  "description": {
+    "ar": "باقة مميزة للمطاعم",
+    "en": "Premium package for restaurants"
+  },
+  "price": 500.00,
+  "duration_days": 30,
+  "max_products": 100,
+  "max_shops": 5,
+  "features": {
+    "ar": ["ميزة 1", "ميزة 2"],
+    "en": ["Feature 1", "Feature 2"]
+  },
+  "is_active": true
+}
+```
+
+#### Create Vendor Subscription
+
+```json
+{
+  "vendor_id": 1,
+  "vendor_package_id": 2,
+  "start_date": "2024-01-01",
+  "end_date": "2024-01-31",
+  "price": 500.00,
+  "payment_method": "card",
+  "status": "active",
+  "auto_renew": true
+}
+```
 
 ---
 
