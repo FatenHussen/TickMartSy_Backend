@@ -114,6 +114,7 @@ class UpdateRequest extends FormRequest
             'extra_details.*.id'            => 'nullable|exists:product_extra_details,id',
             'extra_details.*.detail_key'    => 'nullable|array',
             'extra_details.*.detail_value'  => 'nullable|array',
+            'extra_details.*.price'         => 'nullable|numeric|min:0',
 
             // Media
             'images' => 'nullable|array',

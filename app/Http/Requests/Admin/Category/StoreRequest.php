@@ -21,20 +21,22 @@ class StoreRequest extends FormRequest
         $data = $this->all();
 
         $name = [];
-        $description = [];
 
         foreach ($this->locales as $locale) {
             if (isset($data['name'][$locale])) {
                 $name[$locale] = $data['name'][$locale];
             }
-            if (isset($data['description'][$locale])) {
-                $description[$locale] = $data['description'][$locale];
-            }
+        }
+
+        // Convert empty string to null for parent_id
+        $parentId = $this->parent_id;
+        if ($parentId === '') {
+            $parentId = null;
         }
 
         $this->merge([
             'name' => $name,
-            'description' => $description,
+            'parent_id' => $parentId,
         ]);
     }
 
@@ -44,11 +46,12 @@ class StoreRequest extends FormRequest
         $rules = [
             'icon' => 'nullable|file',
             'parent_id' => 'nullable|integer|exists:categories,id',
+            'order' => 'nullable|integer|min:0',
+            'is_active' => 'nullable|boolean',
         ];
 
         foreach ($this->locales as $locale) {
             $rules["name.{$locale}"] = 'required|string|max:255';
-            $rules["description.{$locale}"] = 'nullable|string';
         }
 
         return $rules;

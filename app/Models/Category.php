@@ -12,14 +12,29 @@ class Category extends Model implements Sectionable
 {
     use HasFactory, HasTranslations, SoftDeletes, LogsActivity;
 
-    public $translatable = ['name', 'description'];
+    public $translatable = ['name'];
 
     protected $fillable = [
         'name',
-        'description',
         'icon',
         'parent_id',
+        'order',
+        'is_active',
     ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeOrdered($query)
+    {
+        return $query->orderBy('order', 'asc');
+    }
 
     public function parent()
     {
@@ -29,6 +44,13 @@ class Category extends Model implements Sectionable
     public function children()
     {
         return $this->hasMany(Category::class, 'parent_id');
+    }
+
+    public function activeChildren()
+    {
+        return $this->hasMany(Category::class, 'parent_id')
+            ->where('is_active', true)
+            ->orderBy('order', 'asc');
     }
 
     public function brands()
@@ -86,12 +108,10 @@ class Category extends Model implements Sectionable
         return [
             'id'       => $this->id,
             'title'     => $this->name,
-            'desc'     => $this->description,
+            'desc'     => null,
             'image'    => $this->icon,
             'price' => null,
             'discount' => null,
-            // 'top_badges' => [],
-            // 'bottom_badges' => [],
         ];
     }
 }

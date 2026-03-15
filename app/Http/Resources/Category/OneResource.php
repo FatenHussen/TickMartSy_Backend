@@ -17,20 +17,23 @@ class OneResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->getTranslations('name'),
-            'description' => $this->getTranslations('description'),
             'icon' => $this->image_url,
             'parent_id' => $this->parent_id,
+            'order' => $this->order,
+            'is_active' => $this->is_active,
             'parent' => $this->whenLoaded('parent', function () use ($locale) {
                 return [
                     'id' => $this->parent?->id,
                     'name' => $this->parent?->getTranslation('name', $locale),
                 ];
             }),
-            'children' => $this->whenLoaded('children', function () use ($locale) {
-                return $this->children->map(function ($child) use ($locale) {
+            'children' => $this->whenLoaded('activeChildren', function () use ($locale) {
+                return $this->activeChildren->map(function ($child) use ($locale) {
                     return [
                         'id' => $child->id,
                         'name' => $child->getTranslation('name', $locale),
+                        'order' => $child->order,
+                        'is_active' => $child->is_active,
                     ];
                 });
             }),

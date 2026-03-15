@@ -105,6 +105,7 @@ class StoreRequest extends FormRequest
             'extra_details'                 => 'nullable|array',
             'extra_details.*.detail_key'    => 'nullable|array',
             'extra_details.*.detail_value'  => 'nullable|array',
+            'extra_details.*.price'         => 'nullable|numeric|min:0',
 
             // Media
             'images' => 'nullable|array',

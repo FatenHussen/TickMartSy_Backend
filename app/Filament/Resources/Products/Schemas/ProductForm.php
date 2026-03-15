@@ -187,6 +187,15 @@ class ProductForm
                                             Forms\Components\TextInput::make('detail_value.en')
                                                 ->label(__('custom.products.form.value_en'))
                                                 ->maxLength(255),
+
+                                            Forms\Components\TextInput::make('price')
+                                                ->label(__('custom.products.form.extra_price'))
+                                                ->numeric()
+                                                ->minValue(0)
+                                                ->default(0)
+                                                ->suffix(__('custom.currency'))
+                                                ->helperText(__('custom.products.form.extra_price_help'))
+                                                ->columnSpanFull(),
                                         ])
                                         ->columns(2)
                                         ->defaultItems(0)

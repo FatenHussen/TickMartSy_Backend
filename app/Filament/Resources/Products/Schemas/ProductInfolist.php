@@ -417,8 +417,14 @@ class ProductInfolist
                                             Infolists\Components\TextEntry::make('detail_value')
                                                 ->label(__('custom.products.detail_value'))
                                                 ->icon('heroicon-o-document-text'),
+
+                                            Infolists\Components\TextEntry::make('price')
+                                                ->label(__('custom.products.form.extra_price'))
+                                                ->money('USD')
+                                                ->icon('heroicon-o-currency-dollar')
+                                                ->color('success'),
                                         ])
-                                        ->columns(2)
+                                        ->columns(3)
                                         ->contained(false),
                                 ])
                                 ->visible(fn($record) => $record->extraDetails->count() > 0)
