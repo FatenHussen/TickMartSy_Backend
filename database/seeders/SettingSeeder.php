@@ -22,7 +22,7 @@ class SettingSeeder extends Seeder
 
         Setting::create([
             'key' => 'phone',
-            'value' => '0999999999',
+            'value' => '+963940404018',
             'type' => 'string',
         ]);
 

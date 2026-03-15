@@ -19,6 +19,8 @@ class PageSectionCrudController extends BaseCRUDController
         $this->filterRequest = FilterRequest::class;
     }
 
+
+
     public function displayTypes($manual_model)
     {
         $data =  $this->service->displayTypes($manual_model);

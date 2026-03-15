@@ -52,7 +52,7 @@ class UserSeeder extends Seeder
                 'affiliate_rate' => '20',
             ],
             [
-                'name' => 'Leen Hassan',
+                'name' => 'Leen Fandi',
                 'phone' => '0991234567',
                 'email' => 'leen@gmail.com',
                 'password' => Hash::make('123456'),

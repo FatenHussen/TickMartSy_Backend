@@ -11,6 +11,7 @@ use App\Services\BaseService;
 
 class PageSectionService extends BaseService
 {
+
     public function __construct(PageSection $model)
     {
         $this->model      = $model;

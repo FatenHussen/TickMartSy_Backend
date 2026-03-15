@@ -36,6 +36,8 @@ class AdminOneResource extends JsonResource
             'discount' => $this->discount,
             ...$this->withCurrency($price, 'price'),
             ...$this->withCurrency($priceAfterDiscount, 'price_after_discount'),
+
+            'delivery_price' => $this->delivery_price,
             'serves' => $this->serves,
             'prepare_time' => $this->prepare_time,
 
