@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\BadgeController;
 use App\Http\Controllers\Admin\Banner\BannerCrudController;
 use App\Http\Controllers\Admin\Basket\BasketController;
 use App\Http\Controllers\Admin\Basket\ScheduledBasketController;
+use App\Http\Controllers\Admin\AffiliateWithdrawRequest\AffiliateWithdrawRequestController;
 use App\Http\Controllers\Admin\Role_Permission\PermissionIndexController;
 use App\Http\Controllers\Admin\Role_Permission\RoleCrudController;
 use App\Http\Controllers\Admin\Brand\BrandController;
@@ -55,6 +56,8 @@ use App\Http\Controllers\Admin\Statistics\StatisticsController;
 use App\Http\Controllers\Admin\Reports\ReportsController;
 use App\Http\Controllers\Admin\PointRuleController;
 use App\Http\Controllers\Admin\PromotionController;
+use App\Http\Controllers\Admin\Setting\SettingController;
+use App\Http\Controllers\Admin\SystemSettingController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(
@@ -145,6 +148,25 @@ Route::prefix('admin')->group(
                 Route::get('/export/driver-performance/{driverId}', [ReportsController::class, 'exportDriverPerformance']);
             });
 
+            // Settings routes (Setting model)
+            Route::prefix('settings')->group(function () {
+                Route::get('/', [SettingController::class, 'index']);
+                Route::get('/{key}', [SettingController::class, 'show']);
+                Route::put('/{key}', [SettingController::class, 'update']);
+            });
+
+            // System Settings routes
+            Route::prefix('system-settings')->group(function () {
+                Route::get('/', [SystemSettingController::class, 'index']);
+                Route::get('/group/{group}', [SystemSettingController::class, 'getByGroup']);
+                Route::post('/batch', [SystemSettingController::class, 'updateBatch']);
+                Route::post('/clear-cache', [SystemSettingController::class, 'clearCache']);
+                Route::get('/{key}', [SystemSettingController::class, 'show']);
+                Route::put('/{key}', [SystemSettingController::class, 'update']);
+                Route::post('/', [SystemSettingController::class, 'store']);
+                Route::delete('/{key}', [SystemSettingController::class, 'destroy']);
+            });
+
             // User Basket Schedules (Read-Only)
             Route::prefix('user-basket-schedules')->group(function () {
                 Route::get('/', [UserBasketScheduleController::class, 'index']);
@@ -213,6 +235,7 @@ Route::prefix('admin')->group(
                 Route::apiResource('faqs', FaqController::class);
                 Route::apiResource('badges', BadgeController::class);
                 Route::apiResource('promotions', PromotionController::class);
+                Route::apiResource('affiliate-withdraw-requests', AffiliateWithdrawRequestController::class)->only(['index', 'show', 'update']);
 
                 // Seller Registration routes
                 Route::apiResource('seller-registrations', SellerRegistrationCrudController::class)->only(['index', 'show', 'destroy']);

@@ -47,8 +47,9 @@ class Coupon extends Model
 
     public function scopeValid($query)
     {
-        return $query->where('is_active', true)
-            ->where('start_at', '<=', now())
+
+        return $query->where('is_active', 1)
+            // ->where('start_at', '<=', now())
             ->where('end_at', '>=', now())
             ->whereColumn('used_count', '<', 'max_uses');
     }

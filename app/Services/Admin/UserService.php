@@ -60,7 +60,6 @@ class UserService extends BaseService
 
             // approve automatically if rate exists
             if (array_key_exists('affiliate_rate', $data)) {
-                Log::info("affiliate_approved");
                 $data['affiliate_approved'] = true;
                 (new NotificationService)->send(
                     $this->model,

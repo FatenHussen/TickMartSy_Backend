@@ -32,7 +32,7 @@ class SettingSeeder extends Seeder
             'type' => 'string',
         ]);
 
-        // واجهة اللوغين
+        // واجهة اللوجين
         Setting::create([
             'key' => 'login_image',
             'value' => 'settings/logo.png',
@@ -59,6 +59,25 @@ class SettingSeeder extends Seeder
                 'ar' => 'مرحبا',
             ],
             'type' => 'json',
+        ]);
+
+        // ألوان الواجهة
+        Setting::create([
+            'key' => 'main_color',
+            'value' => '#E4F0FB',
+            'type' => 'string',
+        ]);
+
+        Setting::create([
+            'key' => 'text_color',
+            'value' => '#2A2A2A',
+            'type' => 'string',
+        ]);
+
+        Setting::create([
+            'key' => 'second_color',
+            'value' => '#e27676',
+            'type' => 'string',
         ]);
     }
 }

@@ -11,7 +11,6 @@ use App\Services\User\RecipeService;
 use App\Services\User\ScheduleService;
 use App\Services\User\ShopService;
 
-// use App\Services\Base\Section\TrendingProductsHandler;
 
 class SectionApiService
 {
@@ -43,7 +42,7 @@ class SectionApiService
     protected function resolveHandler(string $method)
     {
         $map = [
-            'trending_products' => TrendingProductsHandler::class,
+            // 'trending_products' => TrendingProductsHandler::class,
             'brands' => BrandService::class,
             'recipes' => RecipeService::class,
             'baskets' => BasketService::class,

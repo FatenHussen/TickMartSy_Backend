@@ -86,9 +86,15 @@ class HelpCenterController extends Controller
                 'email' => $settings['email']->value ?? null,
             ],
             'color' => [
-                'main_color' => $settings['main_color'] ?? '#E4F0FB',
-                'text_color' => $settings['text_color'] ?? '#2A2A2A',
-                'second_color' => $settings['text_color'] ?? '#e27676',
+                'main_color' => isset($settings['main_color'])
+                    ? $settings['main_color']->value
+                    : '#E4F0FB',
+                'text_color' => isset($settings['text_color'])
+                    ? $settings['text_color']->value
+                    : '#2A2A2A',
+                'second_color' => isset($settings['second_color'])
+                    ? $settings['second_color']->value
+                    : '#e27676',
             ]
         ]);
     }

@@ -264,7 +264,7 @@ class MarketService
             'summary' => [
                 'total_requests' => $collection->count(),
                 'total_withdrawn' => round(
-                    $collection->where('status', 'completed')->sum('amount'),
+                    $collection->where('status', 'approved')->sum('amount'),
                     2
                 ),
                 'pending_amount' => round(

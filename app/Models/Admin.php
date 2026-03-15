@@ -67,6 +67,8 @@ class Admin extends Authenticatable
         }
     }
 
+
+
     public function fcmTokens(): MorphMany
     {
         return $this->morphMany(UserToken::class, 'tokenable');

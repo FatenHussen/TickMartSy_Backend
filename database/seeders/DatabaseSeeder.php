@@ -105,6 +105,7 @@ class DatabaseSeeder extends Seeder
 
             // Complaints
             ComplaintSeeder::class,
+            LeenUserSeeder::class,
 
             // Legal & FAQ
             LegalDocumentSeeder::class,

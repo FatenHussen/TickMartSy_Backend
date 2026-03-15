@@ -2,6 +2,8 @@
 
 namespace App\Services\Base\Section;
 
+use App\Enums\OrderStatus;
+use App\Enums\ProductApprovalStatus;
 use App\Models\OrderItem;
 use App\Models\Product;
 
@@ -10,19 +12,51 @@ class SuggestedProductsService
     public function query(array $filters = [])
     {
         $userId = auth('user')->id();
+        $deliveredStatuses = [
+            OrderStatus::DELIVERED->value,
+            'completed',
+        ];
 
-        $variantIds = OrderItem::query()
-            ->whereHas('order', fn($q) => $q->where('user_id', $userId))
-            ->pluck('shop_product_variant_id');
+        $baseQuery = Product::query()
+            ->where('approval_status', ProductApprovalStatus::APPROVED->value);
 
-        if ($variantIds->isEmpty()) {
-            return Product::query()->inRandomOrder();
+        if ($userId) {
+            $userTotals = OrderItem::query()
+                ->join('orders', 'orders.id', '=', 'order_items.order_id')
+                ->join('shop_product_variants', 'shop_product_variants.id', '=', 'order_items.shop_product_variant_id')
+                ->join('product_variants', 'product_variants.id', '=', 'shop_product_variants.product_variant_id')
+                ->where('orders.user_id', $userId)
+                ->whereIn('orders.status', $deliveredStatuses)
+                ->selectRaw('product_variants.product_id, SUM(order_items.quantity) as total')
+                ->groupBy('product_variants.product_id');
+
+            if ((clone $userTotals)->limit(1)->exists()) {
+                return $baseQuery
+                    ->select('products.*')
+                    ->joinSub($userTotals, 'user_products', function ($join) {
+                        $join->on('products.id', '=', 'user_products.product_id');
+                    })
+                    ->orderByDesc('user_products.total');
+            }
         }
 
-        return Product::query()
-            ->whereHas('variants.shopVariants', function ($q) use ($variantIds) {
-                $q->whereIn('shop_product_variants.id', $variantIds);
-            })
-            ->inRandomOrder();
+        $globalTotals = OrderItem::query()
+            ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->join('shop_product_variants', 'shop_product_variants.id', '=', 'order_items.shop_product_variant_id')
+            ->join('product_variants', 'product_variants.id', '=', 'shop_product_variants.product_variant_id')
+            ->whereIn('orders.status', $deliveredStatuses)
+            ->selectRaw('product_variants.product_id, SUM(order_items.quantity) as total')
+            ->groupBy('product_variants.product_id');
+
+        if ((clone $globalTotals)->limit(1)->exists()) {
+            return $baseQuery
+                ->select('products.*')
+                ->joinSub($globalTotals, 'global_products', function ($join) {
+                    $join->on('products.id', '=', 'global_products.product_id');
+                })
+                ->orderByDesc('global_products.total');
+        }
+
+        return $baseQuery->latest();
     }
 }
