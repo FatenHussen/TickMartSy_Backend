@@ -46,6 +46,10 @@ class ProductService extends BaseService
             'collection' => 'seo',
             'type'       => 'single',
         ],
+        'thumbnail' => [
+            'collection' => 'thumbnail',
+            'type'       => 'single',
+        ],
     ];
 
     protected $searchableFields = [
@@ -57,12 +61,16 @@ class ProductService extends BaseService
         'country',
         'model',
         'price',
+        'cost_price',
         'price_after_discount',
         'quantity',
+        'unit',
         'barcode',
         'time_prepare',
         'bought_with',
         'is_instant_delivery',
+        'is_visible',
+        'discount_type',
         'seo_title',
         'seo_description',
         'seo_keywords',

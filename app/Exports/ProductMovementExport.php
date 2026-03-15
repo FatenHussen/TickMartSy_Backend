@@ -45,7 +45,7 @@ class TopSellingSheet implements FromCollection, WithHeadings, WithTitle, Should
         return collect($this->data)->map(function ($item) {
             return [
                 $item['product_id'],
-                $item['product_name']['ar'] ?? $item['product_name']['en'] ?? 'N/A',
+                $item['name']['ar'] ?? $item['name']['en'] ?? 'N/A',
                 $item['total_sold'],
                 number_format($item['total_revenue'], 2),
             ];
@@ -77,7 +77,7 @@ class LeastSellingSheet implements FromCollection, WithHeadings, WithTitle, Shou
         return collect($this->data)->map(function ($item) {
             return [
                 $item['product_id'],
-                $item['product_name']['ar'] ?? $item['product_name']['en'] ?? 'N/A',
+                $item['name']['ar'] ?? $item['name']['en'] ?? 'N/A',
                 $item['total_sold'],
                 number_format($item['total_revenue'], 2),
             ];

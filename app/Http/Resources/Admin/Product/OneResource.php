@@ -19,8 +19,14 @@ class OneResource extends JsonResource
             'country' => $this->getTranslations('country'),
 
             'price' => $this->price,
+            'cost_price' => $this->cost_price,
             'price_after_discount' => $this->price_after_discount,
+            'discount' => $this->discount,
+            'discount_type' => $this->discount_type,
             'quantity' => $this->quantity,
+            'unit' => $this->unit,
+            'warranty_period' => $this->warranty_period,
+            'is_visible' => $this->is_visible,
 
             'sku' => $this->sku,
             'model' => $this->model,
@@ -28,6 +34,8 @@ class OneResource extends JsonResource
             'time_prepare' => optional($this->time_prepare)->format('H:i'),
             'bought_with' => $this->bought_with ?? [],
             'is_instant_delivery' => $this->is_instant_delivery,
+
+            'thumbnail' => $this->thumbnail ? asset('storage/' . $this->thumbnail) : null,
 
             'category' => [
                 'id' => $this->category?->id,
@@ -107,6 +115,12 @@ class OneResource extends JsonResource
                     'url' => $img->url,
                 ];
             })->values(),
+
+            // SEO Fields
+            'seo_title' => $this->getTranslations('seo_title'),
+            'seo_description' => $this->getTranslations('seo_description'),
+            'seo_keywords' => $this->getTranslations('seo_keywords'),
+            'seo_image' => $this->seo_image ? asset('storage/' . $this->seo_image) : null,
         ];
     }
 }

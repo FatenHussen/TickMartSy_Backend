@@ -21,12 +21,20 @@ class AllResource extends JsonResource
             'sku'                   => $this->sku,
             'model'                 => $this->model,
             'price'                 => $this->price,
+            'cost_price'            => $this->cost_price,
             'price_after_discount'  => $this->price_after_discount,
+            'discount'              => $this->discount,
+            'discount_type'         => $this->discount_type,
             'quantity'              => $this->quantity,
+            'unit'                  => $this->unit,
+            'warranty_period'       => $this->warranty_period,
+            'is_visible'            => $this->is_visible,
             'barcode'               => $this->barcode,
             'time_prepare'          => $this->time_prepare,
             'bought_with'           => $this->bought_with,
             'is_instant_delivery'   => $this->is_instant_delivery,
+
+            'thumbnail'             => $this->thumbnail ? asset('storage/' . $this->thumbnail) : null,
 
             'vendor' => $this->vendor ? [
                 'id' => $this->vendor->id,

@@ -81,13 +81,19 @@ class UpdateRequest extends FormRequest
             'sku'                   => 'nullable|string|unique:products,sku,' . $productId,
             'model'                 => 'nullable|string|unique:products,model,' . $productId,
             'price'                 => 'nullable|integer|min:0',
+            'cost_price'            => 'nullable|numeric|min:0',
             'discount'              => 'nullable|integer|min:0|max:100',
+            'discount_type'         => 'nullable|in:none,percentage,fixed',
             'quantity'              => 'nullable|integer|min:0',
+            'unit'                  => 'nullable|string|max:50',
+            'warranty_period'       => 'nullable|integer|min:0',
             'barcode'               => 'nullable|string',
             'time_prepare'          => 'nullable|string',
             'bought_with'           => 'nullable|array',
             'bought_with.*'         => 'nullable|integer|exists:products,id',
             'is_instant_delivery'   => 'nullable|boolean',
+            'is_visible'            => 'nullable|boolean',
+            'thumbnail'             => 'nullable|image|max:2048',
 
             // Variants
             'variants'                      => 'nullable|array',
@@ -125,6 +131,9 @@ class UpdateRequest extends FormRequest
             'badges.*.id'  => 'required|integer|exists:badges,id',
             'badges.*.position'  => 'required|in:top,bottom',
             'brand_id' => 'nullable|integer|exists:brands,id',
+
+            'icon_ids' => 'nullable|array',
+            'icon_ids.*' => 'required|integer|exists:icons,id',
 
             // SEO Fields
             'seo_image' => 'nullable|image|max:2048',

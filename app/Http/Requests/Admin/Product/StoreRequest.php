@@ -75,13 +75,19 @@ class StoreRequest extends FormRequest
             'sku'                   => 'nullable|string|unique:products,sku',
             'model'                 => 'nullable|string|unique:products,model',
             'price'                 => 'required|integer|min:0',
+            'cost_price'            => 'nullable|numeric|min:0',
             'discount'              => 'nullable|integer|min:0|max:100',
+            'discount_type'         => 'nullable|in:none,percentage,fixed',
             'quantity'              => 'nullable|integer|min:0',
+            'unit'                  => 'nullable|string|max:50',
+            'warranty_period'       => 'nullable|integer|min:0',
             'barcode'               => 'nullable|string',
             'time_prepare'          => 'nullable|string',
             'bought_with'           => 'nullable|array',
             'bought_with.*'         => 'nullable|integer|exists:products,id',
             'is_instant_delivery'   => 'nullable|boolean',
+            'is_visible'            => 'nullable|boolean',
+            'thumbnail'             => 'nullable|image|max:2048',
 
             // Variants
             'variants'                      => 'nullable|array',
@@ -117,6 +123,9 @@ class StoreRequest extends FormRequest
             'badges'          => 'nullable|array',
             'badges.*.id'  => 'required|integer|exists:badges,id',
             'badges.*.position'  => 'required|in:top,bottom',
+
+            'icon_ids' => 'nullable|array',
+            'icon_ids.*' => 'required|integer|exists:icons,id',
 
             // SEO Fields
             'seo_image' => 'nullable|image|max:2048',
