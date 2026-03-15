@@ -23,10 +23,10 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title.ar'              => 'nullable|string|max:255',
-            'title.en'              => 'nullable|string|max:255',
-            'description.ar'       => 'nullable|string',
-            'description.en'       => 'nullable|string',
+            'title' => ['nullable', 'array'],
+            'title.*' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'array'],
+            'description.*' => ['required', 'string', 'max:255'],
             'image'                 => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             // 'is_active'            => 'nullable|boolean',
             'link' => 'nullable|string|url',
