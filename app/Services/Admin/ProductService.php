@@ -42,6 +42,10 @@ class ProductService extends BaseService
             'collection' => 'variant',
             'type'       => 'multiple',
         ],
+        'seo_image' => [
+            'collection' => 'seo',
+            'type'       => 'single',
+        ],
     ];
 
     protected $searchableFields = [
@@ -58,7 +62,10 @@ class ProductService extends BaseService
         'barcode',
         'time_prepare',
         'bought_with',
-        'is_instant_delivery'
+        'is_instant_delivery',
+        'seo_title',
+        'seo_description',
+        'seo_keywords',
     ];
 
     protected $sortableFields = [

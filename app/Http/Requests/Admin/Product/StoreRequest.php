@@ -24,6 +24,9 @@ class StoreRequest extends FormRequest
             'description',
             'full_description',
             'country',
+            'seo_title',
+            'seo_description',
+            'seo_keywords',
         ];
 
         foreach ($translatableFields as $field) {
@@ -114,6 +117,9 @@ class StoreRequest extends FormRequest
             'badges'          => 'nullable|array',
             'badges.*.id'  => 'required|integer|exists:badges,id',
             'badges.*.position'  => 'required|in:top,bottom',
+
+            // SEO Fields
+            'seo_image' => 'nullable|image|max:2048',
         ];
 
         // Add locale-specific validation
@@ -126,6 +132,11 @@ class StoreRequest extends FormRequest
             $rules["category_details.*.detail_value.$locale"] = 'nullable|string';
             $rules["extra_details.*.detail_key.$locale"] = 'nullable|string';
             $rules["extra_details.*.detail_value.$locale"] = 'nullable|string';
+
+            // SEO Fields
+            $rules["seo_title.$locale"] = 'nullable|string|max:160';
+            $rules["seo_description.$locale"] = 'nullable|string|max:320';
+            $rules["seo_keywords.$locale"] = 'nullable|array';
         }
 
         return $rules;
