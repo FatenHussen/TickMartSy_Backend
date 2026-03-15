@@ -34,6 +34,10 @@ class Product extends Model implements Sectionable
         'brand_id',
         'approval_status',
         'rejection_reason',
+        'seo_title',
+        'seo_description',
+        'seo_keywords',
+        'seo_image',
     ];
 
     public array $translatable = [
@@ -41,6 +45,9 @@ class Product extends Model implements Sectionable
         'description',
         'full_description',
         'country',
+        'seo_title',
+        'seo_description',
+        'seo_keywords',
     ];
 
     protected $casts = [

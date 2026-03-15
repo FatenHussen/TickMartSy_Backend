@@ -437,6 +437,54 @@ class ProductInfolist
                                 ])
                                 ->visible(fn($record) => !$record->bought_with || \count($record->bought_with) === 0),
                         ]),
+
+                    // Tab 8: تحسين محركات البحث (SEO)
+                    Tab::make(__('custom.products.seo.title'))
+                        ->icon('heroicon-o-magnifying-glass')
+                        ->badge(fn($record) => ($record->seo_title || $record->seo_description || $record->seo_keywords || $record->seo_image) ? '✓' : null)
+                        ->schema([
+                            Section::make(__('custom.products.seo.title'))
+                                ->schema([
+                                    Infolists\Components\TextEntry::make('seo_title')
+                                        ->label(__('custom.products.seo.seo_title'))
+                                        ->weight('bold')
+                                        ->icon('heroicon-o-document-text')
+                                        ->color('primary')
+                                        ->default('-')
+                                        ->columnSpanFull(),
+
+                                    Infolists\Components\TextEntry::make('seo_description')
+                                        ->label(__('custom.products.seo.seo_description'))
+                                        ->icon('heroicon-o-document-text')
+                                        ->default('-')
+                                        ->columnSpanFull(),
+
+                                    Infolists\Components\TextEntry::make('seo_keywords')
+                                        ->label(__('custom.products.seo.seo_keywords'))
+                                        ->badge()
+                                        ->separator(',')
+                                        ->color('info')
+                                        ->icon('heroicon-o-tag')
+                                        ->default('-')
+                                        ->columnSpanFull(),
+
+                                    Infolists\Components\ImageEntry::make('seo_image')
+                                        ->label(__('custom.products.seo.seo_image'))
+                                        ->disk('public')
+                                        ->size(300)
+                                        ->extraAttributes(['class' => 'rounded-xl'])
+                                        ->visible(fn($record) => $record->seo_image)
+                                        ->columnSpanFull(),
+
+                                    Infolists\Components\TextEntry::make('no_seo_image')
+                                        ->label(__('custom.products.seo.seo_image'))
+                                        ->default(__('custom.products.seo.no_seo_image'))
+                                        ->color('gray')
+                                        ->visible(fn($record) => !$record->seo_image)
+                                        ->columnSpanFull(),
+                                ])
+                                ->collapsible(),
+                        ]),
                 ])
                 ->columnSpanFull(),
         ]);
