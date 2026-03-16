@@ -8,6 +8,7 @@
             defaultLat: @js($getDefaultLatitude()),
             defaultLng: @js($getDefaultLongitude()),
             defaultZoom: @js($getDefaultZoom()),
+            isUpdatingFromMap: false,
 
             init() {
                 if (typeof L === 'undefined') {
@@ -26,11 +27,8 @@
             },
 
             initMap() {
-                const latInput = document.querySelector('[name=\'' + this.latitudeField + '\']');
-                const lngInput = document.querySelector('[name=\'' + this.longitudeField + '\']');
-
-                const currentLat = latInput?.value ? parseFloat(latInput.value) : this.defaultLat;
-                const currentLng = lngInput?.value ? parseFloat(lngInput.value) : this.defaultLng;
+                const currentLat = this.getFieldValue(this.latitudeField) || this.defaultLat;
+                const currentLng = this.getFieldValue(this.longitudeField) || this.defaultLng;
 
                 this.map = L.map(this.$refs.mapContainer).setView([currentLat, currentLng], this.defaultZoom);
 
@@ -54,44 +52,54 @@
                     this.updateFields(lat, lng);
                 });
 
-                // Listen to input changes and update marker
-                if (latInput) {
-                    latInput.addEventListener('input', () => this.updateMarkerFromInputs());
-                }
-                if (lngInput) {
-                    lngInput.addEventListener('input', () => this.updateMarkerFromInputs());
-                }
+                // Watch for changes in form fields
+                this.$watch('$wire.' + this.latitudeField, (value) => {
+                    if (!this.isUpdatingFromMap) {
+                        this.updateMarkerFromInputs();
+                    }
+                });
+
+                this.$watch('$wire.' + this.longitudeField, (value) => {
+                    if (!this.isUpdatingFromMap) {
+                        this.updateMarkerFromInputs();
+                    }
+                });
 
                 setTimeout(() => {
                     this.map.invalidateSize();
                 }, 100);
             },
 
-            updateFields(lat, lng) {
-                const latInput = document.querySelector('[name=\'' + this.latitudeField + '\']');
-                const lngInput = document.querySelector('[name=\'' + this.longitudeField + '\']');
-
-                if (latInput) {
-                    latInput.value = lat.toFixed(6);
-                    latInput.dispatchEvent(new Event('input', { bubbles: true }));
-                }
-
-                if (lngInput) {
-                    lngInput.value = lng.toFixed(6);
-                    lngInput.dispatchEvent(new Event('input', { bubbles: true }));
+            getFieldValue(fieldName) {
+                try {
+                    return this.$wire.get(fieldName);
+                } catch (e) {
+                    return null;
                 }
             },
 
-            updateMarkerFromInputs() {
-                const latInput = document.querySelector('[name=\'' + this.latitudeField + '\']');
-                const lngInput = document.querySelector('[name=\'' + this.longitudeField + '\']');
+            updateFields(lat, lng) {
+                this.isUpdatingFromMap = true;
 
-                const lat = latInput?.value ? parseFloat(latInput.value) : null;
-                const lng = lngInput?.value ? parseFloat(lngInput.value) : null;
+                try {
+                    this.$wire.set(this.latitudeField, lat.toFixed(6));
+                    this.$wire.set(this.longitudeField, lng.toFixed(6));
+                } catch (e) {
+                    console.error('Error updating fields:', e);
+                }
+
+                setTimeout(() => {
+                    this.isUpdatingFromMap = false;
+                }, 100);
+            },
+
+            updateMarkerFromInputs() {
+                const lat = this.getFieldValue(this.latitudeField);
+                const lng = this.getFieldValue(this.longitudeField);
 
                 if (lat && lng && !isNaN(lat) && !isNaN(lng) && this.marker && this.map) {
-                    this.marker.setLatLng([lat, lng]);
-                    this.map.setView([lat, lng], this.map.getZoom());
+                    this.marker.setLatLng([parseFloat(lat), parseFloat(lng)]);
+                    this.map.setView([parseFloat(lat), parseFloat(lng)], this.map.getZoom());
                 }
             }
         }"
