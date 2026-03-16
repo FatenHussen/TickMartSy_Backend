@@ -3,14 +3,13 @@
         x-data="{
             map: null,
             marker: null,
-            latitudeField: '{{ $getLatitudeField() }}',
-            longitudeField: '{{ $getLongitudeField() }}',
-            defaultLat: {{ $getDefaultLatitude() }},
-            defaultLng: {{ $getDefaultLongitude() }},
-            defaultZoom: {{ $getDefaultZoom() }},
+            latitudeField: @js($getLatitudeField()),
+            longitudeField: @js($getLongitudeField()),
+            defaultLat: @js($getDefaultLatitude()),
+            defaultLng: @js($getDefaultLongitude()),
+            defaultZoom: @js($getDefaultZoom()),
 
             init() {
-                // Wait for Leaflet to load
                 if (typeof L === 'undefined') {
                     const link = document.createElement('link');
                     link.rel = 'stylesheet';
@@ -27,49 +26,42 @@
             },
 
             initMap() {
-                // Get current values from form
-                const latInput = document.querySelector('[name=\"' + this.latitudeField + '\"]');
-                const lngInput = document.querySelector('[name=\"' + this.longitudeField + '\"]');
+                const latInput = document.querySelector('[name=\'' + this.latitudeField + '\']');
+                const lngInput = document.querySelector('[name=\'' + this.longitudeField + '\']');
 
                 const currentLat = latInput?.value ? parseFloat(latInput.value) : this.defaultLat;
                 const currentLng = lngInput?.value ? parseFloat(lngInput.value) : this.defaultLng;
 
-                // Initialize map
                 this.map = L.map(this.$refs.mapContainer).setView([currentLat, currentLng], this.defaultZoom);
 
-                // Add tile layer
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '© OpenStreetMap contributors',
                     maxZoom: 19
                 }).addTo(this.map);
 
-                // Add marker
                 this.marker = L.marker([currentLat, currentLng], {
                     draggable: true
                 }).addTo(this.map);
 
-                // Update fields when marker is dragged
                 this.marker.on('dragend', (e) => {
                     const position = e.target.getLatLng();
                     this.updateFields(position.lat, position.lng);
                 });
 
-                // Add click event to map
                 this.map.on('click', (e) => {
                     const { lat, lng } = e.latlng;
                     this.marker.setLatLng([lat, lng]);
                     this.updateFields(lat, lng);
                 });
 
-                // Fix map display issue
                 setTimeout(() => {
                     this.map.invalidateSize();
                 }, 100);
             },
 
             updateFields(lat, lng) {
-                const latInput = document.querySelector('[name=\"' + this.latitudeField + '\"]');
-                const lngInput = document.querySelector('[name=\"' + this.longitudeField + '\"]');
+                const latInput = document.querySelector('[name=\'' + this.latitudeField + '\']');
+                const lngInput = document.querySelector('[name=\'' + this.longitudeField + '\']');
 
                 if (latInput) {
                     latInput.value = lat.toFixed(6);
@@ -92,7 +84,7 @@
         ></div>
 
         <div class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Click on the map or drag the marker to set the location
+            {{ __('custom.shops.map_picker_help') }}
         </div>
     </div>
 </x-dynamic-component>
