@@ -182,6 +182,7 @@ class OrderService extends BaseService
             'available_promotions' => $availablePromotions,
             'non_discount_promotions' => $nonDiscountPromotion,
             'excluded_items' => $discounts['excluded_items'] ?? [],
+            'orderItems' => $orderItems
         ];
     }
 
@@ -546,7 +547,7 @@ class OrderService extends BaseService
                 'price' => $price,
                 'product_discount' => $productDiscount,
                 'price_after_discount' => $priceAfterDiscount,
-                'product' => $product,
+                // 'product' => $product,
 
             ]);
         }
