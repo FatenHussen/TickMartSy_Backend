@@ -63,8 +63,10 @@ class CategoryService extends BaseService
         // Shop filter - categories that have products in this shop
         if (!empty($filters['shop_id'])) {
             $query->whereHas('products', function ($q) use ($filters) {
-                $q->whereHas('shopVariants', function ($sq) use ($filters) {
-                    $sq->where('shop_id', $filters['shop_id']);
+                $q->whereHas('variants', function ($vq) use ($filters) {
+                    $vq->whereHas('shopVariants', function ($sq) use ($filters) {
+                        $sq->where('shop_id', $filters['shop_id']);
+                    });
                 });
             });
         }
