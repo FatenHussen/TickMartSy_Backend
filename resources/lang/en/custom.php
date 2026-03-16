@@ -108,6 +108,7 @@ return [
             'basic_info' => 'Basic Information',
             'contact_info' => 'Contact Information',
             'location_info' => 'Location Information',
+            'map' => 'Map',
             'ratings_info' => 'Ratings & Status',
             'working_hours' => 'Working Hours',
             'settings' => 'Settings',
@@ -129,6 +130,8 @@ return [
         'hours' => 'Hours',
         'add_day' => 'Add Day',
         'working_hours_help' => 'Format: {"monday": {"open": "09:00", "close": "18:00", "closed": false}}',
+        'map_picker' => 'Pick Location on Map',
+        'map_picker_help' => 'Click on the map or drag the marker to set the location. Latitude and longitude will be updated automatically.',
     ],
 
 

@@ -19,7 +19,7 @@ class VendorPackageSeeder extends Seeder
                 'is_featured' => false,
                 'has_premium_badge' => false,
                 'search_priority' => 1,
-                'max_campaigns' => 0,
+                'max_campaigns' => 5,
                 'has_banner_ad' => false,
                 'has_sales_reports' => true,
                 'has_analytics' => false,

@@ -45,7 +45,7 @@ class VendorStatsOverview extends BaseWidget
         $totalProducts = Product::where('vendor_id', $vendorId)->count();
 
         // الطلبات قيد التحضير
-        $pendingOrders = Order::whereIn('status', ['pending', 'preparing'])
+        $pendingOrders = Order::whereIn('status', ['pending'])
             ->whereHas('items.shopProductVariant.productVariant.product', function ($q) use ($vendorId) {
                 $q->where('vendor_id', $vendorId);
             })

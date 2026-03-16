@@ -55,19 +55,40 @@ class ShopInfolist
 
                             Section::make(__('custom.images'))
                                 ->schema([
-                                    Infolists\Components\ImageEntry::make('coverImages')
-                                        ->label('')
+                                    Infolists\Components\ImageEntry::make('cover_images_display')
+                                        ->label(__('custom.shops.cover_images'))
                                         ->disk('public')
-                                        ->getStateUsing(fn($record) => $record->coverImages()?->get()->pluck('path')->toArray() ?? [])
+                                        ->getStateUsing(function ($record) {
+                                            // Try to get from media relationship first
+                                            $mediaImages = $record->coverImages()->get();
+                                            if ($mediaImages->count() > 0) {
+                                                return $mediaImages->pluck('path')->toArray();
+                                            }
+
+                                            // Fallback to cover_images field
+                                            if (!empty($record->cover_images) && is_array($record->cover_images)) {
+                                                return $record->cover_images;
+                                            }
+
+                                            return [];
+                                        })
                                         ->columnSpanFull()
-                                        ->extraAttributes(['class' => 'rounded-xl'])
-                                        ->visible(fn($record) => $record->coverImages()?->count() > 0),
+                                        ->visible(function ($record) {
+                                            $hasMedia = $record->coverImages()->count() > 0;
+                                            $hasImages = !empty($record->cover_images) && is_array($record->cover_images) && count($record->cover_images) > 0;
+                                            return $hasMedia || $hasImages;
+                                        }),
 
                                     Infolists\Components\TextEntry::make('no_cover_images')
                                         ->label('')
+                                        ->default(__('custom.no_images'))
                                         ->color('gray')
                                         ->columnSpanFull()
-                                        ->visible(fn($record) => $record->coverImages()?->count() === 0 || !$record->coverImages()),
+                                        ->visible(function ($record) {
+                                            $hasMedia = $record->coverImages()->count() > 0;
+                                            $hasImages = !empty($record->cover_images) && is_array($record->cover_images) && count($record->cover_images) > 0;
+                                            return !$hasMedia && !$hasImages;
+                                        }),
                                 ])
                                 ->collapsible(),
                         ]),
@@ -188,13 +209,13 @@ class ShopInfolist
                                         ->label('')
                                         ->schema([
                                             Infolists\Components\TextEntry::make('name')
-                                                ->label('custom.service')
+                                                ->label(__('custom.service'))
                                                 ->weight('bold')
                                                 ->icon('heroicon-o-wrench-screwdriver')
                                                 ->color('primary'),
 
                                             Infolists\Components\TextEntry::make('description')
-                                                ->label('custom.description')
+                                                ->label(__('custom.description'))
                                                 ->columnSpanFull(),
                                         ])
                                         ->columns(1)
