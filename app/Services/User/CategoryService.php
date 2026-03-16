@@ -40,6 +40,7 @@ class CategoryService extends BaseService
         $parentFilters = $filters;
         unset($parentFilters['type']);
         unset($parentFilters['sort_by']);
+        unset($parentFilters['shop_id']); // Remove shop_id as it's handled via whereHas
 
         // Now call parent (won't apply search since searchableFields is empty)
         $query = parent::queryBuilder($query, $parentFilters, $config);
