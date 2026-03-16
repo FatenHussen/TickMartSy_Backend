@@ -15,6 +15,7 @@ class AllResource extends JsonResource
             'discount_type'  => $this->discount_type,
             'discount_value' => (float) $this->discount_value,
             'number_of_days'  => $this->number_of_days,
+            'is_default'     => (bool) $this->is_default,
         ];
     }
 }

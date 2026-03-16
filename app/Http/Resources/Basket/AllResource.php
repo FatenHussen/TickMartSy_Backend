@@ -19,14 +19,33 @@ class AllResource extends JsonResource
     public function toArray(Request $request): array
     {
         $nextDelivery = null;
+        $defaultSchedule = null;
 
-        if ($this->activeSchedule && $this->activeSchedule->count()) {
-            $schedule = $this->activeSchedule->first();
-            $nextDelivery = now()->addDays($schedule->number_of_days)->format('Y-m-d');
+        // Get default schedule info for scheduled baskets
+        if ($this->is_schedule && $this->defaultSchedule) {
+            $defaultSchedule = [
+                'id' => $this->defaultSchedule->id,
+                'title' => $this->defaultSchedule->title,
+                'number_of_days' => $this->defaultSchedule->number_of_days,
+                'discount_type' => $this->defaultSchedule->discount_type,
+                'discount_value' => $this->defaultSchedule->discount_value,
+            ];
+
+            // Calculate next delivery based on default schedule
+            $nextDelivery = now()->addDays($this->defaultSchedule->number_of_days)->format('Y-m-d');
         }
 
         $user = auth('user')->user();
         $currencyId = $user?->currency_id;
+
+        // For scheduled baskets, use default schedule's discount values
+        $discountType = $this->discount_type;
+        $discountValue = $this->discount;
+
+        if ($this->is_schedule && $this->defaultSchedule) {
+            $discountType = $this->defaultSchedule->discount_type;
+            $discountValue = $this->defaultSchedule->discount_value;
+        }
 
         return [
             'id'              => $this->id,
@@ -36,8 +55,8 @@ class AllResource extends JsonResource
             'num_varieties'   => $this->num_varieties,
             'offer_ends_at'   => $this->offer_ends_at?->format('Y-m-d') ?? null,
             ...$this->withCurrency($this->calculated_price, 'original_price'),
-            'discount_value'  => $this->discount,
-            'discount_type'   => $this->discount_type,
+            'discount_value'  => $discountValue,
+            'discount_type'   => $discountType,
             ...$this->withCurrency($this->discount_amount, 'discount_amount'),
             ...$this->withCurrency($this->final_price, 'final_price'),
             'rating'          => $this->average_rating,
@@ -47,6 +66,7 @@ class AllResource extends JsonResource
             'next_delivery_date' => $nextDelivery,
             ...$this->withCurrency($this->delivery_price ?? 0, 'delivery_price'),
             'is_favorite' => (bool) ($this->is_favorite ?? false),
+            'default_schedule' => $defaultSchedule,
 
             'top_badges' => BadgeOneResource::collection(
                 $this->badges->where('pivot.position', 'top')->values()

@@ -22,6 +22,27 @@ class OneResource extends JsonResource
         $user = auth('user')->user();
         $currencyId = $user?->currency_id;
 
+        // Get default schedule info for scheduled baskets
+        $defaultSchedule = null;
+        if ($this->is_schedule && $this->defaultSchedule) {
+            $defaultSchedule = [
+                'id' => $this->defaultSchedule->id,
+                'title' => $this->defaultSchedule->title,
+                'number_of_days' => $this->defaultSchedule->number_of_days,
+                'discount_type' => $this->defaultSchedule->discount_type,
+                'discount_value' => $this->defaultSchedule->discount_value,
+            ];
+        }
+
+        // For scheduled baskets, use default schedule's discount values
+        $discountType = $this->discount_type;
+        $discountValue = $this->discount;
+
+        if ($this->is_schedule && $this->defaultSchedule) {
+            $discountType = $this->defaultSchedule->discount_type;
+            $discountValue = $this->defaultSchedule->discount_value;
+        }
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -33,8 +54,8 @@ class OneResource extends JsonResource
             'num_varieties'   => (int) $this->num_varieties,
             'offer_ends_at'   => $this->offer_ends_at?->format('Y-m-d') ?? null,
             ...$this->withCurrency($this->calculated_price, 'original_price'),
-            'discount_value'    => $this->discount,
-            'discount_type'     => $this->discount_type,
+            'discount_value'    => $discountValue,
+            'discount_type'     => $discountType,
             ...$this->withCurrency($this->discount_amount, 'discount_amount'),
             ...$this->withCurrency($this->final_price, 'final_price'),
             'rating'    => $this->average_rating,
@@ -52,6 +73,7 @@ class OneResource extends JsonResource
             'schedules' => $this->is_schedule
                 ? BasketScheduleAllResource::collection($this->schedules)
                 : [],
+            'default_schedule' => $defaultSchedule,
             'is_favorite' => (bool) ($this->is_favorite ?? false),
 
             'top_badges' => BadgeOneResource::collection(

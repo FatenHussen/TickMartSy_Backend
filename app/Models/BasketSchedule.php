@@ -22,10 +22,12 @@ class BasketSchedule extends Model
         'discount_type',
         'discount_value',
         'is_active',
+        'is_default',
     ];
     public $translatable = ['title'];
     protected $casts = [
         'is_active' => 'boolean',
+        'is_default' => 'boolean',
         'discount_value' => 'decimal:2',
     ];
 
