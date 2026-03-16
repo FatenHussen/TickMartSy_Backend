@@ -34,6 +34,15 @@ class OneResource extends JsonResource
             ];
         }
 
+        // For scheduled baskets, use default schedule's discount values
+        $discountType = $this->discount_type;
+        $discountValue = $this->discount;
+
+        if ($this->is_schedule && $this->defaultSchedule) {
+            $discountType = $this->defaultSchedule->discount_type;
+            $discountValue = $this->defaultSchedule->discount_value;
+        }
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -45,8 +54,8 @@ class OneResource extends JsonResource
             'num_varieties'   => (int) $this->num_varieties,
             'offer_ends_at'   => $this->offer_ends_at?->format('Y-m-d') ?? null,
             ...$this->withCurrency($this->calculated_price, 'original_price'),
-            'discount_value'    => $this->discount,
-            'discount_type'     => $this->discount_type,
+            'discount_value'    => $discountValue,
+            'discount_type'     => $discountType,
             ...$this->withCurrency($this->discount_amount, 'discount_amount'),
             ...$this->withCurrency($this->final_price, 'final_price'),
             'rating'    => $this->average_rating,
