@@ -54,6 +54,14 @@
                     this.updateFields(lat, lng);
                 });
 
+                // Listen to input changes and update marker
+                if (latInput) {
+                    latInput.addEventListener('input', () => this.updateMarkerFromInputs());
+                }
+                if (lngInput) {
+                    lngInput.addEventListener('input', () => this.updateMarkerFromInputs());
+                }
+
                 setTimeout(() => {
                     this.map.invalidateSize();
                 }, 100);
@@ -71,6 +79,19 @@
                 if (lngInput) {
                     lngInput.value = lng.toFixed(6);
                     lngInput.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            },
+
+            updateMarkerFromInputs() {
+                const latInput = document.querySelector('[name=\'' + this.latitudeField + '\']');
+                const lngInput = document.querySelector('[name=\'' + this.longitudeField + '\']');
+
+                const lat = latInput?.value ? parseFloat(latInput.value) : null;
+                const lng = lngInput?.value ? parseFloat(lngInput.value) : null;
+
+                if (lat && lng && !isNaN(lat) && !isNaN(lng) && this.marker && this.map) {
+                    this.marker.setLatLng([lat, lng]);
+                    this.map.setView([lat, lng], this.map.getZoom());
                 }
             }
         }"
