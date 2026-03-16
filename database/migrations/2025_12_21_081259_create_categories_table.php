@@ -10,7 +10,6 @@ return new class extends Migration {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->json('name');
-            $table->json('description')->nullable();
             $table->string('icon')->nullable()->default('categories/image1.jpg');
             $table->foreignId('parent_id')->nullable()->constrained('categories')->nullOnDelete('cascade');
             $table->softDeletes();

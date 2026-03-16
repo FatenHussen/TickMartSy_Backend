@@ -13,12 +13,10 @@ class CategorySeeder extends Seeder
         $categories = [
             [
                 'name' => ['en' => 'Electronics', 'ar' => 'إلكترونيات'],
-                'description' => ['en' => 'Devices and gadgets', 'ar' => 'أجهزة وإكسسوارات'],
                 'icon' => 'categories/image1.jpg'
             ],
             [
                 'name' => ['en' => 'Fashion', 'ar' => 'أزياء'],
-                'description' => ['en' => 'Clothing and accessories', 'ar' => 'ملابس وإكسسوارات'],
                 'icon' => 'categories/image2.jpg'
             ],
         ];
@@ -32,20 +30,12 @@ class CategorySeeder extends Seeder
                 'ar' => 'مطاعم',
                 'en' => 'Restaurants',
             ],
-            'description' => [
-                'ar' => 'مطاعم ومقاهي',
-                'en' => 'Restaurants & Cafes',
-            ],
         ]);
 
         Category::create([
             'name' => [
                 'ar' => 'وجبات سريعة',
                 'en' => 'Fast Food',
-            ],
-            'description' => [
-                'ar' => 'مطاعم الوجبات السريعة',
-                'en' => 'Fast food restaurants',
             ],
             'parent_id' => $food->id,
         ]);
@@ -55,10 +45,6 @@ class CategorySeeder extends Seeder
                 'ar' => 'حلويات',
                 'en' => 'Desserts',
             ],
-            'description' => [
-                'ar' => 'محلات الحلويات',
-                'en' => 'Dessert shops',
-            ],
             'parent_id' => $food->id,
         ]);
 
@@ -67,10 +53,6 @@ class CategorySeeder extends Seeder
                 'ar' => 'أكل',
                 'en' => 'أكل'
             ],
-            'description' => [
-                'ar' => 'أكل',
-                'en' => 'أكل'
-            ]
         ]);
 
         $grains = Category::create([

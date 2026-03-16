@@ -15,6 +15,7 @@ class ProductExtraDetail extends Model
         'product_id',
         'detail_key',
         'detail_value',
+        'price',
     ];
 
     public array $translatable = [

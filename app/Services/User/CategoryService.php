@@ -16,12 +16,15 @@ class CategoryService extends BaseService
         $this->model      = $model;
         $this->resource   = OneResource::class;
         $this->collection = AllResource::class;
-        $this->relations = ['parent', 'children'];
+        $this->relations = ['parent', 'activeChildren'];
         $this->pagination = true;
     }
 
     public function queryBuilder($query, $filters = [], $config = [])
     {
+        // Filter only active categories for users
+        $query->where('is_active', true);
+
         // Apply search BEFORE calling parent
         if (!empty($config['search'])) {
             $search = strtolower($config['search']);
@@ -37,6 +40,7 @@ class CategoryService extends BaseService
         $parentFilters = $filters;
         unset($parentFilters['type']);
         unset($parentFilters['sort_by']);
+        unset($parentFilters['shop_id']); // Remove shop_id as it's handled via whereHas
 
         // Now call parent (won't apply search since searchableFields is empty)
         $query = parent::queryBuilder($query, $parentFilters, $config);
@@ -72,6 +76,9 @@ class CategoryService extends BaseService
 
         if (!empty($filters['sort_by'])) {
             $this->applySortBy($query, $filters['sort_by']);
+        } else {
+            // Default ordering by 'order' field
+            $query->orderBy('order', 'asc');
         }
 
         return $query;

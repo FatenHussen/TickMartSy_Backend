@@ -12,6 +12,7 @@ class ExtraDetailResource extends JsonResource
             'id'    => $this->id,
             'key'   => $this->detail_key,
             'value' => $this->detail_value,
+            'price' => (float) $this->price,
         ];
     }
 }

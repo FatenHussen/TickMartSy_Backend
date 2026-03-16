@@ -239,6 +239,8 @@ return [
             'title_ar' => 'Title (Arabic)',
             'title_en' => 'Title (English)',
             'add_extra_detail' => 'Add Extra Detail',
+            'extra_price' => 'Extra Price',
+            'extra_price_help' => 'The price that will be added to the base product price when this extra is selected',
             'select_products' => 'Select Products',
             'bought_with_help' => 'Select products that are usually bought with this product',
             'discount_type' => 'Discount Type',

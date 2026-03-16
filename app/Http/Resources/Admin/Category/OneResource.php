@@ -17,9 +17,10 @@ class OneResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->getTranslations('name'),
-            'description' => $this->getTranslations('description'),
             'icon' => $this->image_url,
             'parent_id' => $this->parent_id,
+            'order' => $this->order,
+            'is_active' => $this->is_active,
             'parent' => $this->whenLoaded('parent', function () use ($locale) {
                 return [
                     'id' => $this->parent?->id,

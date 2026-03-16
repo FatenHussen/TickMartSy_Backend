@@ -17,11 +17,13 @@ class AllResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'icon' => $this->image_url,
-            'children' => $this->whenLoaded('children', function () {
-                return $this->children->map(function ($child)  {
+            'order' => $this->order,
+            'children' => $this->whenLoaded('activeChildren', function () {
+                return $this->activeChildren->map(function ($child)  {
                     return [
                         'id' => $child->id,
                         'name' => $child->name,
+                        'order' => $child->order,
                     ];
                 });
             }),

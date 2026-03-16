@@ -105,6 +105,7 @@ class OneResource extends JsonResource
                     'id' => $detail->id,
                     'key' => $detail->getTranslations('detail_key') ?? [],
                     'value' => $detail->getTranslations('detail_value') ?? [],
+                    'price' => (float) $detail->price,
                 ];
             })->values(),
 
