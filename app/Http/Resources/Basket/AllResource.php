@@ -19,10 +19,20 @@ class AllResource extends JsonResource
     public function toArray(Request $request): array
     {
         $nextDelivery = null;
+        $defaultSchedule = null;
 
-        if ($this->activeSchedule && $this->activeSchedule->count()) {
-            $schedule = $this->activeSchedule->first();
-            $nextDelivery = now()->addDays($schedule->number_of_days)->format('Y-m-d');
+        // Get default schedule info for scheduled baskets
+        if ($this->is_schedule && $this->defaultSchedule) {
+            $defaultSchedule = [
+                'id' => $this->defaultSchedule->id,
+                'title' => $this->defaultSchedule->title,
+                'number_of_days' => $this->defaultSchedule->number_of_days,
+                'discount_type' => $this->defaultSchedule->discount_type,
+                'discount_value' => $this->defaultSchedule->discount_value,
+            ];
+
+            // Calculate next delivery based on default schedule
+            $nextDelivery = now()->addDays($this->defaultSchedule->number_of_days)->format('Y-m-d');
         }
 
         $user = auth('user')->user();
@@ -47,6 +57,7 @@ class AllResource extends JsonResource
             'next_delivery_date' => $nextDelivery,
             ...$this->withCurrency($this->delivery_price ?? 0, 'delivery_price'),
             'is_favorite' => (bool) ($this->is_favorite ?? false),
+            'default_schedule' => $defaultSchedule,
 
             'top_badges' => BadgeOneResource::collection(
                 $this->badges->where('pivot.position', 'top')->values()

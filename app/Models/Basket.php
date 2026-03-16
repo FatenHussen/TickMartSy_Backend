@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
@@ -61,6 +62,17 @@ class Basket extends Model implements Sectionable
     {
         $total = $this->calculated_price;
 
+        // If basket is scheduled and has a default schedule, use its discount
+        if ($this->is_schedule && $this->defaultSchedule) {
+            $schedule = $this->defaultSchedule;
+            if ($schedule->discount_type === 'percentage') {
+                return $total * ($schedule->discount_value / 100);
+            } else {
+                return $schedule->discount_value ?? 0;
+            }
+        }
+
+        // Otherwise use basket's own discount
         if ($this->discount_type === 'percentage') {
             return $total * ($this->discount / 100);
         } else {
@@ -95,14 +107,19 @@ class Basket extends Model implements Sectionable
     {
         return $this->hasMany(BasketSchedule::class)->where('is_active', true);
     }
+
+    public function defaultSchedule()
+    {
+        return $this->hasOne(BasketSchedule::class)->where('is_default', true);
+    }
     public function toSectionArray(): array
     {
         $nextDelivery = null;
 
-        if ($this->activeSchedule && $this->activeSchedule->count()) {
-            $schedule = $this->activeSchedule->first();
+        // Use default schedule for next delivery calculation
+        if ($this->is_schedule && $this->defaultSchedule) {
             $nextDelivery = now()
-                ->addDays($schedule->number_of_days)
+                ->addDays($this->defaultSchedule->number_of_days)
                 ->format('Y-m-d');
         }
         $itemsCount = $this->items?->count() ?? 0;
@@ -131,7 +148,7 @@ class Basket extends Model implements Sectionable
             'rating'   => (float) $this->average_rating,
             'num_sold' => (int) $this->num_sold,
             'saving'   => round($this->discount_amount, 2),
-            
+
             // offer
             'is_on_offer' => $this->offer_ends_at && $this->offer_ends_at->isFuture(),
             'offer_ends_at' => $this->offer_ends_at?->format('Y-m-d'),

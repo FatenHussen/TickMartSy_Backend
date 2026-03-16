@@ -22,6 +22,18 @@ class OneResource extends JsonResource
         $user = auth('user')->user();
         $currencyId = $user?->currency_id;
 
+        // Get default schedule info for scheduled baskets
+        $defaultSchedule = null;
+        if ($this->is_schedule && $this->defaultSchedule) {
+            $defaultSchedule = [
+                'id' => $this->defaultSchedule->id,
+                'title' => $this->defaultSchedule->title,
+                'number_of_days' => $this->defaultSchedule->number_of_days,
+                'discount_type' => $this->defaultSchedule->discount_type,
+                'discount_value' => $this->defaultSchedule->discount_value,
+            ];
+        }
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -52,6 +64,7 @@ class OneResource extends JsonResource
             'schedules' => $this->is_schedule
                 ? BasketScheduleAllResource::collection($this->schedules)
                 : [],
+            'default_schedule' => $defaultSchedule,
             'is_favorite' => (bool) ($this->is_favorite ?? false),
 
             'top_badges' => BadgeOneResource::collection(
