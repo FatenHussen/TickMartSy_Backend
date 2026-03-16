@@ -7,6 +7,7 @@ use App\Http\Resources\User\UserGift\OneResource;
 use App\Models\UserGift;
 use App\Services\BaseService;
 use App\Exceptions\NotFoundException;
+use App\Exceptions\CustomExceptionWithMessage;
 
 class UserGiftService extends BaseService
 {
@@ -49,7 +50,7 @@ class UserGiftService extends BaseService
 
         // Only allow address update if status is pending
         if ($userGift->status !== 'pending') {
-            throw new \Exception('لا يمكن تحديث العنوان بعد بدء معالجة الهدية');
+            throw new CustomExceptionWithMessage('custom.gifts.address_update_not_allowed');
         }
 
         $userGift->update([

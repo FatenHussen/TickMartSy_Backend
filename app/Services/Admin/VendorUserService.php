@@ -6,6 +6,7 @@ use App\Http\Resources\VendorUser\AllResource;
 use App\Http\Resources\VendorUser\OneResource;
 use App\Models\VendorUser;
 use App\Services\BaseService;
+use App\Exceptions\CustomExceptionWithMessage;
 use Illuminate\Support\Facades\Hash;
 
 class VendorUserService extends BaseService
@@ -43,12 +44,15 @@ class VendorUserService extends BaseService
         // Sync shops
         if (!empty($shopIds)) {
             // Validate that all shops belong to the same vendor
-            $shops = \App\Models\Shop::whereIn('id', $shopIds)->get();
-            foreach ($shops as $shop) {
-                if ($shop->vendor_id != $data['vendor_id']) {
-                    throw new \Exception('All shops must belong to the same vendor', 422);
+                $shops = \App\Models\Shop::whereIn('id', $shopIds)->get();
+                foreach ($shops as $shop) {
+                    if ($shop->vendor_id != $data['vendor_id']) {
+                        throw new CustomExceptionWithMessage(
+                            'custom.vendors.shops_must_belong_same_vendor',
+                            422
+                        );
+                    }
                 }
-            }
             $vendorUser->shops()->sync($shopIds);
         }
 
@@ -83,7 +87,10 @@ class VendorUserService extends BaseService
                 $shops = \App\Models\Shop::whereIn('id', $shopIds)->get();
                 foreach ($shops as $shop) {
                     if ($shop->vendor_id != $vendorUser->vendor_id) {
-                        throw new \Exception('All shops must belong to the same vendor', 422);
+                        throw new CustomExceptionWithMessage(
+                            'custom.vendors.shops_must_belong_same_vendor',
+                            422
+                        );
                     }
                 }
             }

@@ -160,7 +160,7 @@ class OrderWithItemsSeeder extends Seeder
             ]);
 
             // 🧾 items (2 لكل order)
-            foreach ([1, 2] as $i) {
+            foreach ([1, 2, 3] as $i) {
                 OrderItem::create([
                     'order_id' => $order->id,
                     'shop_product_variant_id' => $i,

@@ -6,6 +6,7 @@ use App\Models\VendorPackage;
 use App\Services\BaseService;
 use App\Http\Resources\Admin\VendorPackage\AllResource;
 use App\Http\Resources\Admin\VendorPackage\OneResource;
+use App\Exceptions\CustomExceptionWithMessage;
 
 class VendorPackageService extends BaseService
 {
@@ -58,7 +59,7 @@ class VendorPackageService extends BaseService
     {
         $package = VendorPackage::findOrFail($id);
         if ($package->subscriptions()->where('status', 'active')->exists()) {
-            throw new \Exception(__('custom.cannot_delete_package_with_active_subscriptions'));
+            throw new CustomExceptionWithMessage('custom.packages.cannot_delete_with_active_subscriptions');
         }
         $package->delete();
         return true;

@@ -200,7 +200,7 @@ class DriverService
             ->first();
 
         if (!$verification) {
-            throw new CustomExceptionWithMessage('otp_invalid');
+            throw new CustomExceptionWithMessage('custom.otp_invalid');
         }
 
         $driver->update(['phone' => $verification->value]);

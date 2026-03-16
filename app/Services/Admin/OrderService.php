@@ -47,7 +47,9 @@ class OrderService extends BaseService
 
         if (! isset($allowed[$from]) || ! in_array($to, $allowed[$from])) {
             throw new CustomExceptionWithMessage(
-                "Cannot change order status from {$from} to {$to}"
+                'custom.orders.cannot_change_status',
+                400,
+                ['from' => $from, 'to' => $to]
             );
         }
     }
@@ -71,7 +73,9 @@ class OrderService extends BaseService
 
         if (! isset($allowed[$from]) || ! in_array($to, $allowed[$from])) {
             throw new CustomExceptionWithMessage(
-                "Cannot change item status from {$from} to {$to}"
+                'custom.orders.cannot_change_item_status',
+                400,
+                ['from' => $from, 'to' => $to]
             );
         }
     }
@@ -89,7 +93,7 @@ class OrderService extends BaseService
 
             if ($order->status === OrderStatus::DELIVERED->value) {
                 throw new CustomExceptionWithMessage(
-                    'Delivered order cannot be changed'
+                    'custom.orders.delivered_cannot_change'
                 );
             }
 
@@ -153,7 +157,7 @@ class OrderService extends BaseService
 
             if ($order->status === OrderStatus::DELIVERED->value) {
                 throw new CustomExceptionWithMessage(
-                    'Order already delivered'
+                    'custom.orders.already_delivered'
                 );
             }
 
@@ -210,7 +214,7 @@ class OrderService extends BaseService
 
             if ($order->driver_id !== null) {
                 throw new CustomExceptionWithMessage(
-                    'Order already assigned'
+                    'custom.orders.already_assigned'
                 );
             }
 

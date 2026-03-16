@@ -7,6 +7,7 @@ use App\Models\AffiliateWalletTransaction;
 use App\Services\BaseService;
 use App\Http\Resources\Admin\AffiliateWithdrawRequest\AllResource;
 use App\Http\Resources\Admin\AffiliateWithdrawRequest\OneResource;
+use App\Exceptions\CustomExceptionWithMessage;
 use Illuminate\Support\Facades\DB;
 
 class AffiliateWithdrawRequestService extends BaseService
@@ -62,12 +63,12 @@ class AffiliateWithdrawRequestService extends BaseService
                 ->firstOrFail();
 
             if ($request->status !== 'pending') {
-                throw new \Exception('Only pending requests can be updated.');
+                throw new CustomExceptionWithMessage('custom.withdrawals.only_pending_can_be_updated');
             }
 
             $newStatus = $data['status'] ?? null;
             if (!in_array($newStatus, ['approved', 'rejected'], true)) {
-                throw new \Exception('Invalid status.');
+                throw new CustomExceptionWithMessage('custom.withdrawals.invalid_status');
             }
 
             if ($newStatus === 'approved') {
@@ -103,7 +104,7 @@ class AffiliateWithdrawRequestService extends BaseService
         $available = $totalCommission - $totalWithdrawn;
 
         if ($amount > $available) {
-            throw new \Exception('Amount exceeds available balance.');
+            throw new CustomExceptionWithMessage('custom.withdrawals.amount_exceeds_balance');
         }
     }
 }

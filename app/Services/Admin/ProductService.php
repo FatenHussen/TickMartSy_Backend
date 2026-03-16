@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Services\BaseService;
 use App\Http\Resources\Admin\Product\OneResource;
 use App\Http\Resources\Admin\Product\AllResource;
+use App\Exceptions\CustomExceptionWithMessage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -228,7 +229,7 @@ class ProductService extends BaseService
             $product = Product::with(['vendor'])->findOrFail($id);
 
             if ($product->approval_status !== \App\Enums\ProductApprovalStatus::PENDING) {
-                throw new \Exception('يمكن قبول المنتجات المعلقة فقط');
+                throw new CustomExceptionWithMessage('custom.products.only_pending_can_be_approved');
             }
 
             $product->update([
@@ -252,11 +253,11 @@ class ProductService extends BaseService
             $product = Product::with(['vendor'])->findOrFail($id);
 
             if ($product->approval_status !== \App\Enums\ProductApprovalStatus::PENDING) {
-                throw new \Exception('يمكن رفض المنتجات المعلقة فقط');
+                throw new CustomExceptionWithMessage('custom.products.only_pending_can_be_rejected');
             }
 
             if (empty($reason)) {
-                throw new \Exception('يجب إدخال سبب الرفض');
+                throw new CustomExceptionWithMessage('custom.products.rejection_reason_required');
             }
 
             $product->update([

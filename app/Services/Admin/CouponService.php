@@ -45,7 +45,7 @@ class CouponService extends BaseService
             });
 
         if ($hasActiveCoupon) {
-            throw new CustomExceptionWithMessage('This affiliate already has an active coupon.');
+            throw new CustomExceptionWithMessage('custom.coupons.affiliate_active_coupon');
         }
 
         $object = parent::create($data);

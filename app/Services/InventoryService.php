@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\ShopProductVariant;
 use App\Events\LowStockDetected;
-use Exception;
+use App\Exceptions\CustomExceptionWithMessage;
 
 class InventoryService
 {
@@ -13,7 +13,7 @@ class InventoryService
         $variant = ShopProductVariant::lockForUpdate()->findOrFail($variantId);
 
         if (!is_null($variant->quantity) && $variant->quantity < $quantity) {
-            throw new Exception('Insufficient stock');
+            throw new CustomExceptionWithMessage('custom.orders.insufficient_stock_generic');
         }
 
         if (!is_null($variant->quantity)) {

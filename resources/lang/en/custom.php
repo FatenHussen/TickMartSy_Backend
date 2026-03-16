@@ -190,6 +190,9 @@ return [
             'approved' => 'Product approved successfully',
             'rejected' => 'Product rejected successfully',
         ],
+        'only_pending_can_be_approved' => 'Only pending products can be approved.',
+        'only_pending_can_be_rejected' => 'Only pending products can be rejected.',
+        'rejection_reason_required' => 'Rejection reason is required.',
         'sections' => [
             'basic_info' => 'Basic Information',
             'description' => 'Description',
@@ -396,6 +399,27 @@ return [
             'status_updated' => 'Order status updated',
             'ready_notification' => 'Order is ready for delivery',
         ],
+        'basket_id_required' => 'Basket ID is required for scheduled admin cart.',
+        'insufficient_stock' => 'Insufficient stock for :product.',
+        'insufficient_stock_generic' => 'Insufficient stock.',
+        'cannot_cancel' => 'Order cannot be cancelled.',
+        'items_cannot_cancel' => 'Some items cannot be cancelled.',
+        'not_found' => 'Order not found.',
+        'already_assigned' => 'Order already assigned.',
+        'not_instant_delivery' => 'Not an instant delivery order.',
+        'invalid_order_state' => 'Invalid order state.',
+        'not_your_order' => 'Not your order.',
+        'item_not_ready' => 'Item not ready.',
+        'status_not_valid_for_out_delivery' => 'Order status not valid for out delivery.',
+        'not_out_delivery' => 'Order is not out for delivery.',
+        'cannot_change_status' => 'Cannot change order status from :from to :to.',
+        'cannot_change_item_status' => 'Cannot change item status from :from to :to.',
+        'delivered_cannot_change' => 'Delivered order cannot be changed.',
+        'already_delivered' => 'Order already delivered.',
+        'status_updated_successfully' => 'Order status updated successfully.',
+        'assigned_to_driver_successfully' => 'Order assigned to driver successfully.',
+        'item_status_updated_successfully' => 'Item status updated successfully.',
+        'no_items_for_shop' => 'No items found for this shop in the order.',
     ],
 
 
@@ -469,6 +493,7 @@ return [
         'points_bonus' => 'Points Bonus',
         'points' => 'Points',
         'is_active' => 'Active',
+        'cannot_delete_with_active_subscriptions' => 'Cannot delete package with active subscriptions.',
         'subscriptions' => 'Subscriptions',
         'total_subscriptions' => 'Total Subscriptions',
         'active_subscriptions' => 'Active Subscriptions',
@@ -588,6 +613,7 @@ return [
         'end_date' => 'End Date',
         'is_active' => 'Active',
         'min_order_amount' => 'Minimum Order Amount',
+        'affiliate_active_coupon' => 'This affiliate already has an active coupon.',
         'discount_types' => [
             'percent' => 'Percentage',
             'fixed' => 'Fixed Amount',
@@ -881,5 +907,118 @@ return [
     'subscription_days_left_dashboard' => 'Until subscription ends',
     'subscription_status_title' => 'Subscription Status',
     'subscription_status_inactive' => 'Inactive',
+
+    // Driver responses
+    'driver' => [
+        'otp_sent_new_phone' => 'OTP sent to new phone number.',
+        'order_accepted' => 'Order accepted successfully.',
+        'item_out_delivery' => 'Item marked as out for delivery.',
+        'order_out_delivery' => 'Order marked as out for delivery.',
+        'shop_out_delivery' => 'Shop items marked as out for delivery.',
+        'order_delivered' => 'Order delivered successfully.',
+        'statistics_retrieved' => 'Driver statistics retrieved successfully.',
+        'no_current_order' => 'No current order.',
+        'current_order_retrieved' => 'Current order retrieved successfully.',
+    ],
+
+    // Affiliate responses
+    'affiliate' => [
+        'not_authorized' => 'You are not authorized as an affiliate.',
+        'stats_retrieved' => 'Affiliate statistics retrieved successfully.',
+        'profile_retrieved' => 'Affiliate profile retrieved successfully.',
+        'orders_retrieved' => 'Affiliate orders retrieved successfully.',
+        'transactions_retrieved' => 'Affiliate transactions retrieved successfully.',
+        'withdraw_request_failed' => 'Withdraw request failed. Amount exceeds available balance.',
+        'withdraw_request_submitted' => 'Withdraw request submitted successfully.',
+        'withdraw_requests_retrieved' => 'Affiliate withdraw requests retrieved successfully.',
+        'monthly_orders_retrieved' => 'Monthly completed orders retrieved successfully.',
+    ],
+
+    // Marketer
+    'marketer' => [
+        'wait_for_admin_response' => 'Wait for a response from the admin.',
+        'request_already_submitted' => 'You have submitted a marketing request. Please wait for a response from the admin.',
+        'already_marketer' => 'You are a marketer; you do not need to submit an application.',
+        'request_not_submitted' => 'The user has not submitted a marketer request.',
+        'cannot_change_number' => 'Cannot change marketer number.',
+    ],
+
+    // Ratings
+    'ratings' => [
+        'update_own_only' => 'You can only update your own ratings.',
+        'update_within_24_hours' => 'You can only update ratings within 24 hours.',
+        'delete_own_only' => 'You can only delete your own ratings.',
+        'delete_within_24_hours' => 'You can only delete ratings within 24 hours.',
+        'rateable_type_required' => 'Rateable type is required.',
+        'invalid_rateable_type' => 'Invalid rateable type.',
+    ],
+
+    // Points
+    'points' => [
+        'insufficient_balance' => 'Insufficient points balance.',
+        'exchanged_successfully' => 'Points exchanged successfully.',
+        'added_successfully' => 'Points added successfully.',
+        'deducted_successfully' => 'Points deducted successfully.',
+        'user_id_required' => 'User ID is required.',
+        'status_types' => [
+            'pending' => 'Pending transactions (not yet confirmed)',
+            'earned' => 'Earned points (added to balance)',
+            'expired' => 'Expired points (removed from balance)',
+            'redeemed' => 'Redeemed points (spent on rewards)',
+        ],
+    ],
+
+    // Settings
+    'settings' => [
+        'updated_count' => 'Updated :count settings successfully.',
+        'updated_successfully' => 'Setting updated successfully.',
+        'created_successfully' => 'Setting created successfully.',
+        'deleted_successfully' => 'Setting deleted successfully.',
+        'cache_cleared_successfully' => 'Settings cache cleared successfully.',
+    ],
+
+    // Documents
+    'documents' => [
+        'not_found' => 'Document not found.',
+    ],
+
+    // Addresses
+    'addresses' => [
+        'default_address' => 'This is the default address.',
+    ],
+
+    // Vendors
+    'vendors' => [
+        'shops_must_belong_same_vendor' => 'All shops must belong to the same vendor.',
+    ],
+
+    // Seller Registration
+    'seller_registration' => [
+        'not_pending' => 'Registration is not pending.',
+    ],
+
+    // Promotions
+    'promotions' => [
+        'only_pending_can_be_approved' => 'Only pending requests can be approved.',
+        'only_pending_can_be_rejected' => 'Only pending requests can be rejected.',
+        'rejection_reason_required' => 'Rejection reason is required.',
+    ],
+
+    // Withdrawals
+    'withdrawals' => [
+        'only_pending_can_be_updated' => 'Only pending requests can be updated.',
+        'invalid_status' => 'Invalid status.',
+        'amount_exceeds_balance' => 'Amount exceeds available balance.',
+    ],
+
+    // Gifts
+    'gifts' => [
+        'address_update_not_allowed' => 'Address cannot be updated after gift processing starts.',
+    ],
+
+    // Languages
+    'languages' => [
+        'source_not_found' => 'Source language [:lang] does not exist.',
+    ],
 
 ];

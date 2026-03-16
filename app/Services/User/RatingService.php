@@ -55,7 +55,7 @@ class RatingService extends BaseService
     public function create($data)
     {
         if (empty($data['type'])) {
-            abort(422, 'Rateable type is required');
+            abort(422, __('custom.ratings.rateable_type_required'));
         }
 
         $data['user_id'] = auth('user')->id();
@@ -95,11 +95,11 @@ class RatingService extends BaseService
         $rating = Rating::findOrFail($id);
 
         if ($rating->user_id !== auth('user')->id()) {
-            throw new \App\Exceptions\CustomExceptionWithMessage('You can only update your own ratings');
+            throw new \App\Exceptions\CustomExceptionWithMessage('custom.ratings.update_own_only');
         }
 
         if ($rating->created_at->diffInHours(now()) > 24) {
-            throw new \App\Exceptions\CustomExceptionWithMessage('You can only update ratings within 24 hours');
+            throw new \App\Exceptions\CustomExceptionWithMessage('custom.ratings.update_within_24_hours');
         }
 
         parent::update($id, $data);
@@ -114,11 +114,11 @@ class RatingService extends BaseService
         $rating = Rating::findOrFail($id);
 
         if ($rating->user_id !== auth('user')->id()) {
-            throw new \App\Exceptions\CustomExceptionWithMessage('You can only delete your own ratings');
+            throw new \App\Exceptions\CustomExceptionWithMessage('custom.ratings.delete_own_only');
         }
 
         if ($rating->created_at->diffInHours(now()) > 24) {
-            throw new \App\Exceptions\CustomExceptionWithMessage('You can only delete ratings within 24 hours');
+            throw new \App\Exceptions\CustomExceptionWithMessage('custom.ratings.delete_within_24_hours');
         }
 
         return parent::delete($id);
@@ -135,7 +135,7 @@ class RatingService extends BaseService
             RateableType::BASKET->value => \App\Models\Basket::class,
             RateableType::SCHEDULED_BASKET->value => \App\Models\BasketSchedule::class,
             RateableType::ORDER->value => \App\Models\Order::class,
-            default => abort(422, 'Invalid rateable type'),
+            default => abort(422, __('custom.ratings.invalid_rateable_type')),
         };
     }
     public function getMyRatings(array $filters = [])

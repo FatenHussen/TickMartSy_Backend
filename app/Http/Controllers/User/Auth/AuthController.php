@@ -122,6 +122,6 @@ class AuthController extends Controller
 
         $this->service->markterRequest($user, $request->all());
 
-        return $this->sendResponse(message: 'wait for a response from the admin.');
+        return $this->sendResponse(message: __('custom.marketer.wait_for_admin_response'));
     }
 }

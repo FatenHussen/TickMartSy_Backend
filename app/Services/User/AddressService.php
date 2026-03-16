@@ -66,4 +66,20 @@ class AddressService extends BaseService
 
         return new $this->resource($address);
     }
+
+    public function delete($id): bool
+    {
+        /** @var User $user */
+        $user = auth('user')->user();
+
+        $address = $user->addresses()->findOrFail($id);
+
+        if ($address->is_default) {
+            abort(422, __('custom.addresses.default_address'));
+        }
+
+        $address->delete();
+
+        return true;
+    }
 }

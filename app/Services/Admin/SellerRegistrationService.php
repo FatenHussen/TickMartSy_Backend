@@ -12,6 +12,7 @@ use App\Mail\VendorCredentialsMail;
 use App\Models\VendorPackage;
 use App\Models\VendorSubscription;
 use App\Services\BaseService;
+use App\Exceptions\CustomExceptionWithMessage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -36,7 +37,7 @@ class SellerRegistrationService extends BaseService
         $registration = $this->model->findOrFail($id);
 
         if ($registration->status !== 'pending') {
-            throw new \Exception('Registration is not pending');
+            throw new CustomExceptionWithMessage('custom.seller_registration.not_pending');
         }
 
         return DB::transaction(function () use ($registration, $data) {
@@ -127,7 +128,7 @@ class SellerRegistrationService extends BaseService
         $registration = $this->model->findOrFail($id);
 
         if ($registration->status !== 'pending') {
-            throw new \Exception('Registration is not pending');
+            throw new CustomExceptionWithMessage('custom.seller_registration.not_pending');
         }
 
         $registration->update(['status' => 'rejected']);

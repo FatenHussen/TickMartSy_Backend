@@ -23,7 +23,6 @@ use App\Services\PointExchangeService;
 use App\Services\User\CalculateDeliveryPriceService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Exception;
 use App\Services\InventoryService;
 
 class OrderService extends BaseService
@@ -175,6 +174,7 @@ class OrderService extends BaseService
         $nonDiscountPromotion = $promotionService
             ->applyNonDiscountPromotions(null, collect($orderItems));
 
+        $discounts['basketDiscount'] = $basketDiscount;
         return [
             'discounts' => $discounts,
             'subtotal_before_discount' => $subtotalBeforeDiscount,
@@ -405,7 +405,7 @@ class OrderService extends BaseService
                 $basketId = $data['admin_schedule_basket_id'] ?? $data['admin_basket_id'] ?? null;
 
                 if (!$basketId) {
-                    throw new Exception('Basket ID is required for scheduled admin cart');
+                    throw new CustomExceptionWithMessage('custom.orders.basket_id_required');
                 }
 
                 $basket = Basket::findOrFail($basketId);
@@ -488,8 +488,10 @@ class OrderService extends BaseService
                 ->findOrFail($item['shop_product_variant_id']);
 
             if (!is_null($shopVariant->quantity) && $shopVariant->quantity < $item['quantity']) {
-                throw new Exception(
-                    'Insufficient stock for ' . $shopVariant->productVariant->product->name
+                throw new CustomExceptionWithMessage(
+                    'custom.orders.insufficient_stock',
+                    400,
+                    ['product' => $shopVariant->productVariant->product->name]
                 );
             }
 
@@ -691,12 +693,12 @@ class OrderService extends BaseService
             ->firstOrFail();
 
         if ($order->status !== OrderStatus::PENDING->value) {
-            throw new CustomExceptionWithMessage('Order cannot be cancelled');
+            throw new CustomExceptionWithMessage('custom.orders.cannot_cancel');
         }
 
         foreach ($order->items as $item) {
             if ($item->item_status !== OrderStatus::PENDING->value) {
-                throw new CustomExceptionWithMessage('Some items cannot be cancelled');
+                throw new CustomExceptionWithMessage('custom.orders.items_cannot_cancel');
             }
         }
         $oldStatus = $order->status;
@@ -751,7 +753,7 @@ class OrderService extends BaseService
 
         // Ensure the order belongs to the user
         if ($originalOrder->user_id !== $user->id) {
-            throw new CustomExceptionWithMessage('Order not found', 404);
+            throw new CustomExceptionWithMessage('custom.orders.not_found', 404);
         }
 
         return DB::transaction(function () use ($originalOrder, $user) {

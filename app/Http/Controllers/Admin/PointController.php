@@ -36,7 +36,7 @@ class PointController extends BaseCRUDController
 
         return $this->sendResponse(
             data: $transaction,
-            message: 'Points added successfully'
+            message: __('custom.points.added_successfully')
         );
     }
 
@@ -58,13 +58,13 @@ class PointController extends BaseCRUDController
         if (!$transaction) {
             return $this->sendResponse(
                 success: false,
-                message: 'Insufficient points balance'
+                message: __('custom.points.insufficient_balance')
             );
         }
 
         return $this->sendResponse(
             data: $transaction,
-            message: 'Points deducted successfully'
+            message: __('custom.points.deducted_successfully')
         );
     }
 
@@ -78,7 +78,7 @@ class PointController extends BaseCRUDController
         if (!$userId) {
             return $this->sendResponse(
                 success: false,
-                message: 'User ID is required'
+                message: __('custom.points.user_id_required')
             );
         }
 
@@ -107,7 +107,7 @@ class PointController extends BaseCRUDController
         if (!$userId) {
             return $this->sendResponse(
                 success: false,
-                message: 'User ID is required'
+                message: __('custom.points.user_id_required')
             );
         }
 

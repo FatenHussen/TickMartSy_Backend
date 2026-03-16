@@ -36,7 +36,7 @@ class OrderController extends BaseIndexController
 
         return $this->sendResponse(
             data: new AllResource($order),
-            message: 'Order status updated successfully'
+            message: __('custom.orders.status_updated_successfully')
         );
     }
 
@@ -52,7 +52,7 @@ class OrderController extends BaseIndexController
         $this->service->assignDriver($orderId, $data['driver_id']);
 
         return $this->sendResponse(
-            message: 'Order assigned to driver successfully'
+            message: __('custom.orders.assigned_to_driver_successfully')
         );
     }
 
@@ -72,7 +72,7 @@ class OrderController extends BaseIndexController
 
         return $this->sendResponse(
             data: $item,
-            message: 'Item status updated successfully'
+            message: __('custom.orders.item_status_updated_successfully')
         );
     }
 }

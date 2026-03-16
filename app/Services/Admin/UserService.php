@@ -47,7 +47,7 @@ class UserService extends BaseService
             Log::info("hasAffiliateData");
 
             if (!$object->is_affiliate) {
-                throw new CustomExceptionWithMessage('المستخدم غير مقدم على طلب مسوّق');
+                throw new CustomExceptionWithMessage('custom.marketer.request_not_submitted');
             }
 
             if (
@@ -55,7 +55,7 @@ class UserService extends BaseService
                 $object->affiliate_id &&
                 $object->affiliate_id != $data['affiliate_id']
             ) {
-                throw new CustomExceptionWithMessage('لا يمكن تغيير رقم المسوّق');
+                throw new CustomExceptionWithMessage('custom.marketer.cannot_change_number');
             }
 
             // approve automatically if rate exists
