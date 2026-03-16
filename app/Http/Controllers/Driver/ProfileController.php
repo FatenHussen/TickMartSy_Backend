@@ -29,7 +29,7 @@ class ProfileController extends Controller
     public function updatePhone(UpdatePhoneRequest $request)
     {
         $res = $this->service->updatePhone($request->validated());
-        return $this->sendResponse(message: 'OTP sent to new phone number');
+        return $this->sendResponse(message: __('custom.driver.otp_sent_new_phone'));
     }
 
     public function verifyUpdate(VerifyUpdateRequest $request)

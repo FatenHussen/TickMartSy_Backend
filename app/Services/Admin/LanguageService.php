@@ -6,6 +6,7 @@ use App\Http\Resources\Admin\Language\OneResource;
 use App\Http\Resources\Admin\Language\AllResource;
 use App\Models\Language;
 use App\Services\BaseService;
+use App\Exceptions\CustomExceptionWithMessage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 
@@ -32,7 +33,11 @@ class LanguageService extends BaseService
         $targetPath = resource_path("lang/{$code}");
 
         if (!File::exists($sourcePath)) {
-            throw new \Exception("Source language [{$sourceLang}] does not exist.");
+            throw new CustomExceptionWithMessage(
+                'custom.languages.source_not_found',
+                400,
+                ['lang' => $sourceLang]
+            );
         }
 
         if (!File::exists($targetPath)) {

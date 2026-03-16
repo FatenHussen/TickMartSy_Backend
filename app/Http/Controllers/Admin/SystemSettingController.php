@@ -86,7 +86,7 @@ class SystemSettingController extends Controller
         SystemSetting::clearCache();
 
         return $this->sendResponse(
-            message: "Updated {$updatedCount} settings successfully",
+            message: __('custom.settings.updated_count', ['count' => $updatedCount]),
             data: ['updated_count' => $updatedCount]
         );
     }
@@ -107,7 +107,7 @@ class SystemSettingController extends Controller
         $setting->update(['value' => (string) $value]);
 
         return $this->sendResponse(
-            message: 'Setting updated successfully',
+            message: __('custom.settings.updated_successfully'),
             data: [
                 'key' => $setting->key,
                 'value' => $this->castValue($setting->value, $setting->type),
@@ -144,7 +144,7 @@ class SystemSettingController extends Controller
         $setting = SystemSetting::create($request->validated());
 
         return $this->sendResponse(
-            message: 'Setting created successfully',
+            message: __('custom.settings.created_successfully'),
             data: [
                 'id' => $setting->id,
                 'key' => $setting->key,
@@ -166,7 +166,7 @@ class SystemSettingController extends Controller
         $setting->delete();
 
         return $this->sendResponse(
-            message: 'Setting deleted successfully'
+            message: __('custom.settings.deleted_successfully')
         );
     }
 
@@ -178,7 +178,7 @@ class SystemSettingController extends Controller
         SystemSetting::clearCache();
 
         return $this->sendResponse(
-            message: 'Settings cache cleared successfully'
+            message: __('custom.settings.cache_cleared_successfully')
         );
     }
 

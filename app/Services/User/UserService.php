@@ -359,7 +359,7 @@ class UserService
         $user = User::findOrFail($id);
 
         if (!Hash::check($request['old_password'], $user->password)) {
-            throw new CustomExceptionWithMessage('wrong_password');
+            throw new CustomExceptionWithMessage('custom.wrong_password');
         }
 
         $user->update(['password' => Hash::make($request['new_password'])]);
@@ -424,7 +424,7 @@ class UserService
             ->first();
 
         if (!$verification) {
-            throw new CustomExceptionWithMessage('otp_invalid');
+            throw new CustomExceptionWithMessage('custom.otp_invalid');
         }
 
         if ($verification->type === 'update_email') {
@@ -473,10 +473,10 @@ class UserService
 
         if ($user->is_affiliate && !$user->affiliate_approved) {
             Log::info("Hello");
-            throw new CustomExceptionWithMessage('You have submitted a marketing request, just wait for a response from the admin.');
+            throw new CustomExceptionWithMessage('custom.marketer.request_already_submitted');
         }
         if ($user->is_affiliate && $user->affiliate_approved) {
-            throw new CustomExceptionWithMessage('You are a marketer, you dont need to submit an application.');
+            throw new CustomExceptionWithMessage('custom.marketer.already_marketer');
         }
         $user->update([
             'is_affiliate' => true,

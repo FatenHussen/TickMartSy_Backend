@@ -65,7 +65,7 @@ class OrderController extends Controller
 
         return $this->sendResponse(
             data: OneResource::make($order),
-            message: 'Order accepted successfully'
+            message: __('custom.driver.order_accepted')
         );
     }
 
@@ -77,7 +77,7 @@ class OrderController extends Controller
         $item = $this->service->itemOutDelivery($itemId);
 
         return $this->sendResponse(
-            message: 'Item marked as out for delivery'
+            message: __('custom.driver.item_out_delivery')
         );
     }
 
@@ -90,7 +90,21 @@ class OrderController extends Controller
 
         return $this->sendResponse(
             // data: OneResource::make($order),
-            message: 'Order marked as out for delivery'
+            message: __('custom.driver.order_out_delivery')
+        );
+    }
+
+    public function shopOutDelivery(Request $request, int $orderId)
+    {
+        $data = $request->validate([
+            'shop_id' => 'required|exists:shops,id',
+        ]);
+
+        $order = $this->service->shopOutDelivery($orderId, $data['shop_id']);
+
+        return $this->sendResponse(
+            // data: OneResource::make($order),
+            message: __('custom.driver.shop_out_delivery')
         );
     }
 
@@ -108,7 +122,7 @@ class OrderController extends Controller
 
         return $this->sendResponse(
             // data: OneResource::make($order),
-            message: 'Order delivered successfully'
+            message: __('custom.driver.order_delivered')
         );
     }
 
@@ -121,7 +135,7 @@ class OrderController extends Controller
 
         return $this->sendResponse(
             data: $data,
-            message: 'Driver statistics retrieved successfully'
+            message: __('custom.driver.statistics_retrieved')
         );
     }
     public function currentOrder()
@@ -130,14 +144,14 @@ class OrderController extends Controller
 
         if (! $order) {
             return $this->sendResponse(
-                message: 'No current order',
+                message: __('custom.driver.no_current_order'),
                 data: null
             );
         }
 
         return $this->sendResponse(
             data: OneResource::make($order),
-            message: 'Current order retrieved successfully'
+            message: __('custom.driver.current_order_retrieved')
         );
     }
 }

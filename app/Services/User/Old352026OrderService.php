@@ -21,7 +21,6 @@ use App\Services\BaseService;
 use App\Services\User\CalculateDeliveryPriceService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 class Old352026OrderService extends BaseService
 {
@@ -494,7 +493,11 @@ class Old352026OrderService extends BaseService
                 ->findOrFail($item['shop_product_variant_id']);
 
             if (!is_null($shopVariant->quantity) && $shopVariant->quantity < $item['quantity']) {
-                throw new Exception('Insufficient stock for ' . $shopVariant->productVariant->product->name);
+                throw new CustomExceptionWithMessage(
+                    'custom.orders.insufficient_stock',
+                    400,
+                    ['product' => $shopVariant->productVariant->product->name]
+                );
             }
 
             $product = $shopVariant->productVariant->product;
@@ -702,12 +705,12 @@ class Old352026OrderService extends BaseService
             ->firstOrFail();
 
         if ($order->status !== OrderStatus::PENDING->value) {
-            throw new CustomExceptionWithMessage('Order cannot be cancelled');
+            throw new CustomExceptionWithMessage('custom.orders.cannot_cancel');
         }
 
         foreach ($order->items as $item) {
             if ($item->item_status !== OrderStatus::PENDING->value) {
-                throw new CustomExceptionWithMessage('Some items cannot be cancelled');
+                throw new CustomExceptionWithMessage('custom.orders.items_cannot_cancel');
             }
         }
         $oldStatus = $order->status;

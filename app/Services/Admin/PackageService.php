@@ -6,6 +6,7 @@ use App\Models\Package;
 use App\Services\BaseService;
 use App\Http\Resources\Admin\Package\OneResource;
 use App\Http\Resources\Admin\Package\AllResource;
+use App\Exceptions\CustomExceptionWithMessage;
 
 class PackageService extends BaseService
 {
@@ -109,7 +110,7 @@ class PackageService extends BaseService
             ->count();
 
         if ($activeSubscriptions > 0) {
-            throw new \Exception('Cannot delete package with active subscriptions');
+            throw new CustomExceptionWithMessage('custom.packages.cannot_delete_with_active_subscriptions');
         }
 
         $package->delete();

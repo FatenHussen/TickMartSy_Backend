@@ -52,13 +52,13 @@ class PointController extends BaseCRUDController
 
         if (!$transaction) {
             return $this->sendError(
-                message: 'رصيد النقاط غير كافي / Insufficient points balance',
+                message: __('custom.points.insufficient_balance'),
                 code: 400
             );
         }
 
         return $this->sendResponse(
-            message: 'تم استبدال النقاط بنجاح / Points exchanged successfully',
+            message: __('custom.points.exchanged_successfully'),
             data: $transaction
         );
     }
@@ -75,10 +75,10 @@ class PointController extends BaseCRUDController
             data: [
                 'transactions_count' => $counts,
                 'status_types' => [
-                    'pending' => 'Pending transactions (not yet confirmed)',
-                    'earned' => 'Earned points (added to balance)',
-                    'expired' => 'Expired points (removed from balance)',
-                    'redeemed' => 'Redeemed points (spent on rewards)',
+                    'pending' => __('custom.points.status_types.pending'),
+                    'earned' => __('custom.points.status_types.earned'),
+                    'expired' => __('custom.points.status_types.expired'),
+                    'redeemed' => __('custom.points.status_types.redeemed'),
                 ]
             ]
         );

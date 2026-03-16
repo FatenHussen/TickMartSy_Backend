@@ -165,90 +165,142 @@ class RecipeSeeder extends Seeder
         ]);
 
         /* =======================
-         * Recipe
+         * Recipes
          * ======================= */
 
-        $recipe = Recipe::create([
-            'name' => ['ar' => 'كبسة رز', 'en' => 'Kabsa Rice'],
-            'description' => ['ar' => 'كبسة رز بالدجاج', 'en' => 'Rice Kabsa with Chicken'],
-            'image' => 'recipies/image3.jpg',
-            'rating' => 4.5,
-            'discount' => 20,
-            'serves' => '2-4',
-            'prepare_time' => '25',
-            'video_url' => 'https://youtu.be/WJibKMiLXw8',
-            'delivery_price' => 500,
-        ]);
+        $recipes = [
+            [
+                'name' => ['ar' => 'Kabsa Rice', 'en' => 'Kabsa Rice'],
+                'description' => ['ar' => 'Rice Kabsa with Chicken', 'en' => 'Rice Kabsa with Chicken'],
+                'image' => 'recipies/image3.jpg',
+                'rating' => 4.5,
+                'discount' => 20,
+                'serves' => '2-4',
+                'prepare_time' => '25',
+                'video_url' => 'https://youtu.be/WJibKMiLXw8',
+                'delivery_price' => 500,
+            ],
+            [
+                'name' => ['ar' => 'Mandi Rice', 'en' => 'Mandi Rice'],
+                'description' => ['ar' => 'Traditional mandi with spices', 'en' => 'Traditional mandi with spices'],
+                'image' => 'recipies/image1.jpg',
+                'rating' => 4.1,
+                'discount' => 10,
+                'serves' => '3-5',
+                'prepare_time' => '35',
+                'video_url' => 'https://youtu.be/WJibKMiLXw8',
+                'delivery_price' => 600,
+            ],
+            [
+                'name' => ['ar' => 'Biryani Rice', 'en' => 'Biryani Rice'],
+                'description' => ['ar' => 'Aromatic biryani-style rice', 'en' => 'Aromatic biryani-style rice'],
+                'image' => 'recipies/image2.jpg',
+                'rating' => 4.7,
+                'discount' => 15,
+                'serves' => '2-3',
+                'prepare_time' => '30',
+                'video_url' => 'https://youtu.be/WJibKMiLXw8',
+                'delivery_price' => 550,
+            ],
+            [
+                'name' => ['ar' => 'Spiced Bulgur', 'en' => 'Spiced Bulgur'],
+                'description' => ['ar' => 'Light bulgur with spices', 'en' => 'Light bulgur with spices'],
+                'image' => 'recipies/image4.jpg',
+                'rating' => 3.9,
+                'discount' => 5,
+                'serves' => '2-4',
+                'prepare_time' => '20',
+                'video_url' => 'https://youtu.be/WJibKMiLXw8',
+                'delivery_price' => 450,
+            ],
+            [
+                'name' => ['ar' => 'Ghee Rice', 'en' => 'Ghee Rice'],
+                'description' => ['ar' => 'Rich ghee rice', 'en' => 'Rich ghee rice'],
+                'image' => 'recipies/image5.jpg',
+                'rating' => 4.3,
+                'discount' => 12,
+                'serves' => '2-4',
+                'prepare_time' => '22',
+                'video_url' => 'https://youtu.be/WJibKMiLXw8',
+                'delivery_price' => 500,
+            ],
+        ];
 
-        /* =======================
-         * Recipe Items
-         * ======================= */
-
-        RecipeItem::create([
-            'recipe_id' => $recipe->id,
-            'shop_product_variant_id' => $shortShopVariant->id,
-            'quantity' => 1,
-            'switchable_category_id' => $riceBulgur->id,
-            'is_required' => true,
-            'min_quantity' => 1,
-            'max_quantity' => 5,
-        ]);
-
-        RecipeItem::create([
-            'recipe_id' => $recipe->id,
-            'shop_product_variant_id' => $gheeShopVariant->id,
-            'quantity' => 1,
-            'is_required' => true,
-            'min_quantity' => 1,
-            'max_quantity' => 3,
-        ]);
-
-        /* =======================
-         * Steps
-         * ======================= */
-
-        $recipe->steps()->createMany([
+        $steps = [
             [
                 'step_number' => 1,
                 'instruction' => [
-                    'ar' => 'اغلي الماء واطبخ الأرز.',
+                    'ar' => 'Boil water and cook the rice.',
                     'en' => 'Boil water and cook the rice.'
                 ],
                 'time_minutes' => [
-                    'ar' => '10 دقائق',
+                    'ar' => '10 minutes',
                     'en' => '10 minutes'
                 ],
                 'heat_level' => [
-                    'ar' => 'نار عالية',
+                    'ar' => 'High heat',
                     'en' => 'High heat'
                 ],
             ],
             [
                 'step_number' => 2,
                 'instruction' => [
-                    'ar' => 'أضف السمنة وامزج جيداً.',
+                    'ar' => 'Add ghee and mix well.',
                     'en' => 'Add ghee and mix well.'
                 ],
                 'time_minutes' => [
-                    'ar' => '5 دقائق',
+                    'ar' => '5 minutes',
                     'en' => '5 minutes'
                 ],
                 'heat_level' => [
-                    'ar' => 'نار متوسطة',
+                    'ar' => 'Medium heat',
                     'en' => 'Medium heat'
                 ],
             ],
-        ]);
+        ];
 
-        /* =======================
-         * Badges
-         * ======================= */
+        foreach ($recipes as $recipeData) {
+            $recipe = Recipe::create($recipeData);
 
-        $recipe->badges()->attach([
-            1 => ['position' => 'top'],
-            2 => ['position' => 'bottom'],
-            3 => ['position' => 'bottom'],
-        ]);
+            /* =======================
+             * Recipe Items
+             * ======================= */
+
+            RecipeItem::create([
+                'recipe_id' => $recipe->id,
+                'shop_product_variant_id' => $shortShopVariant->id,
+                'quantity' => 1,
+                'switchable_category_id' => $riceBulgur->id,
+                'is_required' => true,
+                'min_quantity' => 1,
+                'max_quantity' => 5,
+            ]);
+
+            RecipeItem::create([
+                'recipe_id' => $recipe->id,
+                'shop_product_variant_id' => $gheeShopVariant->id,
+                'quantity' => 1,
+                'is_required' => true,
+                'min_quantity' => 1,
+                'max_quantity' => 3,
+            ]);
+
+            /* =======================
+             * Steps
+             * ======================= */
+
+            $recipe->steps()->createMany($steps);
+
+            /* =======================
+             * Badges
+             * ======================= */
+
+            $recipe->badges()->attach([
+                1 => ['position' => 'top'],
+                2 => ['position' => 'bottom'],
+                3 => ['position' => 'bottom'],
+            ]);
+        }
     }
 
     private function attachRandomMedia($product, $files)

@@ -33,7 +33,7 @@ class MarketController extends BaseCRUDController
             !$affiliate->affiliate_approved ||
             empty($affiliate->affiliate_id)
         ) {
-            throw new CustomExceptionWithMessage('You are not authorized as an affiliate', 403);
+            throw new CustomExceptionWithMessage('custom.affiliate.not_authorized', 403);
         }
 
         return $affiliate;
@@ -53,7 +53,7 @@ class MarketController extends BaseCRUDController
 
         return $this->sendResponse(
             data: $data,
-            message: 'Affiliate statistics retrieved successfully'
+            message: __('custom.affiliate.stats_retrieved')
         );
     }
 
@@ -68,7 +68,7 @@ class MarketController extends BaseCRUDController
 
         return $this->sendResponse(
             data: $data,
-            message: 'Affiliate profile retrieved successfully'
+            message: __('custom.affiliate.profile_retrieved')
         );
     }
 
@@ -105,7 +105,7 @@ class MarketController extends BaseCRUDController
                     'total'        => $orders->total(),
                 ],
             ],
-            message: 'Affiliate orders retrieved successfully'
+            message: __('custom.affiliate.orders_retrieved')
         );
     }
 
@@ -139,7 +139,7 @@ class MarketController extends BaseCRUDController
                     'total'        => $transactions->total(),
                 ],
             ],
-            message: 'Affiliate transactions retrieved successfully'
+            message: __('custom.affiliate.transactions_retrieved')
         );
     }
 
@@ -156,13 +156,13 @@ class MarketController extends BaseCRUDController
 
         if (!$withdraw) {
             return $this->sendError(
-                message: 'Withdraw request failed, Amount exceeds available balance'
+                message: __('custom.affiliate.withdraw_request_failed')
             );
         }
 
         return $this->sendResponse(
             data: ['withdraw_request' => $withdraw],
-            message: 'Withdraw request submitted successfully'
+            message: __('custom.affiliate.withdraw_request_submitted')
         );
     }
 
@@ -196,7 +196,7 @@ class MarketController extends BaseCRUDController
                     'total'        => $requests->total(),
                 ],
             ],
-            message: 'Affiliate withdraw requests retrieved successfully'
+            message: __('custom.affiliate.withdraw_requests_retrieved')
         );
     }
 
@@ -218,7 +218,7 @@ class MarketController extends BaseCRUDController
 
         return $this->sendResponse(
             data: $data,
-            message: 'Monthly completed orders retrieved successfully'
+            message: __('custom.affiliate.monthly_orders_retrieved')
         );
     }
 

@@ -199,6 +199,9 @@ return [
             'approved' => 'تمت الموافقة على المنتج',
             'rejected' => 'تم رفض المنتج',
         ],
+        'only_pending_can_be_approved' => 'يمكن قبول المنتجات المعلقة فقط.',
+        'only_pending_can_be_rejected' => 'يمكن رفض المنتجات المعلقة فقط.',
+        'rejection_reason_required' => 'يجب إدخال سبب الرفض.',
         'sections' => [
             'basic_info' => 'المعلومات الأساسية',
             'description' => 'الوصف',
@@ -428,6 +431,27 @@ return [
             'status_updated' => 'تم تحديث حالة الطلب',
             'ready_notification' => 'الطلب جاهز للتوصيل',
         ],
+        'basket_id_required' => 'رقم السلة مطلوب لطلبات السلة المجدولة.',
+        'insufficient_stock' => 'الكمية غير كافية للمنتج :product.',
+        'insufficient_stock_generic' => 'الكمية غير كافية.',
+        'cannot_cancel' => 'لا يمكن إلغاء الطلب.',
+        'items_cannot_cancel' => 'بعض العناصر لا يمكن إلغاؤها.',
+        'not_found' => 'الطلب غير موجود.',
+        'already_assigned' => 'تم إسناد الطلب مسبقًا.',
+        'not_instant_delivery' => 'الطلب ليس توصيلًا فوريًا.',
+        'invalid_order_state' => 'حالة الطلب غير صحيحة.',
+        'not_your_order' => 'هذا الطلب ليس لك.',
+        'item_not_ready' => 'العنصر غير جاهز.',
+        'status_not_valid_for_out_delivery' => 'حالة الطلب غير صالحة للخروج للتوصيل.',
+        'not_out_delivery' => 'الطلب ليس في حالة الخروج للتوصيل.',
+        'cannot_change_status' => 'لا يمكن تغيير حالة الطلب من :from إلى :to.',
+        'cannot_change_item_status' => 'لا يمكن تغيير حالة العنصر من :from إلى :to.',
+        'delivered_cannot_change' => 'لا يمكن تعديل طلب تم توصيله.',
+        'already_delivered' => 'تم توصيل الطلب بالفعل.',
+        'status_updated_successfully' => 'تم تحديث حالة الطلب بنجاح.',
+        'assigned_to_driver_successfully' => 'تم إسناد الطلب للسائق بنجاح.',
+        'item_status_updated_successfully' => 'تم تحديث حالة العنصر بنجاح.',
+        'no_items_for_shop' => 'لا يوجد عناصر لهذا المتجر ضمن الطلب.',
     ],
 
     // Dashboard
@@ -500,6 +524,7 @@ return [
         'points_bonus' => 'نقاط المكافأة',
         'points' => 'نقاط',
         'is_active' => 'نشط',
+        'cannot_delete_with_active_subscriptions' => 'لا يمكن حذف الباقة لوجود اشتراكات نشطة.',
         'subscriptions' => 'الاشتراكات',
         'total_subscriptions' => 'إجمالي الاشتراكات',
         'active_subscriptions' => 'الاشتراكات النشطة',
@@ -618,6 +643,7 @@ return [
         'end_date' => 'تاريخ الانتهاء',
         'is_active' => 'نشط',
         'min_order_amount' => 'الحد الأدنى لقيمة الطلب',
+        'affiliate_active_coupon' => 'هذا المسوّق لديه كوبون نشط بالفعل.',
         'discount_types' => [
         ],
         ],
@@ -892,4 +918,117 @@ return [
     'subscription_days_left_dashboard' => 'حتى نهاية الاشتراك',
     'subscription_status_title' => 'حالة الاشتراك',
     'subscription_status_inactive' => 'غير نشط',
+
+    // Driver responses
+    'driver' => [
+        'otp_sent_new_phone' => 'تم إرسال رمز التحقق إلى رقم الهاتف الجديد.',
+        'order_accepted' => 'تم قبول الطلب بنجاح.',
+        'item_out_delivery' => 'تم وضع العنصر في حالة الخروج للتوصيل.',
+        'order_out_delivery' => 'تم وضع الطلب في حالة الخروج للتوصيل.',
+        'shop_out_delivery' => 'تم وضع عناصر المتجر في حالة الخروج للتوصيل.',
+        'order_delivered' => 'تم تسليم الطلب بنجاح.',
+        'statistics_retrieved' => 'تم جلب إحصائيات السائق بنجاح.',
+        'no_current_order' => 'لا يوجد طلب حالي.',
+        'current_order_retrieved' => 'تم جلب الطلب الحالي بنجاح.',
+    ],
+
+    // Affiliate responses
+    'affiliate' => [
+        'not_authorized' => 'غير مصرح لك كمسوّق بالعمولة.',
+        'stats_retrieved' => 'تم جلب إحصائيات المسوّق بالعمولة بنجاح.',
+        'profile_retrieved' => 'تم جلب ملف المسوّق بالعمولة بنجاح.',
+        'orders_retrieved' => 'تم جلب طلبات المسوّق بالعمولة بنجاح.',
+        'transactions_retrieved' => 'تم جلب معاملات المسوّق بالعمولة بنجاح.',
+        'withdraw_request_failed' => 'فشل طلب السحب. المبلغ يتجاوز الرصيد المتاح.',
+        'withdraw_request_submitted' => 'تم إرسال طلب السحب بنجاح.',
+        'withdraw_requests_retrieved' => 'تم جلب طلبات السحب للمسوّق بالعمولة بنجاح.',
+        'monthly_orders_retrieved' => 'تم جلب ملخص الطلبات المكتملة شهرياً بنجاح.',
+    ],
+
+    // Marketer
+    'marketer' => [
+        'wait_for_admin_response' => 'انتظر رد الإدارة.',
+        'request_already_submitted' => 'لقد قدّمت طلب تسويق مسبقًا. يرجى انتظار رد الإدارة.',
+        'already_marketer' => 'أنت مسوّق بالفعل ولا تحتاج لتقديم طلب.',
+        'request_not_submitted' => 'المستخدم غير مقدّم على طلب مسوّق.',
+        'cannot_change_number' => 'لا يمكن تغيير رقم المسوّق.',
+    ],
+
+    // Ratings
+    'ratings' => [
+        'update_own_only' => 'يمكنك تحديث تقييماتك فقط.',
+        'update_within_24_hours' => 'يمكنك تحديث التقييم خلال 24 ساعة فقط.',
+        'delete_own_only' => 'يمكنك حذف تقييماتك فقط.',
+        'delete_within_24_hours' => 'يمكنك حذف التقييم خلال 24 ساعة فقط.',
+        'rateable_type_required' => 'نوع التقييم مطلوب.',
+        'invalid_rateable_type' => 'نوع التقييم غير صالح.',
+    ],
+
+    // Points
+    'points' => [
+        'insufficient_balance' => 'رصيد النقاط غير كافٍ.',
+        'exchanged_successfully' => 'تم استبدال النقاط بنجاح.',
+        'added_successfully' => 'تم إضافة النقاط بنجاح.',
+        'deducted_successfully' => 'تم خصم النقاط بنجاح.',
+        'user_id_required' => 'معرّف المستخدم مطلوب.',
+        'status_types' => [
+            'pending' => 'المعاملات المعلّقة (غير مؤكدة بعد)',
+            'earned' => 'نقاط مكتسبة (مضافة إلى الرصيد)',
+            'expired' => 'نقاط منتهية الصلاحية (أُزيلت من الرصيد)',
+            'redeemed' => 'نقاط مُستبدلة (صُرفت كمكافآت)',
+        ],
+    ],
+
+    // Settings
+    'settings' => [
+        'updated_count' => 'تم تحديث :count من الإعدادات بنجاح.',
+        'updated_successfully' => 'تم تحديث الإعداد بنجاح.',
+        'created_successfully' => 'تم إنشاء الإعداد بنجاح.',
+        'deleted_successfully' => 'تم حذف الإعداد بنجاح.',
+        'cache_cleared_successfully' => 'تم مسح كاش الإعدادات بنجاح.',
+    ],
+
+    // Documents
+    'documents' => [
+        'not_found' => 'المستند غير موجود.',
+    ],
+
+    // Addresses
+    'addresses' => [
+        'default_address' => 'هذا العنوان الافتراضي.',
+    ],
+
+    // Vendors
+    'vendors' => [
+        'shops_must_belong_same_vendor' => 'يجب أن تتبع جميع المتاجر لنفس البائع.',
+    ],
+
+    // Seller Registration
+    'seller_registration' => [
+        'not_pending' => 'طلب التسجيل ليس قيد الانتظار.',
+    ],
+
+    // Promotions
+    'promotions' => [
+        'only_pending_can_be_approved' => 'يمكن قبول الطلبات المعلقة فقط.',
+        'only_pending_can_be_rejected' => 'يمكن رفض الطلبات المعلقة فقط.',
+        'rejection_reason_required' => 'يجب إدخال سبب الرفض.',
+    ],
+
+    // Withdrawals
+    'withdrawals' => [
+        'only_pending_can_be_updated' => 'يمكن تحديث الطلبات المعلقة فقط.',
+        'invalid_status' => 'حالة غير صالحة.',
+        'amount_exceeds_balance' => 'المبلغ يتجاوز الرصيد المتاح.',
+    ],
+
+    // Gifts
+    'gifts' => [
+        'address_update_not_allowed' => 'لا يمكن تحديث العنوان بعد بدء معالجة الهدية.',
+    ],
+
+    // Languages
+    'languages' => [
+        'source_not_found' => 'لغة المصدر [:lang] غير موجودة.',
+    ],
 ];

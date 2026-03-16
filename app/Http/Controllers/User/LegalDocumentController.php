@@ -13,7 +13,7 @@ class LegalDocumentController extends Controller
         $document = LegalDocument::where('key', $key)->first();
 
         if (!$document) {
-            return $this->sendError(message: 'Document not found', code: 404);
+            return $this->sendError(message: __('custom.documents.not_found'), code: 404);
         }
         return $this->sendResponse(data: [
             'key' => $document->key,

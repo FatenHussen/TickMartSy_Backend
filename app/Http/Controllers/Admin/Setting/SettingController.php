@@ -43,7 +43,7 @@ class SettingController extends Controller
         ]);
 
         return $this->sendResponse(
-            message: 'Setting updated successfully',
+            message: __('custom.settings.updated_successfully'),
             data: $this->formatSetting($setting->fresh())
         );
     }

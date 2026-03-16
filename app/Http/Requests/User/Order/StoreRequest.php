@@ -24,7 +24,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'address_id' => ['required', 'exists:user_addresses,id'],
-            'payment_method_id' => ['required', 'exists:payment_methods,id'],
+            'payment_method_id' => ['nullable', 'exists:payment_methods,id'],
             'cart_type' => ['nullable', 'string', 'in:default,recipe,admin_cart,schedule_admin_cart'],
             'is_instant_delivery' => ['required', 'boolean'],
 

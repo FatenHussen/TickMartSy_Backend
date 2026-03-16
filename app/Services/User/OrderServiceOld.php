@@ -13,7 +13,7 @@ use App\Models\ShopProductVariant;
 use App\Models\User;
 use App\Services\BaseService;
 use App\Services\User\CalculateDeliveryPriceService;
-use Exception;
+use App\Exceptions\CustomExceptionWithMessage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -137,7 +137,11 @@ class OrderServiceOld extends BaseService
                         'available' => $shopVariant->quantity,
                         'requested' => $item['quantity'],
                     ]);
-                    throw new Exception('Insufficient stock');
+                    throw new CustomExceptionWithMessage(
+                        'custom.orders.insufficient_stock',
+                        400,
+                        ['product' => $shopVariant->productVariant->product->name]
+                    );
                 }
 
                 $product  = $shopVariant->productVariant->product;

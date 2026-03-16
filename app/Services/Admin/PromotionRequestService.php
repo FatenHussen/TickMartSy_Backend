@@ -8,6 +8,7 @@ use App\Services\BaseService;
 use App\Http\Resources\Admin\PromotionRequest\AllResource;
 use App\Http\Resources\Admin\PromotionRequest\OneResource;
 use App\Helpers\SendFCMNotification;
+use App\Exceptions\CustomExceptionWithMessage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -62,7 +63,7 @@ class PromotionRequestService extends BaseService
             $request = PromotionRequest::with(['vendor', 'shop'])->findOrFail($id);
 
             if ($request->status !== PromotionStatus::PENDING) {
-                throw new \Exception('يمكن قبول الطلبات المعلقة فقط');
+                throw new CustomExceptionWithMessage('custom.promotions.only_pending_can_be_approved');
             }
 
             $request->update([
@@ -88,11 +89,11 @@ class PromotionRequestService extends BaseService
             $request = PromotionRequest::with(['vendor', 'shop'])->findOrFail($id);
 
             if ($request->status !== PromotionStatus::PENDING) {
-                throw new \Exception('يمكن رفض الطلبات المعلقة فقط');
+                throw new CustomExceptionWithMessage('custom.promotions.only_pending_can_be_rejected');
             }
 
             if (empty($data['admin_notes'])) {
-                throw new \Exception('يجب إدخال سبب الرفض');
+                throw new CustomExceptionWithMessage('custom.promotions.rejection_reason_required');
             }
 
             $request->update([
