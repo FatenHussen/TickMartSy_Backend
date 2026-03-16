@@ -100,7 +100,7 @@ class OrderService extends BaseService
             );
 
             $finalTotal = $this->calculateFinalTotal(
-                $subtotalBeforeDiscount,
+                $subtotalAfterProductDiscount,
                 $basketDiscount,
                 $externalDiscount,
                 $deliveryPrice
@@ -143,7 +143,6 @@ class OrderService extends BaseService
             $totalQuantity,
             $orderItems
         ] = $this->addItemsToOrder(null, $data);
-
         // خصومات عامة + نقاط + اشتراك
         $discounts = $this->applyExternalDiscounts(
             null,
@@ -163,8 +162,7 @@ class OrderService extends BaseService
         );
 
         $finalTotal =
-            $subtotalBeforeDiscount - $basketDiscount - $externalDiscount + $deliveryPrice;
-
+            $subtotalAfterProductDiscount - $basketDiscount - $externalDiscount + $discounts['delivery_price'];
         // العروض المالية القابلة للاختيار
         $promotionService = app(\App\Services\User\PromotionService::class);
         $availablePromotions = $promotionService
@@ -184,6 +182,7 @@ class OrderService extends BaseService
             'available_promotions' => $availablePromotions,
             'non_discount_promotions' => $nonDiscountPromotion,
             'excluded_items' => $discounts['excluded_items'] ?? [],
+            'orderItems' => $orderItems
         ];
     }
 
@@ -226,6 +225,7 @@ class OrderService extends BaseService
         $couponDiscount = 0;
         $pointsDiscount = 0;
         $subscriptionDiscount = 0;
+        $useSubscriptionFreeDelivery = false;
         $promotionDiscount = 0;
         $freeDeliveryFromPoints = false;
         $totalDiscount = 0;
@@ -282,6 +282,7 @@ class OrderService extends BaseService
 
             if ($subscription['free_delivery_applied'] ?? false) {
                 $deliveryPrice = 0;
+                $useSubscriptionFreeDelivery = true;
             }
         }
 
@@ -303,6 +304,7 @@ class OrderService extends BaseService
             'coupon_discount' => $couponDiscount,
             'coupon_discount_from_points' => $pointsDiscount,
             'subscription_discount' => $subscriptionDiscount,
+            'useSubscriptionFreeDelivery' => $useSubscriptionFreeDelivery,
             'promotion_discount' => $promotionDiscount,
             'free_delivery_from_points' => $freeDeliveryFromPoints,
             'delivery_price' => $deliveryPrice,
@@ -545,7 +547,7 @@ class OrderService extends BaseService
                 'price' => $price,
                 'product_discount' => $productDiscount,
                 'price_after_discount' => $priceAfterDiscount,
-                'product' => $product,
+                // 'product' => $product,
 
             ]);
         }
