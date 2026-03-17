@@ -6,6 +6,7 @@ use Filament\Forms;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Schema;
+use App\Forms\Components\MapPicker;
 
 class ShopForm
 {
@@ -75,11 +76,17 @@ class ShopForm
                                     ->schema([
                                         Forms\Components\TextInput::make('lat')
                                             ->label(__('custom.shops.lat'))
-                                            ->numeric(),
+                                            ->numeric()
+                                            ->step(0.000001)
+                                            ->placeholder('33.513807')
+                                            ->live(onBlur: true),
 
                                         Forms\Components\TextInput::make('lng')
                                             ->label(__('custom.shops.lng'))
-                                            ->numeric(),
+                                            ->numeric()
+                                            ->step(0.000001)
+                                            ->placeholder('36.276528')
+                                            ->live(onBlur: true),
 
                                         Forms\Components\Select::make('area_id')
                                             ->label(__('custom.shops.area'))
@@ -88,6 +95,21 @@ class ShopForm
                                             ->preload(),
                                     ])
                                     ->columns(3),
+
+                                Section::make(__('custom.shops.sections.map'))
+                                    ->schema([
+                                        MapPicker::make('location')
+                                            ->label(__('custom.shops.map_picker'))
+                                            ->latitudeField('lat')
+                                            ->longitudeField('lng')
+                                            ->defaultLatitude(33.513807) // Damascus
+                                            ->defaultLongitude(36.276528)
+                                            ->defaultZoom(13)
+                                            ->columnSpanFull()
+                                            ->helperText(__('custom.shops.map_picker_help')),
+                                    ])
+                                    ->collapsible()
+                                    ->collapsed(false),
                             ]),
 
                         // Tab 4: Media

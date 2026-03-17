@@ -113,6 +113,7 @@ return [
             'basic_info' => 'المعلومات الأساسية',
             'contact_info' => 'معلومات الاتصال',
             'location_info' => 'معلومات الموقع',
+            'map' => 'الخريطة',
             'ratings_info' => 'التقييمات والحالة',
             'working_hours' => 'أوقات العمل',
             'settings' => 'الإعدادات',
@@ -133,6 +134,8 @@ return [
         'hours' => 'الساعات',
         'add_day' => 'إضافة يوم',
         'working_hours_help' => 'الصيغة: {"monday": {"open": "09:00", "close": "18:00", "closed": false}}',
+        'map_picker' => 'اختر الموقع على الخريطة',
+        'map_picker_help' => 'انقر على الخريطة أو اسحب العلامة لتحديد الموقع. سيتم تحديث خط الطول والعرض تلقائياً.',
     ],
 
     // Products

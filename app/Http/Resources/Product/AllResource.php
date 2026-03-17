@@ -17,6 +17,16 @@ class AllResource extends JsonResource
         $user = auth('user')->user();
         $currencyId = $user?->currency_id;
 
+        // Get first shop_product_variant_id for this product
+        $shopProductVariantId = null;
+        $firstVariant = $this->variants()->first();
+        if ($firstVariant) {
+            $firstShopVariant = $firstVariant->shopVariants()->first();
+            if ($firstShopVariant) {
+                $shopProductVariantId = $firstShopVariant->id;
+            }
+        }
+
         return [
             'id'                    => $this->id,
             'category'              => $this->category->name,
@@ -33,6 +43,7 @@ class AllResource extends JsonResource
             'sold_number'           => $this->sold_quantity ?? 0,
             'rating' => $this->average_rating ?? 0,
             'is_favorite' => (bool) ($this->is_favorite ?? false),
+            'shop_product_variant_id' => $shopProductVariantId,
 
             'top_badges' => BadgeOneResource::collection(
                 $this->badges->where('pivot.position', 'top')->values()

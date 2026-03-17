@@ -108,8 +108,8 @@ class StoreRequest extends FormRequest
             'extra_details.*.price'         => 'nullable|numeric|min:0',
 
             // Media
-            'images' => 'nullable|array',
-            'images.*' => 'image',
+            'media' => 'required|array|min:1',
+            'media.*' => 'required|image|max:5120',
 
             // Shop Product Variants
             // Shop Product Variants
