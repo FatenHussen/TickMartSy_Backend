@@ -73,7 +73,7 @@
             },
 
             getFieldValue(fieldName) {
-                const input = document.querySelector('input[name=\'' + fieldName + '\']');
+                const input = document.querySelector('input[name=\\'' + fieldName + '\\']');
                 return input && input.value ? parseFloat(input.value) : null;
             },
 
@@ -96,8 +96,20 @@
                 this.lastLat = lat;
                 this.lastLng = lng;
 
-                this.$wire.set(this.latitudeField, lat.toFixed(6));
-                this.$wire.set(this.longitudeField, lng.toFixed(6));
+                const latInput = document.querySelector('input[name=\\'' + this.latitudeField + '\\']');
+                const lngInput = document.querySelector('input[name=\\'' + this.longitudeField + '\\']');
+
+                if (latInput) {
+                    latInput.value = lat.toFixed(6);
+                    latInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    latInput.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+
+                if (lngInput) {
+                    lngInput.value = lng.toFixed(6);
+                    lngInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    lngInput.dispatchEvent(new Event('change', { bubbles: true }));
+                }
 
                 setTimeout(() => {
                     this.isUpdatingFromMap = false;
