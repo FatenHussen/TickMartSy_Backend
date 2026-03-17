@@ -547,7 +547,10 @@ class OrderService extends BaseService
                 'price' => $price,
                 'product_discount' => $productDiscount,
                 'price_after_discount' => $priceAfterDiscount,
-                // 'product' => $product,
+                'vendor_id' => $product->vendor_id,
+                'category_id' => $product->category_id,
+                'product_id' => $product->id,
+
 
             ]);
         }
@@ -579,18 +582,17 @@ class OrderService extends BaseService
         $excludedItems = [];
 
         foreach ($basketItemsCollection as $item) {
-            $product = $item['product'];
             $allowed = true;
 
-            if ($coupon->products->isNotEmpty() && !$coupon->products->contains('id', $product->id)) {
+            if ($coupon->products->isNotEmpty() && !$coupon->products->contains('id', $item['product_id'])) {
                 $allowed = false;
             }
 
-            if ($coupon->categories->isNotEmpty() && !$coupon->categories->contains('id', $product->category_id)) {
+            if ($coupon->categories->isNotEmpty() && !$coupon->categories->contains('id', $item['category_id'])) {
                 $allowed = false;
             }
 
-            if ($coupon->vendors->isNotEmpty() && !$coupon->vendors->contains('id', $product->vendor_id)) {
+            if ($coupon->vendors->isNotEmpty() && !$coupon->vendors->contains('id', $item['vendor_id'])) {
                 $allowed = false;
             }
 
