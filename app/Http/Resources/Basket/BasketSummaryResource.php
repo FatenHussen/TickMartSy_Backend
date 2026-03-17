@@ -36,6 +36,7 @@ class BasketSummaryResource extends JsonResource
             'rating'    => number_format((float) $this->rating, 1),
             'num_sold'  => (int) $this->num_sold,
             'is_on_offer' => $this->offer_ends_at && $this->offer_ends_at->isFuture(),
+            'is_paused' => (bool) ($this->pause_at !== null),
             'paused_at' => $this->pause_at?->format('Y-m-d H:i:s') ?? null,
             'schedules' => $this->is_schedule
                 ? ($this->selected_schedule

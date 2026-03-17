@@ -60,6 +60,8 @@ class MyBasketService
                     $order = $orders->firstWhere('basket_id', $basket->id);
                     $basket->selected_schedule = $order?->basketSchedule;
                     $basket->pause_at = $order?->pause_at;
+                    $basket->is_paused = $order?->pause_at !== null;
+                    $basket->paused_at = $order?->pause_at;
                     return $basket;
                 });
 
