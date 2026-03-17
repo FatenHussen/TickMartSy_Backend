@@ -73,7 +73,8 @@
             },
 
             getFieldValue(fieldName) {
-                const input = document.querySelector('input[name=\\'' + fieldName + '\\']');
+                const selector = `input[name=${JSON.stringify(fieldName)}]`;
+                const input = document.querySelector(selector);
                 return input && input.value ? parseFloat(input.value) : null;
             },
 
@@ -96,8 +97,11 @@
                 this.lastLat = lat;
                 this.lastLng = lng;
 
-                const latInput = document.querySelector('input[name=\\'' + this.latitudeField + '\\']');
-                const lngInput = document.querySelector('input[name=\\'' + this.longitudeField + '\\']');
+                const latSelector = `input[name=${JSON.stringify(this.latitudeField)}]`;
+                const lngSelector = `input[name=${JSON.stringify(this.longitudeField)}]`;
+
+                const latInput = document.querySelector(latSelector);
+                const lngInput = document.querySelector(lngSelector);
 
                 if (latInput) {
                     latInput.value = lat.toFixed(6);
