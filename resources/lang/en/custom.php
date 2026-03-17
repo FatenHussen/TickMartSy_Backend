@@ -85,6 +85,8 @@ return [
         'area' => 'Area',
         'lat' => 'Latitude',
         'lng' => 'Longitude',
+        'lat_help' => 'Latitude must be between -90 and 90',
+        'lng_help' => 'Longitude must be between -180 and 180',
         'rating' => 'Rating',
         'average_rating' => 'Rating',
         'ratings_count' => 'Ratings Count',
