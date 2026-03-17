@@ -10,6 +10,8 @@
             defaultZoom: @js($getDefaultZoom()),
             mapInitialized: false,
             isUpdatingFromMap: false,
+            lastLat: null,
+            lastLng: null,
 
             init() {
                 if (typeof L === 'undefined') {
@@ -26,25 +28,22 @@
                     this.initMap();
                 }
 
-                // Watch for field changes using Alpine's $watch
-                this.$watch('$wire.' + this.latitudeField, (value) => {
+                // Poll for field changes
+                setInterval(() => {
                     if (!this.isUpdatingFromMap) {
-                        this.updateMarkerFromInputs();
+                        this.checkFieldChanges();
                     }
-                });
-
-                this.$watch('$wire.' + this.longitudeField, (value) => {
-                    if (!this.isUpdatingFromMap) {
-                        this.updateMarkerFromInputs();
-                    }
-                });
+                }, 500);
             },
 
             initMap() {
                 if (this.mapInitialized) return;
 
-                const currentLat = this.getWireValue(this.latitudeField) || this.defaultLat;
-                const currentLng = this.getWireValue(this.longitudeField) || this.defaultLng;
+                const currentLat = this.getFieldValue(this.latitudeField) || this.defaultLat;
+                const currentLng = this.getFieldValue(this.longitudeField) || this.defaultLng;
+
+                this.lastLat = currentLat;
+                this.lastLng = currentLng;
 
                 this.map = L.map(this.$refs.mapContainer).setView([currentLat, currentLng], this.defaultZoom);
                 this.mapInitialized = true;
@@ -74,18 +73,32 @@
                 }, 100);
             },
 
-            getWireValue(fieldName) {
-                try {
-                    const value = this.$wire.get(fieldName);
-                    return value ? parseFloat(value) : null;
-                } catch (e) {
-                    return null;
+            getFieldValue(fieldName) {
+                const input = document.querySelector('input[wire\\\\:model\\\\.blur=\"' + fieldName + '\"]') ||
+                             document.querySelector('input[wire\\\\:model=\"' + fieldName + '\"]') ||
+                             document.querySelector('input[name=\"' + fieldName + '\"]');
+                return input?.value ? parseFloat(input.value) : null;
+            },
+
+            checkFieldChanges() {
+                const lat = this.getFieldValue(this.latitudeField);
+                const lng = this.getFieldValue(this.longitudeField);
+
+                if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
+                    if (lat !== this.lastLat || lng !== this.lastLng) {
+                        this.lastLat = lat;
+                        this.lastLng = lng;
+                        this.updateMarkerFromInputs(lat, lng);
+                    }
                 }
             },
 
             updateFields(lat, lng) {
                 // Set flag to prevent circular updates
                 this.isUpdatingFromMap = true;
+
+                this.lastLat = lat;
+                this.lastLng = lng;
 
                 // Update using Livewire
                 this.$wire.set(this.latitudeField, lat.toFixed(6));
@@ -94,14 +107,11 @@
                 // Reset flag after a short delay
                 setTimeout(() => {
                     this.isUpdatingFromMap = false;
-                }, 100);
+                }, 300);
             },
 
-            updateMarkerFromInputs() {
-                const lat = this.getWireValue(this.latitudeField);
-                const lng = this.getWireValue(this.longitudeField);
-
-                if (lat && lng && !isNaN(lat) && !isNaN(lng) && this.marker && this.map) {
+            updateMarkerFromInputs(lat, lng) {
+                if (this.marker && this.map) {
                     this.marker.setLatLng([lat, lng]);
                     this.map.setView([lat, lng], this.map.getZoom());
                 }
