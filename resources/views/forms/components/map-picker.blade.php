@@ -28,7 +28,6 @@
                     this.initMap();
                 }
 
-                // Poll for field changes
                 setInterval(() => {
                     if (!this.isUpdatingFromMap) {
                         this.checkFieldChanges();
@@ -74,8 +73,8 @@
             },
 
             getFieldValue(fieldName) {
-                const input = document.querySelector('input[name=\"' + fieldName + '\"]');
-                return input?.value ? parseFloat(input.value) : null;
+                const input = document.querySelector('input[name=\'' + fieldName + '\']');
+                return input && input.value ? parseFloat(input.value) : null;
             },
 
             checkFieldChanges() {
@@ -92,17 +91,14 @@
             },
 
             updateFields(lat, lng) {
-                // Set flag to prevent circular updates
                 this.isUpdatingFromMap = true;
 
                 this.lastLat = lat;
                 this.lastLng = lng;
 
-                // Update using Livewire
                 this.$wire.set(this.latitudeField, lat.toFixed(6));
                 this.$wire.set(this.longitudeField, lng.toFixed(6));
 
-                // Reset flag after a short delay
                 setTimeout(() => {
                     this.isUpdatingFromMap = false;
                 }, 300);
