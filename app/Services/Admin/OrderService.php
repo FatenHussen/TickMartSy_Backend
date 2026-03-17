@@ -172,12 +172,12 @@ class OrderService extends BaseService
                 'item_status' => $newStatus,
             ]);
 
-            OrderItemStatusChanged::dispatch(
-                $item->fresh(),
-                $oldStatus,
-                $newStatus,
-                'admin'
-            );
+            // OrderItemStatusChanged::dispatch(
+            //     $item->fresh(),
+            //     $oldStatus,
+            //     $newStatus,
+            //     'admin'
+            // );
 
             // لو كل العناصر صاروا بنفس الحالة → حدّث الطلب
             if (

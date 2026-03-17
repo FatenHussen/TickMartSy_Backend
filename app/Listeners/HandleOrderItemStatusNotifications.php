@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Enums\OrderStatus;
 use App\Events\OrderItemStatusChanged;
 use App\Models\Admin;
 use App\Services\Base\NotificationService;
@@ -19,14 +20,12 @@ class HandleOrderItemStatusNotifications implements ShouldQueue
         Log::info("HandleOrderItemStatusNotifications Listener");
 
 
-        $item  = $event->item;
-        $order = $item->order;
+        $items = $event->items;
+        $order = $items[0]->order; // كلهم نفس الطلب
 
         Log::info('Order item status changed', [
             'changed_by' => $event->changedBy,
             'order_id'   => $order->id,
-            'item_id'    => $item->id,
-            'new_status' => $item->item_status,
         ]);
 
         /*
@@ -34,41 +33,73 @@ class HandleOrderItemStatusNotifications implements ShouldQueue
         | 1️⃣ إذا الدرايفر أخذ عنصر (instant delivery)
         |--------------------------------------------------------------------------
         */
-        if ($event->changedBy === 'driver') {
+        if ($event->changedBy === 'driver' && $event->to == OrderStatus::OUT_DELIVERY->value) {
 
-            Admin::chunk(100, function ($admins) use ($order, $item) {
+            $count = count($items);
+            $shopName = $items[0]->shopProductVariant->shop->name;
+
+            Admin::chunk(100, function ($admins) use ($order, $count, $shopName) {
                 foreach ($admins as $admin) {
                     $this->notificationService->send(
                         $admin,
-                        'عنصر خرج للتوصيل',
-                        "العنصر رقم {$item->id} من الطلب {$order->id} خرج للتوصيل",
+                        'تم استلام الطلب من المحل',
+                        "تم استلام {$count} عنصر من {$shopName} للطلب {$order->order_code}",
                         [
                             'order_id' => (string) $order->id,
-                            'item_id'  => (string)$item->id,
-                            'type'     => 'order_item'
+                            'type'     => 'order_items_group'
                         ]
                     );
                 }
             });
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | 2️⃣ إذا الأدمن غير حالة عنصر → بلغ المستخدم
-        |--------------------------------------------------------------------------
-        */
-        if ($event->changedBy === 'admin') {
 
-            $this->notificationService->send(
-                $order->user,
-                'تحديث عنصر في طلبك',
-                "تم تحديث عنصر في الطلب رقم {$order->id}",
-                [
-                    'order_id' => (string)$order->id,
-                    'item_id'  => (string) $item->id,
-                    'type'     => 'order_item'
-                ]
-            );
+        if (
+            $event->changedBy == 'vendor' &&
+            $event->to == OrderStatus::PREPARING->value
+        ) {
+
+            $items = $event->items;
+            $order = $items[0]->order;
+
+            $count = count($items);
+            $shopName = $items[0]->shopProductVariant->shop->name;
+
+            /*
+            |--------------------------------------------------
+            | 1️⃣ إشعار لكل الأدمن
+            |--------------------------------------------------
+            */
+            Admin::chunk(100, function ($admins) use ($order, $count, $shopName) {
+                foreach ($admins as $admin) {
+                    $this->notificationService->send(
+                        $admin,
+                        'المحل بدأ التحضير',
+                        "المحل {$shopName} بدأ تحضير {$count} عنصر للطلب {$order->order_code}",
+                        [
+                            'order_id' => (string) $order->id,
+                            'type'     => 'order_items_group'
+                        ]
+                    );
+                }
+            });
+
+            /*
+            |--------------------------------------------------
+            | 2️⃣ إشعار للدرايفر
+            |--------------------------------------------------
+            */
+            if ($order->driver) {
+                $this->notificationService->send(
+                    $order->driver,
+                    'طلبك قيد التحضير',
+                    "المحل {$shopName} بدأ تحضير الطلب {$order->order_code}",
+                    [
+                        'order_id' => (string) $order->id,
+                        'type'     => 'order'
+                    ]
+                );
+            }
         }
     }
 }

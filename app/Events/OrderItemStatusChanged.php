@@ -19,7 +19,7 @@ class OrderItemStatusChanged
      * Create a new event instance.
      */
     public function __construct(
-        public OrderItem $item,
+        public array $items,
         public string $from,
         public string $to,
         public string $changedBy

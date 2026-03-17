@@ -128,12 +128,12 @@ class OrderService
                 'item_status' => OrderStatus::OUT_DELIVERY->value
             ]);
 
-            OrderItemStatusChanged::dispatch(
-                $item->fresh(),
-                $oldStatus,
-                OrderStatus::OUT_DELIVERY->value,
-                'driver'
-            );
+            // OrderItemStatusChanged::dispatch(
+            //     $item->fresh(),
+            //     $oldStatus,
+            //     OrderStatus::OUT_DELIVERY->value,
+            //     'driver'
+            // );
 
 
             return $item;
@@ -237,6 +237,8 @@ class OrderService
                 }
             }
 
+            $updatedItems = [];
+
             foreach ($items as $item) {
                 if ($item->item_status === OrderStatus::PREPARING->value) {
                     $oldStatus = $item->item_status;
@@ -245,13 +247,17 @@ class OrderService
                         'item_status' => OrderStatus::OUT_DELIVERY->value,
                     ]);
 
-                    OrderItemStatusChanged::dispatch(
-                        $item->fresh(),
-                        $oldStatus,
-                        OrderStatus::OUT_DELIVERY->value,
-                        'driver'
-                    );
+                    $updatedItems[] = $item->fresh();
                 }
+            }
+
+            if (!empty($updatedItems)) {
+                OrderItemStatusChanged::dispatch(
+                    $updatedItems,
+                    OrderStatus::PREPARING->value,
+                    OrderStatus::OUT_DELIVERY->value,
+                    'driver'
+                );
             }
 
             $allOutDelivery = OrderItem::where('order_id', $orderId)
