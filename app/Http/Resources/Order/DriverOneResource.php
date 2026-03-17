@@ -24,12 +24,13 @@ class DriverOneResource extends JsonResource
             return $item->shopProductVariant->shop_id;
         })->mapWithKeys(function ($items) {
             $shop = $items->first()->shopProductVariant->shop;
-            return [$shop->name => [
+            return [
+                'id' => $shop->id,
                 'shop' => $shop->name,
                 'lat' => $shop->lat,
                 'lng' => $shop->lng,
                 'items' => OrderItemResource::collection($items)
-            ]];
+            ];
         });
         return [
             'id' => $this->id,
@@ -57,7 +58,7 @@ class DriverOneResource extends JsonResource
             ] : null,
             // 'baskes' => $this->basket ? BasketAllResource::make($this->basket) : null,
             // 'basket_schedule' => $this->basket_schedule_id ? BasketScheduleAllResource::make($this->basketSchedule) : null,
-            'items' => $groupedItems
+            'shops' => $groupedItems
         ];
     }
 }
