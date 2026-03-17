@@ -74,9 +74,7 @@
             },
 
             getFieldValue(fieldName) {
-                const input = document.querySelector('input[wire\\\\:model\\\\.blur=\"' + fieldName + '\"]') ||
-                             document.querySelector('input[wire\\\\:model=\"' + fieldName + '\"]') ||
-                             document.querySelector('input[name=\"' + fieldName + '\"]');
+                const input = document.querySelector('input[name=\"' + fieldName + '\"]');
                 return input?.value ? parseFloat(input.value) : null;
             },
 

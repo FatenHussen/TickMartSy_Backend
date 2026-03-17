@@ -67,6 +67,8 @@ class AllResource extends JsonResource
             ...$this->withCurrency($this->delivery_price ?? 0, 'delivery_price'),
             'is_favorite' => (bool) ($this->is_favorite ?? false),
             'default_schedule' => $defaultSchedule,
+            'is_paused' => (bool) ($this->is_paused ?? false),
+            'paused_at' => $this->paused_at?->format('Y-m-d H:i:s'),
 
             'top_badges' => BadgeOneResource::collection(
                 $this->badges->where('pivot.position', 'top')->values()
