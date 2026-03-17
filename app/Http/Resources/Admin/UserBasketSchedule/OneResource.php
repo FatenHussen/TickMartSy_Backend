@@ -29,7 +29,6 @@ class OneResource extends JsonResource
             'next_run_date' => $this->next_run_date?->format('Y-m-d'),
 
             'schedule' => new ScheduleResource($this->whenLoaded('schedule')),
-            'category' => $this->category?->name,
             'items' => BasketItemResource::collection($this->whenLoaded('items')),
 
             // Timestamps
