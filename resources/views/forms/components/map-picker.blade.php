@@ -3,8 +3,8 @@
         x-data="{
             map: null,
             marker: null,
-            latitudeField: @js($getLatitudeField()),
-            longitudeField: @js($getLongitudeField()),
+            latitude: @entangle($getLatitudeField()),
+            longitude: @entangle($getLongitudeField()),
             defaultLat: @js($getDefaultLatitude()),
             defaultLng: @js($getDefaultLongitude()),
             defaultZoom: @js($getDefaultZoom()),
@@ -27,8 +27,8 @@
             },
 
             initMap() {
-                const currentLat = this.getFieldValue(this.latitudeField) || this.defaultLat;
-                const currentLng = this.getFieldValue(this.longitudeField) || this.defaultLng;
+                const currentLat = this.latitude || this.defaultLat;
+                const currentLng = this.longitude || this.defaultLng;
 
                 this.map = L.map(this.$refs.mapContainer).setView([currentLat, currentLng], this.defaultZoom);
 
@@ -43,25 +43,25 @@
 
                 this.marker.on('dragend', (e) => {
                     const position = e.target.getLatLng();
-                    this.updateFields(position.lat, position.lng);
+                    this.updateFromMap(position.lat, position.lng);
                 });
 
                 this.map.on('click', (e) => {
                     const { lat, lng } = e.latlng;
                     this.marker.setLatLng([lat, lng]);
-                    this.updateFields(lat, lng);
+                    this.updateFromMap(lat, lng);
                 });
 
-                // Watch for changes in form fields
-                this.$watch('$wire.' + this.latitudeField, (value) => {
-                    if (!this.isUpdatingFromMap) {
-                        this.updateMarkerFromInputs();
+                // Watch for changes from form inputs
+                this.$watch('latitude', (value) => {
+                    if (!this.isUpdatingFromMap && value && this.longitude) {
+                        this.updateMarkerPosition();
                     }
                 });
 
-                this.$watch('$wire.' + this.longitudeField, (value) => {
-                    if (!this.isUpdatingFromMap) {
-                        this.updateMarkerFromInputs();
+                this.$watch('longitude', (value) => {
+                    if (!this.isUpdatingFromMap && value && this.latitude) {
+                        this.updateMarkerPosition();
                     }
                 });
 
@@ -70,36 +70,23 @@
                 }, 100);
             },
 
-            getFieldValue(fieldName) {
-                try {
-                    return this.$wire.get(fieldName);
-                } catch (e) {
-                    return null;
-                }
-            },
-
-            updateFields(lat, lng) {
+            updateFromMap(lat, lng) {
                 this.isUpdatingFromMap = true;
-
-                try {
-                    this.$wire.set(this.latitudeField, lat.toFixed(6));
-                    this.$wire.set(this.longitudeField, lng.toFixed(6));
-                } catch (e) {
-                    console.error('Error updating fields:', e);
-                }
+                this.latitude = parseFloat(lat.toFixed(6));
+                this.longitude = parseFloat(lng.toFixed(6));
 
                 setTimeout(() => {
                     this.isUpdatingFromMap = false;
                 }, 100);
             },
 
-            updateMarkerFromInputs() {
-                const lat = this.getFieldValue(this.latitudeField);
-                const lng = this.getFieldValue(this.longitudeField);
+            updateMarkerPosition() {
+                const lat = parseFloat(this.latitude);
+                const lng = parseFloat(this.longitude);
 
-                if (lat && lng && !isNaN(lat) && !isNaN(lng) && this.marker && this.map) {
-                    this.marker.setLatLng([parseFloat(lat), parseFloat(lng)]);
-                    this.map.setView([parseFloat(lat), parseFloat(lng)], this.map.getZoom());
+                if (!isNaN(lat) && !isNaN(lng) && this.marker && this.map) {
+                    this.marker.setLatLng([lat, lng]);
+                    this.map.setView([lat, lng], this.map.getZoom());
                 }
             }
         }"
