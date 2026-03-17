@@ -3,12 +3,11 @@
 namespace App\Services\User;
 
 use App\Http\Resources\User\MyBasket\MyBasketResource;
-use App\Http\Resources\Basket\OneResource as BasketOneResource;
+use App\Http\Resources\Basket\BasketSummaryResource;
 use App\Models\UserBasketSchedule;
 use App\Models\Order;
 use App\Models\Basket;
 use App\Enums\CartType;
-use App\Http\Resources\Basket\BasketSummaryResource;
 use Illuminate\Support\Collection;
 
 class MyBasketService
@@ -56,12 +55,17 @@ class MyBasketService
                 ->get()
                 ->map(function ($basket) use ($orders) {
                     $basket->basket_type = 'subscription';
-                    // Find the selected schedule from order
-                    $order = $orders->firstWhere('basket_id', $basket->id);
-                    $basket->selected_schedule = $order?->basketSchedule;
-                    $basket->pause_at = $order?->pause_at;
-                    $basket->is_paused = $order?->pause_at !== null;
-                    $basket->paused_at = $order?->pause_at;
+
+                    // Get the LATEST order for this basket to get current pause status
+                    $latestOrder = $orders->where('basket_id', $basket->id)
+                        ->sortByDesc('created_at')
+                        ->first();
+
+                    $basket->selected_schedule = $latestOrder?->basketSchedule;
+                    $basket->pause_at = $latestOrder?->pause_at;
+                    $basket->is_paused = $latestOrder?->pause_at !== null;
+                    $basket->paused_at = $latestOrder?->pause_at;
+
                     return $basket;
                 });
 
@@ -101,22 +105,20 @@ class MyBasketService
             }
         })->values();
     }
+
     public function pauseSubscriptionBasket(int $userId, int $basketId)
     {
         Order::where('basket_id', $basketId)
             ->where('user_id', $userId)
             ->where('cart_type', CartType::SCHEDULE_ADMIN_CART->value)
-            ->update([
-                'pause_at' => now()
-            ]);
+            ->update(['pause_at' => now()]);
     }
+
     public function resumeSubscriptionBasket(int $userId, int $basketId)
     {
         Order::where('basket_id', $basketId)
             ->where('user_id', $userId)
             ->where('cart_type', CartType::SCHEDULE_ADMIN_CART->value)
-            ->update([
-                'pause_at' => null
-            ]);
+            ->update(['pause_at' => null]);
     }
 }
