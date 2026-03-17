@@ -9,6 +9,7 @@
             defaultLng: @js($getDefaultLongitude()),
             defaultZoom: @js($getDefaultZoom()),
             mapInitialized: false,
+            isUpdatingFromMap: false,
 
             init() {
                 if (typeof L === 'undefined') {
@@ -24,16 +25,26 @@
                 } else {
                     this.initMap();
                 }
+
+                // Watch for field changes using Alpine's $watch
+                this.$watch('$wire.' + this.latitudeField, (value) => {
+                    if (!this.isUpdatingFromMap) {
+                        this.updateMarkerFromInputs();
+                    }
+                });
+
+                this.$watch('$wire.' + this.longitudeField, (value) => {
+                    if (!this.isUpdatingFromMap) {
+                        this.updateMarkerFromInputs();
+                    }
+                });
             },
 
             initMap() {
                 if (this.mapInitialized) return;
 
-                const latInput = document.querySelector('[name=\'' + this.latitudeField + '\']');
-                const lngInput = document.querySelector('[name=\'' + this.longitudeField + '\']');
-
-                const currentLat = latInput?.value ? parseFloat(latInput.value) : this.defaultLat;
-                const currentLng = lngInput?.value ? parseFloat(lngInput.value) : this.defaultLng;
+                const currentLat = this.getWireValue(this.latitudeField) || this.defaultLat;
+                const currentLng = this.getWireValue(this.longitudeField) || this.defaultLng;
 
                 this.map = L.map(this.$refs.mapContainer).setView([currentLat, currentLng], this.defaultZoom);
                 this.mapInitialized = true;
@@ -58,44 +69,37 @@
                     this.updateFields(lat, lng);
                 });
 
-                // Listen to input field changes using MutationObserver
-                if (latInput) {
-                    latInput.addEventListener('change', () => this.updateMarkerFromInputs());
-                    latInput.addEventListener('blur', () => this.updateMarkerFromInputs());
-                }
-                if (lngInput) {
-                    lngInput.addEventListener('change', () => this.updateMarkerFromInputs());
-                    lngInput.addEventListener('blur', () => this.updateMarkerFromInputs());
-                }
-
                 setTimeout(() => {
                     this.map.invalidateSize();
                 }, 100);
             },
 
-            updateFields(lat, lng) {
-                const latInput = document.querySelector('[name=\'' + this.latitudeField + '\']');
-                const lngInput = document.querySelector('[name=\'' + this.longitudeField + '\']');
-
-                if (latInput) {
-                    latInput.value = lat.toFixed(6);
-                    latInput.dispatchEvent(new Event('input', { bubbles: true }));
-                    latInput.dispatchEvent(new Event('change', { bubbles: true }));
-                }
-
-                if (lngInput) {
-                    lngInput.value = lng.toFixed(6);
-                    lngInput.dispatchEvent(new Event('input', { bubbles: true }));
-                    lngInput.dispatchEvent(new Event('change', { bubbles: true }));
+            getWireValue(fieldName) {
+                try {
+                    const value = this.$wire.get(fieldName);
+                    return value ? parseFloat(value) : null;
+                } catch (e) {
+                    return null;
                 }
             },
 
-            updateMarkerFromInputs() {
-                const latInput = document.querySelector('[name=\'' + this.latitudeField + '\']');
-                const lngInput = document.querySelector('[name=\'' + this.longitudeField + '\']');
+            updateFields(lat, lng) {
+                // Set flag to prevent circular updates
+                this.isUpdatingFromMap = true;
 
-                const lat = latInput?.value ? parseFloat(latInput.value) : null;
-                const lng = lngInput?.value ? parseFloat(lngInput.value) : null;
+                // Update using Livewire
+                this.$wire.set(this.latitudeField, lat.toFixed(6));
+                this.$wire.set(this.longitudeField, lng.toFixed(6));
+
+                // Reset flag after a short delay
+                setTimeout(() => {
+                    this.isUpdatingFromMap = false;
+                }, 100);
+            },
+
+            updateMarkerFromInputs() {
+                const lat = this.getWireValue(this.latitudeField);
+                const lng = this.getWireValue(this.longitudeField);
 
                 if (lat && lng && !isNaN(lat) && !isNaN(lng) && this.marker && this.map) {
                     this.marker.setLatLng([lat, lng]);

@@ -78,13 +78,15 @@ class ShopForm
                                             ->label(__('custom.shops.lat'))
                                             ->numeric()
                                             ->step(0.000001)
-                                            ->placeholder('33.513807'),
+                                            ->placeholder('33.513807')
+                                            ->live(onBlur: true),
 
                                         Forms\Components\TextInput::make('lng')
                                             ->label(__('custom.shops.lng'))
                                             ->numeric()
                                             ->step(0.000001)
-                                            ->placeholder('36.276528'),
+                                            ->placeholder('36.276528')
+                                            ->live(onBlur: true),
 
                                         Forms\Components\Select::make('area_id')
                                             ->label(__('custom.shops.area'))
