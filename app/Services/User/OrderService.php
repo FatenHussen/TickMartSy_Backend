@@ -477,7 +477,8 @@ class OrderService extends BaseService
         // تحديد إذا في خصم خارجي
         $hasExternalDiscount = !empty($data['coupon'])
             || !empty($data['point_coupon_exchange_id'])
-            || !empty($data['use_subscription_discount']);
+            || !empty($data['use_subscription_discount'])
+            || !empty($data['promotion_id']);
 
         // تحديد نوع السلة
         $cartType = $data['cart_type'] ?? 'default';
@@ -550,8 +551,6 @@ class OrderService extends BaseService
                 'vendor_id' => $product->vendor_id,
                 'category_id' => $product->category_id,
                 'product_id' => $product->id,
-
-
             ]);
         }
 
