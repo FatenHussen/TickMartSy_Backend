@@ -20,18 +20,22 @@ class DriverOneResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $groupedItems = $this->items->groupBy(function ($item) {
-            return $item->shopProductVariant->shop_id;
-        })->mapWithKeys(function ($items) {
-            $shop = $items->first()->shopProductVariant->shop;
-            return [$shop->id => [
-                'id' => $shop->id,
-                'shop' => $shop->name,
-                'lat' => $shop->lat,
-                'lng' => $shop->lng,
-                'items' => OrderItemResource::collection($items)
-            ]];
-        });
+        $groupedItems = $this->items
+            ->groupBy(function ($item) {
+                return $item->shopProductVariant->shop_id;
+            })
+            ->map(function ($items) {
+                $shop = $items->first()->shopProductVariant->shop;
+
+                return [
+                    'id' => $shop->id,
+                    'shop' => $shop->name,
+                    'lat' => $shop->lat,
+                    'lng' => $shop->lng,
+                    'items' => OrderItemResource::collection($items),
+                ];
+            })
+            ->values(); // مهم لإعادة ترتيب المفاتيح (0,1,2...)
         return [
             'id' => $this->id,
             'order_code' => $this->order_code,
