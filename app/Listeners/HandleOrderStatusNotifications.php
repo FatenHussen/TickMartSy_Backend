@@ -177,6 +177,15 @@ class HandleOrderStatusNotifications implements ShouldQueue
             ];
         }
 
+        // 🎉 تم التسليم
+        if ($event->to === OrderStatus::PREPARING->value && !$order->driver_id) {
+            return [
+                'title' => 'الطلب قيد التحضير',
+                'body'  => "الطلب قيد التحضير {$order->order_code} و ولا يوجد درايفر مسند للطلب",
+            ];
+        }
+
+
         return null;
     }
 
@@ -207,6 +216,21 @@ class HandleOrderStatusNotifications implements ShouldQueue
                     );
                 }
             });
+        }
+
+        if (
+            $event->to === OrderStatus::PREPARING->value && $order->driver_id
+        ) {
+            $this->notificationService->send(
+                $order->driver,
+                '  استعد الطلب قيد التحضير 🚚',
+                "الطلب {$order->order_code} قيد التحضير و استعد لتسليمه",
+                [
+                    'order_id' => (string) $order->id,
+                    'type'     => 'order',
+                    'status'   => (string) $order->status,
+                ]
+            );
         }
     }
 

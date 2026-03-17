@@ -98,6 +98,7 @@ class OrdersTable
                         ]);
                         $record->items()->update(['item_status' => OrderStatus::PREPARING->value]);
 
+
                         \Filament\Notifications\Notification::make()
                             ->title(__('custom.orders.actions.status_updated'))
                             ->success()
