@@ -24,13 +24,13 @@ class DriverOneResource extends JsonResource
             return $item->shopProductVariant->shop_id;
         })->mapWithKeys(function ($items) {
             $shop = $items->first()->shopProductVariant->shop;
-            return [
+            return [$shop->id => [
                 'id' => $shop->id,
                 'shop' => $shop->name,
                 'lat' => $shop->lat,
                 'lng' => $shop->lng,
                 'items' => OrderItemResource::collection($items)
-            ];
+            ]];
         });
         return [
             'id' => $this->id,
