@@ -25,18 +25,15 @@ class MyBasketController extends Controller
 
         $this->service->pauseSubscriptionBasket($userId, $basketId);
 
-        return response()->json([
-            'message' => 'Basket paused successfully'
-        ]);
+        return $this->sendResponse([], 'تم إيقاف الاشتراك بنجاح');
     }
+
     public function resumeSubscription($basketId)
     {
         $userId = auth('user')->id();
 
         $this->service->resumeSubscriptionBasket($userId, $basketId);
 
-        return response()->json([
-            'message' => 'Basket resumed successfully'
-        ]);
+        return $this->sendResponse([], 'تم استئناف الاشتراك بنجاح');
     }
 }
