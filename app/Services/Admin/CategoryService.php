@@ -17,7 +17,7 @@ class CategoryService extends BaseService
         $this->singleImages = ['icon'];
         $this->relations = ['parent', 'children'];
         $this->pagination = true;
-        $this->searchableFields = ['name', 'description'];
-        $this->sortableFields = ['id', 'created_at'];
+        $this->searchableFields = ['name'];
+        $this->sortableFields = ['id', 'created_at', 'order'];
     }
 }
