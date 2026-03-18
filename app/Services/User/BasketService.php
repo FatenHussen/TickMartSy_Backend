@@ -26,12 +26,29 @@ class BasketService extends BaseService
 
     public function queryBuilder($query, $filters = [], $config = [])
     {
-        // Extract type filter before passing to parent
+        // Extract custom filters before passing to parent
         $type = $filters['type'] ?? null;
-        unset($filters['type']);
-
         $sort = $filters['sort_by'] ?? null;
-        unset($filters['sort_by']);
+        $isSchedule = $filters['is_schedule'] ?? null;
+        $categoryId = $filters['category_id'] ?? null;
+        $priceMin = $filters['price_min'] ?? null;
+        $priceMax = $filters['price_max'] ?? null;
+        $ratingMin = $filters['rating_min'] ?? null;
+        $itemsCountMin = $filters['items_count_min'] ?? null;
+        $itemsCountMax = $filters['items_count_max'] ?? null;
+
+        // Remove custom filters from array before passing to parent
+        unset(
+            $filters['type'],
+            $filters['sort_by'],
+            $filters['is_schedule'],
+            $filters['category_id'],
+            $filters['price_min'],
+            $filters['price_max'],
+            $filters['rating_min'],
+            $filters['items_count_min'],
+            $filters['items_count_max']
+        );
 
         // Apply base query builder first (search, sort, favorites)
         $query = parent::queryBuilder($query, $filters, $config);
@@ -45,39 +62,44 @@ class BasketService extends BaseService
         }
 
         // Filter by schedule status
-        if (isset($filters['is_schedule'])) {
-            $query->where('is_schedule', $filters['is_schedule']);
+        if ($isSchedule !== null) {
+            $query->where('is_schedule', $isSchedule);
         }
 
         // Category filter
-        if (!empty($filters['category_id'])) {
-            $query->where('category_id', $filters['category_id']);
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
         }
 
         // Price range filter
-        $query = $this->applyPriceFilter($query, $filters, 'items_min_price');
+        if ($priceMin || $priceMax) {
+            $query = $this->applyPriceFilter($query, [
+                'price_min' => $priceMin,
+                'price_max' => $priceMax
+            ], 'items_min_price');
+        }
 
         // Rating filter
-        if (!empty($filters['rating_min'])) {
-            $query->where('rating', '>=', $filters['rating_min']);
+        if ($ratingMin) {
+            $query->where('rating', '>=', $ratingMin);
         }
 
         // Items count filter
-        if (!empty($filters['items_count_min']) || !empty($filters['items_count_max'])) {
-            $query->whereHas('items', function ($q) {}, '>=', $filters['items_count_min'] ?? 0);
+        if ($itemsCountMin || $itemsCountMax) {
+            $query->whereHas('items', function ($q) {}, '>=', $itemsCountMin ?? 0);
 
-            if (!empty($filters['items_count_max'])) {
-                $query->whereHas('items', function ($q) {}, '<=', $filters['items_count_max']);
+            if ($itemsCountMax) {
+                $query->whereHas('items', function ($q) {}, '<=', $itemsCountMax);
             }
         }
 
         // Type filters
-        if (!empty($type)) {
+        if ($type) {
             $this->applyTypeFilters($query, $type);
         }
 
         // Sort by
-        if (!empty($sort)) {
+        if ($sort) {
             $this->applySortBy($query, $sort);
         }
 
