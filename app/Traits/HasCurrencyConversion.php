@@ -40,6 +40,11 @@ trait HasCurrencyConversion
             'formatted' => $currency->symbol . ' ' . number_format($convertedAmount, 2)
         ];
     }
+    public function convertFormattedPrice($priceInUSD, $currencyId = null)
+    {
+        $converted = $this->convertPrice($priceInUSD, $currencyId);
+        return $converted['formatted'];
+    }
 
     /**
      * تحويل مصفوفة أسعار

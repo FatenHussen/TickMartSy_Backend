@@ -30,7 +30,7 @@ class RecipeSeeder extends Seeder
          * ======================= */
 
         $food = Category::create([
-            'name' => ['ar' => 'أكل', 'en' => 'Food'],
+            'name' => ['ar' => 'بقوليات', 'en' => 'Legumes'],
         ]);
 
         $riceBulgur = Category::create([

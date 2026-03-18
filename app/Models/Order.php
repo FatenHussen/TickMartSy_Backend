@@ -125,6 +125,10 @@ class Order extends Model
     {
         return $this->morphMany(Rating::class, 'rateable');
     }
+    public function  getOrderCodeAttribute()
+    {
+        return $this->attributes['order_code'] ?? $this->attributes['id'];
+    }
 
     protected static function booted()
     {
