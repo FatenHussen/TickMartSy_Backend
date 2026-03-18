@@ -48,7 +48,7 @@ class MyBasketResource extends JsonResource
             'image' => $imageUrl,
             'basket_type' => $this->basket_type ?? 'user-schedule',
             'is_active' => $this->is_active,
-            'is_paused' => (bool) ($this->is_paused ?? false),
+            'is_paused' => (bool) ($this->paused_at ? true : false),
             'paused_at' => $this->paused_at?->format('Y-m-d H:i:s') ?? null,
             'num_varieties' => $items->count(),
             'start_date' => $this->start_date?->format('Y-m-d'),
