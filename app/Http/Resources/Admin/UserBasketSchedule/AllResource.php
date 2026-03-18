@@ -37,7 +37,7 @@ class AllResource extends JsonResource
 
             // Basket info (same as user resource)
             'name' => $this->name,
-            'image' => $this->category?->image_url ?? null,
+            'image' => null,
             'num_varieties' => $this->items?->count() ?? 0,
             'original_price' => round($totalPrice, 2),
             'discount_value' => $discountValue,
