@@ -24,77 +24,59 @@ class BasketService extends BaseService
     protected $sortableFields   = ['id', 'created_at', 'num_sold', 'rating'];
     protected $pagination = true;
 
-    // public function queryBuilder($query, $filters = [], $config = [])
-    // {
-    //     // Extract type filter before passing to parent
-    //     $type = $filters['type'] ?? null;
-    //     unset($filters['type']);
-    //     $sort= $filters['sort_by'] ?? null;
-    //     unset($filters['sort_by']);
-
-    //     // Apply base query builder first (search, sort, favorites)
-    //     $query = parent::queryBuilder($query, $filters, $config);
-
-    //     // Apply latest ordering by default
-    //     if (empty($config['sortField'])) {
-    //         $query->latest();
-    //     }
-
-    //     // Filter by schedule status
-    //     if (isset($filters['is_schedule'])) {
-    //         $query->where('is_schedule', $filters['is_schedule']);
-    //     }
-
-    //     // Category filter
-    //     if (!empty($filters['category_id'])) {
-    //         $query->where('category_id', $filters['category_id']);
-    //     }
-
-    //     // Price range filter - تحويل من عملة اليوزر للدولار
-    //     $query = $this->applyPriceFilter($query, $filters);
-
-    //     // Rating filter
-    //     if (!empty($filters['rating_min'])) {
-    //         $query->where('rating', '>=', $filters['rating_min']);
-    //     }
-
-    //     // Items count filter
-    //     if (!empty($filters['items_count_min']) || !empty($filters['items_count_max'])) {
-    //         $query->whereHas('items', function ($q) {}, '>=', $filters['items_count_min'] ?? 0);
-
-    //         if (!empty($filters['items_count_max'])) {
-    //             $query->whereHas('items', function ($q) {}, '<=', $filters['items_count_max']);
-    //         }
-    //     }
-
-    //     // Type filters
-    //     if (!empty($type)) {
-    //         $this->applyTypeFilters($query, $type);
-    //     }
-
-    //     if (!empty($sort)) {
-    //         $this->applySortBy($query, $sort);
-    //     }
-
-    //     return $query;
-    // }
     public function queryBuilder($query, $filters = [], $config = [])
     {
+        // Extract type filter before passing to parent
         $type = $filters['type'] ?? null;
         unset($filters['type']);
 
         $sort = $filters['sort_by'] ?? null;
         unset($filters['sort_by']);
 
+        // Apply base query builder first (search, sort, favorites)
         $query = parent::queryBuilder($query, $filters, $config);
 
-        // نحسب أقل سعر داخل السلة
+        // Calculate minimum price within basket
         $query->withMin('items', 'price');
 
+        // Apply latest ordering by default
         if (empty($config['sortField'])) {
             $query->latest();
         }
 
+        // Filter by schedule status
+        if (isset($filters['is_schedule'])) {
+            $query->where('is_schedule', $filters['is_schedule']);
+        }
+
+        // Category filter
+        if (!empty($filters['category_id'])) {
+            $query->where('category_id', $filters['category_id']);
+        }
+
+        // Price range filter
+        $query = $this->applyPriceFilter($query, $filters, 'items_min_price');
+
+        // Rating filter
+        if (!empty($filters['rating_min'])) {
+            $query->where('rating', '>=', $filters['rating_min']);
+        }
+
+        // Items count filter
+        if (!empty($filters['items_count_min']) || !empty($filters['items_count_max'])) {
+            $query->whereHas('items', function ($q) {}, '>=', $filters['items_count_min'] ?? 0);
+
+            if (!empty($filters['items_count_max'])) {
+                $query->whereHas('items', function ($q) {}, '<=', $filters['items_count_max']);
+            }
+        }
+
+        // Type filters
+        if (!empty($type)) {
+            $this->applyTypeFilters($query, $type);
+        }
+
+        // Sort by
         if (!empty($sort)) {
             $this->applySortBy($query, $sort);
         }
@@ -140,18 +122,6 @@ class BasketService extends BaseService
         }
     }
 
-    // protected function applySortBy($query, string $sortBy): void
-    // {
-    //     $query->reorder();
-
-    //     match ($sortBy) {
-    //         'price_desc' => $query->orderBy('original_price', 'desc'),
-    //         'price_asc' => $query->orderBy('original_price', 'asc'),
-    //         'newest' => $query->orderBy('created_at', 'desc'),
-    //         'oldest' => $query->orderBy('created_at', 'asc'),
-    //         default => null,
-    //     };
-    // }
     protected function applySortBy($query, string $sortBy): void
     {
         $query->reorder();
@@ -161,6 +131,8 @@ class BasketService extends BaseService
             'price_asc'  => $query->orderBy('items_min_price', 'asc'),
             'newest'     => $query->orderBy('created_at', 'desc'),
             'oldest'     => $query->orderBy('created_at', 'asc'),
+            'rating_desc' => $query->orderBy('rating', 'desc'),
+            'rating_asc'  => $query->orderBy('rating', 'asc'),
             default      => null,
         };
     }
