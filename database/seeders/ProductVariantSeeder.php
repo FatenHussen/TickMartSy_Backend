@@ -23,16 +23,26 @@ class ProductVariantSeeder extends Seeder
                 'attributes_values_ids' => [1, 5],
                 'is_trend' => 1,
             ]);
-
+            $variant3 = ProductVariant::create([
+                'product_id' => $product->id,
+                'attributes_values_ids' => [1, 6],
+                'is_trend' => 1,
+            ]);
             $variant2 = ProductVariant::create([
                 'product_id' => $product->id,
                 'attributes_values_ids' => [2, 6],
                 'is_trend' => 0,
             ]);
-
+            $variant4 = ProductVariant::create([
+                'product_id' => $product->id,
+                'attributes_values_ids' => [2, 5],
+                'is_trend' => 0,
+            ]);
             // Add 4 random images for each variant
             $this->addRandomImages($variant1, $files);
             $this->addRandomImages($variant2, $files);
+            $this->addRandomImages($variant3, $files);
+            $this->addRandomImages($variant4, $files);
         }
     }
 
