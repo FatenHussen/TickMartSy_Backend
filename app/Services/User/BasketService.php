@@ -71,12 +71,17 @@ class BasketService extends BaseService
             $query->where('category_id', $categoryId);
         }
 
-        // Price range filter
+        // Price range filter - use having for aggregated column
         if ($priceMin || $priceMax) {
-            $query = $this->applyPriceFilter($query, [
-                'price_min' => $priceMin,
-                'price_max' => $priceMax
-            ], 'items_min_price');
+            // Convert price range from user currency to USD
+            $priceRange = \App\Helpers\CurrencyHelper::convertPriceRangeToUSD($priceMin, $priceMax);
+
+            if ($priceRange['min']) {
+                $query->having('items_min_price', '>=', $priceRange['min']);
+            }
+            if ($priceRange['max']) {
+                $query->having('items_min_price', '<=', $priceRange['max']);
+            }
         }
 
         // Rating filter
@@ -84,12 +89,15 @@ class BasketService extends BaseService
             $query->where('rating', '>=', $ratingMin);
         }
 
-        // Items count filter
+        // Items count filter - use having for aggregated column
         if ($itemsCountMin || $itemsCountMax) {
-            $query->whereHas('items', function ($q) {}, '>=', $itemsCountMin ?? 0);
+            $query->withCount('items');
 
+            if ($itemsCountMin) {
+                $query->having('items_count', '>=', $itemsCountMin);
+            }
             if ($itemsCountMax) {
-                $query->whereHas('items', function ($q) {}, '<=', $itemsCountMax);
+                $query->having('items_count', '<=', $itemsCountMax);
             }
         }
 
