@@ -63,25 +63,27 @@ class OneResource extends JsonResource
             'is_on_offer' => $this->offer_ends_at && $this->offer_ends_at->isFuture(),
 
             'items' => $this->whenLoaded('items', function () {
-                return BasketItemResource::collection($this->items->where('is_extra', 0));
+                $items = $this->items ?? collect();
+                return BasketItemResource::collection($items->where('is_extra', 0));
             }),
 
             'extras' => $this->whenLoaded('items', function () {
-                return BasketItemResource::collection($this->items->where('is_extra', 1));
+                $items = $this->items ?? collect();
+                return BasketItemResource::collection($items->where('is_extra', 1));
             }) ?? [],
 
             'schedules' => $this->is_schedule
-                ? BasketScheduleAllResource::collection($this->schedules)
+                ? BasketScheduleAllResource::collection($this->schedules ?? collect())
                 : [],
             'default_schedule' => $defaultSchedule,
             'is_favorite' => (bool) ($this->is_favorite ?? false),
 
             'top_badges' => BadgeOneResource::collection(
-                $this->badges->where('pivot.position', 'top')->values()
+                ($this->badges ?? collect())->where('pivot.position', 'top')->values()
             ),
 
             'bottom_badges' => BadgeOneResource::collection(
-                $this->badges->where('pivot.position', 'bottom')->values()
+                ($this->badges ?? collect())->where('pivot.position', 'bottom')->values()
             ),
 
 

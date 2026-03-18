@@ -8,10 +8,12 @@ class BasketItemProductResource extends JsonResource
 {
     public function toArray($request)
     {
+        $media = $this->media ?? collect();
+
         return [
             'id'    => $this->id,
             'name'  => $this->name,
-            'image' => $this->media->first()?->url,
+            'image' => $media->first()?->url ?? null,
         ];
     }
 }
