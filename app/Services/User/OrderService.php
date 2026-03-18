@@ -8,7 +8,7 @@ use App\Events\LowStockDetected;
 use App\Events\OrderCreated;
 use App\Events\OrderStatusChanged;
 use App\Exceptions\CustomExceptionWithMessage;
-use App\Http\Resources\Order\DriverOneResource as OneResource;
+use App\Http\Resources\Order\OneResource as OneResource;
 use App\Http\Resources\Order\AllResource;
 use App\Models\AffiliateWalletTransaction;
 use App\Models\Basket;
