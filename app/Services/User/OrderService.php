@@ -8,7 +8,7 @@ use App\Events\LowStockDetected;
 use App\Events\OrderCreated;
 use App\Events\OrderStatusChanged;
 use App\Exceptions\CustomExceptionWithMessage;
-use App\Http\Resources\Order\DriverOneResource as OneResource;
+use App\Http\Resources\Order\OneResource as OneResource;
 use App\Http\Resources\Order\AllResource;
 use App\Models\AffiliateWalletTransaction;
 use App\Models\Basket;
@@ -477,7 +477,8 @@ class OrderService extends BaseService
         // تحديد إذا في خصم خارجي
         $hasExternalDiscount = !empty($data['coupon'])
             || !empty($data['point_coupon_exchange_id'])
-            || !empty($data['use_subscription_discount']);
+            || !empty($data['use_subscription_discount'])
+            || !empty($data['promotion_id']);
 
         // تحديد نوع السلة
         $cartType = $data['cart_type'] ?? 'default';
@@ -547,8 +548,9 @@ class OrderService extends BaseService
                 'price' => $price,
                 'product_discount' => $productDiscount,
                 'price_after_discount' => $priceAfterDiscount,
-                // 'product' => $product,
-
+                'vendor_id' => $product->vendor_id,
+                'category_id' => $product->category_id,
+                'product_id' => $product->id,
             ]);
         }
 
@@ -579,18 +581,17 @@ class OrderService extends BaseService
         $excludedItems = [];
 
         foreach ($basketItemsCollection as $item) {
-            $product = $item['product'];
             $allowed = true;
 
-            if ($coupon->products->isNotEmpty() && !$coupon->products->contains('id', $product->id)) {
+            if ($coupon->products->isNotEmpty() && !$coupon->products->contains('id', $item['product_id'])) {
                 $allowed = false;
             }
 
-            if ($coupon->categories->isNotEmpty() && !$coupon->categories->contains('id', $product->category_id)) {
+            if ($coupon->categories->isNotEmpty() && !$coupon->categories->contains('id', $item['category_id'])) {
                 $allowed = false;
             }
 
-            if ($coupon->vendors->isNotEmpty() && !$coupon->vendors->contains('id', $product->vendor_id)) {
+            if ($coupon->vendors->isNotEmpty() && !$coupon->vendors->contains('id', $item['vendor_id'])) {
                 $allowed = false;
             }
 
