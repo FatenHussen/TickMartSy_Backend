@@ -57,6 +57,8 @@ class BasketItemResource extends JsonResource
 
             $priceData = $this->convertPrice($variant->price, $currencyId);
 
+            $media = $product ? ($product->media ?? collect()) : collect();
+
             return [
                 'product_id' => $product->id ?? null,
                 'shop_product_variant_id' => $variant->id,
@@ -65,7 +67,7 @@ class BasketItemResource extends JsonResource
                     ($product->name ?? '') . ' ' . ($brand->name ?? '')
                 ),
 
-                'image_url' => optional($product->media->first())->url,
+                'image_url' => $media->first()?->url ?? null,
 
                 'price' => $priceData['amount'],
                 'price_formatted' => $priceData['formatted'],

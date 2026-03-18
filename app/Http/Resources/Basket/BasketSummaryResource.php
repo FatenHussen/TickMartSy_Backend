@@ -47,7 +47,7 @@ class BasketSummaryResource extends JsonResource
                         'discount_value' => (float) $this->selected_schedule->discount_value,
                         'number_of_days' => $this->selected_schedule->number_of_days,
                     ]]
-                    : BasketScheduleAllResource::collection($this->schedules)) // Return all schedules if no selection
+                    : BasketScheduleAllResource::collection($this->schedules ?? collect())) // Return all schedules if no selection
                 : [],
         ];
     }
