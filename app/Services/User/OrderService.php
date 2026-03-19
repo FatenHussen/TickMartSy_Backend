@@ -24,10 +24,11 @@ use App\Services\User\CalculateDeliveryPriceService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Services\InventoryService;
+use App\Traits\HasCurrencyConversion;
 
 class OrderService extends BaseService
 {
-
+    use HasCurrencyConversion;
     public function __construct(Order $model)
     {
         $this->model      = $model;
@@ -173,16 +174,36 @@ class OrderService extends BaseService
             ->applyNonDiscountPromotions(null, collect($orderItems));
 
         $discounts['basketDiscount'] = $basketDiscount;
+
+        $formattedDiscounts = array_map(function ($value) {
+            if (is_numeric($value)) {
+                return $this->convertFormattedPrice($value);
+            }
+            return $value;
+        }, $discounts);
+
+        $formattedItems = array_map(function ($item) {
+            return [
+                "shop_product_variant_id" => $item["shop_product_variant_id"],
+                "product_name" => $item["product_name"],
+                "quantity" => $item["quantity"],
+                "price" => $this->convertFormattedPrice($item["price"]),
+                // "product_discount" => $this->convertFormattedPrice($item["product_discount"]),
+                "price_after_discount" => $this->convertFormattedPrice($item["price_after_discount"]),
+                "variant" => $item["variant"],
+            ];
+        }, $orderItems->toArray()); // 👈 هون الحل
+
         return [
-            'discounts' => $discounts,
-            'subtotal_before_discount' => $subtotalBeforeDiscount,
-            'subtotal_after_product_discount' => $subtotalAfterProductDiscount,
+            'discounts' => $formattedDiscounts,
+            'subtotal_before_discount' => $this->convertFormattedPrice($subtotalBeforeDiscount),
+            'subtotal_after_product_discount' => $this->convertFormattedPrice($subtotalAfterProductDiscount),
             'total_quantity' => $totalQuantity,
-            'total' => round($finalTotal, 2),
+            'total' => $this->convertFormattedPrice($finalTotal),
             'available_promotions' => $availablePromotions,
             'non_discount_promotions' => $nonDiscountPromotion,
             'excluded_items' => $discounts['excluded_items'] ?? [],
-            'orderItems' => $orderItems
+            'orderItems' => $formattedItems
         ];
     }
 
@@ -301,14 +322,15 @@ class OrderService extends BaseService
         }
 
         return [
-            'coupon_discount' => $couponDiscount,
+            'coupon_discount' =>   $couponDiscount,
             'coupon_discount_from_points' => $pointsDiscount,
-            'subscription_discount' => $subscriptionDiscount,
-            'useSubscriptionFreeDelivery' => $useSubscriptionFreeDelivery,
+            'subscription_discount' =>  $subscriptionDiscount,
             'promotion_discount' => $promotionDiscount,
-            'free_delivery_from_points' => $freeDeliveryFromPoints,
-            'delivery_price' => $deliveryPrice,
             'total_discount' => $totalDiscount,
+            'delivery_price' => $deliveryPrice,
+            'useSubscriptionFreeDelivery' => $useSubscriptionFreeDelivery,
+            'free_delivery_from_points' => $freeDeliveryFromPoints,
+
             'excluded_items' => $excludedItems, // <--- ترجع الآن بالـ preview
         ];
     }
@@ -516,7 +538,8 @@ class OrderService extends BaseService
                 'price' => $price,
                 'quantity' => $quantity,
                 'product_discount' => $productDiscount,
-                'price_after_discount' => $priceAfterDiscount
+                'price_after_discount' => $priceAfterDiscount,
+                'variant' => $shopVariant->productVariant->attributes_values->pluck('name')->toArray()
             ]);
 
             /**
@@ -551,6 +574,8 @@ class OrderService extends BaseService
                 'vendor_id' => $product->vendor_id,
                 'category_id' => $product->category_id,
                 'product_id' => $product->id,
+                'variant' => $shopVariant->productVariant->attributes_values->pluck('name')->toArray()
+
             ]);
         }
 
@@ -815,7 +840,7 @@ class OrderService extends BaseService
             }
 
             // Generate order code
-            // $newOrder->update(['order_code' => 'ORD-' . $newOrder->id]);
+            $newOrder->update(['order_code' => 'ORD-' . $newOrder->id]);
 
             return new OneResource($newOrder->load('items'));
         });
