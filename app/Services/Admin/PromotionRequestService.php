@@ -57,7 +57,7 @@ class PromotionRequestService extends BaseService
     /**
      * قبول طلب الترويج
      */
-    public function approve(int $id, array $data = []): PromotionRequest
+    public function approve(int $id, array $data = [])
     {
         return DB::transaction(function () use ($id, $data) {
             $request = PromotionRequest::with(['vendor', 'shop'])->findOrFail($id);
@@ -83,7 +83,7 @@ class PromotionRequestService extends BaseService
     /**
      * رفض طلب الترويج
      */
-    public function reject(int $id, array $data): PromotionRequest
+    public function reject(int $id, array $data)
     {
         return DB::transaction(function () use ($id, $data) {
             $request = PromotionRequest::with(['vendor', 'shop'])->findOrFail($id);
