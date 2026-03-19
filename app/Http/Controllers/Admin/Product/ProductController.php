@@ -6,6 +6,7 @@ use App\Http\Controllers\BaseCRUDController;
 use App\Http\Requests\Admin\Product\FilterRequest;
 use App\Http\Requests\Admin\Product\StoreRequest;
 use App\Http\Requests\Admin\Product\UpdateRequest;
+use App\Http\Resources\Admin\Product\OneResource;
 use App\Services\Admin\ProductService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -32,7 +33,7 @@ class ProductController extends BaseCRUDController
             $product = $this->service->approve($id);
 
             return $this->sendResponse(
-                new ($this->service->resource)($product),
+                new OneResource($product),
                 'تم قبول المنتج بنجاح'
             );
         } catch (\Exception $e) {
@@ -61,7 +62,7 @@ class ProductController extends BaseCRUDController
             $product = $this->service->reject($id, $request->rejection_reason);
 
             return $this->sendResponse(
-                new ($this->service->resource)($product),
+                new OneResource($product),
                 'تم رفض المنتج'
             );
         } catch (\Exception $e) {

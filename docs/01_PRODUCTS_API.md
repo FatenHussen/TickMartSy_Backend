@@ -20,8 +20,11 @@ Authorization: Bearer {admin_token}
 - `search` (string): Search in name, SKU, barcode
 - `category_id` (int): Filter by category
 - `brand_id` (int): Filter by brand
+- `vendor_id` (int): Filter by vendor
+- `shop_id` (int): Filter by shop
 - `approval_status` (string): pending, approved, rejected
-- `sort_field` (string): id, name, price, created_at
+- `is_visible` (boolean): true, false
+- `sort_field` (string): id, name, price, created_at, quantity
 - `sort_order` (string): asc, desc
 
 ### Response
@@ -29,7 +32,42 @@ Authorization: Bearer {admin_token}
 {
   "success": true,
   "data": {
-    "items": [...],
+    "items": [
+      {
+        "id": 1,
+        "category_id": "Electronics",
+        "brand_id": "Samsung",
+        "name": "Product Name",
+        "description": "Short description",
+        "full_description": "Full description",
+        "country": "USA",
+        "sku": "SKU-123",
+        "model": "MODEL-123",
+        "price": 100,
+        "cost_price": 80,
+        "price_after_discount": 90,
+        "discount": 10,
+        "discount_type": "percentage",
+        "quantity": 50,
+        "unit": "piece",
+        "warranty_period": 12,
+        "is_visible": true,
+        "barcode": "BAR123",
+        "time_prepare": "02:00:00",
+        "bought_with": [1, 2, 3],
+        "is_instant_delivery": true,
+        "thumbnail": "https://...",
+        "vendor": {
+          "id": 1,
+          "name": "Vendor Name"
+        },
+        "approval_status": "pending",
+        "approval_status_label": "قيد الانتظار",
+        "image": "https://...",
+        "images": ["https://...", "https://..."],
+        "created_at": "2024-01-01T00:00:00.000000Z"
+      }
+    ],
     "pagination": {
       "current_page": 1,
       "last_page": 10,
@@ -53,33 +91,123 @@ Authorization: Bearer {admin_token}
     "description": {"en": "Short desc", "ar": "وصف قصير"},
     "full_description": {"en": "Full desc", "ar": "وصف كامل"},
     "country": {"en": "USA", "ar": "أمريكا"},
-    "price": 100.00,
-    "cost_price": 80.00,
-    "price_after_discount": 90.00,
+    
+    "price": 100,
+    "cost_price": 80,
+    "price_after_discount": 90,
+    "discount": 10,
+    "discount_type": "percentage",
     "quantity": 50,
     "unit": "piece",
     "warranty_period": 12,
     "is_visible": true,
-    "discount_type": "percentage",
+    
     "sku": "SKU-123",
     "model": "MODEL-123",
     "barcode": "BAR123",
     "time_prepare": "02:00",
+    "bought_with": [1, 2, 3],
     "is_instant_delivery": true,
-    "rating": 4.5,
-    "rating_breakdown": {...},
+    
     "thumbnail": "https://...",
-    "category": {"id": 5, "name": "Electronics"},
-    "attributes_map": {...},
-    "shop_variants": [...],
-    "category_details": [...],
-    "extra_details": [...],
-    "images": [...],
-    "available_shops": [...],
-    "is_favorite": false,
-    "top_badges": [...],
-    "bottom_badges": [...],
-    "icons": [...]
+    
+    "category": {
+      "id": 5,
+      "name": "Electronics"
+    },
+    
+    "brand": {
+      "id": 3,
+      "name": "Samsung"
+    },
+    
+    "vendor": {
+      "id": 1,
+      "name": "Vendor Name"
+    },
+    
+    "approval_status": "pending",
+    "approval_status_label": "قيد الانتظار",
+    "rejection_reason": null,
+    
+    "variants": [
+      {
+        "id": 1,
+        "attributes": [
+          {
+            "attribute": "Color",
+            "value": "Red",
+            "type": "color"
+          }
+        ],
+        "shops": [
+          {
+            "shop_id": 1,
+            "shop_name": "Shop Name",
+            "price": 100,
+            "quantity": 50
+          }
+        ],
+        "images": [
+          {
+            "id": 1,
+            "url": "https://..."
+          }
+        ]
+      }
+    ],
+    
+    "category_details": [
+      {
+        "id": 1,
+        "name": "Detail Name",
+        "value": {"en": "Value", "ar": "القيمة"}
+      }
+    ],
+    
+    "extra_details": [
+      {
+        "id": 1,
+        "key": {"en": "Weight", "ar": "الوزن"},
+        "value": {"en": "1kg", "ar": "1 كجم"},
+        "price": 5
+      }
+    ],
+    
+    "images": [
+      {
+        "id": 1,
+        "url": "https://..."
+      }
+    ],
+    
+    "seo_title": {"en": "SEO Title", "ar": "عنوان SEO"},
+    "seo_description": {"en": "SEO Description", "ar": "وصف SEO"},
+    "seo_keywords": {"en": ["keyword1"], "ar": ["كلمة1"]},
+    "seo_image": "https://...",
+    
+    "badges": [
+      {
+        "id": 1,
+        "name": "New",
+        "icon": "https://...",
+        "position": "top"
+      }
+    ],
+    
+    "icons": [
+      {
+        "id": 1,
+        "name": "Free Shipping",
+        "icon": "https://..."
+      }
+    ],
+    
+    "rating": 4.5,
+    "rating_count": 120,
+    
+    "created_at": "2024-01-01T00:00:00.000000Z",
+    "updated_at": "2024-01-01T00:00:00.000000Z"
   }
 }
 ```
@@ -189,3 +317,134 @@ Authorization: Bearer {admin_token}
   "seo_image": file
 }
 ```
+
+### Response
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "name": {"en": "Product Name", "ar": "اسم المنتج"},
+    "description": {"en": "Short desc", "ar": "وصف قصير"},
+    "full_description": {"en": "Full desc", "ar": "وصف كامل"},
+    "country": {"en": "USA", "ar": "أمريكا"},
+    "price": 100,
+    "cost_price": 80,
+    "price_after_discount": 90,
+    "discount": 10,
+    "discount_type": "percentage",
+    "quantity": 50,
+    "unit": "piece",
+    "warranty_period": 12,
+    "is_visible": true,
+    "sku": "SKU-123",
+    "model": "MODEL-123",
+    "barcode": "BAR123",
+    "time_prepare": "02:00",
+    "bought_with": [1, 2, 3],
+    "is_instant_delivery": true,
+    "thumbnail": "https://...",
+    "category": {"id": 5, "name": "Electronics"},
+    "brand": {"id": 3, "name": "Samsung"},
+    "vendor": {"id": 1, "name": "Vendor Name"},
+    "approval_status": "pending",
+    "approval_status_label": "قيد الانتظار",
+    "rejection_reason": null,
+    "variants": [...],
+    "category_details": [...],
+    "extra_details": [...],
+    "images": [...],
+    "seo_title": {"en": "SEO Title", "ar": "عنوان SEO"},
+    "seo_description": {"en": "SEO Description", "ar": "وصف SEO"},
+    "seo_keywords": {"en": ["keyword1"], "ar": ["كلمة1"]},
+    "seo_image": "https://...",
+    "badges": [...],
+    "icons": [...],
+    "rating": 4.5,
+    "rating_count": 120,
+    "created_at": "2024-01-01T00:00:00.000000Z",
+    "updated_at": "2024-01-01T00:00:00.000000Z"
+  },
+  "message": "تم إنشاء المنتج بنجاح"
+}
+```
+
+## 4. Update Product
+**PUT/PATCH** `/api/admin/products/{id}`
+
+Same request body as Create Product endpoint.
+
+### Response
+Same as Create Product response.
+
+## 5. Delete Product
+**DELETE** `/api/admin/products/{id}`
+
+### Response
+```json
+{
+  "success": true,
+  "message": "تم حذف المنتج بنجاح"
+}
+```
+
+## 6. Approve Product
+**POST** `/api/admin/products/{id}/approve`
+
+### Description
+قبول منتج في حالة pending فقط
+
+### Response
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "name": {"en": "Product Name", "ar": "اسم المنتج"},
+    "approval_status": "approved",
+    "approval_status_label": "مقبول",
+    "rejection_reason": null,
+    ...
+  },
+  "message": "تم قبول المنتج بنجاح"
+}
+```
+
+### Errors
+- `400`: Only pending products can be approved
+
+## 7. Reject Product
+**POST** `/api/admin/products/{id}/reject`
+
+### Description
+رفض منتج في حالة pending فقط
+
+### Request Body
+```json
+{
+  "rejection_reason": "سبب الرفض"
+}
+```
+
+### Validation
+- `rejection_reason`: required|string|max:1000
+
+### Response
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "name": {"en": "Product Name", "ar": "اسم المنتج"},
+    "approval_status": "rejected",
+    "approval_status_label": "مرفوض",
+    "rejection_reason": "سبب الرفض",
+    ...
+  },
+  "message": "تم رفض المنتج"
+}
+```
+
+### Errors
+- `400`: Only pending products can be rejected
+- `422`: Rejection reason is required
