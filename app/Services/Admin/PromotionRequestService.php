@@ -76,7 +76,7 @@ class PromotionRequestService extends BaseService
             // إرسال إشعار للفيندور
             $this->sendNotificationToVendor($request, 'approved');
 
-            return $request->fresh(['vendor', 'shop', 'approvedBy']);
+            return true;
         });
     }
 
@@ -106,7 +106,7 @@ class PromotionRequestService extends BaseService
             // إرسال إشعار للفيندور
             $this->sendNotificationToVendor($request, 'rejected');
 
-            return $request->fresh(['vendor', 'shop', 'approvedBy']);
+            return true;
         });
     }
 
