@@ -30,7 +30,7 @@ class PromotionRequestCrudController extends BaseCRUDController
             $promotionRequest = $this->service->approve($id, $request->validated());
 
             return $this->sendResponse(
-                new ($this->service->resource)($promotionRequest),
+                $promotionRequest,
                 'تم قبول طلب الترويج بنجاح'
             );
         } catch (\Exception $e) {
@@ -51,7 +51,7 @@ class PromotionRequestCrudController extends BaseCRUDController
             $promotionRequest = $this->service->reject($id, $request->validated());
 
             return $this->sendResponse(
-                new ($this->service->resource)($promotionRequest),
+                $promotionRequest,
                 'تم رفض طلب الترويج'
             );
         } catch (\Exception $e) {
