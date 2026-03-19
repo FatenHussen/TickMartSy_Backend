@@ -83,7 +83,7 @@ Route::prefix('admin')->group(
             Route::apiResource('legal-documents', LegalDocumentController::class);
 
             Route::apiResource('baskets', BasketController::class);
-            Route::apiResource('scheduled-baskets', ScheduledBasketController::class);
+            Route::apiResource('scheduled-baskets',  ScheduledBasketController::class);
             Route::apiResource('schedules', ScheduleCrudController::class);
             Route::apiResource('packages', PackageController::class);
             Route::apiResource('subscriptions', SubscriptionController::class);

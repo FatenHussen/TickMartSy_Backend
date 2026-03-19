@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Admin\Schedule;
 
-use App\Models\Language;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Language;
 
 class StoreRequest extends FormRequest
 {
@@ -44,5 +44,17 @@ class StoreRequest extends FormRequest
         }
 
         return $rules;
+    }
+
+    public function messages(): array
+    {
+        return [
+            'interval_days.required' => 'عدد الأيام مطلوب',
+            'interval_days.integer' => 'عدد الأيام يجب أن يكون رقم صحيح',
+            'interval_days.min' => 'عدد الأيام يجب أن يكون على الأقل 1',
+            'discount_type.in' => 'نوع الخصم يجب أن يكون percentage أو fixed',
+            'discount_value.numeric' => 'قيمة الخصم يجب أن تكون رقم',
+            'discount_value.min' => 'قيمة الخصم يجب أن تكون أكبر من أو تساوي 0',
+        ];
     }
 }
