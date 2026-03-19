@@ -61,6 +61,7 @@ class OneResource extends JsonResource
             'rating'    => $this->average_rating,
             'num_sold'  => (int) $this->num_sold,
             'is_on_offer' => $this->offer_ends_at && $this->offer_ends_at->isFuture(),
+            'is_schedule' => $this->is_schedule,
 
             'items' => $this->whenLoaded('items', function () {
                 $items = $this->items ?? collect();
