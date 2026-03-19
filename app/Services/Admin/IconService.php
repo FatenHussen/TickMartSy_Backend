@@ -15,7 +15,7 @@ class IconService extends BaseService
     protected $searchableFields = ['name', 'description'];
     protected $sortableFields = ['id', 'name', 'is_active', 'created_at'];
 
-    public function create(array $data)
+    public function create($data)
     {
         if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
             $data['image'] = $this->uploadImage($data['image']);
@@ -40,7 +40,7 @@ class IconService extends BaseService
         return parent::update($id, $data);
     }
 
-    public function delete($id)
+    public function delete($id): bool
     {
         $icon = Icon::findOrFail($id);
 
