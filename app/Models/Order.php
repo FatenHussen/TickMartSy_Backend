@@ -38,7 +38,8 @@ class Order extends Model
         'subscription_points_bonus',
         'promotion_id',
         'promotion_discount',
-        'pause_at'
+        'pause_at',
+        'order_code'
 
     ];
     protected $casts = [
