@@ -43,6 +43,7 @@ class OneResource extends JsonResource
             // Timestamps
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
+            'next_delivery_date' => $this->next_delivery_date,
 
             'badges' => BadgeOneResource::collection(
                 $this->badges

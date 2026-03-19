@@ -14,6 +14,7 @@ class BasketItemProductResource extends JsonResource
             'id'    => $this->id,
             'name'  => $this->name,
             'image' => $media->first()?->url ?? null,
+            'is_instant_delivery' => $this->is_instant_delivery
         ];
     }
 }
