@@ -292,8 +292,7 @@ class LeenUserSeeder extends Seeder
         string $cartType,
         ?int $basketId,
         ?int $basketScheduleId
-    ): Order
-    {
+    ): Order {
         $totalQty = 0;
         $subtotal = 0;
         $items = [];
@@ -338,6 +337,16 @@ class LeenUserSeeder extends Seeder
             'out_delivery_at' => $timestamps['out_delivery_at'] ?? null,
             'delivered_at' => $timestamps['delivered_at'] ?? null,
         ])->save();
+
+        $order->refresh(); // مهم
+
+        if (!$order->order_code) {
+            $order->order_code = 'ORD-' .
+                now()->format('ymd') . '-' .
+                str_pad($order->id, 5, '0', STR_PAD_LEFT);
+
+            $order->save();
+        }
 
         foreach ($items as $item) {
             $variant = $item['variant'];

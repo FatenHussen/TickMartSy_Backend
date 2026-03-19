@@ -126,24 +126,21 @@ class Order extends Model
     {
         return $this->morphMany(Rating::class, 'rateable');
     }
-    public function  getOrderCodeAttribute()
-    {
-        return $this->attributes['order_code'] ?? $this->attributes['id'];
-    }
 
     protected static function booted()
     {
         static::created(function ($order) {
 
-            $order->updateQuietly([
-                'order_code' => 'ORD-' .
-                    now()->format('ymd') . '-' .
-                    strtoupper(Str::random(4)) .
-                    $order->id
-            ]);
+            if (!$order->order_code) {
 
-            Log::info("Helllllo");
+                $order->order_code = 'ORD-' .
+                    now()->format('ymd') . '-' .
+                    str_pad($order->id, 5, '0', STR_PAD_LEFT);
+
+                $order->saveQuietly();
+            }
         });
+
 
         static::updating(function ($order) {
             if ($order->isDirty('status')) {

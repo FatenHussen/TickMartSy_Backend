@@ -134,7 +134,7 @@ class OrderWithItemsSeeder extends Seeder
             $order = Order::create(array_merge([
 
                 'user_id' => $data['user_id'],
-                'order_code' => $data['order_code'],
+                // 'order_code' => $data['order_code'],
                 'user_address_id' => $data['user_address_id'],
                 'cart_type' => CartType::DEFAULT->value,
                 'total_quantity' => 2,
@@ -152,6 +152,15 @@ class OrderWithItemsSeeder extends Seeder
 
             ], $data['timestamps']));
 
+            $order->refresh(); // مهم
+
+            if (!$order->order_code) {
+                $order->order_code = 'ORD-' .
+                    now()->format('ymd') . '-' .
+                    str_pad($order->id, 5, '0', STR_PAD_LEFT);
+
+                $order->save();
+            }
             AffiliateWalletTransaction::create([
                 'affiliate_id' => '12567',
                 'type' => 'commission',
