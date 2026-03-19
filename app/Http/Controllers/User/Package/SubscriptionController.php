@@ -54,9 +54,31 @@ class SubscriptionController extends Controller
         $subscription = $this->service->subscribe(
             auth('user')->user(),
             $package,
-            true 
+            true
         );
 
         return $this->sendResponse();
+    }
+
+    /**
+     * Cancel user subscription
+     */
+    public function cancel($packageId)
+    {
+        $userId = auth('user')->id();
+
+        $subscription = \App\Models\Subscription::where('user_id', $userId)
+            ->where('package_id', $packageId)
+            ->where('status', 'active')
+            ->first();
+
+        if (!$subscription) {
+            return $this->sendError('الاشتراك غير موجود أو تم إلغاؤه مسبقاً', [], 404);
+        }
+
+        // Delete the subscription
+        $subscription->delete();
+
+        return $this->sendResponse([], 'تم إلغاء الاشتراك بنجاح');
     }
 }
