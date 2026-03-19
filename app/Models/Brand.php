@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Http\Resources\Admin\Brand\AllResource;
+use App\Http\Resources\Brand\AllResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;

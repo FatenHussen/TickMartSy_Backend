@@ -188,11 +188,12 @@ class OrderService extends BaseService
                 "product_name" => $item["product_name"],
                 "quantity" => $item["quantity"],
                 "price" => $this->convertFormattedPrice($item["price"]),
-                // "product_discount" => $this->convertFormattedPrice($item["product_discount"]),
+                "product_discount" => $this->convertFormattedPrice($item["product_discount"]),
                 "price_after_discount" => $this->convertFormattedPrice($item["price_after_discount"]),
+                "total" => $this->convertFormattedPrice($item["price_after_discount"] * $item["quantity"]),
                 "variant" => $item["variant"],
             ];
-        }, $orderItems->toArray()); // 👈 هون الحل
+        }, $orderItems->toArray());
 
         return [
             'discounts' => $formattedDiscounts,
