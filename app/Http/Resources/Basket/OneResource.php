@@ -21,6 +21,22 @@ class OneResource extends JsonResource
     {
         $user = auth('user')->user();
         $currencyId = $user?->currency_id;
+        $nextDelivery = null;
+        $defaultSchedule = null;
+
+        // Get default schedule info for scheduled baskets
+        if ($this->is_schedule && $this->defaultSchedule) {
+            $defaultSchedule = [
+                'id' => $this->defaultSchedule->id,
+                'title' => $this->defaultSchedule->title,
+                'number_of_days' => $this->defaultSchedule->number_of_days,
+                'discount_type' => $this->defaultSchedule->discount_type,
+                'discount_value' => $this->defaultSchedule->discount_value,
+            ];
+
+            // Calculate next delivery based on default schedule
+            $nextDelivery = now()->addDays($this->defaultSchedule->number_of_days)->format('Y-m-d');
+        }
 
         // Get default schedule info for scheduled baskets
         $defaultSchedule = null;
@@ -82,6 +98,7 @@ class OneResource extends JsonResource
             'top_badges' => BadgeOneResource::collection(
                 ($this->badges ?? collect())->where('pivot.position', 'top')->values()
             ),
+            'next_delivery_date' => $nextDelivery,
 
             'bottom_badges' => BadgeOneResource::collection(
                 ($this->badges ?? collect())->where('pivot.position', 'bottom')->values()
