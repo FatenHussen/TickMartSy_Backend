@@ -38,14 +38,22 @@ class Currency extends Model
     }
 
     // تحويل من دولار للعملة الحالية
-    public function convertFromUSD(float $amountInUSD): float
+    public function convertFromUSD(?float $amountInUSD): ?float
     {
+        if ($amountInUSD === null) {
+            return null;
+        }
+
         return round($amountInUSD * $this->exchange_rate, 2);
     }
 
     // تحويل من العملة الحالية للدولار
-    public function convertToUSD(float $amount): float
+    public function convertToUSD(?float $amount): ?float
     {
+        if ($amount === null) {
+            return null;
+        }
+
         return round($amount / $this->exchange_rate, 2);
     }
 
