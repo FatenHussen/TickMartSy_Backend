@@ -236,6 +236,7 @@ Route::prefix('user')->group(
             Route::post('/subscribe', [SubscriptionController::class, 'subscribe']);
             Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
             Route::post('/renew', [SubscriptionController::class, 'renew']);
+            Route::delete('/cancel-subscription/{packageId}', [SubscriptionController::class, 'cancel']);
         });
 
         // Subscription benefits
