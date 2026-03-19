@@ -8,6 +8,7 @@ use App\Services\BaseService;
 use App\Http\Resources\Admin\AffiliateWithdrawRequest\AllResource;
 use App\Http\Resources\Admin\AffiliateWithdrawRequest\OneResource;
 use App\Exceptions\CustomExceptionWithMessage;
+use App\Services\Base\NotificationService;
 use Illuminate\Support\Facades\DB;
 
 class AffiliateWithdrawRequestService extends BaseService
@@ -20,6 +21,12 @@ class AffiliateWithdrawRequestService extends BaseService
     protected $searchableFields = ['id', 'affiliate_id', 'status'];
     protected $sortableFields = ['id', 'created_at', 'amount', 'status'];
 
+    private NotificationService $notificationService;
+
+    public function __construct()
+    {
+        $this->notificationService = app(NotificationService::class);
+    }
     public function queryBuilder($query, $filters = [], $config = [])
     {
         if (!empty($filters['status'])) {
@@ -86,6 +93,20 @@ class AffiliateWithdrawRequestService extends BaseService
                 'status' => $newStatus,
                 'note' => $data['note'] ?? $request->note,
             ]);
+
+            $title = $newStatus === 'approved'
+                ? '✅ تمت الموافقة على طلب السحب'
+                : '❌ تم رفض طلب السحب';
+
+            $message = $newStatus === 'approved'
+                ? "تمت الموافقة على طلب السحب الخاص بك بقيمة {$request->amount}."
+                : "تم رفض طلب السحب بقيمة {$request->amount}.\nالسبب: " . ($data['note'] ?? 'غير محدد');
+
+            $this->notificationService->send(
+                $request->affiliate,
+                $title,
+                $message
+            );
 
             return new $this->resource($request->fresh(['affiliate']));
         });
