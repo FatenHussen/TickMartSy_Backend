@@ -31,6 +31,8 @@ class AllResource extends JsonResource
             'items_count' => $this->items()->count(),
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
+            'is_schedule' => $this->is_schedule,
+            'next_delivery_date' => $this->next_delivery_date
         ];
     }
 }
