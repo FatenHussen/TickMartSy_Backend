@@ -138,6 +138,10 @@ class UpdateRequest extends FormRequest
 
             // SEO Fields
             'seo_image' => 'nullable|image|max:2048',
+
+            'badges'          => 'nullable|array',
+            'badges.*.id'  => 'required|integer|exists:badges,id',
+            'badges.*.position'  => 'required|in:top,bottom',
         ];
 
         // Locale-specific validation

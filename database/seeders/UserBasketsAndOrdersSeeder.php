@@ -125,6 +125,15 @@ class UserBasketsAndOrdersSeeder extends Seeder
                 'delivered_at' => now()->subDays(rand(1, 10)),
             ]);
 
+            $order->refresh(); // مهم
+
+            if (!$order->order_code) {
+                $order->order_code = 'ORD-' .
+                    now()->format('ymd') . '-' .
+                    str_pad($order->id, 5, '0', STR_PAD_LEFT);
+
+                $order->save();
+            }
             // Add order items from basket items
             foreach ($basket->items as $item) {
                 OrderItem::create([
@@ -164,6 +173,15 @@ class UserBasketsAndOrdersSeeder extends Seeder
                 'total_quantity' => $basket->items->sum('quantity'),
                 'delivered_at' => now()->subDays(rand(1, 10)),
             ]);
+            $order->refresh(); // مهم
+
+            if (!$order->order_code) {
+                $order->order_code = 'ORD-' .
+                    now()->format('ymd') . '-' .
+                    str_pad($order->id, 5, '0', STR_PAD_LEFT);
+
+                $order->save();
+            }
 
             // Add order items from basket items
             foreach ($basket->items as $item) {

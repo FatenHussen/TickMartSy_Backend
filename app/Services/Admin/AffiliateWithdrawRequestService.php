@@ -102,10 +102,15 @@ class AffiliateWithdrawRequestService extends BaseService
                 ? "تمت الموافقة على طلب السحب الخاص بك بقيمة {$request->amount}."
                 : "تم رفض طلب السحب بقيمة {$request->amount}.\nالسبب: " . ($data['note'] ?? 'غير محدد');
 
+
+
             $this->notificationService->send(
                 $request->affiliate,
                 $title,
-                $message
+                $message,
+                [
+                    'type' => 'admin'
+                ]
             );
 
             return new $this->resource($request->fresh(['affiliate']));
