@@ -38,7 +38,8 @@ class ShopVariantResource extends JsonResource
 
         return [
             'id' => $shopVariant->id,
-            'variant_id' => $this->id,
+            // 'variant_id' => $this->id,
+            'variant_id' =>$shopVariant->id,
             'attributes' => VariantAttributeResource::collection(
                 $this->attributesValues
             ),
