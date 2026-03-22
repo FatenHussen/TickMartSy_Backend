@@ -40,7 +40,6 @@ class HandleOrderStatusNotifications implements ShouldQueue
     | User Notifications
     |--------------------------------------------------------------------------
     */
-
     private function notifyUser($order, string $status): void
     {
         $message = $this->userMessageForStatus($status, $order);
@@ -83,6 +82,11 @@ class HandleOrderStatusNotifications implements ShouldQueue
             OrderStatus::DELIVERED->value => [
                 'title' => 'تم تسليم الطلب 🎉',
                 'body'  => "تم تسليم طلبك رقم {$order->order_code}",
+            ],
+
+            OrderStatus::FAILDDELIVER->value => [
+                'title' => 'فشل تسليم الطلب',
+                'body'  => "فشل تسليم طلبك رقم {$order->order_code} و ستتم المراجعة من الادمن",
             ],
 
             OrderStatus::CANCELLED->value => [
@@ -177,14 +181,28 @@ class HandleOrderStatusNotifications implements ShouldQueue
             ];
         }
 
-        // 🎉 تم التسليم
+        //
         if ($event->to === OrderStatus::PREPARING->value && !$order->driver_id) {
             return [
                 'title' => 'الطلب قيد التحضير',
-                'body'  => "الطلب قيد التحضير {$order->order_code} و ولا يوجد درايفر مسند للطلب",
+                'body'  => "الطلب قيد التحضير {$order->order_code} ولا يوجد درايفر مسند للطلب",
             ];
         }
 
+        // 
+        if ($event->to === OrderStatus::FAILDDELIVER->value) {
+            return [
+                'title' => 'فشل في تسليم الطلب',
+                'body'  =>  " فشل تسليم الطلب رقم {$order->order_code} ",
+            ];
+        }
+
+        if ($event->to === OrderStatus::REJECTEDBYDELIVERY->value) {
+            return [
+                'title' => 'رفض استلام الديلفري الطلب',
+                'body'  =>  "الطلب رقم {$order->order_code} تم رفض استلامه من الديلفري",
+            ];
+        }
 
         return null;
     }

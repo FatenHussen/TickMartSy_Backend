@@ -620,8 +620,7 @@ return [
         'users_count' => 'عدد المستخدمين',
         'guard_name' => 'اسم الحارس',
         'sections' => [
-        'sections' => [
-        ],
+            'sections' => [],
         ],
     ],
 
@@ -631,26 +630,24 @@ return [
         'name' => 'اسم الصلاحية',
         'guard_name' => 'اسم الحارس',
         'sections' => [
-        'sections' => [
+            'sections' => [],
         ],
-    ],
 
-    // Coupons
-    'coupons' => [
-        'title' => 'الكوبونات',
-        'singular' => 'كوبون',
-        'code' => 'كود الكوبون',
-        'discount_type' => 'نوع الخصم',
-        'discount_value' => 'قيمة الخصم',
-        'max_uses' => 'الحد الأقصى للاستخدام',
-        'used_count' => 'عدد مرات الاستخدام',
-        'start_date' => 'تاريخ البدء',
-        'end_date' => 'تاريخ الانتهاء',
-        'is_active' => 'نشط',
-        'min_order_amount' => 'الحد الأدنى لقيمة الطلب',
-        'affiliate_active_coupon' => 'هذا المسوّق لديه كوبون نشط بالفعل.',
-        'discount_types' => [
-        ],
+        // Coupons
+        'coupons' => [
+            'title' => 'الكوبونات',
+            'singular' => 'كوبون',
+            'code' => 'كود الكوبون',
+            'discount_type' => 'نوع الخصم',
+            'discount_value' => 'قيمة الخصم',
+            'max_uses' => 'الحد الأقصى للاستخدام',
+            'used_count' => 'عدد مرات الاستخدام',
+            'start_date' => 'تاريخ البدء',
+            'end_date' => 'تاريخ الانتهاء',
+            'is_active' => 'نشط',
+            'min_order_amount' => 'الحد الأدنى لقيمة الطلب',
+            'affiliate_active_coupon' => 'هذا المسوّق لديه كوبون نشط بالفعل.',
+            'discount_types' => [],
         ],
         'sections' => [
             'basic_info' => 'المعلومات الأساسية',
@@ -861,7 +858,7 @@ return [
     'location' => 'الموقع والاتصال',
     'services' => 'الخدمات',
     'service' => 'الخدمة ',
-    'working_hours' =>'أوقات العمل ',
+    'working_hours' => 'أوقات العمل ',
     // Product features
     'product_features' => 'ميزات المنتجات',
     'max_products' => 'الحد الأقصى للمنتجات',
@@ -928,6 +925,7 @@ return [
     'driver' => [
         'otp_sent_new_phone' => 'تم إرسال رمز التحقق إلى رقم الهاتف الجديد.',
         'order_accepted' => 'تم قبول الطلب بنجاح.',
+        'order_rejected' => 'تم رفض الطلب بنجاح.',
         'item_out_delivery' => 'تم وضع العنصر في حالة الخروج للتوصيل.',
         'order_out_delivery' => 'تم وضع الطلب في حالة الخروج للتوصيل.',
         'shop_out_delivery' => 'تم وضع عناصر المتجر في حالة الخروج للتوصيل.',

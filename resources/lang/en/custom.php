@@ -919,6 +919,7 @@ return [
     'driver' => [
         'otp_sent_new_phone' => 'OTP sent to new phone number.',
         'order_accepted' => 'Order accepted successfully.',
+        'order_rejected' => 'Order rejected successfully.',
         'item_out_delivery' => 'Item marked as out for delivery.',
         'order_out_delivery' => 'Order marked as out for delivery.',
         'shop_out_delivery' => 'Shop items marked as out for delivery.',

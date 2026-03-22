@@ -70,10 +70,15 @@ Route::prefix('driver')->group(
                 Route::get('/to-assigned', [OrderController::class, 'ordersToAssigned']);
                 Route::get('statistics', [OrderController::class, 'statistics']);
                 Route::post('accept/{orderId}', [OrderController::class, 'accept']);
+                Route::post('reject/{orderId}', [OrderController::class, 'reject']);
+
                 Route::post('item-out-delivery/{itemId}', [OrderController::class, 'itemOutDelivery']);
                 Route::post('order-out-delivery/{orderId}', [OrderController::class, 'orderOutDelivery']);
                 Route::post('shop-out-delivery/{orderId}', [OrderController::class, 'shopOutDelivery']);
                 Route::post('deliver/{orderId}', [OrderController::class, 'deliver']);
+                Route::post('faild-deliver/{orderId}', [OrderController::class, 'faildDeliver']);
+
+
                 Route::post('/update-location', [DriverTrackingController::class, 'update']);
                 Route::get('/current', [OrderController::class, 'currentOrder']);
             });

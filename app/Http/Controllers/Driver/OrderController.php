@@ -20,7 +20,6 @@ class OrderController extends Controller
         $data = $request->validate([
             'status' => 'required|in:pending,preparing,out_delivery,delivered',
             'assigned_by' => 'nullable|in:admin,driver',
-
         ]);
 
         $res = $this->service->orders($data);
@@ -69,6 +68,18 @@ class OrderController extends Controller
         );
     }
 
+    /* =======================
+       ✅ ACCEPT ORDER
+    ======================= */
+    public function reject(int $orderId)
+    {
+        $order = $this->service->reject($orderId);
+
+        return $this->sendResponse(
+            // data: OneResource::make($order),
+            message: __('custom.driver.order_rejected')
+        );
+    }
     /* =======================
        🚚 ITEM → OUT DELIVERY (instant)
     ======================= */
@@ -125,6 +136,24 @@ class OrderController extends Controller
             message: __('custom.driver.order_delivered')
         );
     }
+
+    /* =======================
+       ✅ DELIVER ORDER (final)
+    ======================= */
+
+    public function faildDeliver(int $orderId)
+    {
+        // $data = $request->validate([
+        //     'code' => 'nullable|string'
+        // ]);
+        $this->service->faildDeliver($orderId);
+
+
+        return $this->sendResponse(
+            // data: OneResource::make($order),
+        );
+    }
+
 
     /* =======================
        📊 STATISTICS

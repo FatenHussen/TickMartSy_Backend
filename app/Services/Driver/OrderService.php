@@ -92,6 +92,46 @@ class OrderService
         });
     }
 
+
+    /* =======================
+       ✅ ACCEPT ORDER (instant)
+    ======================= */
+    public function reject(int $orderId)
+    {
+        $driverId = auth('driver')->id();
+
+        return DB::transaction(function () use ($orderId, $driverId) {
+
+            $order = Order::lockForUpdate()->findOrFail($orderId);
+
+            // ✅ تحقق أن الدرايفر هو نفس الشخص
+            if ($order->driver_id !== $driverId) {
+                throw new CustomExceptionWithMessage('custom.orders.not_your_order');
+            }
+
+
+            if (! in_array($order->status, [
+                OrderStatus::PENDING->value,
+                OrderStatus::PREPARING->value
+            ])) {
+                throw new CustomExceptionWithMessage('custom.orders.invalid_order_state');
+            }
+
+
+            $order->update([
+                'driver_id' => null,
+            ]);
+
+            OrderStatusChanged::dispatch(
+                $order->fresh('items'),
+                $order->status,
+                OrderStatus::REJECTEDBYDELIVERY->value,
+                'driver'
+            );
+
+            return $order;
+        });
+    }
     /* =======================
    🚚 ITEM → OUT DELIVERY (instant)
 ======================= */
@@ -167,7 +207,7 @@ class OrderService
             // ✅ تحقق أن الحالة صحيحة للتحويل
             $allowedStatuses = [
                 OrderStatus::PREPARING->value,
-                OrderStatus::PENDING->value // إذا احتجنا السماح للطلبات المعلقة
+                // OrderStatus::PENDING->value 
             ];
 
             if (!in_array($order->status, $allowedStatuses)) {
@@ -330,6 +370,56 @@ class OrderService
             return $order->fresh('items');
         });
     }
+
+    /* =======================
+       ✅ DELIVER ORDER (final)
+    ======================= */
+    public function faildDeliver(int $orderId)
+    {
+        $code = "";
+        $driverId = auth('driver')->id();
+
+        return DB::transaction(function () use ($orderId, $driverId, $code) {
+
+            $order = Order::with('items')
+                ->lockForUpdate()
+                ->findOrFail($orderId);
+
+            // تحقق من صاحب الطلب
+            if ($order->driver_id !== $driverId) {
+                throw new CustomExceptionWithMessage('custom.orders.not_your_order');
+            }
+
+            // تحقق من الحالة
+            if ($order->status !== OrderStatus::OUT_DELIVERY->value) {
+                throw new CustomExceptionWithMessage('custom.orders.not_out_delivery');
+            }
+
+            // // تحقق من كود التسليم
+            // if ($order->delivery_code !== $code) {
+            //     throw new CustomExceptionWithMessage('Invalid delivery code');
+            // }
+
+            $oldStatus = $order->status;
+
+            $order->update([
+                'status' => OrderStatus::FAILDDELIVER->value
+            ]);
+
+            $order->items()->update([
+                'item_status' => OrderStatus::FAILDDELIVER->value
+            ]);
+
+            OrderStatusChanged::dispatch(
+                $order->fresh('items'),
+                $oldStatus,
+                OrderStatus::FAILDDELIVER->value,
+                'driver'
+            );
+            return $order->fresh('items');
+        });
+    }
+
 
     /* =======================
        📊 STATISTICS

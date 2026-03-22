@@ -9,6 +9,8 @@ enum OrderStatus: string
     case OUT_DELIVERY = 'out_delivery';
     case DELIVERED = 'delivered';
     case CANCELLED = 'cancelled';
+    case REJECTEDBYDELIVERY = 'rejected_by_delivery';
+    case FAILDDELIVER = 'faild_deliver';
 
     public function labelAr(): string
     {
