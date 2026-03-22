@@ -57,7 +57,7 @@ class PromotionRequestService extends BaseService
     /**
      * قبول طلب الترويج
      */
-    public function approve(int $id, array $data = []): PromotionRequest
+    public function approve(int $id, array $data = [])
     {
         return DB::transaction(function () use ($id, $data) {
             $request = PromotionRequest::with(['vendor', 'shop'])->findOrFail($id);
@@ -76,14 +76,16 @@ class PromotionRequestService extends BaseService
             // إرسال إشعار للفيندور
             $this->sendNotificationToVendor($request, 'approved');
 
-            return $request->fresh(['vendor', 'shop', 'approvedBy']);
+            $request = $request->fresh(['vendor', 'shop', 'approvedBy']);
+
+            return new ($this->resource)($request);
         });
     }
 
     /**
      * رفض طلب الترويج
      */
-    public function reject(int $id, array $data): PromotionRequest
+    public function reject(int $id, array $data)
     {
         return DB::transaction(function () use ($id, $data) {
             $request = PromotionRequest::with(['vendor', 'shop'])->findOrFail($id);
@@ -106,7 +108,9 @@ class PromotionRequestService extends BaseService
             // إرسال إشعار للفيندور
             $this->sendNotificationToVendor($request, 'rejected');
 
-            return $request->fresh(['vendor', 'shop', 'approvedBy']);
+            $request = $request->fresh(['vendor', 'shop', 'approvedBy']);
+
+            return new ($this->resource)($request);
         });
     }
 

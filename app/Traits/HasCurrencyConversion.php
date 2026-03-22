@@ -11,6 +11,19 @@ trait HasCurrencyConversion
      */
     public function convertPrice($priceInUSD, $currencyId = null)
     {
+        // Handle null price
+        if ($priceInUSD === null) {
+            return [
+                'amount' => null,
+                'currency' => 'USD',
+                'symbol' => '$',
+                'formatted' => null
+            ];
+        }
+
+        // Convert to float if needed
+        $priceInUSD = (float) $priceInUSD;
+
         if (!$currencyId) {
             $user = auth('user')->user();
             $currencyId = $user?->currency_id;

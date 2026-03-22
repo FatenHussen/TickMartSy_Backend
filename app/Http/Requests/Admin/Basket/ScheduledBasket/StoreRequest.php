@@ -31,6 +31,7 @@ class StoreRequest extends FormRequest
             'schedule.discount_type' => 'nullable|in:fixed,percentage',
             'schedule.discount_value' => 'nullable|numeric|min:0',
             'schedule.is_active' => 'nullable|boolean',
+            'schedule.is_default' => 'nullable|boolean',
 
             // Basket items - for scheduled baskets
             'items' => 'required|array|min:1',

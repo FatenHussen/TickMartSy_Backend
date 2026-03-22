@@ -122,6 +122,33 @@ class OneResource extends JsonResource
             'seo_description' => $this->getTranslations('seo_description'),
             'seo_keywords' => $this->getTranslations('seo_keywords'),
             'seo_image' => $this->seo_image ? asset('storage/' . $this->seo_image) : null,
+
+            // Badges
+            'badges' => ($this->badges ?? collect())->map(function ($badge) {
+                return [
+                    'id' => $badge->id,
+                    'name' => $badge->name,
+                    'icon' => $badge->icon ? asset('storage/' . $badge->icon) : null,
+                    'position' => $badge->pivot?->position,
+                ];
+            })->values(),
+
+            // Icons
+            'icons' => ($this->icons ?? collect())->map(function ($icon) {
+                return [
+                    'id' => $icon->id,
+                    'name' => $icon->name,
+                    'icon' => $icon->icon ? asset('storage/' . $icon->icon) : null,
+                ];
+            })->values(),
+
+            // Rating
+            'rating' => round((float) $this->average_rating, 1),
+            'rating_count' => $this->ratings()->count(),
+
+            // Timestamps
+            'created_at' => $this->created_at?->toISOString(),
+            'updated_at' => $this->updated_at?->toISOString(),
         ];
     }
 }
