@@ -145,23 +145,53 @@ class RecipeService extends BaseService
             $query->where('discount', '<=', $filters['discount_max']);
         }
 
+        // Filter recipes with discount only
+        if (isset($filters['has_discount']) && filter_var($filters['has_discount'], FILTER_VALIDATE_BOOLEAN)) {
+            $query->where('discount', '>', 0);
+        }
+
+        /* ================= RATING FILTER ================= */
+
+        if (!empty($filters['rating_min'])) {
+            $query->where('rating', '>=', $filters['rating_min']);
+        }
+
+        if (!empty($filters['rating_max'])) {
+            $query->where('rating', '<=', $filters['rating_max']);
+        }
+
         /* ================= SERVES FILTER ================= */
 
         if (!empty($filters['serves'])) {
-            $query->where('serves', $filters['serves']);
+            // البحث الجزئي في حقل serves (مثال: "2-4" يطابق "2-4" أو يحتوي على "2")
+            $query->where('serves', 'LIKE', '%' . $filters['serves'] . '%');
         }
 
         /* ================= PREPARE TIME FILTER ================= */
 
         if (!empty($filters['prepare_time'])) {
-            $query->where('prepare_time', $filters['prepare_time']);
+            // البحث الجزئي في حقل prepare_time (مثال: "25" يطابق "25" أو "25 minutes")
+            $query->where('prepare_time', 'LIKE', '%' . $filters['prepare_time'] . '%');
+        }
+
+        /* ================= TYPE FILTER ================= */
+
+        if (!empty($filters['type'])) {
+            match ($filters['type']) {
+                'newest' => $query->orderBy('created_at', 'desc'),
+                'popular' => $query->orderBy('orders_count', 'desc'),
+                'top_rated' => $query->where('rating', '>=', 4)->orderBy('rating', 'desc'),
+                'on_sale' => $query->where('discount', '>', 0)->orderBy('discount', 'desc'),
+                default => null,
+            };
         }
 
         /* ================= SORT ================= */
 
         if (!empty($filters['sort_by'])) {
             $this->applySortBy($query, $filters['sort_by']);
-        } else {
+        } elseif (empty($filters['type'])) {
+            // إذا لم يكن هناك type أو sort_by، استخدم الترتيب الافتراضي
             $query->latest();
         }
 
@@ -192,6 +222,14 @@ class RecipeService extends BaseService
             'price_desc' => $query->orderBy('variants_min_price', 'desc'),
 
             'price_asc' => $query->orderBy('variants_min_price', 'asc'),
+
+            'rating_desc' => $query->orderBy('rating', 'desc'),
+
+            'rating_asc' => $query->orderBy('rating', 'asc'),
+
+            'popular' => $query->orderBy('orders_count', 'desc'),
+
+            'discount_desc' => $query->orderBy('discount', 'desc'),
 
             default => null,
         };
