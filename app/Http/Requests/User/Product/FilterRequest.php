@@ -21,7 +21,7 @@ class FilterRequest extends FormRequest
             'country'       => ['nullable', 'string', 'max:100'],
             'name'          => ['nullable', 'string', 'max:100'],
 
-            'type'          => ['nullable', 'in:new,trend,top_rated,offers,recommended,for_you,search_based'],
+            'type'          => ['nullable', 'in:new,trend,top_rated,offers,recommended,for_you,search_based,most_popular'],
             'search'        => ['nullable', 'string', 'max:255'],
             'brand_id' => ['nullable', 'integer', 'exists:brands,id'],
             'is_free_delivery' => ['nullable', 'boolean'],

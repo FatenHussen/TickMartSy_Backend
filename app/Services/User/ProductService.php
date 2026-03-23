@@ -55,6 +55,8 @@ class ProductService extends BaseService
             'recommended'  => $this->filterRecommended($query),
             'for_you'      => $this->filterForYou($query),
             'search_based' => $this->filterSearchBased($query, $filters),
+            'most_popular' => $this->filterTrend($query),
+
             default        => null,
         };
     }
@@ -194,10 +196,13 @@ class ProductService extends BaseService
             $query->where('country->' . app()->getLocale(), 'like', '%' . $filters['country'] . '%');
         }
 
-        // Free delivery filter
+        // Free delivery filter (filter by shops that offer free delivery)
         if (isset($filters['is_free_delivery'])) {
             $isFreeDelivery = filter_var($filters['is_free_delivery'], FILTER_VALIDATE_BOOLEAN);
-            $query->where('is_instant_delivery', $isFreeDelivery);
+
+            $query->whereHas('shopVariants.shop', function ($q) use ($isFreeDelivery) {
+                $q->where('is_free_delivery', $isFreeDelivery);
+            });
         }
 
         // On Sale filter (products with discount)

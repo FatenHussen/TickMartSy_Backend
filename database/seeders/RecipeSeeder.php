@@ -170,8 +170,8 @@ class RecipeSeeder extends Seeder
 
         $recipes = [
             [
-                'name' => ['ar' => 'Kabsa Rice', 'en' => 'Kabsa Rice'],
-                'description' => ['ar' => 'Rice Kabsa with Chicken', 'en' => 'Rice Kabsa with Chicken'],
+                'name' => ['ar' => 'أرز الكبسة', 'en' => 'Kabsa Rice'],
+                'description' => ['ar' => 'أرز كبسة بالدجاج مع التوابل الشرقية', 'en' => 'Rice Kabsa with Chicken and Eastern Spices'],
                 'image' => 'recipies/image3.jpg',
                 'rating' => 4.5,
                 'discount' => 20,
@@ -181,8 +181,8 @@ class RecipeSeeder extends Seeder
                 'delivery_price' => 500,
             ],
             [
-                'name' => ['ar' => 'Mandi Rice', 'en' => 'Mandi Rice'],
-                'description' => ['ar' => 'Traditional mandi with spices', 'en' => 'Traditional mandi with spices'],
+                'name' => ['ar' => 'أرز المندي', 'en' => 'Mandi Rice'],
+                'description' => ['ar' => 'مندي تقليدي بالتوابل العربية الأصيلة', 'en' => 'Traditional Mandi with Authentic Arabic Spices'],
                 'image' => 'recipies/image1.jpg',
                 'rating' => 4.1,
                 'discount' => 10,
@@ -192,8 +192,8 @@ class RecipeSeeder extends Seeder
                 'delivery_price' => 600,
             ],
             [
-                'name' => ['ar' => 'Biryani Rice', 'en' => 'Biryani Rice'],
-                'description' => ['ar' => 'Aromatic biryani-style rice', 'en' => 'Aromatic biryani-style rice'],
+                'name' => ['ar' => 'أرز البرياني', 'en' => 'Biryani Rice'],
+                'description' => ['ar' => 'برياني عطري بالتوابل الهندية الفاخرة', 'en' => 'Aromatic Biryani with Premium Indian Spices'],
                 'image' => 'recipies/image2.jpg',
                 'rating' => 4.7,
                 'discount' => 15,
@@ -203,9 +203,9 @@ class RecipeSeeder extends Seeder
                 'delivery_price' => 550,
             ],
             [
-                'name' => ['ar' => 'Spiced Bulgur', 'en' => 'Spiced Bulgur'],
-                'description' => ['ar' => 'Light bulgur with spices', 'en' => 'Light bulgur with spices'],
-                'image' => 'recipies/image4.jpg',
+                'name' => ['ar' => 'برغل بالتوابل', 'en' => 'Spiced Bulgur'],
+                'description' => ['ar' => 'برغل خفيف مع خلطة التوابل الشامية', 'en' => 'Light Bulgur with Levantine Spice Mix'],
+                'image' => 'recipies/image1.jpg',
                 'rating' => 3.9,
                 'discount' => 5,
                 'serves' => '2-4',
@@ -214,9 +214,9 @@ class RecipeSeeder extends Seeder
                 'delivery_price' => 450,
             ],
             [
-                'name' => ['ar' => 'Ghee Rice', 'en' => 'Ghee Rice'],
-                'description' => ['ar' => 'Rich ghee rice', 'en' => 'Rich ghee rice'],
-                'image' => 'recipies/image5.jpg',
+                'name' => ['ar' => 'أرز بالسمنة', 'en' => 'Ghee Rice'],
+                'description' => ['ar' => 'أرز غني بالسمنة البلدية الطبيعية', 'en' => 'Rich Rice with Natural Homemade Ghee'],
+                'image' => 'recipies/image1.jpg',
                 'rating' => 4.3,
                 'discount' => 12,
                 'serves' => '2-4',
@@ -230,30 +230,30 @@ class RecipeSeeder extends Seeder
             [
                 'step_number' => 1,
                 'instruction' => [
-                    'ar' => 'Boil water and cook the rice.',
-                    'en' => 'Boil water and cook the rice.'
+                    'ar' => 'اغلي الماء واطبخ الأرز حتى ينضج',
+                    'en' => 'Boil water and cook the rice until done'
                 ],
                 'time_minutes' => [
-                    'ar' => '10 minutes',
+                    'ar' => '10 دقائق',
                     'en' => '10 minutes'
                 ],
                 'heat_level' => [
-                    'ar' => 'High heat',
+                    'ar' => 'نار عالية',
                     'en' => 'High heat'
                 ],
             ],
             [
                 'step_number' => 2,
                 'instruction' => [
-                    'ar' => 'Add ghee and mix well.',
-                    'en' => 'Add ghee and mix well.'
+                    'ar' => 'أضف السمنة وقلب جيداً حتى تتداخل النكهات',
+                    'en' => 'Add ghee and mix well until flavors blend'
                 ],
                 'time_minutes' => [
-                    'ar' => '5 minutes',
+                    'ar' => '5 دقائق',
                     'en' => '5 minutes'
                 ],
                 'heat_level' => [
-                    'ar' => 'Medium heat',
+                    'ar' => 'نار متوسطة',
                     'en' => 'Medium heat'
                 ],
             ],
