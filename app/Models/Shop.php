@@ -258,4 +258,23 @@ class Shop extends Model implements Sectionable
             ? asset('storage/' . $this->logo)
             : null;
     }
+
+    /**
+     * Get unique categories from products available in this shop
+     */
+    public function getShopCategories()
+    {
+        return Category::whereHas('products.variants.shopVariants', function ($query) {
+            $query->where('shop_id', $this->id);
+        })
+        ->select('id', 'name')
+        ->distinct()
+        ->get()
+        ->map(function ($category) {
+            return [
+                'id' => $category->id,
+                'name' => $category->name,
+            ];
+        });
+    }
 }

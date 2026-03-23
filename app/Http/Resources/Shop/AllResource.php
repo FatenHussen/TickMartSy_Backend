@@ -20,17 +20,18 @@ class AllResource extends JsonResource
         return [
             'id'                    => $this->id,
             'name'                  => $this->name,
-            'description'            => $this->description,
-            'logo_url'                => $this->logo_url,
+            'description'           => $this->description,
+            'email'                 => $this->email,
+            'mobile'                => $this->mobile,
+            'logo_url'              => $this->logo_url,
             'is_active'             => $this->is_active,
             'is_open_now'           => $this->isOpenNow(),
             'created_at'            => $this->created_at?->format('Y-m-d H:i'),
-            'is_favorite' => (bool) ($this->is_favorite ?? false),
-            'is_active'             => $this->is_active,
-            'average_rating'        =>  $this->average_rating ?? 0,
-            // 'ratings_count'         => $this->ratings_count,
-            'is_open_now'           => $this->isOpenNow(),
-            'vendor' => VendorAllResource::make($this->vendor),
+            'is_favorite'           => (bool) ($this->is_favorite ?? false),
+            'average_rating'        => $this->average_rating ?? 0,
+            // 'ratings_count'      => $this->ratings_count,
+            'categories'            => $this->getShopCategories(),
+            'vendor'                => VendorAllResource::make($this->vendor),
         ];
     }
 }
