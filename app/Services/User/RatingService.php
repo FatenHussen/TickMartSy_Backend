@@ -50,7 +50,7 @@ class RatingService extends BaseService
         return parent::queryBuilder($query, $filters, $config);
     }
     /**
-     * Override create logic
+     * Override create logic - Update existing rating or create new one
      */
     public function create($data)
     {
@@ -58,26 +58,40 @@ class RatingService extends BaseService
             abort(422, __('custom.ratings.rateable_type_required'));
         }
 
-        $data['user_id'] = auth('user')->id();
+        $userId = auth('user')->id();
+        $data['user_id'] = $userId;
         $data['is_verified'] = true;
 
         $data['rateable_type'] = $this->resolveRateableType($data['type']);
         unset($data['type']);
 
+        // Check if user already rated this item
+        $existingRating = Rating::where('user_id', $userId)
+            ->where('rateable_type', $data['rateable_type'])
+            ->where('rateable_id', $data['rateable_id'])
+            ->first();
+
+        if ($existingRating) {
+            // Update existing rating (skip time check since user is re-rating)
+            $this->update($existingRating->id, $data, skipTimeCheck: true);
+            return true;
+        }
+
+        // Create new rating
         $rating = parent::create($data);
 
-        // Award product review points
+        // Award product review points (only for new ratings)
         try {
             $pointService = app(\App\Services\PointService::class);
             $pointService->awardPoints(
-                userId: $data['user_id'],
+                userId: $userId,
                 ruleCode: 'product_review',
                 referenceType: 'rating',
                 referenceId: $rating->id
             );
         } catch (\Throwable $e) {
             Log::error('Failed to award review points', [
-                'user_id' => $data['user_id'],
+                'user_id' => $userId,
                 'rating_id' => $rating->id,
                 'error' => $e->getMessage()
             ]);
@@ -88,9 +102,9 @@ class RatingService extends BaseService
 
 
     /**
-     * Only owner can update within 24 hours
+     * Only owner can update within 24 hours (or anytime if called from create method)
      */
-    public function update($id, array $data)
+    public function update($id, array $data, bool $skipTimeCheck = false)
     {
         $rating = Rating::findOrFail($id);
 
@@ -98,7 +112,7 @@ class RatingService extends BaseService
             throw new \App\Exceptions\CustomExceptionWithMessage('custom.ratings.update_own_only');
         }
 
-        if ($rating->created_at->diffInHours(now()) > 24) {
+        if (!$skipTimeCheck && $rating->created_at->diffInHours(now()) > 24) {
             throw new \App\Exceptions\CustomExceptionWithMessage('custom.ratings.update_within_24_hours');
         }
 
