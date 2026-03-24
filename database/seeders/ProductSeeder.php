@@ -301,8 +301,8 @@ class ProductSeeder extends Seeder
             foreach ($extraDetails as $detail) {
                 ProductExtraDetail::create([
                     'product_id' => $product->id,
-                    'key' => $detail['key'],
-                    'value' => $detail['value'],
+                    'detail_key' => $detail['key'],
+                    'detail_value' => $detail['value'],
                     'price' => $detail['price'],
                 ]);
             }
