@@ -163,7 +163,7 @@ class ProductService extends BaseService
                     $categoryIds[] = $category->id;
                 }
 
-                $query->whereIn('category_id', $categoryIds->toArray());
+                $query->whereIn('category_id', $categoryIds);
             }
 
             // $category = Category::find($filters['category_id']);
