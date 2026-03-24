@@ -15,7 +15,6 @@ class UserBasketScheduleService extends BaseService
 
     protected $relations = [
         'user',
-        'category',
         'schedule',
         'items.product',
         'items.variant',
@@ -24,7 +23,6 @@ class UserBasketScheduleService extends BaseService
     protected $searchableFields = [
         'name',
         'user_id',
-        'category_id',
     ];
 
     protected $sortableFields = [
@@ -45,11 +43,6 @@ class UserBasketScheduleService extends BaseService
         // Filter by user_id
         if (!empty($filters['user_id'])) {
             $query->where('user_id', $filters['user_id']);
-        }
-
-        // Filter by category_id
-        if (!empty($filters['category_id'])) {
-            $query->where('category_id', $filters['category_id']);
         }
 
         // Filter by schedule_id
@@ -76,5 +69,5 @@ class UserBasketScheduleService extends BaseService
 
 
 
-   
+
 }
