@@ -26,7 +26,7 @@ class AuthService
         }
 
         if (! Hash::check($credentials['password'], $admin->password)) {
-            throw new AuthenticationException();
+            throw new CustomExceptionWithMessage('custom.wrong_credential');
         }
 
         $token = $admin->createToken('admin-token')->plainTextToken;
