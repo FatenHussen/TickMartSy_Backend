@@ -291,11 +291,15 @@ class ProductSeeder extends Seeder
             ],
         ];
 
+        $createdProducts = [];
+
+        // First pass: Create all products
         foreach ($products as $productData) {
             $extraDetails = $productData['extra_details'] ?? [];
             unset($productData['extra_details']);
 
             $product = Product::create($productData);
+            $createdProducts[] = $product;
 
             // Add extra details
             foreach ($extraDetails as $detail) {
@@ -324,6 +328,21 @@ class ProductSeeder extends Seeder
                 if (!empty($selectedIcons)) {
                     $product->icons()->attach($selectedIcons);
                 }
+            }
+        }
+
+        // Second pass: Update bought_with relationships
+        foreach ($createdProducts as $product) {
+            // Get products from same or related categories
+            $relatedProducts = collect($createdProducts)
+                ->where('id', '!=', $product->id)
+                ->shuffle()
+                ->take(rand(2, 4))
+                ->pluck('id')
+                ->toArray();
+
+            if (!empty($relatedProducts)) {
+                $product->update(['bought_with' => $relatedProducts]);
             }
         }
     }
