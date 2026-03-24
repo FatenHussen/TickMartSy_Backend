@@ -32,7 +32,12 @@ class OneResource extends JsonResource
             'model' => $this->model,
             'barcode' => $this->barcode,
             'time_prepare' => optional($this->time_prepare)->format('H:i'),
-            'bought_with' => $this->bought_with ?? [],
+            'bought_with'           => $this->bought_with_products_list->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                ];
+            }),
             'is_instant_delivery' => $this->is_instant_delivery,
 
             'thumbnail' => $this->thumbnail ? asset('storage/' . $this->thumbnail) : null,
@@ -53,7 +58,7 @@ class OneResource extends JsonResource
             ] : null,
 
             'approval_status' => $this->approval_status?->value,
-            'approval_status_label' => match($this->approval_status?->value) {
+            'approval_status_label' => match ($this->approval_status?->value) {
                 'pending' => 'قيد الانتظار',
                 'approved' => 'مقبول',
                 'rejected' => 'مرفوض',
