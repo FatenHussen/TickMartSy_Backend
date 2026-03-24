@@ -56,9 +56,9 @@ class ProductSeeder extends Seeder
                 'seo_keywords' => ['en' => 'basmati, rice, premium, indian', 'ar' => 'بسمتي، أرز، فاخر، هندي'],
                 'seo_image' => 'products/seo/basmati-seo.jpg',
                 'extra_details' => [
-                    ['key' => ['en' => 'Weight', 'ar' => 'الوزن'], 'value' => ['en' => '5 kg', 'ar' => '5 كغ'], 'price' => null],
-                    ['key' => ['en' => 'Grain Type', 'ar' => 'نوع الحبة'], 'value' => ['en' => 'Extra Long', 'ar' => 'طويلة جداً'], 'price' => null],
-                    ['key' => ['en' => 'Cooking Time', 'ar' => 'وقت الطبخ'], 'value' => ['en' => '20-25 min', 'ar' => '20-25 دقيقة'], 'price' => null],
+                    ['key' => ['en' => 'Weight', 'ar' => 'الوزن'], 'value' => ['en' => '5 kg', 'ar' => '5 كغ'], 'price' => 0],
+                    ['key' => ['en' => 'Grain Type', 'ar' => 'نوع الحبة'], 'value' => ['en' => 'Extra Long', 'ar' => 'طويلة جداً'], 'price' => 0],
+                    ['key' => ['en' => 'Cooking Time', 'ar' => 'وقت الطبخ'], 'value' => ['en' => '20-25 min', 'ar' => '20-25 دقيقة'], 'price' => 0],
                 ]
             ],
             [
@@ -94,9 +94,9 @@ class ProductSeeder extends Seeder
                 'seo_keywords' => ['en' => 'egyptian, rice, short grain, kabsa', 'ar' => 'مصري، أرز، قصير، كبسة'],
                 'seo_image' => 'products/seo/egyptian-rice-seo.jpg',
                 'extra_details' => [
-                    ['key' => ['en' => 'Weight', 'ar' => 'الوزن'], 'value' => ['en' => '5 kg', 'ar' => '5 كغ'], 'price' => null],
-                    ['key' => ['en' => 'Grain Type', 'ar' => 'نوع الحبة'], 'value' => ['en' => 'Short', 'ar' => 'قصيرة'], 'price' => null],
-                    ['key' => ['en' => 'Best For', 'ar' => 'الأفضل لـ'], 'value' => ['en' => 'Kabsa & Mandi', 'ar' => 'كبسة ومندي'], 'price' => null],
+                    ['key' => ['en' => 'Weight', 'ar' => 'الوزن'], 'value' => ['en' => '5 kg', 'ar' => '5 كغ'], 'price' => 0],
+                    ['key' => ['en' => 'Grain Type', 'ar' => 'نوع الحبة'], 'value' => ['en' => 'Short', 'ar' => 'قصيرة'], 'price' => 0],
+                    ['key' => ['en' => 'Best For', 'ar' => 'الأفضل لـ'], 'value' => ['en' => 'Kabsa & Mandi', 'ar' => 'كبسة ومندي'], 'price' => 0],
                 ]
             ],
             [
@@ -125,9 +125,9 @@ class ProductSeeder extends Seeder
                 'seo_description' => ['en' => 'Premium Thai jasmine rice', 'ar' => 'أرز ياسمين تايلندي فاخر'],
                 'seo_keywords' => ['en' => 'jasmine, thai, rice, aromatic', 'ar' => 'ياسمين، تايلندي، أرز، عطري'],
                 'extra_details' => [
-                    ['key' => ['en' => 'Weight', 'ar' => 'الوزن'], 'value' => ['en' => '4.5 kg', 'ar' => '4.5 كغ'], 'price' => null],
-                    ['key' => ['en' => 'Origin', 'ar' => 'المنشأ'], 'value' => ['en' => 'Thailand', 'ar' => 'تايلاند'], 'price' => null],
-                    ['key' => ['en' => 'Texture', 'ar' => 'القوام'], 'value' => ['en' => 'Soft & Sticky', 'ar' => 'ناعم ولزج'], 'price' => null],
+                    ['key' => ['en' => 'Weight', 'ar' => 'الوزن'], 'value' => ['en' => '4.5 kg', 'ar' => '4.5 كغ'], 'price' => 0],
+                    ['key' => ['en' => 'Origin', 'ar' => 'المنشأ'], 'value' => ['en' => 'Thailand', 'ar' => 'تايلاند'], 'price' => 0],
+                    ['key' => ['en' => 'Texture', 'ar' => 'القوام'], 'value' => ['en' => 'Soft & Sticky', 'ar' => 'ناعم ولزج'], 'price' => 0],
                 ]
             ],
 
@@ -158,9 +158,9 @@ class ProductSeeder extends Seeder
                 'seo_description' => ['en' => 'Premium fine bulgur for tabbouleh', 'ar' => 'برغل ناعم فاخر للتبولة'],
                 'seo_keywords' => ['en' => 'bulgur, fine, wheat, tabbouleh', 'ar' => 'برغل، ناعم، قمح، تبولة'],
                 'extra_details' => [
-                    ['key' => ['en' => 'Weight', 'ar' => 'الوزن'], 'value' => ['en' => '1 kg', 'ar' => '1 كغ'], 'price' => null],
-                    ['key' => ['en' => 'Grade', 'ar' => 'الدرجة'], 'value' => ['en' => 'Fine', 'ar' => 'ناعم'], 'price' => null],
-                    ['key' => ['en' => 'Preparation', 'ar' => 'التحضير'], 'value' => ['en' => 'Soak 10 min', 'ar' => 'نقع 10 دقائق'], 'price' => null],
+                    ['key' => ['en' => 'Weight', 'ar' => 'الوزن'], 'value' => ['en' => '1 kg', 'ar' => '1 كغ'], 'price' => 0],
+                    ['key' => ['en' => 'Grade', 'ar' => 'الدرجة'], 'value' => ['en' => 'Fine', 'ar' => 'ناعم'], 'price' => 0],
+                    ['key' => ['en' => 'Preparation', 'ar' => 'التحضير'], 'value' => ['en' => 'Soak 10 min', 'ar' => 'نقع 10 دقائق'], 'price' => 0],
                 ]
             ],
             [
@@ -189,9 +189,9 @@ class ProductSeeder extends Seeder
                 'seo_description' => ['en' => 'Premium coarse bulgur for pilafs', 'ar' => 'برغل خشن فاخر للبرغل بالخلطة'],
                 'seo_keywords' => ['en' => 'bulgur, coarse, wheat, pilaf', 'ar' => 'برغل، خشن، قمح، خلطة'],
                 'extra_details' => [
-                    ['key' => ['en' => 'Weight', 'ar' => 'الوزن'], 'value' => ['en' => '1 kg', 'ar' => '1 كغ'], 'price' => null],
-                    ['key' => ['en' => 'Grade', 'ar' => 'الدرجة'], 'value' => ['en' => 'Coarse', 'ar' => 'خشن'], 'price' => null],
-                    ['key' => ['en' => 'Cooking Time', 'ar' => 'وقت الطبخ'], 'value' => ['en' => '15-20 min', 'ar' => '15-20 دقيقة'], 'price' => null],
+                    ['key' => ['en' => 'Weight', 'ar' => 'الوزن'], 'value' => ['en' => '1 kg', 'ar' => '1 كغ'], 'price' => 0],
+                    ['key' => ['en' => 'Grade', 'ar' => 'الدرجة'], 'value' => ['en' => 'Coarse', 'ar' => 'خشن'], 'price' => 0],
+                    ['key' => ['en' => 'Cooking Time', 'ar' => 'وقت الطبخ'], 'value' => ['en' => '15-20 min', 'ar' => '15-20 دقيقة'], 'price' => 0],
                 ]
             ],
 
@@ -222,9 +222,9 @@ class ProductSeeder extends Seeder
                 'seo_description' => ['en' => 'Premium red lentils for soups', 'ar' => 'عدس أحمر فاخر للشوربات'],
                 'seo_keywords' => ['en' => 'lentils, red, protein, soup', 'ar' => 'عدس، أحمر، بروتين، شوربة'],
                 'extra_details' => [
-                    ['key' => ['en' => 'Weight', 'ar' => 'الوزن'], 'value' => ['en' => '1 kg', 'ar' => '1 كغ'], 'price' => null],
-                    ['key' => ['en' => 'Type', 'ar' => 'النوع'], 'value' => ['en' => 'Split Red', 'ar' => 'أحمر مقشور'], 'price' => null],
-                    ['key' => ['en' => 'Protein', 'ar' => 'البروتين'], 'value' => ['en' => '25g per 100g', 'ar' => '25غ لكل 100غ'], 'price' => null],
+                    ['key' => ['en' => 'Weight', 'ar' => 'الوزن'], 'value' => ['en' => '1 kg', 'ar' => '1 كغ'], 'price' => 0],
+                    ['key' => ['en' => 'Type', 'ar' => 'النوع'], 'value' => ['en' => 'Split Red', 'ar' => 'أحمر مقشور'], 'price' => 0],
+                    ['key' => ['en' => 'Protein', 'ar' => 'البروتين'], 'value' => ['en' => '25g per 100g', 'ar' => '25غ لكل 100غ'], 'price' => 0],
                 ]
             ],
             [
@@ -253,9 +253,9 @@ class ProductSeeder extends Seeder
                 'seo_description' => ['en' => 'French green lentils for salads', 'ar' => 'عدس أخضر فرنسي للسلطات'],
                 'seo_keywords' => ['en' => 'lentils, green, french, salad', 'ar' => 'عدس، أخضر، فرنسي، سلطة'],
                 'extra_details' => [
-                    ['key' => ['en' => 'Weight', 'ar' => 'الوزن'], 'value' => ['en' => '1 kg', 'ar' => '1 كغ'], 'price' => null],
-                    ['key' => ['en' => 'Type', 'ar' => 'النوع'], 'value' => ['en' => 'Whole Green', 'ar' => 'أخضر كامل'], 'price' => null],
-                    ['key' => ['en' => 'Texture', 'ar' => 'القوام'], 'value' => ['en' => 'Firm', 'ar' => 'متماسك'], 'price' => null],
+                    ['key' => ['en' => 'Weight', 'ar' => 'الوزن'], 'value' => ['en' => '1 kg', 'ar' => '1 كغ'], 'price' => 0],
+                    ['key' => ['en' => 'Type', 'ar' => 'النوع'], 'value' => ['en' => 'Whole Green', 'ar' => 'أخضر كامل'], 'price' => 0],
+                    ['key' => ['en' => 'Texture', 'ar' => 'القوام'], 'value' => ['en' => 'Firm', 'ar' => 'متماسك'], 'price' => 0],
                 ]
             ],
             [
@@ -284,9 +284,9 @@ class ProductSeeder extends Seeder
                 'seo_description' => ['en' => 'Versatile brown lentils', 'ar' => 'عدس بني متعدد الاستخدامات'],
                 'seo_keywords' => ['en' => 'lentils, brown, versatile, soup', 'ar' => 'عدس، بني، متعدد، شوربة'],
                 'extra_details' => [
-                    ['key' => ['en' => 'Weight', 'ar' => 'الوزن'], 'value' => ['en' => '1 kg', 'ar' => '1 كغ'], 'price' => null],
-                    ['key' => ['en' => 'Type', 'ar' => 'النوع'], 'value' => ['en' => 'Whole Brown', 'ar' => 'بني كامل'], 'price' => null],
-                    ['key' => ['en' => 'Uses', 'ar' => 'الاستخدامات'], 'value' => ['en' => 'All Purpose', 'ar' => 'جميع الأغراض'], 'price' => null],
+                    ['key' => ['en' => 'Weight', 'ar' => 'الوزن'], 'value' => ['en' => '1 kg', 'ar' => '1 كغ'], 'price' => 0],
+                    ['key' => ['en' => 'Type', 'ar' => 'النوع'], 'value' => ['en' => 'Whole Brown', 'ar' => 'بني كامل'], 'price' => 0],
+                    ['key' => ['en' => 'Uses', 'ar' => 'الاستخدامات'], 'value' => ['en' => 'All Purpose', 'ar' => 'جميع الأغراض'], 'price' => 0],
                 ]
             ],
         ];
@@ -303,7 +303,7 @@ class ProductSeeder extends Seeder
                     'product_id' => $product->id,
                     'detail_key' => $detail['key'],
                     'detail_value' => $detail['value'],
-                    'price' => $detail['price'],
+                    'price' => $detail['price'] ?? 0,
                 ]);
             }
 
