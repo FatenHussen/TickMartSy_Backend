@@ -38,7 +38,7 @@ class OneResource extends JsonResource
             'model' => $this->model,
             'barcode' => $this->barcode,
             'time_prepare' => optional($this->time_prepare)->format('H:i'),
-            'bought_with' => AllResource::collection($this->bought_with_products_list ?? []),
+            'bought_with' => OneResource::collection($this->bought_with_products_list ?? []),
             'is_instant_delivery' => $this->is_instant_delivery,
             'rating' => $this->average_rating ?? 0,
             'rating_breakdown' => $this->getRatingBreakdown() ?? [],
