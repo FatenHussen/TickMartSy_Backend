@@ -316,11 +316,15 @@ class ProductSeeder extends Seeder
                 2 => ['position' => 'bottom'],
             ]);
 
-            // Attach random icons (1-3 icons)
-            $iconIds = range(1, 5);
-            shuffle($iconIds);
-            $selectedIcons = array_slice($iconIds, 0, rand(1, 3));
-            $product->icons()->attach($selectedIcons);
+            // Attach random icons (1-3 icons) - only if icons exist
+            $availableIcons = \App\Models\Icon::pluck('id')->toArray();
+            if (!empty($availableIcons)) {
+                shuffle($availableIcons);
+                $selectedIcons = array_slice($availableIcons, 0, min(rand(1, 3), count($availableIcons)));
+                if (!empty($selectedIcons)) {
+                    $product->icons()->attach($selectedIcons);
+                }
+            }
         }
     }
 
