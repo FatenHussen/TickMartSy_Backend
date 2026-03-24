@@ -31,7 +31,12 @@ class AllResource extends JsonResource
             'is_visible'            => $this->is_visible,
             'barcode'               => $this->barcode,
             'time_prepare'          => $this->time_prepare,
-            'bought_with'           => $this->bought_with,
+            'bought_with'           => $this->bought_with_products_list->map(function($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                ];
+            }),
             'is_instant_delivery'   => $this->is_instant_delivery,
 
             'thumbnail'             => $this->thumbnail ? asset('storage/' . $this->thumbnail) : null,
