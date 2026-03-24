@@ -147,15 +147,36 @@ class ProductService extends BaseService
         if (!empty($filters['category_id'])) {
             $category = Category::find($filters['category_id']);
             if ($category) {
-                // Get all descendant category IDs
-                $categoryIds = collect([$category->id]);
-                $descendants = $category->descendants()->get();
+                // // Get all descendant category IDs
+                // $categoryIds = collect([$category->id]);
+                // $descendants = $category->descendants()->get();
 
-                // Recursively collect all descendant IDs
-                $this->collectDescendantIds($descendants, $categoryIds);
+                // // Recursively collect all descendant IDs
+                // $this->collectDescendantIds($descendants, $categoryIds);
+
+                $categoryIds = $category
+                    ->leafDescendants()
+                    ->pluck('id')
+                    ->toArray();
+
+                if ($category->children()->count() === 0) {
+                    $categoryIds[] = $category->id;
+                }
 
                 $query->whereIn('category_id', $categoryIds->toArray());
             }
+
+            // $category = Category::find($filters['category_id']);
+            // if ($category) {
+            //     // Get all descendant category IDs
+            //     $categoryIds = collect([$category->id]);
+            //     $descendants = $category->descendants()->get();
+
+            //     // Recursively collect all descendant IDs
+            //     $this->collectDescendantIds($descendants, $categoryIds);
+
+            //     $query->whereIn('category_id', $categoryIds->toArray());
+            // }
         }
         if (!empty($filters['brand_id'])) {
             $query->where('brand_id', $filters['brand_id']);
