@@ -110,9 +110,9 @@ class UserBasketSchedule extends Model implements Sectionable
 
             // section basics
             'title' => $this->name,
-            'desc'  => $this->category?->name,
+            'desc'  => $this->schedule?->name ?? '',
 
-            'image' => $this->category?->image_url,
+            'image' => null,
 
             'price' => round($totalPrice, 2),
             'price_after_discount' => $finalPrice,
