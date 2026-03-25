@@ -87,7 +87,7 @@ class StoreRequest extends FormRequest
             'bought_with.*'         => 'nullable|integer|exists:products,id',
             'is_instant_delivery'   => 'nullable|boolean',
             'is_visible'            => 'nullable|boolean',
-            'thumbnail'             => 'nullable|image|max:2048',
+            'thumbnail'             => 'nullable|image',
 
             // Variants
             'variants'                      => 'nullable|array',
