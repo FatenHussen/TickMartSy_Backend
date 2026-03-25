@@ -616,7 +616,9 @@ class OrderService extends BaseService
             ->where('code', $couponCode)
             ->first();
 
-        if (!$coupon) return [null, 0, [], null];
+        if (!$coupon) {
+            throw new CustomExceptionWithMessage('custom.invalid_coupon');
+        }
 
         $excludedItems = [];
 

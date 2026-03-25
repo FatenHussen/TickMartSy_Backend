@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\Order;
 
+use App\Enums\OrderStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Log;
 
@@ -23,7 +24,10 @@ class FilterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => 'nullable|in:pending,preparing,out_delivery,delivered',
+            'status'   => [
+                'nullable',
+                'in:' . implode(',', array_column(OrderStatus::cases(), 'value')),
+            ],
         ];
     }
 }
