@@ -105,9 +105,15 @@ abstract class BaseService
             if (method_exists($relationObj, 'sync')) {
                 $syncData = [];
                 foreach ($items as $item) {
-                    $id = $item['id'];
-                    unset($item['id']);
-                    $syncData[$id] = $item;
+                    // Handle both formats: [1, 2, 3] or [['id' => 1, 'position' => 'top'], ...]
+                    if (is_array($item) && isset($item['id'])) {
+                        $id = $item['id'];
+                        unset($item['id']);
+                        $syncData[$id] = $item;
+                    } else {
+                        // Simple ID format
+                        $syncData[$item] = [];
+                    }
                 }
                 $relationObj->sync($syncData);
             } else {
