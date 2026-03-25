@@ -27,6 +27,7 @@ class BasketScheduleSeeder extends Seeder
                     ],
                     'discount_type' => 'percentage',
                     'discount_value' => 5,
+                    'is_default' => 1
                 ],
                 [
                     'number_of_days' => 7,
@@ -38,6 +39,7 @@ class BasketScheduleSeeder extends Seeder
                     ],
                     'discount_type' => 'percentage',
                     'discount_value' => 10,
+                    'is_default' => 0
                 ],
                 [
                     'number_of_days' => 14,
@@ -47,6 +49,7 @@ class BasketScheduleSeeder extends Seeder
                     ],
                     'discount_type' => 'percentage',
                     'discount_value' => 15,
+                    'is_default' => 0
                 ],
                 [
                     'number_of_days' => 30,
@@ -56,6 +59,7 @@ class BasketScheduleSeeder extends Seeder
                     ],
                     'discount_type' => 'percentage',
                     'discount_value' => 20,
+                    'is_default' => 0
                 ],
             ];
 
@@ -70,6 +74,7 @@ class BasketScheduleSeeder extends Seeder
                         'discount_type'  => $schedule['discount_type'],
                         'discount_value' => $schedule['discount_value'],
                         'is_active'      => true,
+                        'is_default' => $schedule['is_default']
                     ]
                 );
             }
