@@ -14,7 +14,6 @@ class OneResource extends JsonResource
     {
         return [
             'id' => $this->id,
-
             'name' => $this->name,
             'admin_name' =>    $this->getTranslations('name'),
             'affiliate_id' => $this->affiliate_id,

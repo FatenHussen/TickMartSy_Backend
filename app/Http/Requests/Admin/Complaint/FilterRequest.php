@@ -30,7 +30,7 @@ class FilterRequest extends FormRequest
             ],
             'type'   => [
                 'nullable',
-                'in:' . implode(',', array_column(ComplaintStatus::cases(), 'value')),
+                'in:' . implode(',', array_column(ComplaintType::cases(), 'value')),
             ],
 
             'order_id' => ['nullable', 'integer'],

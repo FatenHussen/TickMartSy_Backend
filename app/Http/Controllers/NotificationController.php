@@ -35,8 +35,7 @@ class NotificationController extends Controller
 
     public function notifications(Request $request)
     {
-        /** @var User $user */
-        $user = auth('user')->user();
+        $user = auth()->user();
 
         $query = $user->notifications()->latest();
 
