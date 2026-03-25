@@ -20,7 +20,7 @@ class AllResource extends JsonResource
     {
         $price = $this->getTotalItemsPrice();
         $priceAfterDiscount = $this->getTotalAfterDiscount();
-
+        $sold = $price - $priceAfterDiscount;
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -30,6 +30,8 @@ class AllResource extends JsonResource
 
             ...$this->withCurrency($price, 'price'),
             ...$this->withCurrency($priceAfterDiscount, 'price_after_discount'),
+            ...$this->withCurrency($sold, 'sold'),
+
             'discount' => $this->discount,
             'orders_count' => $this->orders_count,
             'created_at' => $this->created_at,

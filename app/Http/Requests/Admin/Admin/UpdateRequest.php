@@ -26,7 +26,7 @@ class UpdateRequest extends FormRequest
         return [
             'name'              => 'required|string|max:255',
             'email' => ['required', 'email', 'unique:admins,email,' . $adminId],
-            'password' => ['required'],
+            'password' => ['nullable'],
             'is_active'            => 'nullable|boolean',
             'type' => 'nullable|in:square,circle,color',
             'roles' => 'nullable|array',
