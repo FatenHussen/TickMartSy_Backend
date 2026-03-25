@@ -55,7 +55,8 @@ class AdminRolePermissionSeeder extends Seeder
             'ActivityLog',
             'AffiliateWithdrawRequest',
             'Promotion',
-            'PromotionRequest'
+            'PromotionRequest',
+            'Subscription'
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];
