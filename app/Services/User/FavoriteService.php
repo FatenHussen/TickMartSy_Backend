@@ -64,6 +64,18 @@ class FavoriteService
             });
         }
 
+        /* ================= FAVORITES ================= */
+        if (
+            auth('user')->check() &&
+            method_exists($query->getModel(), 'favorites')
+        ) {
+            $query->withExists([
+                'favorites as is_favorite' => function ($q) {
+                    $q->where('user_id', auth('user')->id());
+                }
+            ]);
+        }
+
         return $query->get()
             ->map(function ($fav) {
                 return $fav->favoriteable?->toSectionArray();

@@ -9,6 +9,8 @@ use App\Models\Category;
 use App\Services\BaseService;
 use App\Http\Resources\Product\OneResource;
 use App\Http\Resources\Product\AllResource;
+use Illuminate\Container\Attributes\Log;
+use Illuminate\Support\Facades\Log as FacadesLog;
 
 class ProductService extends BaseService
 {
@@ -162,8 +164,10 @@ class ProductService extends BaseService
                 if ($category->children()->count() === 0) {
                     $categoryIds[] = $category->id;
                 }
+                FacadesLog::info($categoryIds);
 
                 $query->whereIn('category_id', $categoryIds);
+                FacadesLog::info($query->get());
             }
 
             // $category = Category::find($filters['category_id']);

@@ -3,11 +3,13 @@
 use App\Http\Controllers\VendorFcmTokenController;
 use App\Http\Middleware\CheckIfBlocked;
 use App\Http\Middleware\SetLocale;
+use App\Models\Category;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\VendorFcmToken;
+
 Route::get('/', function () {
     return view('welcome');
 })->middleware([CheckIfBlocked::class, SetLocale::class]);
@@ -28,7 +30,7 @@ Route::get('/cache', function () {
     Artisan::call('view:cache');
     return '✅ Laravel caches rebuilt successfully!';
 });
-Route::post('/vendor/fcm-token',[VendorFcmTokenController::class, 'store']);
+Route::post('/vendor/fcm-token', [VendorFcmTokenController::class, 'store']);
 //  function (Request $request) {
 
 //     $user = Auth::guard('vendor-user')->user();
@@ -49,3 +51,18 @@ Route::post('/vendor/fcm-token',[VendorFcmTokenController::class, 'store']);
 
 //     return response()->json(['success' => true]);
 // });
+
+
+Route::get('/category', function () {
+    $category = Category::find(13);
+
+    $categoryIds = $category
+        ->leafDescendants()
+        ->pluck('id')
+        ->toArray();
+
+    if ($category->children()->count() === 0) {
+        $categoryIds[] = $category->id;
+    }
+    return $categoryIds;
+});

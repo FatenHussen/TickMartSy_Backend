@@ -96,7 +96,8 @@ class RecipeSeeder extends Seeder
             'vendor_id' => $vendor->id,
             'name' => ['ar' => 'رز قصير أبيض', 'en' => 'Short White Rice'],
             'description' => ['ar' => 'رز قصير أبيض', 'en' => 'Short White Rice'],
-            'price' => 2000,
+            'price' => 20,
+            'approval_status' => \App\Enums\ProductApprovalStatus::APPROVED->value
         ]);
 
         $this->attachRandomMedia($shortRiceProduct, $files);
@@ -119,7 +120,9 @@ class RecipeSeeder extends Seeder
             'vendor_id' => $vendor->id,
             'name' => ['ar' => 'رز طويل أبيض', 'en' => 'Long White Rice'],
             'description' => ['ar' => 'رز طويل أبيض', 'en' => 'Long White Rice'],
-            'price' => 2100,
+            'price' => 21,
+            'approval_status' => \App\Enums\ProductApprovalStatus::APPROVED->value
+
         ]);
 
         $this->attachRandomMedia($longRiceProduct, $files);
@@ -147,7 +150,9 @@ class RecipeSeeder extends Seeder
             'vendor_id' => $vendor->id,
             'name' => ['ar' => 'سمنة', 'en' => 'Ghee'],
             'description' => ['ar' => 'سمنة', 'en' => 'Ghee'],
-            'price' => 500,
+            'price' => 50,
+            'approval_status' => \App\Enums\ProductApprovalStatus::APPROVED->value
+
         ]);
 
         $this->attachRandomMedia($gheeProduct, $files);
