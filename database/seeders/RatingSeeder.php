@@ -55,14 +55,17 @@ class RatingSeeder extends Seeder
 
             $rateableId = Arr::random($rateables[$type]);
 
+            // Check if it's a product or not
+            $isProduct = $type === RateableType::PRODUCT->value;
+
             Rating::create([
                 'user_id' => Arr::random($users),
-                'order_id' => null, 
+                'order_id' => null,
                 'rateable_type' => $this->resolveRateableClass($type),
                 'rateable_id' => $rateableId,
                 'rating' => rand(1, 5),
-                'comment' => Arr::random($comments),
-                'image' => rand(0, 1) ? 'ratings/sample.jpg' : null,
+                'comment' => $isProduct ? Arr::random($comments) : null,
+                'image' => $isProduct && rand(0, 1) ? 'ratings/sample.jpg' : null,
                 'is_verified' => rand(0, 1),
                 'created_at' => now()->subDays(rand(0, 180)),
                 'updated_at' => now(),
