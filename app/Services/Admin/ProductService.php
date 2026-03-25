@@ -145,8 +145,29 @@ class ProductService extends BaseService
             unset($data['icon_ids']);
         }
 
+        // Handle badges before other relations
+        if (isset($data['badges']) && is_array($data['badges'])) {
+            $badgesData = $data['badges'];
+            unset($data['badges']);
+
+            $syncData = [];
+            foreach ($badgesData as $badge) {
+                if (is_array($badge) && isset($badge['id'])) {
+                    $badgeId = $badge['id'];
+                    unset($badge['id']);
+                    $syncData[$badgeId] = $badge;
+                } elseif (is_numeric($badge)) {
+                    $syncData[$badge] = [];
+                }
+            }
+
+            if (!empty($syncData)) {
+                $object->badges()->sync($syncData);
+            }
+        }
+
         foreach ($this->syncRelations as $relation => $requestKey) {
-            if (in_array($requestKey, ['variants', 'shop_variants'])) {
+            if (in_array($requestKey, ['variants', 'shop_variants', 'badges'])) {
                 continue;
             }
 
