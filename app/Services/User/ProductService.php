@@ -221,7 +221,7 @@ class ProductService extends BaseService
         if (isset($filters['is_free_delivery'])) {
             $isFreeDelivery = filter_var($filters['is_free_delivery'], FILTER_VALIDATE_BOOLEAN);
 
-            $query->whereHas('shopVariants.shop', function ($q) use ($isFreeDelivery) {
+            $query->whereHas('variants.shopVariants.shop', function ($q) use ($isFreeDelivery) {
                 $q->where('is_free_delivery', $isFreeDelivery);
             });
         }
