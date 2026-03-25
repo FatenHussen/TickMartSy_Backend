@@ -34,9 +34,9 @@ class StoreRequest extends FormRequest
             'working_hours.*.close' => 'required_without:working_hours.*.closed|date_format:H:i',
             'working_hours.*.closed' => 'sometimes|boolean',
 
-            'logo'                 => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'logo'                 => 'nullable|image|mimes:jpeg,png,jpg,gif,webp',
             'cover_images'         => 'nullable|array',
-            'cover_images.*'       => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'cover_images.*'       => 'image|mimes:jpeg,png,jpg,gif,webp',
 
             'is_active'            => 'sometimes|boolean',
 

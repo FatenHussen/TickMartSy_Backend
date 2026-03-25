@@ -249,7 +249,7 @@ Authorization: Bearer {admin_token}
 - `name.*`: required|string|max:255
 - `discount`: nullable|numeric|min:0
 - `discount_type`: required|in:fixed,percentage
-- `image`: nullable|image|mimes:jpeg,png,jpg,gif|max:2048
+- `image`: nullable|image|mimes:jpeg,png,jpg,gif
 - `delivery_price`: nullable|numeric|min:0
 
 #### Schedule

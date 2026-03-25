@@ -31,22 +31,22 @@ class UpdateRequest extends FormRequest
 
             'owner_name'           => 'nullable|string|max:255',
             'owner_phone'          => 'nullable|string|max:20',
-           
+
             'commercial_register'  => 'nullable|string|max:100',
             'contract_date'        => 'nullable|date',
-            'contract_number'      => ['nullable', 'required', 'string','unique:vendors,contract_number,'.$vendorId],
+            'contract_number'      => ['nullable', 'required', 'string', 'unique:vendors,contract_number,' . $vendorId],
             'contract_duration_months' => 'nullable|integer|min:1',
             'commission_rate'      => 'nullable|numeric|min:0|max:100',
 
-            'logo'                 => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'logo'                 => 'nullable|image|mimes:jpeg,png,jpg,gif,webp',
             'cover_images'         => 'nullable|array',
-            'cover_images.*'       => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'cover_images.*'       => 'image|mimes:jpeg,png,jpg,gif,webp',
 
             'is_active'            => 'nullable|boolean',
         ];
     }
 
-        public function attributes(): array
+    public function attributes(): array
     {
         return [
             'name.ar' => 'اسم المتجر (عربي)',
@@ -56,5 +56,4 @@ class UpdateRequest extends FormRequest
             'address.ar' => 'العنوان (عربي)',
         ];
     }
-    
 }

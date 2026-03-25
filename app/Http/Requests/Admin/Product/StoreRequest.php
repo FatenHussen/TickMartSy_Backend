@@ -129,7 +129,7 @@ class StoreRequest extends FormRequest
             'icon_ids.*' => 'required|integer|exists:icons,id',
 
             // SEO Fields
-            'seo_image' => 'nullable|image|max:2048',
+            'seo_image' => 'nullable|image',
 
         ];
 

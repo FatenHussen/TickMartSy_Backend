@@ -35,7 +35,7 @@ class UpdateRequest extends FormRequest
             'rate_per_order' => 'nullable',
             'vehicle_type' => 'nullable',
             'vehicle_number' => 'nullable',
-            'image'                 => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image'                 => 'nullable|image|mimes:jpeg,png,jpg,gif,webp',
 
         ];
     }

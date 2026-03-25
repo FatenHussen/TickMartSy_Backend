@@ -117,6 +117,8 @@ class OrderService extends BaseService
                 $finalTotal
             );
 
+            $this->maybeIncrementRecipeOrdersCount($order, $data);
+
             $promotionService = app(\App\Services\User\PromotionService::class);
             $nonDiscountPromotion = $promotionService
                 ->applyNonDiscountPromotions($order, collect($orderItems));
@@ -398,6 +400,18 @@ class OrderService extends BaseService
             OrderStatus::PENDING->value,
             'user'
         );
+    }
+
+    private function maybeIncrementRecipeOrdersCount(Order $order, array $data): void
+    {
+        $recipeId = $data['recipe_id'] ?? null;
+        $cartType = $data['cart_type'] ?? CartType::DEFAULT->value;
+
+        if ($cartType !== CartType::RECIPE->value || !$recipeId) {
+            return;
+        }
+
+        Recipe::whereKey($recipeId)->increment('orders_count');
     }
 
     /** -----------------------------

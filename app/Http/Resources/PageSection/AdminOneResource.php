@@ -27,7 +27,7 @@ class AdminOneResource extends JsonResource
             'order' => $this->order,
             'display_type_id' => $this->display_type_id,
             'background_color' => $this->background_color,
-            'background_crad_color' => $this->background_crad_color,
+            'background_card_color' => $this->background_card_color,
             'filters' => $this->filters,
         ];
     }

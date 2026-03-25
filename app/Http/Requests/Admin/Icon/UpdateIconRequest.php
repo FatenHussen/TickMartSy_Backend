@@ -17,7 +17,7 @@ class UpdateIconRequest extends FormRequest
             'name' => 'sometimes|array',
             'name.ar' => 'required_with:name|string|max:255',
             'name.en' => 'required_with:name|string|max:255',
-            'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg,webp',
             'description' => 'nullable|array',
             'description.ar' => 'nullable|string|max:1000',
             'description.en' => 'nullable|string|max:1000',

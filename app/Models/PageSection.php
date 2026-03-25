@@ -12,7 +12,17 @@ class PageSection extends Model
     use HasTranslations, LogsActivity;
     public array $translatable = ['name'];
 
-    protected $fillable = ['name', 'page_id', 'section_id', 'position', 'order', 'filters', 'background_card_color', 'background_color'];
+    protected $fillable = [
+        'name',
+        'page_id',
+        'section_id',
+        'position',
+        'order',
+        'filters',
+        'background_card_color',
+        'background_color',
+        'display_type_id'
+    ];
     protected $casts = ['filters' => 'array'];
 
     public function page()

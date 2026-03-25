@@ -25,7 +25,7 @@ class StoreRequest extends FormRequest
             'rate_per_order' => 'required',
             'vehicle_type' => 'required',
             'vehicle_number' => 'required',
-            'image'                 => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image'                 => 'nullable|image|mimes:jpeg,png,jpg,gif,webp',
 
         ];
     }
