@@ -305,6 +305,7 @@ class ProductService extends BaseService
             'price_asc' => $query->orderBy('price', 'asc'),
             'newest' => $query->orderBy('created_at', 'desc'),
             'oldest' => $query->orderBy('created_at', 'asc'),
+            'rating' => $query->withAvg('ratings', 'rating')->orderByDesc('ratings_avg_rating'),
             default => null,
         };
     }

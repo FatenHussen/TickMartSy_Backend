@@ -51,7 +51,7 @@ class CategorySeeder extends Seeder
         $main = Category::create([
             'name' => [
                 'ar' => 'أكل',
-                'en' => 'أكل'
+                'en' => 'Food'
             ],
         ]);
 
