@@ -19,6 +19,6 @@ class BadgeService extends BaseService
         $this->resource   = AdminOneResource::class;
         $this->collection = OneResource::class;
         $this->pagination = true;
-        $this->searchableFields = ['id', 'question', 'answer', 'type'];
+        $this->searchableFields = ['id'];
     }
 }

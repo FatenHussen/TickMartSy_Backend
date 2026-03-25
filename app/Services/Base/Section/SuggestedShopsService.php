@@ -5,6 +5,7 @@ namespace App\Services\Base\Section;
 use App\Enums\OrderStatus;
 use App\Models\OrderItem;
 use App\Models\Shop;
+use Illuminate\Database\Eloquent\Builder;
 
 class SuggestedShopsService
 {
@@ -26,13 +27,15 @@ class SuggestedShopsService
                 ->groupBy('shop_product_variants.shop_id');
 
             if ((clone $userTotals)->limit(1)->exists()) {
-                return Shop::query()
+                $query = Shop::query()
                     ->where('is_active', true)
                     ->select('shops.*')
                     ->joinSub($userTotals, 'user_shops', function ($join) {
                         $join->on('shops.id', '=', 'user_shops.shop_id');
                     })
                     ->orderByDesc('user_shops.total');
+
+                return $this->addFavoriteFlag($query);
             }
         }
 
@@ -44,17 +47,35 @@ class SuggestedShopsService
             ->groupBy('shop_product_variants.shop_id');
 
         if ((clone $globalTotals)->limit(1)->exists()) {
-            return Shop::query()
+            $query = Shop::query()
                 ->where('is_active', true)
                 ->select('shops.*')
                 ->joinSub($globalTotals, 'global_shops', function ($join) {
                     $join->on('shops.id', '=', 'global_shops.shop_id');
                 })
                 ->orderByDesc('global_shops.total');
+
+            return $this->addFavoriteFlag($query);
         }
 
-        return Shop::query()
+        $query = Shop::query()
             ->where('is_active', true)
             ->latest();
+
+        return $this->addFavoriteFlag($query);
+    }
+
+    private function addFavoriteFlag(Builder $query): Builder
+    {
+        if (
+            auth('user')->check() &&
+            method_exists($query->getModel(), 'favorites')
+        ) {
+            $query->withExists([
+                'favorites as is_favorite' => fn($q) => $q->where('user_id', auth('user')->id()),
+            ]);
+        }
+
+        return $query;
     }
 }

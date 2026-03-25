@@ -6,6 +6,7 @@ use App\Enums\OrderStatus;
 use App\Enums\ProductApprovalStatus;
 use App\Models\OrderItem;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Builder;
 
 class SuggestedProductsService
 {
@@ -31,12 +32,14 @@ class SuggestedProductsService
                 ->groupBy('product_variants.product_id');
 
             if ((clone $userTotals)->limit(1)->exists()) {
-                return $baseQuery
+                $query = $baseQuery
                     ->select('products.*')
                     ->joinSub($userTotals, 'user_products', function ($join) {
                         $join->on('products.id', '=', 'user_products.product_id');
                     })
                     ->orderByDesc('user_products.total');
+
+                return $this->addFavoriteFlag($query);
             }
         }
 
@@ -49,14 +52,32 @@ class SuggestedProductsService
             ->groupBy('product_variants.product_id');
 
         if ((clone $globalTotals)->limit(1)->exists()) {
-            return $baseQuery
+            $query = $baseQuery
                 ->select('products.*')
                 ->joinSub($globalTotals, 'global_products', function ($join) {
                     $join->on('products.id', '=', 'global_products.product_id');
                 })
                 ->orderByDesc('global_products.total');
+
+            return $this->addFavoriteFlag($query);
         }
 
-        return $baseQuery->latest();
+        $query = $baseQuery->latest();
+
+        return $this->addFavoriteFlag($query);
+    }
+
+    private function addFavoriteFlag(Builder $query): Builder
+    {
+        if (
+            auth('user')->check() &&
+            method_exists($query->getModel(), 'favorites')
+        ) {
+            $query->withExists([
+                'favorites as is_favorite' => fn($q) => $q->where('user_id', auth('user')->id()),
+            ]);
+        }
+
+        return $query;
     }
 }

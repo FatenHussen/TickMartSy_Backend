@@ -418,6 +418,7 @@ return [
         'not_your_order' => 'Not your order.',
         'item_not_ready' => 'Item not ready.',
         'status_not_valid_for_out_delivery' => 'Order status not valid for out delivery.',
+        'only_one_out_delivery_allowed' => 'You cannot have more than one order out for delivery at the same time.',
         'not_out_delivery' => 'Order is not out for delivery.',
         'cannot_change_status' => 'Cannot change order status from :from to :to.',
         'cannot_change_item_status' => 'Cannot change item status from :from to :to.',

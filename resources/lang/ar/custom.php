@@ -448,6 +448,7 @@ return [
         'not_your_order' => 'هذا الطلب ليس لك.',
         'item_not_ready' => 'العنصر غير جاهز.',
         'status_not_valid_for_out_delivery' => 'حالة الطلب غير صالحة للخروج للتوصيل.',
+        'only_one_out_delivery_allowed' => 'لا يمكنك أن يكون لديك أكثر من طلب واحد في حالة الخروج للتوصيل في نفس الوقت.',
         'not_out_delivery' => 'الطلب ليس في حالة الخروج للتوصيل.',
         'cannot_change_status' => 'لا يمكن تغيير حالة الطلب من :from إلى :to.',
         'cannot_change_item_status' => 'لا يمكن تغيير حالة العنصر من :from إلى :to.',

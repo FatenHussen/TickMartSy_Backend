@@ -156,7 +156,8 @@ class Basket extends Model implements Sectionable
             // delivery
             'next_delivery_date' => $nextDelivery,
             'items_count' => $itemsCount,
-            'delivery_price' => $this->delivery_price
+            'delivery_price' => $this->delivery_price,
+            'is_favorite' => (bool) ($this->is_favorite ?? false),
 
         ];
     }

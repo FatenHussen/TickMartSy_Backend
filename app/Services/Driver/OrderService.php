@@ -109,6 +109,8 @@ class OrderService
                 throw new CustomExceptionWithMessage('custom.orders.not_your_order');
             }
 
+            $this->ensureSingleOutDeliveryOrder($driverId, $order->id);
+
 
             if (! in_array($order->status, [
                 OrderStatus::PENDING->value,
@@ -146,6 +148,8 @@ class OrderService
                 ->findOrFail($itemId);
 
             $order = $item->order;
+
+            $this->ensureSingleOutDeliveryOrder($driverId, $order->id);
 
             // ✅ تحقق أن الدرايفر هو نفس الشخص
             if ($order->driver_id !== $driverId) {
@@ -198,6 +202,8 @@ class OrderService
             if ($order->driver_id !== $driverId) {
                 throw new CustomExceptionWithMessage('custom.orders.not_your_order');
             }
+
+            $this->ensureSingleOutDeliveryOrder($driverId, $order->id);
 
             // ✅ تحقق أن الطلب غير فوري
             // if ($order->is_instant_delivery) {
@@ -427,21 +433,17 @@ class OrderService
     public function statistics()
     {
         $driver = auth('driver')->user();
-        $rate = $driver->rate_per_order;
-
-        $orders = Order::where('driver_id', $driver->id)
-            ->where('status', OrderStatus::DELIVERED->value)
-            ->get(['delivery_price']);
-
-        $earnings = $orders->sum(
-            fn($o) =>
-            $o->delivery_price * ($rate / 100)
-        );
 
         return [
-            'delivered_orders' => $orders->count(),
-            'rate_percent' => $rate,
-            'total_earnings' => round($earnings, 2),
+            'average_rating' => $driver->average_rating,
+            'rate_percent' => (float) $driver->rate_per_order,
+            'total_orders' => $driver->total_orders,
+            'total_delivered' => $driver->total_delivered,
+            'today_delivered' => $driver->today_delivered,
+            'total_earnings' => $driver->total_earnings,
+            'today_earnings' => $driver->today_earnings,
+            'average_delivery_time_minutes' => $driver->average_delivery_time,
+            'cancellation_rate_percent' => $driver->cancellation_rate,
         ];
     }
     public function currentOrder()
@@ -455,5 +457,19 @@ class OrderService
             ])
             ->latest()
             ->first();
+    }
+
+    private function ensureSingleOutDeliveryOrder(int $driverId, ?int $currentOrderId = null): void
+    {
+        $query = Order::where('driver_id', $driverId)
+            ->where('status', OrderStatus::OUT_DELIVERY->value);
+
+        if ($currentOrderId !== null) {
+            $query->where('id', '!=', $currentOrderId);
+        }
+
+        if ($query->exists()) {
+            throw new CustomExceptionWithMessage('custom.orders.only_one_out_delivery_allowed');
+        }
     }
 }

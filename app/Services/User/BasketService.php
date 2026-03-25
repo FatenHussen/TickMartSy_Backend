@@ -135,6 +135,7 @@ class BasketService extends BaseService
         return $query;
     }
 
+
     protected function applyTypeFilters($query, $type)
     {
         switch ($type) {

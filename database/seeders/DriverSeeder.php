@@ -17,7 +17,8 @@ class DriverSeeder extends Seeder
         $drivers = [
             [
                 'name' => 'حمزة فواز',
-                'phone' => '0993359824',
+                'phone' => '
+                ',
                 'password' => Hash::make('123456'),
                 'address' => 'شارع الملك فيصل، وسط البلد',
                 'status' => 'available',
