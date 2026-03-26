@@ -5,6 +5,7 @@ namespace App\Http\Resources\Order;
 use App\Http\Resources\EndUser\AllResource as EndUserAllResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\Address\AllResource as AddressOneResource;
 
 class AllResource extends JsonResource
 {
@@ -15,6 +16,21 @@ class AllResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $groupedItems = $this->items
+            ->groupBy(function ($item) {
+                return $item->shopProductVariant->shop_id;
+            })
+            ->map(function ($items) {
+                $shop = $items->first()->shopProductVariant->shop;
+
+                return [
+                    'id' => $shop->id,
+                    'shop' => $shop->name,
+                    'lat' => $shop->lat,
+                    'lng' => $shop->lng,
+                ];
+            })
+            ->values();
         return [
             'id' => $this->id,
             'order_code' => $this->order_code ?? $this->id,
@@ -39,6 +55,8 @@ class AllResource extends JsonResource
             'affiliate_source' => $this->affiliate_source,
             'affiliate_commission' => $this->affiliate_commission,
             'user' => EndUserAllResource::make($this->user),
+            'user_address' => AddressOneResource::make($this->address),
+            'shops' => $groupedItems
 
         ];
     }
