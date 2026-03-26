@@ -937,6 +937,7 @@ return [
         'statistics_retrieved' => 'تم جلب إحصائيات السائق بنجاح.',
         'no_current_order' => 'لا يوجد طلب حالي.',
         'current_order_retrieved' => 'تم جلب الطلب الحالي بنجاح.',
+        'only_one_order_for_delivery' => 'يمكنك بدء طلب واحد فقط للتسليم في كل مرة.',
     ],
 
     // Affiliate responses

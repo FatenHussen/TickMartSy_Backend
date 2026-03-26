@@ -39,11 +39,14 @@ class Order extends Model
         'promotion_id',
         'promotion_discount',
         'pause_at',
-        'order_code'
+        'start_todelivery',
+        'order_code',
+        'assigned_by'
 
     ];
     protected $casts = [
         'is_instant_delivery' => 'boolean',
+        'start_todelivery' => 'boolean',
         'subscription_free_delivery' => 'boolean',
         'pause_at' => 'datetime',
     ];

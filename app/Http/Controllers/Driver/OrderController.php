@@ -167,6 +167,20 @@ class OrderController extends Controller
             message: __('custom.driver.statistics_retrieved')
         );
     }
+
+
+    public function startToOutDelivery($orderId)
+    {
+        $order = $this->service->startToOutDelivery($orderId);
+
+        if (! $order) {
+            return $this->sendError();
+        }
+
+        return $this->sendResponse(
+            data: OneResource::make($order),
+        );
+    }
     public function currentOrder()
     {
         $order = $this->service->currentOrder();

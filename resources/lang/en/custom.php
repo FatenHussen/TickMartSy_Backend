@@ -931,6 +931,7 @@ return [
         'statistics_retrieved' => 'Driver statistics retrieved successfully.',
         'no_current_order' => 'No current order.',
         'current_order_retrieved' => 'Current order retrieved successfully.',
+        'only_one_order_for_delivery' => 'You can only start one order at a time for delivery.',
     ],
 
     // Affiliate responses
