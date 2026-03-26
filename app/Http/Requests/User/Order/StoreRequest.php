@@ -34,6 +34,8 @@ class StoreRequest extends FormRequest
                 'exists:shop_product_variants,id'
             ],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
+            'items.*.extras' => ['nullable', 'array'],
+            'items.*.extras.*' => ['integer', 'exists:product_extra_details,id'],
             'recipe_id' => 'nullable|exists:recipes,id',
             'admin_basket_id' => 'nullable|exists:baskets,id',
             'admin_schedule_basket_id' => 'nullable|exists:baskets,id',

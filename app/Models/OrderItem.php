@@ -37,6 +37,12 @@ class OrderItem extends Model
         return $this->belongsTo(ShopProductVariant::class);
     }
 
+    // العلاقة مع الـ extras
+    public function extras()
+    {
+        return $this->hasMany(OrderItemExtra::class);
+    }
+
     // لو حاب تحوّل variant_attributes من JSON تلقائياً
     protected $casts = [
         'variant_attributes' => 'array',

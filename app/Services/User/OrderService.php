@@ -37,7 +37,7 @@ class OrderService extends BaseService
 
         $this->searchableFields = ['total', 'total_quantity'];
         $this->sortableFields   = ['id', 'total', 'total_quantity'];
-        $this->relations        = ['items'];
+        $this->relations        = ['items', 'items.extras', 'items.extras.extraDetail'];
         $this->pagination       = true;
     }
 
@@ -525,6 +525,26 @@ class OrderService extends BaseService
             $price = $shopVariant->price;
             $quantity = $item['quantity'];
 
+            // حساب سعر الـ extras
+            $extrasPrice = 0;
+            $extrasData = [];
+
+            if (!empty($item['extras']) && is_array($item['extras'])) {
+                $extraDetails = \App\Models\ProductExtraDetail::whereIn('id', $item['extras'])
+                    ->where('product_id', $product->id)
+                    ->get();
+
+                foreach ($extraDetails as $extra) {
+                    $extrasPrice += $extra->price;
+                    $extrasData[] = [
+                        'id' => $extra->id,
+                        'detail_key' => $extra->detail_key,
+                        'detail_value' => $extra->detail_value,
+                        'price' => $extra->price,
+                    ];
+                }
+            }
+
             // تطبيق خصم المنتج فقط في حالة عدم وجود خصم خارجي
             $productDiscount = 0;
 
@@ -533,6 +553,7 @@ class OrderService extends BaseService
             }
 
             $priceAfterDiscount = $price * (1 - ($productDiscount / 100));
+            $finalPriceWithExtras = $priceAfterDiscount + $extrasPrice;
 
             Log::info('ITEM CALCULATION', [
                 'product' => $product->name,
@@ -540,6 +561,8 @@ class OrderService extends BaseService
                 'quantity' => $quantity,
                 'product_discount' => $productDiscount,
                 'price_after_discount' => $priceAfterDiscount,
+                'extras_price' => $extrasPrice,
+                'final_price_with_extras' => $finalPriceWithExtras,
                 'variant' => $shopVariant->productVariant->attributes_values->pluck('name')->toArray()
             ]);
 
@@ -548,7 +571,7 @@ class OrderService extends BaseService
              */
             if ($order) {
 
-                $order->items()->create([
+                $orderItem = $order->items()->create([
                     'shop_product_variant_id' => $shopVariant->id,
                     'product_name' => $product->name,
                     'variant_attributes' => $shopVariant->productVariant->getAttributesValuesAttribute(),
@@ -557,12 +580,22 @@ class OrderService extends BaseService
                     'discount' => $productDiscount,
                 ]);
 
+                // حفظ الـ extras
+                if (!empty($extrasData)) {
+                    foreach ($extrasData as $extra) {
+                        $orderItem->extras()->create([
+                            'product_extra_detail_id' => $extra['id'],
+                            'price' => $extra['price'],
+                        ]);
+                    }
+                }
+
                 app(InventoryService::class)
                     ->decreaseStock($shopVariant->id, $quantity);
             }
 
             $subtotalBeforeDiscount += $price * $quantity;
-            $subtotalAfterProductDiscount += $priceAfterDiscount * $quantity;
+            $subtotalAfterProductDiscount += $finalPriceWithExtras * $quantity;
             $totalQuantity += $quantity;
 
             $orderItems->push([
@@ -572,6 +605,9 @@ class OrderService extends BaseService
                 'price' => $price,
                 'product_discount' => $productDiscount,
                 'price_after_discount' => $priceAfterDiscount,
+                'extras_price' => $extrasPrice,
+                'final_price_with_extras' => $finalPriceWithExtras,
+                'extras' => $extrasData,
                 'vendor_id' => $product->vendor_id,
                 'category_id' => $product->category_id,
                 'product_id' => $product->id,
