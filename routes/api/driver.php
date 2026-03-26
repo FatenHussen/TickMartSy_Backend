@@ -77,10 +77,9 @@ Route::prefix('driver')->group(
                 Route::post('shop-out-delivery/{orderId}', [OrderController::class, 'shopOutDelivery']);
                 Route::post('deliver/{orderId}', [OrderController::class, 'deliver']);
                 Route::post('faild-deliver/{orderId}', [OrderController::class, 'faildDeliver']);
-
-
                 Route::post('/update-location', [DriverTrackingController::class, 'update']);
                 Route::get('/current', [OrderController::class, 'currentOrder']);
+                Route::post('/start-to-outdelivery/{orderId}', [OrderController::class, 'startToOutDelivery']);
             });
         });
     }

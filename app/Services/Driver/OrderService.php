@@ -109,8 +109,6 @@ class OrderService
                 throw new CustomExceptionWithMessage('custom.orders.not_your_order');
             }
 
-            $this->ensureSingleOutDeliveryOrder($driverId, $order->id);
-
 
             if (! in_array($order->status, [
                 OrderStatus::PENDING->value,
@@ -118,7 +116,6 @@ class OrderService
             ])) {
                 throw new CustomExceptionWithMessage('custom.orders.invalid_order_state');
             }
-
 
             $order->update([
                 'driver_id' => null,
@@ -149,7 +146,6 @@ class OrderService
 
             $order = $item->order;
 
-            $this->ensureSingleOutDeliveryOrder($driverId, $order->id);
 
             // ✅ تحقق أن الدرايفر هو نفس الشخص
             if ($order->driver_id !== $driverId) {
@@ -203,7 +199,6 @@ class OrderService
                 throw new CustomExceptionWithMessage('custom.orders.not_your_order');
             }
 
-            $this->ensureSingleOutDeliveryOrder($driverId, $order->id);
 
             // ✅ تحقق أن الطلب غير فوري
             // if ($order->is_instant_delivery) {
@@ -453,23 +448,51 @@ class OrderService
         return Order::with('items')
             ->where('driver_id', $driverId)
             ->whereIn('status', [
-                OrderStatus::OUT_DELIVERY->value
+                OrderStatus::PREPARING->value
             ])
+            ->where('start_todelivery', true)
             ->latest()
             ->first();
     }
 
-    private function ensureSingleOutDeliveryOrder(int $driverId, ?int $currentOrderId = null): void
+
+
+    public function startToOutDelivery($orderId)
     {
-        $query = Order::where('driver_id', $driverId)
-            ->where('status', OrderStatus::OUT_DELIVERY->value);
+        $driverId = auth('driver')->id();
 
-        if ($currentOrderId !== null) {
-            $query->where('id', '!=', $currentOrderId);
-        }
+        return DB::transaction(function () use ($orderId, $driverId) {
 
-        if ($query->exists()) {
-            throw new CustomExceptionWithMessage('custom.orders.only_one_out_delivery_allowed');
-        }
+            $order = Order::with('items')
+                ->lockForUpdate()
+                ->findOrFail($orderId);
+
+            // ensure the driver is assigned to the order
+            if ($order->driver_id !== $driverId) {
+                throw new CustomExceptionWithMessage('custom.orders.not_your_order');
+            }
+
+            if ($order->status !== OrderStatus::PREPARING->value) {
+                throw new CustomExceptionWithMessage('custom.orders.invalid_order_state');
+            }
+
+            $hasActiveOrder = Order::where('driver_id', $driverId)
+                ->where('start_todelivery', true)
+                ->where('status', OrderStatus::PREPARING->value)
+                ->where('id', '!=', $orderId)
+                ->exists();
+
+            if ($hasActiveOrder) {
+                throw new CustomExceptionWithMessage('custom.driver.only_one_order_for_delivery');
+            }
+
+            if (! $order->start_todelivery) {
+                $order->update([
+                    'start_todelivery' => true
+                ]);
+            }
+
+            return $order->fresh('items');
+        });
     }
 }
