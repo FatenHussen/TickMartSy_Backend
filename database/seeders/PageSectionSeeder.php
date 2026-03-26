@@ -64,21 +64,29 @@ class PageSectionSeeder extends Seeder
             'fields' => ['image', 'title', 'decription', 'price', 'brand']
         ]);
 
+        $bannerDisplayType2 = DisplayType::create([
+            'manual_model' => 'banner',
+            'image' => 'images/display/banner.png',
+            'fields' => ['image', 'title', 'price']
+        ]);
+
         /*
         |--------------------------------------------------------------------------
         | Banners
         |--------------------------------------------------------------------------
         */
         $banner1 = Banner::create([
-            'title' => ['en' => 'Dis 50%', 'ar' => 'خصم حتى 50%'],
+            'title' => ['en' => 'New arrivals', 'ar' => 'وصل حديثا'],
+            'description' => ['en' => 'New arrivals', 'ar' => 'وصل حديثا'],
             'image' => 'banner/image.png',
-            'link'  => '/sale',
+            'link'  => 'https://tickmartsy.com/shops',
         ]);
 
         $banner2 = Banner::create([
-            'title' => ['en' => 'New Arrivals', 'ar' => 'وصل حديثا'],
+            'title' => ['en' => 'Browse our stores', 'ar' => 'تصفح متاجرنا'],
+            'description' => ['en' => 'Browse our stores', 'ar' => 'تصفح متاجرنا'],
             'image' => 'banner/image.png',
-            'link'  => '/new-arrivals',
+            'link'  => 'https://tickmartsy.com/categories?category=13',
         ]);
 
         /*
@@ -158,6 +166,19 @@ class PageSectionSeeder extends Seeder
                 'position' => $bannerPositions[$page->slug] ?? 'before',
             ]);
         }
+
+        $page = Page::firstOrCreate(
+            ['slug' => 'home'],
+            ['title' => 'home']
+        );
+        PageSection::firstOrCreate([
+            'page_id' => $page->id,
+            'section_id' => $bannerSection->id,
+        ], [
+            'display_type_id' => $bannerDisplayType2->id,
+            'position' =>  'after',
+        ]);
+
 
         /*
         |--------------------------------------------------------------------------

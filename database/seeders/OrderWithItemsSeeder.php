@@ -100,9 +100,9 @@ class OrderWithItemsSeeder extends Seeder
 
                 'user_id' => 2,
                 'user_address_id' => 2,
-                'status' => OrderStatus::OUT_DELIVERY->value,
+                'status' => OrderStatus::PREPARING->value,
                 'driver_id' => 1,
-                'is_instant_delivery' => false,
+                'is_instant_delivery' => true,
                 'assigned_by' => 'admin',
                 'timestamps' => [
                     'pending_at' => $now->copy()->subHour(),
@@ -117,7 +117,7 @@ class OrderWithItemsSeeder extends Seeder
 
                 'user_id' => 2,
                 'user_address_id' => 2,
-                'status' => OrderStatus::DELIVERED->value,
+                'status' => OrderStatus::PREPARING->value,
                 'driver_id' => 1,
                 'is_instant_delivery' => false,
                 'assigned_by' => 'admin',

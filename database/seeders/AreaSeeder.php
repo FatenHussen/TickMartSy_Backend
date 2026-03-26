@@ -15,7 +15,7 @@ class AreaSeeder extends Seeder
                 'lat' => 40.712776,
                 'lng' => -74.005974,
                 'city_id' => 1,
-                'base_fee' => 5
+                'base_fee' => 3
             ],
             [
                 'name' => ['en' => 'Uptown', 'ar' => 'المدينة العليا'],
@@ -29,14 +29,14 @@ class AreaSeeder extends Seeder
                 'lat' => 40.650002,
                 'lng' => -73.949997,
                 'city_id' => 1,
-                'base_fee' => 7
+                'base_fee' => 4
             ],
             [
                 'name' => ['en' => 'Queens', 'ar' => 'كوينز'],
                 'lat' => 40.728224,
                 'lng' => -73.794852,
                 'city_id' => 1,
-                'base_fee' => 8
+                'base_fee' => 4
             ],
         ];
 
