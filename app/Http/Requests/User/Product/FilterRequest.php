@@ -25,6 +25,7 @@ class FilterRequest extends FormRequest
             'search'        => ['nullable', 'string', 'max:255'],
             'brand_id' => ['nullable', 'integer', 'exists:brands,id'],
             'is_free_delivery' => ['nullable', 'boolean'],
+            'is_instant_delivery' => ['nullable', 'boolean'],
             'on_sale' => ['nullable', 'boolean'],
             'in_stock_only' => ['nullable', 'boolean'],
             'sort_by' => ['nullable', 'in:price_desc,price_asc,newest,oldest,rating_desc,rating_asc,rating'],

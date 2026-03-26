@@ -230,6 +230,12 @@ class ProductService extends BaseService
             });
         }
 
+        // Instant delivery filter
+        if (isset($filters['is_instant_delivery'])) {
+            $isInstantDelivery = filter_var($filters['is_instant_delivery'], FILTER_VALIDATE_BOOLEAN);
+            $query->where('is_instant_delivery', $isInstantDelivery);
+        }
+
         // On Sale filter (products with discount)
         if (isset($filters['on_sale'])) {
             $onSale = filter_var($filters['on_sale'], FILTER_VALIDATE_BOOLEAN);
