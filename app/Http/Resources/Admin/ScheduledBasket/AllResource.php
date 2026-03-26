@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Admin\ScheduledBasket;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\Badge\OneResource as BadgeOneResource;
 
 class AllResource extends JsonResource
 {
@@ -41,6 +42,14 @@ class AllResource extends JsonResource
             // Timestamps
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
+             'top_badges' => BadgeOneResource::collection(
+                ($this->badges ?? collect())->where('pivot.position', 'top')->values()
+            ),
+
+            'bottom_badges' => BadgeOneResource::collection(
+                ($this->badges ?? collect())->where('pivot.position', 'bottom')->values()
+            ),
+
         ];
     }
 }

@@ -94,6 +94,7 @@ class ScheduledBasketService extends BaseService
                     'discount_type' => $scheduleData['discount_type'] ?? null,
                     'discount_value' => $scheduleData['discount_value'] ?? null,
                     'is_active' => $scheduleData['is_active'] ?? true,
+                    'is_default' => $scheduleData['is_default']
                 ]);
             }
 
@@ -169,6 +170,8 @@ class ScheduledBasketService extends BaseService
                     'discount_type' => $scheduleData['discount_type'] ?? null,
                     'discount_value' => $scheduleData['discount_value'] ?? null,
                     'is_active' => $scheduleData['is_active'] ?? true,
+                    'is_default' => $scheduleData['is_default']
+
                 ]);
             }
 
@@ -317,4 +320,3 @@ class ScheduledBasketService extends BaseService
         return [];
     }
 }
-
