@@ -33,7 +33,7 @@ class StoreRequest extends FormRequest
             'offer_ends_at' => 'nullable|date|after:today',
             'discount' => 'nullable|numeric|min:0',
             'discount_type' => 'required|in:fixed,percentage',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif',
             'delivery_price' => 'nullable|numeric|min:0',
 
             // Basket items - simplified

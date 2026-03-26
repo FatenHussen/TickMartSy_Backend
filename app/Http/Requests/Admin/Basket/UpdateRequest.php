@@ -13,12 +13,6 @@ class UpdateRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        \Log::info('UpdateRequest::prepareForValidation - RAW', [
-            'all_data' => $this->all(),
-            'request_data' => $this->request->all(),
-            'content_type' => $this->header('Content-Type'),
-            'method' => $this->method(),
-        ]);
 
         // Convert date format from d-m-Y to Y-m-d if provided
         if ($this->has('offer_ends_at') && $this->offer_ends_at) {
@@ -46,7 +40,7 @@ class UpdateRequest extends FormRequest
             'offer_ends_at' => 'nullable|date|after:today',
             'discount' => 'nullable|numeric|min:0',
             'discount_type' => 'sometimes|required|in:fixed,percentage',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif',
             'delivery_price' => 'nullable|numeric|min:0',
 
             // Basket items - simplified

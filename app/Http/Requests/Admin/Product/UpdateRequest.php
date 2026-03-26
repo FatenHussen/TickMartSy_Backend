@@ -93,7 +93,7 @@ class UpdateRequest extends FormRequest
             'bought_with.*'         => 'nullable|integer|exists:products,id',
             'is_instant_delivery'   => 'nullable|boolean',
             'is_visible'            => 'nullable|boolean',
-            'thumbnail'             => 'nullable|image|max:2048',
+            'thumbnail'             => 'nullable|image',
 
             // Variants
             'variants'                      => 'nullable|array',
@@ -137,7 +137,7 @@ class UpdateRequest extends FormRequest
             'icon_ids.*' => 'required|integer|exists:icons,id',
 
             // SEO Fields
-            'seo_image' => 'nullable|image|max:2048',
+            'seo_image' => 'nullable|image',
 
             'badges'          => 'nullable|array',
             'badges.*.id'  => 'required|integer|exists:badges,id',

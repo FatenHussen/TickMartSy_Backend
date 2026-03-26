@@ -10,7 +10,7 @@ class UpdateProfileRequest extends BaseRequest
     {
         return [
             'name' => 'nullable|string|min:3',
-            'image' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:2048',
+            'image' => 'nullable|file|mimes:jpg,jpeg,png,webp',
             'city_id' => 'nullable|exists:cities,id'
         ];
     }

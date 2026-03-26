@@ -24,6 +24,7 @@ class OneResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'phone' => $this->phone,
+            'area_id' => $this->area_id,
 
             'affiliate' => [
                 'is_affiliate'       => (bool) $this->is_affiliate,

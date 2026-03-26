@@ -19,7 +19,6 @@ class PageSectionService extends BaseService
         $this->collection = AllResource::class;
         $this->pagination = true;
         $this->searchableFields = ['id', 'name'];
-        $this->pagination = true;
         $this->syncRelations = [
             'sectionItems'   => 'item_ids',
         ];

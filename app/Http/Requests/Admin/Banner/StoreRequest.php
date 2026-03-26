@@ -15,9 +15,9 @@ class StoreRequest extends FormRequest
     {
         return [
             'title' => ['nullable', 'array'],
-            'title.*' => ['required', 'string', 'max:255'],
+            'title.*' => ['required', 'string'],
             'description' => ['nullable', 'array'],
-            'description.*' => ['required', 'string', 'max:255'],
+            'description.*' => ['required', 'string'],
 
             'image'                 => 'required|image|mimes:jpeg,png,jpg,gif,webp',
             // 'is_active'            => 'nullable|boolean',

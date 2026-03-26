@@ -215,25 +215,43 @@ class HandleOrderStatusNotifications implements ShouldQueue
 
     private function notifyDrivers($order, OrderStatusChanged $event): void
     {
+        if (
+            $event->changedBy === 'admin' &&
+            $order->driver_id &&
+            $event->from === $event->to
+        ) {
+            $this->notificationService->send(
+                $order->driver,
+                'تم تعيين طلب جديد لك 🚚',
+                "تم تسليم الطلب رقم {$order->order_code} إليك من قبل لوحة الإدارة",
+                [
+                    'order_id' => (string) $order->id,
+                    'type'     => 'order',
+                    'status'   => (string) $order->status,
+                ]
+            );
+        }
+
         // فقط عند إنشاء طلب جديد
         if (
             $event->from === null &&
             $event->to === OrderStatus::PENDING->value
         ) {
-            Driver::chunk(100, function ($drivers) use ($order) {
-                foreach ($drivers as $driver) {
-                    $this->notificationService->send(
-                        $driver,
-                        'طلب جديد متاح 🚚',
-                        "يوجد طلب جديد رقم {$order->order_code} بانتظار التوصيل",
-                        [
-                            'order_id' => (string) $order->id,
-                            'type'     => 'order',
-                            'status'   => (string) $order->status,
-                        ]
-                    );
-                }
-            });
+            Driver::where('is_active', true)->where('status', 'available')
+                ->chunk(100, function ($drivers) use ($order) {
+                    foreach ($drivers as $driver) {
+                        $this->notificationService->send(
+                            $driver,
+                            'طلب جديد متاح 🚚',
+                            "يوجد طلب جديد رقم {$order->order_code} بانتظار التوصيل",
+                            [
+                                'order_id' => (string) $order->id,
+                                'type'     => 'order',
+                                'status'   => (string) $order->status,
+                            ]
+                        );
+                    }
+                });
         }
 
         if (

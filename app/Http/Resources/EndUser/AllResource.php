@@ -19,6 +19,8 @@ class AllResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'phone' => $this->phone,
+            'area_id' => $this->area_id,
+
             // Affiliate / Marketer info
             'affiliate' => [
                 'is_affiliate' => (bool) $this->is_affiliate,

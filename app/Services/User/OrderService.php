@@ -117,6 +117,8 @@ class OrderService extends BaseService
                 $finalTotal
             );
 
+            $this->maybeIncrementRecipeOrdersCount($order, $data);
+
             $promotionService = app(\App\Services\User\PromotionService::class);
             $nonDiscountPromotion = $promotionService
                 ->applyNonDiscountPromotions($order, collect($orderItems));
@@ -400,6 +402,18 @@ class OrderService extends BaseService
         );
     }
 
+    private function maybeIncrementRecipeOrdersCount(Order $order, array $data): void
+    {
+        $recipeId = $data['recipe_id'] ?? null;
+        $cartType = $data['cart_type'] ?? CartType::DEFAULT->value;
+
+        if ($cartType !== CartType::RECIPE->value || !$recipeId) {
+            return;
+        }
+
+        Recipe::whereKey($recipeId)->increment('orders_count');
+    }
+
     /** -----------------------------
      * Resolve basket discount & delivery price
      * ----------------------------- */
@@ -638,7 +652,9 @@ class OrderService extends BaseService
             ->where('code', $couponCode)
             ->first();
 
-        if (!$coupon) return [null, 0, [], null];
+        if (!$coupon) {
+            throw new CustomExceptionWithMessage('custom.invalid_coupon');
+        }
 
         $excludedItems = [];
 
