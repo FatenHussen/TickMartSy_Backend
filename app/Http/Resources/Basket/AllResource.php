@@ -69,7 +69,7 @@ class AllResource extends JsonResource
             'default_schedule' => $defaultSchedule,
             'is_paused' => (bool) ($this->paused_at ? true : false),
             'paused_at' => $this->paused_at?->format('Y-m-d H:i:s'),
-'is_schedule' => $this->is_schedule,
+            'is_schedule' => $this->is_schedule,
             'top_badges' => BadgeOneResource::collection(
                 ($this->badges ?? collect())->where('pivot.position', 'top')->values()
             ),

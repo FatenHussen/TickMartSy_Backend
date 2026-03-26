@@ -75,6 +75,16 @@ class UserBasketScheduleService extends BaseService
             $basket = $this->model::create($data);
 
             foreach ($items as $item) {
+                // Get product_id from shop_product_variant_id if not provided
+                if (!isset($item['product_id']) && isset($item['shop_product_variant_id'])) {
+                    $shopVariant = \App\Models\ShopProductVariant::with('productVariant.product')
+                        ->find($item['shop_product_variant_id']);
+
+                    if ($shopVariant) {
+                        $item['product_id'] = $shopVariant->productVariant->product_id;
+                    }
+                }
+
                 $basket->items()->create($item);
             }
 
@@ -83,6 +93,7 @@ class UserBasketScheduleService extends BaseService
 
         return new $this->resource($basket->load($this->relations));
     }
+
 
 
     public function update($id, array $data)
@@ -100,6 +111,16 @@ class UserBasketScheduleService extends BaseService
         $existingItems = $basket->items()->get()->keyBy('id');
 
         foreach ($items as $itemData) {
+            // Get product_id from shop_product_variant_id if not provided
+            if (!isset($itemData['product_id']) && isset($itemData['shop_product_variant_id'])) {
+                $shopVariant = \App\Models\ShopProductVariant::with('productVariant.product')
+                    ->find($itemData['shop_product_variant_id']);
+
+                if ($shopVariant) {
+                    $itemData['product_id'] = $shopVariant->productVariant->product_id;
+                }
+            }
+
             if (isset($itemData['id']) && $existingItems->has($itemData['id'])) {
                 $existingItems[$itemData['id']]->update($itemData);
                 $existingItems->forget($itemData['id']);
@@ -114,6 +135,7 @@ class UserBasketScheduleService extends BaseService
 
         return new $this->resource($basket->load($this->relations));
     }
+
 
 
     public function delete($id): bool
