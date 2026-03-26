@@ -71,6 +71,20 @@ class OrderService
                 throw new CustomExceptionWithMessage('custom.orders.not_instant_delivery');
             }
 
+            $hasActiveInstantOrder = Order::where('driver_id', $driverId)
+                ->where('is_instant_delivery', true)
+                ->whereIn('status', [
+                    OrderStatus::PENDING->value,
+                    OrderStatus::PREPARING->value,
+                    OrderStatus::OUT_DELIVERY->value,
+                ])
+                ->where('id', '!=', $orderId)
+                ->exists();
+
+            if ($hasActiveInstantOrder) {
+                throw new CustomExceptionWithMessage('custom.driver.only_one_order_for_delivery');
+            }
+
             if (! in_array($order->status, [
                 OrderStatus::PENDING->value,
                 OrderStatus::PREPARING->value
