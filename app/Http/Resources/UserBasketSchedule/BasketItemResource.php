@@ -14,12 +14,29 @@ class BasketItemResource extends JsonResource
     public function toArray($request): array
     {
         $user = auth('user')->user();
-        $currencyId = $user?->currency_id;
+
+        // حساب السعر بعد الخصم
+        $originalPrice = $this->price;
+        $discountValue = $this->basket?->schedule?->discount_value ?? 0;
+        $discountType = $this->basket?->schedule?->discount_type ?? null;
+
+        $discountAmount = 0;
+        if ($discountValue > 0) {
+            if ($discountType === 'percent') {
+                $discountAmount = round($originalPrice * $discountValue / 100, 2);
+            } else {
+                $discountAmount = round(min($discountValue, $originalPrice), 2);
+            }
+        }
+
+        $priceAfterDiscount = $originalPrice - $discountAmount;
 
         return [
             'id' => $this->id,
             'quantity' => (int) $this->quantity,
-            ...$this->withCurrency($this->price, 'price'),
+            ...$this->withCurrency($originalPrice, 'original_price'),
+            ...$this->withCurrency($discountAmount, 'discount_amount'),
+            ...$this->withCurrency($priceAfterDiscount, 'price_after_discount'),
             'shop_product_variant_id' => $this->shop_product_variant_id,
 
             'product' => new BasketItemProductResource($this->whenLoaded('product')),
