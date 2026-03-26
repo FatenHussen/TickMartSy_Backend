@@ -72,7 +72,7 @@ class ShopSeeder extends Seeder
                 'ratings_sum'   => rand(0, 500),
 
                 'vendor_id' => $vendor->id,
-                'is_free_delivery' => 1
+                'is_free_delivery' => 0
             ]);
 
 
