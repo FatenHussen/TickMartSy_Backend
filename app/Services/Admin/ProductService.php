@@ -166,6 +166,29 @@ class ProductService extends BaseService
             }
         }
 
+        // Handle product media with existing_media_ids
+        if (isset($data['existing_media_ids']) || isset($data['media'])) {
+            $existingIds = $data['existing_media_ids'] ?? [];
+            $newFiles = $data['media'] ?? [];
+
+            $mediaService = new \App\Services\Base\MediaService();
+
+            // Delete images not in existing_media_ids
+            $currentMedia = $object->getMedia('product');
+            foreach ($currentMedia as $media) {
+                if (!in_array($media->id, $existingIds)) {
+                    $media->delete();
+                }
+            }
+
+            // Upload new images
+            if (is_array($newFiles)) {
+                $mediaService->uploadMultiple($object, $newFiles, 'product');
+            }
+
+            unset($data['existing_media_ids'], $data['media']);
+        }
+
         foreach ($this->syncRelations as $relation => $requestKey) {
             if (in_array($requestKey, ['variants', 'shop_variants', 'badges'])) {
                 continue;
@@ -202,13 +225,26 @@ class ProductService extends BaseService
             $variantIndexMap = [];
 
             foreach ($variantsData as $index => $variantItem) {
+                $existingImagesIds = $variantItem['existing_images_ids'] ?? [];
                 $variantImages = $variantItem['images'] ?? [];
-                unset($variantItem['images']);
+                unset($variantItem['existing_images_ids'], $variantItem['images']);
 
                 $variant = $object->variants()->create($variantItem);
 
                 $variantIndexMap[$index] = $variant;
 
+                // Handle variant images with existing_images_ids
+                if (!empty($existingImagesIds)) {
+                    // This is an update - delete images not in existing list
+                    $currentMedia = $variant->getMedia('variant_images');
+                    foreach ($currentMedia as $media) {
+                        if (!in_array($media->id, $existingImagesIds)) {
+                            $media->delete();
+                        }
+                    }
+                }
+
+                // Upload new images
                 if (!empty($variantImages)) {
                     foreach ($variantImages as $file) {
                         if ($file instanceof \Illuminate\Http\UploadedFile) {
