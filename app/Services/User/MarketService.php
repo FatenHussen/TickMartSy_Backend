@@ -173,18 +173,14 @@ class MarketService
 
         $totalCommissions = $collection
             ->where('type', 'commission')
-            ->where('status', 'completed')
+            // ->where('status', 'completed')
             ->sum('amount');
 
         $totalWithdrawn = $collection
             ->where('type', 'withdraw')
-            ->where('status', 'completed')
+            // ->where('status', 'completed')
             ->sum('amount');
 
-        $pendingWithdrawals = $collection
-            ->where('type', 'withdraw')
-            ->where('status', 'pending')
-            ->sum('amount');
 
         return [
             'transactions' => $query->paginate($perPage),
@@ -192,8 +188,8 @@ class MarketService
                 'transactions_count' => $collection->count(),
                 'total_commissions'  => round($totalCommissions, 2),
                 'total_withdrawn'    => round($totalWithdrawn, 2),
-                'pending_withdrawals' => round($pendingWithdrawals, 2),
-                'available_balance'  => round($totalCommissions - $totalWithdrawn, 2),
+                'pending_withdrawals' => 0,
+                'available_balance'  => 0,
             ],
         ];
     }
