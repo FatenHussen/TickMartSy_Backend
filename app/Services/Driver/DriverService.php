@@ -69,6 +69,11 @@ class DriverService
             throw new CustomExceptionWithMessage('custom.wrong_credential');
         }
 
+        // Check if driver is deleted
+        if ($driver->is_deleted) {
+            throw new CustomExceptionWithMessage('custom.wrong_credential');
+        }
+
         return new DriverResource($driver);
     }
 
@@ -215,5 +220,22 @@ class DriverService
             ['device_id' => $data['deviceId']],
             ['fcm_token' => $data['fcmToken']]
         );
+    }
+
+    /* =========================
+        Delete Account
+    ========================= */
+
+    public function deleteAccount(): bool
+    {
+        $driver = auth('driver')->user();
+
+        // Mark as deleted instead of actual deletion
+        $driver->update(['is_deleted' => true]);
+
+        // Delete all tokens to logout
+        $driver->tokens()->delete();
+
+        return true;
     }
 }

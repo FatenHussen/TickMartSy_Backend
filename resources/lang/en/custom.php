@@ -33,6 +33,9 @@ return [
 
     'wrong_credential' => 'Invalid login credentials.',
 
+    'driver_account_deleted' => 'This account is no longer valid.',
+    'account_deleted_successfully' => 'Account deleted successfully.',
+
     'account_not_registered' => 'Account not registered.',
 
     'wrong_password' => 'The current password is incorrect.',

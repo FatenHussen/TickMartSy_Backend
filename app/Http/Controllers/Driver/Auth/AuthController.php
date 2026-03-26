@@ -90,4 +90,15 @@ class AuthController extends Controller
 
         return $this->sendResponse(message: __('custom.Success'), data: NotificationResource::collection($driver->notifications));
     }
+
+    /* =========================
+        Delete Account
+    ========================= */
+
+    public function deleteAccount(Request $request)
+    {
+        $this->service->deleteAccount();
+
+        return $this->sendResponse(message: __('custom.account_deleted_successfully'));
+    }
 }

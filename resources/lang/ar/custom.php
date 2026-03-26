@@ -36,6 +36,9 @@ return [
     'my_subscription_plural_model_label' => 'اشتراكاتي', // 'My Subscriptions'
     'wrong_credential' => 'بيانات تسجيل الدخول غير صحيحة.',
 
+    'driver_account_deleted' => 'هذا الحساب غير صالح.',
+    'account_deleted_successfully' => 'تم حذف الحساب بنجاح.',
+
     'account_not_registered' => 'الحساب غير مسجل.',
 
     'wrong_password' => 'كلمة المرور الحالية غير صحيحة.',
