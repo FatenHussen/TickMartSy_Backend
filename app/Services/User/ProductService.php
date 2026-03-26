@@ -9,7 +9,6 @@ use App\Models\Category;
 use App\Services\BaseService;
 use App\Http\Resources\Product\OneResource;
 use App\Http\Resources\Product\AllResource;
-use Illuminate\Container\Attributes\Log;
 use Illuminate\Support\Facades\Log as FacadesLog;
 
 class ProductService extends BaseService
@@ -278,8 +277,12 @@ class ProductService extends BaseService
             $this->applyTypeFilters($query, $filters);
         }
 
+        // Apply sort_by after type filters, or use default ordering
         if (!empty($filters['sort_by'])) {
             $this->applySortBy($query, $filters['sort_by']);
+        } elseif (empty($filters['type'])) {
+            // Default ordering when no type or sort_by is specified
+            $query->latest();
         }
 
         /* ================= FAVORITES ================= */
@@ -308,6 +311,7 @@ class ProductService extends BaseService
 
     protected function applySortBy($query, string $sortBy): void
     {
+        // Clear any previous ordering
         $query->reorder();
 
         match ($sortBy) {

@@ -31,7 +31,8 @@ return [
         'http://localhost:8081',
         'http://localhost:5173',
         'https://tikmool-website.octopus-software.online',
-
+        "https://tickadmin.tickmartsy.com",
+        "https://tickmartsy.com"
 
     ],
 

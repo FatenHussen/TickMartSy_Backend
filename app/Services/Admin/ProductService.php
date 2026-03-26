@@ -174,7 +174,7 @@ class ProductService extends BaseService
             $mediaService = new \App\Services\Base\MediaService();
 
             // Delete images not in existing_media_ids
-            $currentMedia = $object->getMedia('product');
+            $currentMedia = $object->media()->where('collection', 'product')->get();
             foreach ($currentMedia as $media) {
                 if (!in_array($media->id, $existingIds)) {
                     $media->delete();
@@ -236,7 +236,7 @@ class ProductService extends BaseService
                 // Handle variant images with existing_images_ids
                 if (!empty($existingImagesIds)) {
                     // This is an update - delete images not in existing list
-                    $currentMedia = $variant->getMedia('variant_images');
+                    $currentMedia = $variant->media()->where('collection', 'variant_images')->get();
                     foreach ($currentMedia as $media) {
                         if (!in_array($media->id, $existingImagesIds)) {
                             $media->delete();
