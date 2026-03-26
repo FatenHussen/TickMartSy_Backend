@@ -28,6 +28,7 @@ class Driver extends Authenticatable
         'password',
         'name',
         'is_active',
+        'is_deleted',
         'address',
         'status',
         'rate_per_order',

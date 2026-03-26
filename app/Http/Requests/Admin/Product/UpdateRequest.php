@@ -101,6 +101,8 @@ class UpdateRequest extends FormRequest
             'variants.*.attributes_values_ids' => 'nullable|array',
             'variants.*.attributes_values_ids.*' => 'required|integer|exists:attribute_values,id',
             'variants.*.price'              => 'nullable|integer|min:0',
+            'variants.*.existing_images_ids' => 'nullable|array',
+            'variants.*.existing_images_ids.*' => 'integer',
             'variants.*.images' => 'nullable|array',
             'variants.*.images.*' => 'image',
             // Category Details
@@ -117,8 +119,10 @@ class UpdateRequest extends FormRequest
             'extra_details.*.price'         => 'nullable|numeric|min:0',
 
             // Media
-            'images' => 'nullable|array',
-            'images.*' => 'image',
+            'existing_media_ids' => 'nullable|array',
+            'existing_media_ids.*' => 'integer',
+            'media' => 'nullable|array',
+            'media.*' => 'image',
 
             // Shop Product Variants (اختياري)
             'shop_variants'                 => 'nullable|array',
@@ -139,9 +143,6 @@ class UpdateRequest extends FormRequest
             // SEO Fields
             'seo_image' => 'nullable|image',
 
-            'badges'          => 'nullable|array',
-            'badges.*.id'  => 'required|integer|exists:badges,id',
-            'badges.*.position'  => 'required|in:top,bottom',
         ];
 
         // Locale-specific validation
