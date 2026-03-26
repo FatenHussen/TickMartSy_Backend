@@ -22,6 +22,7 @@ class ScheduledBasketService extends BaseService
         'items.variant',
         'items.shopProductVariant',
         'schedules',
+        'badges',
     ];
 
     protected $searchableFields = [
@@ -62,12 +63,13 @@ class ScheduledBasketService extends BaseService
     {
         DB::beginTransaction();
         try {
-            // Store items and schedule temporarily
+            // Store items, schedules, and badges temporarily
             $items = $data['items'] ?? [];
-            $scheduleData = $data['schedule'] ?? null;
+            $schedulesData = $data['schedules'] ?? [];
+            $badgesData = $data['badges'] ?? [];
 
-            // Remove items and schedule from data
-            unset($data['items'], $data['schedule']);
+            // Remove items, schedules, and badges from data
+            unset($data['items'], $data['schedules'], $data['badges']);
 
             // Set defaults
             $data['num_varieties'] = 0;
@@ -86,22 +88,33 @@ class ScheduledBasketService extends BaseService
                 $this->syncScheduledBasketItems($basket, $items);
             }
 
-            // Create default schedule if provided
-            if ($scheduleData) {
-                $basket->schedules()->create([
-                    'title' => $scheduleData['title'] ?? ['en' => 'Default Schedule', 'ar' => 'جدولة افتراضية'],
-                    'number_of_days' => $scheduleData['number_of_days'],
-                    'discount_type' => $scheduleData['discount_type'] ?? null,
-                    'discount_value' => $scheduleData['discount_value'] ?? null,
-                    'is_active' => $scheduleData['is_active'] ?? true,
-                    'is_default' => $scheduleData['is_default']
-                ]);
+            // Create schedules if provided
+            if (!empty($schedulesData)) {
+                foreach ($schedulesData as $scheduleData) {
+                    $basket->schedules()->create([
+                        'title' => $scheduleData['title'] ?? ['en' => 'Schedule', 'ar' => 'جدولة'],
+                        'number_of_days' => $scheduleData['number_of_days'],
+                        'discount_type' => $scheduleData['discount_type'] ?? null,
+                        'discount_value' => $scheduleData['discount_value'] ?? null,
+                        'is_active' => $scheduleData['is_active'] ?? true,
+                        'is_default' => $scheduleData['is_default'] ?? false,
+                    ]);
+                }
+            }
+
+            // Sync badges if provided
+            if (!empty($badgesData)) {
+                $badgeSync = [];
+                foreach ($badgesData as $badge) {
+                    $badgeSync[$badge['id']] = ['position' => $badge['position']];
+                }
+                $basket->badges()->sync($badgeSync);
             }
 
             DB::commit();
 
             // Return fresh resource with relations
-            $basket = $this->model::with($this->relations)->findOrFail($basket->id);
+            $basket = $this->model::with(array_merge($this->relations, ['badges']))->findOrFail($basket->id);
             return new $this->resource($basket);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -112,6 +125,7 @@ class ScheduledBasketService extends BaseService
             throw $e;
         }
     }
+
 
     /**
      * Override update to handle items and schedule
@@ -127,12 +141,13 @@ class ScheduledBasketService extends BaseService
                 'items_count' => isset($data['items']) ? count($data['items']) : 0,
             ]);
 
-            // Store items and schedule temporarily
+            // Store items, schedules, and badges temporarily
             $items = $data['items'] ?? [];
-            $scheduleData = $data['schedule'] ?? null;
+            $schedulesData = $data['schedules'] ?? [];
+            $badgesData = $data['badges'] ?? [];
 
-            // Remove items and schedule from data
-            unset($data['items'], $data['schedule']);
+            // Remove items, schedules, and badges from data
+            unset($data['items'], $data['schedules'], $data['badges']);
 
             // Find basket
             $basket = $this->model::findOrFail($id);
@@ -158,27 +173,37 @@ class ScheduledBasketService extends BaseService
                 $this->syncScheduledBasketItems($basket, $items);
             }
 
-            // Update schedule if provided
-            if ($scheduleData) {
+            // Update schedules if provided
+            if (!empty($schedulesData)) {
                 // Delete old schedules
                 $basket->schedules()->delete();
 
-                // Create new schedule
-                $basket->schedules()->create([
-                    'title' => $scheduleData['title'] ?? ['en' => 'Default Schedule', 'ar' => 'جدولة افتراضية'],
-                    'number_of_days' => $scheduleData['number_of_days'],
-                    'discount_type' => $scheduleData['discount_type'] ?? null,
-                    'discount_value' => $scheduleData['discount_value'] ?? null,
-                    'is_active' => $scheduleData['is_active'] ?? true,
-                    'is_default' => $scheduleData['is_default']
+                // Create new schedules
+                foreach ($schedulesData as $scheduleData) {
+                    $basket->schedules()->create([
+                        'title' => $scheduleData['title'] ?? ['en' => 'Schedule', 'ar' => 'جدولة'],
+                        'number_of_days' => $scheduleData['number_of_days'],
+                        'discount_type' => $scheduleData['discount_type'] ?? null,
+                        'discount_value' => $scheduleData['discount_value'] ?? null,
+                        'is_active' => $scheduleData['is_active'] ?? true,
+                        'is_default' => $scheduleData['is_default'] ?? false,
+                    ]);
+                }
+            }
 
-                ]);
+            // Sync badges if provided
+            if (!empty($badgesData)) {
+                $badgeSync = [];
+                foreach ($badgesData as $badge) {
+                    $badgeSync[$badge['id']] = ['position' => $badge['position']];
+                }
+                $basket->badges()->sync($badgeSync);
             }
 
             DB::commit();
 
             // Return fresh resource with relations
-            $basket = $this->model::with($this->relations)->findOrFail($basket->id);
+            $basket = $this->model::with(array_merge($this->relations, ['badges']))->findOrFail($basket->id);
             return new $this->resource($basket);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -189,6 +214,7 @@ class ScheduledBasketService extends BaseService
             throw $e;
         }
     }
+
 
     /**
      * Sync scheduled basket items - handles primary variant + alternatives

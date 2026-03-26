@@ -23,15 +23,15 @@ class StoreRequest extends FormRequest
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif',
             'delivery_price' => 'nullable|numeric|min:0',
 
-            // Schedule (default delivery schedule)
-            'schedule' => 'required|array',
-            'schedule.title' => 'nullable|array',
-            'schedule.title.*' => 'nullable|string|max:255',
-            'schedule.number_of_days' => 'required|integer|min:1',
-            'schedule.discount_type' => 'nullable|in:fixed,percentage',
-            'schedule.discount_value' => 'nullable|numeric|min:0',
-            'schedule.is_active' => 'nullable|boolean',
-            'schedule.is_default' => 'nullable|boolean',
+            // Schedules (multiple schedules)
+            'schedules' => 'required|array|min:1',
+            'schedules.*.title' => 'nullable|array',
+            'schedules.*.title.*' => 'nullable|string|max:255',
+            'schedules.*.number_of_days' => 'required|integer|min:1',
+            'schedules.*.discount_type' => 'nullable|in:fixed,percentage',
+            'schedules.*.discount_value' => 'nullable|numeric|min:0',
+            'schedules.*.is_active' => 'nullable|boolean',
+            'schedules.*.is_default' => 'nullable|boolean',
 
             // Basket items - for scheduled baskets
             'items' => 'required|array|min:1',
@@ -59,9 +59,10 @@ class StoreRequest extends FormRequest
             'name.required' => 'اسم السلة مطلوب',
             'name.*.required' => 'اسم السلة مطلوب لجميع اللغات',
 
-            'schedule.required' => 'الجدولة الافتراضية مطلوبة',
-            'schedule.number_of_days.required' => 'عدد الأيام للتوصيل مطلوب',
-            'schedule.number_of_days.min' => 'عدد الأيام يجب أن يكون على الأقل 1',
+            'schedules.required' => 'الجدولات مطلوبة',
+            'schedules.min' => 'يجب إضافة جدولة واحدة على الأقل',
+            'schedules.*.number_of_days.required' => 'عدد الأيام للتوصيل مطلوب',
+            'schedules.*.number_of_days.min' => 'عدد الأيام يجب أن يكون على الأقل 1',
 
             'items.required' => 'يجب إضافة منتج واحد على الأقل للسلة',
             'items.min' => 'يجب إضافة منتج واحد على الأقل للسلة',
