@@ -57,7 +57,8 @@ class AdminRolePermissionSeeder extends Seeder
             'Promotion',
             'PromotionRequest',
             'Subscription',
-            'Schedule'
+            'Schedule',
+            'CountrySale'
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];
