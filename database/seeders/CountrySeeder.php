@@ -22,7 +22,7 @@ class CountrySeeder extends Seeder
             ['name' => ['en' => 'China', 'ar' => 'الصين'], 'code' => '+86'],
             ['name' => ['en' => 'Turkey', 'ar' => 'تركيا'], 'code' => '+90'],
             ['name' => ['en' => 'Bangladesh', 'ar' => 'بنغلاديش'], 'code' => '+880'],
-            ['name' => ['en' => 'Canada', 'ar' => 'كندا'], 'code' => '+1'],
+            ['name' => ['en' => 'Canada', 'ar' => 'كندا'], 'code' => '+12'],
             ['name' => ['en' => 'France', 'ar' => 'فرنسا'], 'code' => '+33'],
         ];
 
