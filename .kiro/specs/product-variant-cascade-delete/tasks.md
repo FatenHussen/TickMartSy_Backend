@@ -1,0 +1,96 @@
+# Implementation Plan
+
+- [ ] 1. Write bug condition exploration test
+  - **Property 1: Fault Condition** - Cascade Soft Delete Failure and Orphaned ShopProductVariants
+  - **CRITICAL**: This test MUST FAIL on unfixed code - failure confirms the bug exists
+  - **DO NOT attempt to fix the test or the code when it fails**
+  - **NOTE**: This test encodes the expected behavior - it will validate the fix when it passes after implementation
+  - **GOAL**: Surface counterexamples that demonstrate the bug exists
+  - **Scoped PBT Approach**: Scope the property to concrete failing cases - Product updates with existing variants that have ShopProductVariants
+  - Test that updating a Product with variants soft-deletes ProductVariants WITHOUT cascading to ShopProductVariants (from Fault Condition in design)
+  - Test that ShopProductVariants remain active (deleted_at IS NULL) while their ProductVariants have deleted_at set
+  - Test that queries loading ShopProductVariant->productVariant relationship fail or return null
+  - Test that variant IDs change even when variant data hasn't changed, breaking relationships
+  - Run test on UNFIXED code
+  - **EXPECTED OUTCOME**: Test FAILS (this is correct - it proves the bug exists)
+  - Document counterexamples found to understand root cause
+  - Mark task complete when test is written, run, and failure is documented
+  - _Requirements: 2.1, 2.2, 2.3, 2.4_
+
+- [ ] 2. Write preservation property tests (BEFORE implementing fix)
+  - **Property 2: Preservation** - Non-Variant Operations Unchanged
+  - **IMPORTANT**: Follow observation-first methodology
+  - Observe behavior on UNFIXED code for non-buggy inputs
+  - Write property-based tests capturing observed behavior patterns from Preservation Requirements
+  - Property-based testing generates many test cases for stronger guarantees
+  - Test that creating a new Product with variants works correctly (variants are created, no errors)
+  - Test that querying ProductVariants with soft delete scope correctly excludes soft-deleted variants
+  - Test that force deleting (hard delete) a ProductVariant works correctly without cascading to ShopProductVariants
+  - Test that updating a Product without changing variant data leaves variants unchanged
+  - Test that Products without variants continue to work normally
+  - Test that Variants without ShopProductVariants continue to work normally
+  - Run tests on UNFIXED code
+  - **EXPECTED OUTCOME**: Tests PASS (this confirms baseline behavior to preserve)
+  - Mark task complete when tests are written, run, and passing on unfixed code
+  - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6_
+
+- [ ] 3. Fix for Product Variant Cascade Delete Bug
+
+  - [ ] 3.1 Add cascade soft delete event listener to ProductVariant model
+    - Open `app/Models/ProductVariant.php`
+    - Add or update the `boot()` method to include a `deleting` event listener
+    - In the event listener, check if the deletion is a soft delete (not force delete)
+    - If soft delete, cascade to related ShopProductVariants: `$this->shopVariants()->delete()`
+    - Ensure hard deletes (force delete) do NOT trigger cascade
+    - _Bug_Condition: isBugCondition(input) where input.operation == 'update' AND existingVariantsHaveShopVariants(input.productId) AND NOT cascadeSoftDeleteImplemented()_
+    - _Expected_Behavior: cascadeSoftDeleteOccurred(result) - ShopProductVariants are automatically soft-deleted when their parent ProductVariant is soft-deleted_
+    - _Preservation: Hard-deleting (force delete) a ProductVariant must continue to follow existing hard delete behavior (no cascade)_
+    - _Requirements: 2.1, 2.3, 3.4_
+
+  - [ ] 3.2 Replace delete-create pattern with update-or-create pattern in ProductService
+    - Open `app/Services/Admin/ProductService.php`
+    - Locate the `handleRelations()` method
+    - Replace `$object->variants()->delete()` with update-or-create logic:
+      - Build a map of existing variants keyed by attributes_values_ids (sorted for consistent matching)
+      - Iterate through incoming variant data
+      - For each incoming variant, check if a matching existing variant exists (same attributes_values_ids)
+      - If match found: update the existing variant with new data (is_trend, etc.) and preserve its ID
+      - If no match: create a new variant
+      - After processing all incoming variants, soft-delete any existing variants that were not matched
+    - Update $variantIndexMap to use existing variant IDs for matched variants
+    - Ensure shop_variants logic works with both new and updated variants
+    - Ensure image handling works for both new and updated variants
+    - _Bug_Condition: isBugCondition(input) where input.operation == 'update' AND existingVariantsExist(input.productId)_
+    - _Expected_Behavior: matchedVariantsWereUpdated(result) AND onlyUnmatchedVariantsWereDeleted(result) - matched variants are updated in place, preserving relationships_
+    - _Preservation: Creating a new Product with variants must continue to create all variants normally; Updating a Product without changing variant data must continue to leave variants unchanged_
+    - _Requirements: 2.2, 2.4, 3.1, 3.5_
+
+  - [ ] 3.3 Verify bug condition exploration test now passes
+    - **Property 1: Expected Behavior** - Cascade Soft Delete and Relationship Preservation
+    - **IMPORTANT**: Re-run the SAME test from task 1 - do NOT write a new test
+    - The test from task 1 encodes the expected behavior
+    - When this test passes, it confirms the expected behavior is satisfied
+    - Run bug condition exploration test from step 1
+    - **EXPECTED OUTCOME**: Test PASSES (confirms bug is fixed)
+    - Verify that ShopProductVariants are soft-deleted when ProductVariants are soft-deleted
+    - Verify that matched variants are updated in place with preserved IDs
+    - Verify that queries loading ShopProductVariant->productVariant relationship succeed
+    - _Requirements: 2.1, 2.2, 2.3, 2.4_
+
+  - [ ] 3.4 Verify preservation tests still pass
+    - **Property 2: Preservation** - Non-Variant Operations Unchanged
+    - **IMPORTANT**: Re-run the SAME tests from task 2 - do NOT write new tests
+    - Run preservation property tests from step 2
+    - **EXPECTED OUTCOME**: Tests PASS (confirms no regressions)
+    - Confirm all tests still pass after fix (no regressions)
+    - Verify new product creation still works correctly
+    - Verify variant queries still work correctly
+    - Verify hard deletes still work correctly
+    - Verify products without variants still work correctly
+
+- [ ] 4. Checkpoint - Ensure all tests pass
+  - Run all tests (exploration + preservation)
+  - Verify no regressions in existing functionality
+  - Verify bug is fixed for all buggy inputs
+  - Verify existing behavior is preserved for all non-buggy inputs
+  - Ask the user if questions arise

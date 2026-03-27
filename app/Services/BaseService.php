@@ -167,6 +167,8 @@ abstract class BaseService
                     $data[$column]
                 );
             }
+            // Remove from $data to prevent overwriting with null
+            unset($data[$column]);
         }
 
         if (!empty($updateData)) {

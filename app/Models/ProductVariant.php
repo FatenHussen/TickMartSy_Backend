@@ -22,6 +22,22 @@ class ProductVariant extends Model
         'attributes_values_ids' => 'array',
     ];
 
+    /**
+     * Boot the model and register event listeners
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Cascade soft delete to related ShopProductVariants
+        static::deleting(function ($productVariant) {
+            // Only cascade on soft delete, not on force delete
+            if (!$productVariant->isForceDeleting()) {
+                $productVariant->shopVariants()->delete();
+            }
+        });
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Relationships
