@@ -198,7 +198,8 @@ Route::prefix('admin')->group(
                     'category-details' => CategoryDetailController::class,
                     'products' => ProductController::class,
                     'product-variants' => ProductVariantController::class,
-                    'shop-product-variants' => ShopProductVariantController::class
+                    'shop-product-variants' => ShopProductVariantController::class,
+                    'sale-countries' => \App\Http\Controllers\Admin\SaleCountry\SaleCountryCrudController::class,
                 ]);
 
                 // Product Approval routes

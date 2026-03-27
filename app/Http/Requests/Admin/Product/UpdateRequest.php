@@ -23,7 +23,6 @@ class UpdateRequest extends FormRequest
             'name',
             'description',
             'full_description',
-            'country',
             'seo_title',
             'seo_description',
             'seo_keywords',
@@ -80,6 +79,8 @@ class UpdateRequest extends FormRequest
             'category_id'           => 'nullable|exists:categories,id',
             'sku'                   => 'nullable|string|unique:products,sku,' . $productId,
             'model'                 => 'nullable|string|unique:products,model,' . $productId,
+            'country_id'            => 'nullable|exists:countries,id',
+            'country_sale_id'       => 'nullable|exists:sale_countries,id',
             'price'                 => 'nullable|integer|min:0',
             'cost_price'            => 'nullable|numeric|min:0',
             'discount'              => 'nullable|integer|min:0|max:100',
@@ -150,7 +151,6 @@ class UpdateRequest extends FormRequest
             $rules["name.$locale"] = 'nullable|string|max:255';
             $rules["description.$locale"] = 'nullable|string';
             $rules["full_description.$locale"] = 'nullable|string';
-            $rules["country.$locale"] = 'nullable|string';
 
             $rules["category_details.*.detail_value.$locale"] = 'nullable|string';
             $rules["extra_details.*.detail_key.$locale"] = 'nullable|string';

@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            // Remove old country field (was JSON)
+            // إزالة حقل country القديم (JSON)
             $table->dropColumn('country');
 
-            // Add new country fields as foreign keys
+            // إضافة الحقول الجديدة
             $table->foreignId('country_id')->nullable()->after('model')->constrained('countries')->nullOnDelete();
-            $table->foreignId('country_sale_id')->nullable()->after('country_id')->constrained('countries')->nullOnDelete();
+            $table->foreignId('country_sale_id')->nullable()->after('country_id')->constrained('sale_countries')->nullOnDelete();
         });
     }
 
@@ -31,7 +31,7 @@ return new class extends Migration
             $table->dropForeign(['country_sale_id']);
             $table->dropColumn(['country_id', 'country_sale_id']);
 
-            // Restore old country field
+            // إعادة حقل country القديم
             $table->json('country')->nullable();
         });
     }

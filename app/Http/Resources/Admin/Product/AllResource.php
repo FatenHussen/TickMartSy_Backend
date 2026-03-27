@@ -16,7 +16,6 @@ class AllResource extends JsonResource
             'name'                  => $this->name,
             'description'           => $this->description,
             'full_description'      => $this->full_description,
-            'country'               => $this->country,
 
             'sku'                   => $this->sku,
             'model'                 => $this->model,
@@ -45,6 +44,9 @@ class AllResource extends JsonResource
                 'id' => $this->vendor->id,
                 'name' => $this->vendor->name,
             ] : null,
+
+            'origin_country' => $this->originCountry?->name,
+            'sale_country' => $this->saleCountry?->name,
 
             'approval_status' => $this->approval_status?->value,
             'approval_status_label' => match($this->approval_status?->value) {
