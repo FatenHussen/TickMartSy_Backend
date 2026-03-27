@@ -38,8 +38,8 @@ class PromotionSeeder extends Seeder
         // Example: spend X discount
         Promotion::create([
             'name' => [
-                'en' => 'Spend 200 Get 20 Off',
-                'ar' => 'اصرف 200 واحصل على خصم 20'
+                'en' => 'Spend 100 Get 20 Off',
+                'ar' => 'اصرف 100 واحصل على خصم 20'
             ],
             'description' => [
                 'en' => 'Get $20 off when spending $200 or more.',
@@ -51,7 +51,7 @@ class PromotionSeeder extends Seeder
             'ends_at' => Carbon::now()->addDays(30),
             'discount_value' => 20,
             'discount_type' => 'fixed',
-            'min_spend' => 200,
+            'min_spend' => 100,
             'buy_quantity' => null,
             'get_quantity' => null,
             'gift_product_ids' => [],
@@ -60,12 +60,12 @@ class PromotionSeeder extends Seeder
         // Example: buy X get Y free promotion
         Promotion::create([
             'name' => [
-                'en' => 'Buy 2 Get 1 Free',
-                'ar' => 'اشتري 2 واحصل على 1 مجاناً'
+                'en' => 'Buy 3 Get 1 Free',
+                'ar' => 'اشتري 3 واحصل على 1 مجاناً'
             ],
             'description' => [
-                'en' => 'Buy 2 products and get 1 free.',
-                'ar' => 'اشتري منتجين واحصل على واحد مجاناً.'
+                'en' => 'Buy 3 products and get 1 free.',
+                'ar' => 'اشتري 3 منتجات واحصل على واحد مجاناً.'
             ],
             'type' => 'buy_x_get_y',
             'is_active' => true,
@@ -74,7 +74,7 @@ class PromotionSeeder extends Seeder
             'discount_value' => 0,
             'discount_type' => null,
             'min_spend' => 0,
-            'buy_quantity' => 2,
+            'buy_quantity' => 3,
             'get_quantity' => 1,
             'gift_product_ids' => [1], // replace with real product IDs
         ]);

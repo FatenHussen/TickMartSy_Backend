@@ -83,7 +83,6 @@ class RecipeSeeder extends Seeder
             'area_id' => 1,
             'address' => ['ar' => 'المزة', 'en' => 'Al-Mazza'],
             'vendor_id' => $vendor->id,
-            'working_hours' => ['sat-sun' => '08:00-20:00'],
         ]);
 
         /* =======================
@@ -96,7 +95,7 @@ class RecipeSeeder extends Seeder
             'vendor_id' => $vendor->id,
             'name' => ['ar' => 'رز قصير أبيض', 'en' => 'Short White Rice'],
             'description' => ['ar' => 'رز قصير أبيض', 'en' => 'Short White Rice'],
-            'price' => 20,
+            'price' => 4,
             'approval_status' => \App\Enums\ProductApprovalStatus::APPROVED->value
         ]);
 
@@ -111,7 +110,7 @@ class RecipeSeeder extends Seeder
             'product_variant_id' => $shortVariant->id,
             'shop_id' => $shop->id,
             'quantity' => 100,
-            'price' => 2000,
+            'price' => 4,
         ]);
 
         // Long Rice
@@ -120,7 +119,7 @@ class RecipeSeeder extends Seeder
             'vendor_id' => $vendor->id,
             'name' => ['ar' => 'رز طويل أبيض', 'en' => 'Long White Rice'],
             'description' => ['ar' => 'رز طويل أبيض', 'en' => 'Long White Rice'],
-            'price' => 21,
+            'price' => 5,
             'approval_status' => \App\Enums\ProductApprovalStatus::APPROVED->value
 
         ]);
@@ -136,7 +135,7 @@ class RecipeSeeder extends Seeder
             'product_variant_id' => $longVariant->id,
             'shop_id' => $shop->id,
             'quantity' => 80,
-            'price' => 2100,
+            'price' => 6,
         ]);
 
         // Ghee
@@ -150,7 +149,7 @@ class RecipeSeeder extends Seeder
             'vendor_id' => $vendor->id,
             'name' => ['ar' => 'سمنة', 'en' => 'Ghee'],
             'description' => ['ar' => 'سمنة', 'en' => 'Ghee'],
-            'price' => 50,
+            'price' => 5,
             'approval_status' => \App\Enums\ProductApprovalStatus::APPROVED->value
 
         ]);
@@ -166,7 +165,7 @@ class RecipeSeeder extends Seeder
             'product_variant_id' => $gheeVariant->id,
             'shop_id' => $shop->id,
             'quantity' => 50,
-            'price' => 500,
+            'price' => 5,
         ]);
 
         /* =======================
@@ -183,18 +182,18 @@ class RecipeSeeder extends Seeder
                 'serves' => '2-4',
                 'prepare_time' => '25',
                 'video_url' => 'https://youtu.be/WJibKMiLXw8',
-                'delivery_price' => 500,
+                'delivery_price' => 7,
             ],
             [
                 'name' => ['ar' => 'أرز المندي', 'en' => 'Mandi Rice'],
                 'description' => ['ar' => 'مندي تقليدي بالتوابل العربية الأصيلة', 'en' => 'Traditional Mandi with Authentic Arabic Spices'],
-                'image' => 'recipies/image1.jpg',
+                'image' => 'recipies/image3.jpg',
                 'rating' => 4.1,
                 'discount' => 10,
                 'serves' => '3-5',
                 'prepare_time' => '35',
                 'video_url' => 'https://youtu.be/WJibKMiLXw8',
-                'delivery_price' => 600,
+                'delivery_price' => 7,
             ],
             [
                 'name' => ['ar' => 'أرز البرياني', 'en' => 'Biryani Rice'],
@@ -205,29 +204,29 @@ class RecipeSeeder extends Seeder
                 'serves' => '2-3',
                 'prepare_time' => '30',
                 'video_url' => 'https://youtu.be/WJibKMiLXw8',
-                'delivery_price' => 550,
+                'delivery_price' => 8,
             ],
             [
                 'name' => ['ar' => 'برغل بالتوابل', 'en' => 'Spiced Bulgur'],
                 'description' => ['ar' => 'برغل خفيف مع خلطة التوابل الشامية', 'en' => 'Light Bulgur with Levantine Spice Mix'],
-                'image' => 'recipies/image1.jpg',
+                'image' => 'recipies/image2.jpg',
                 'rating' => 3.9,
                 'discount' => 5,
                 'serves' => '2-4',
                 'prepare_time' => '20',
                 'video_url' => 'https://youtu.be/WJibKMiLXw8',
-                'delivery_price' => 450,
+                'delivery_price' => 9,
             ],
             [
                 'name' => ['ar' => 'أرز بالسمنة', 'en' => 'Ghee Rice'],
                 'description' => ['ar' => 'أرز غني بالسمنة البلدية الطبيعية', 'en' => 'Rich Rice with Natural Homemade Ghee'],
-                'image' => 'recipies/image1.jpg',
+                'image' => 'recipies/image2.jpg',
                 'rating' => 4.3,
                 'discount' => 12,
                 'serves' => '2-4',
                 'prepare_time' => '22',
                 'video_url' => 'https://youtu.be/WJibKMiLXw8',
-                'delivery_price' => 500,
+                'delivery_price' => 9,
             ],
         ];
 

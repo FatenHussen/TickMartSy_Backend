@@ -158,7 +158,7 @@ class LeenUserSeeder extends Seeder
                 'cart_type' => CartType::DEFAULT->value,
             ],
             [
-                'status' => OrderStatus::OUT_DELIVERY->value,
+                'status' => OrderStatus::PREPARING->value,
                 'timestamps' => [
                     'pending_at' => now()->subHours(10),
                     'preparing_at' => now()->subHours(9)->addMinutes(15),

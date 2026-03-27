@@ -474,6 +474,8 @@ class OrderService extends BaseService
             case CartType::DEFAULT->value:
             default:
                 $variantIds = collect($data['items'])->pluck('shop_product_variant_id')->values()->toArray();
+                Log::info("Helooooooooooooo");
+
                 $deliveryPrice = CalculateDeliveryPriceService::handle(
                     user: $user,
                     items: $variantIds,

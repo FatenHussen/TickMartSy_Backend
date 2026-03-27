@@ -462,7 +462,9 @@ class OrderService
         return Order::with('items')
             ->where('driver_id', $driverId)
             ->whereIn('status', [
-                OrderStatus::PREPARING->value
+                OrderStatus::PREPARING->value,
+                OrderStatus::OUT_DELIVERY->value
+
             ])
             ->where('start_todelivery', true)
             ->latest()
@@ -492,8 +494,11 @@ class OrderService
 
             $hasActiveOrder = Order::where('driver_id', $driverId)
                 ->where('start_todelivery', true)
-                ->where('status', OrderStatus::PREPARING->value)
-                ->where('id', '!=', $orderId)
+                ->whereIn('status', [
+                    OrderStatus::PREPARING->value,
+                    OrderStatus::OUT_DELIVERY->value
+
+                ])->where('id', '!=', $orderId)
                 ->exists();
 
             if ($hasActiveOrder) {

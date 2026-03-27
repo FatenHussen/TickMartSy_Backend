@@ -247,7 +247,7 @@ class GovernorateSeeder extends Seeder
                         'lat' => $area['lat'] ?? null,
                         'lng' => $area['lng'] ?? null,
                         'city_id' => $city->id,
-                        'base_fee' => 5
+                        'base_fee' => 4
                     ]);
                 }
             }
