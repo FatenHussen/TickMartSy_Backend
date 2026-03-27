@@ -29,7 +29,7 @@ return new class extends Migration
         Schema::table('products', function (Blueprint $table) {
             $table->dropForeign(['country_id']);
             $table->dropForeign(['sale_country_id']);
-            $table->dropColumn(['country_id', 'country_sale_id']);
+            $table->dropColumn(['country_id', 'sale_country_id']);
 
             // إعادة حقل country القديم
             $table->json('country')->nullable();

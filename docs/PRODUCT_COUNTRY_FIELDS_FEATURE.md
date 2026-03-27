@@ -4,7 +4,7 @@
 
 تم إضافة حقلين جديدين لجدول المنتجات:
 1. **بلد المنشأ** (`country_id`) - من جدول `countries` الموجود
-2. **بلد المبيع** (`country_sale_id`) - من جدول `sale_countries` الجديد
+2. **بلد المبيع** (`sale_country_id`) - من جدول `sale_countries` الجديد
 
 ## التغييرات في قاعدة البيانات
 
@@ -29,7 +29,7 @@ country JSON NULL
 
 -- تم إضافة
 country_id BIGINT NULL FOREIGN KEY REFERENCES countries(id)
-country_sale_id BIGINT NULL FOREIGN KEY REFERENCES sale_countries(id)
+sale_country_id BIGINT NULL FOREIGN KEY REFERENCES sale_countries(id)
 ```
 
 ## الـ Models
@@ -54,7 +54,7 @@ class SaleCountry extends Model
 
     public function products()
     {
-        return $this->hasMany(Product::class, 'country_sale_id');
+        return $this->hasMany(Product::class, 'sale_country_id');
     }
 
     public function getIconUrlAttribute()
@@ -74,7 +74,7 @@ public function originCountry()
 
 public function saleCountry()
 {
-    return $this->belongsTo(SaleCountry::class, 'country_sale_id');
+    return $this->belongsTo(SaleCountry::class, 'sale_country_id');
 }
 ```
 
@@ -192,7 +192,7 @@ description[en]: Product description
 country_id: 5
 
 # بلد المبيع (من جدول sale_countries)
-country_sale_id: 1
+sale_country_id: 1
 
 media[0]: [صورة]
 ```
@@ -210,7 +210,7 @@ POST /api/admin/products/20
 country_id: 3
 
 # تحديث بلد المبيع
-country_sale_id: 2
+sale_country_id: 2
 ```
 
 ---
@@ -294,7 +294,7 @@ name[en]: iPhone 15
 description[ar]: أحدث هاتف من آبل
 description[en]: Latest Apple phone
 country_id: 10
-country_sale_id: 1
+sale_country_id: 1
 media[0]: [صورة]
 ```
 
@@ -305,7 +305,7 @@ POST http://127.0.0.1:8000/api/admin/products/20
 
 Body (form-data):
 country_id: 5
-country_sale_id: 2
+sale_country_id: 2
 ```
 
 ---
@@ -330,13 +330,13 @@ country_sale_id: 2
 
 **Create & Update:**
 - `country_id`: nullable|exists:countries,id
-- `country_sale_id`: nullable|exists:sale_countries,id
+- `sale_country_id`: nullable|exists:sale_countries,id
 
 ---
 
 ## الفرق بين بلد المنشأ وبلد المبيع
 
-| الميزة | بلد المنشأ (country_id) | بلد المبيع (country_sale_id) |
+| الميزة | بلد المنشأ (country_id) | بلد المبيع (sale_country_id) |
 |--------|------------------------|------------------------------|
 | الجدول | `countries` | `sale_countries` |
 | الاستخدام | البلد الذي صُنع فيه المنتج | البلد الذي يُباع فيه المنتج |

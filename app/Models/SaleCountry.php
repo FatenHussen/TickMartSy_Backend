@@ -29,7 +29,7 @@ class SaleCountry extends Model
 
     public function products()
     {
-        return $this->hasMany(Product::class, 'country_sale_id');
+        return $this->hasMany(Product::class, 'sale_country_id');
     }
 
     public function getIconUrlAttribute()
