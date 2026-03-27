@@ -17,7 +17,7 @@ return new class extends Migration
 
             // إضافة الحقول الجديدة
             $table->foreignId('country_id')->nullable()->after('model')->constrained('countries')->nullOnDelete();
-            $table->foreignId('country_sale_id')->nullable()->after('country_id')->constrained('sale_countries')->nullOnDelete();
+            $table->foreignId('sale_country_id')->nullable()->after('country_id')->constrained('sale_countries')->nullOnDelete();
         });
     }
 
@@ -28,7 +28,7 @@ return new class extends Migration
     {
         Schema::table('products', function (Blueprint $table) {
             $table->dropForeign(['country_id']);
-            $table->dropForeign(['country_sale_id']);
+            $table->dropForeign(['sale_country_id']);
             $table->dropColumn(['country_id', 'country_sale_id']);
 
             // إعادة حقل country القديم
