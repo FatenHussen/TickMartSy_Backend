@@ -26,8 +26,8 @@ class ProductSeeder extends Seeder
         $fashionCategory = Category::where('name->en', 'Fashion')->first();
 
         // Get countries for origin and sale
-        $countries = \App\Models\Country::pluck('id', 'name->en')->toArray();
-        $saleCountries = \App\Models\SaleCountry::pluck('id', 'name->en')->toArray();
+        $countries = \App\Models\Country::all()->pluck('id', 'name.en')->toArray();
+        $saleCountries = \App\Models\SaleCountry::all()->pluck('id', 'name.en')->toArray();
 
         $products = [
             // Rice Products
