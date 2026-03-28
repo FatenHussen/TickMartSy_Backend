@@ -37,6 +37,14 @@ class BasketItemSeeder extends Seeder
                 ['product_id' => 4, 'variant_id' => 8, 'shop_product_variant_id' => 1, 'quantity' => 2, 'is_required' => false, 'shop_product_variant_ids' => [4, 3]],
                 ['product_id' => 5, 'variant_id' => 10, 'shop_product_variant_id' => 1, 'quantity' => 4, 'is_required' => true, 'shop_product_variant_ids' => [4, 3]],
             ],
+
+            4 => [
+                ['product_id' => 1, 'variant_id' => 2, 'shop_product_variant_id' => 1, 'quantity' => 3, 'is_required' => true, 'shop_product_variant_ids' => []],
+                ['product_id' => 2, 'variant_id' => 4, 'shop_product_variant_id' => 2, 'quantity' => 2, 'is_required' => true, 'shop_product_variant_ids' => []],
+                ['product_id' => 3, 'variant_id' => 5, 'shop_product_variant_id' => 3, 'quantity' => 1, 'is_required' => true, 'shop_product_variant_ids' => []],
+                ['product_id' => 4, 'variant_id' => 7, 'shop_product_variant_id' => 1, 'quantity' => 2, 'is_required' => true, 'shop_product_variant_ids' => []],
+                ['product_id' => 5, 'variant_id' => 9, 'shop_product_variant_id' => 2, 'quantity' => 1, 'is_required' => true, 'shop_product_variant_ids' => []],
+            ],
         ];
 
         foreach ($itemsData as $basketId => $items) {
@@ -67,8 +75,8 @@ class BasketItemSeeder extends Seeder
 
                     'is_extra' => $isScheduled ? ($itemData['is_required'] ? 0 : 1) : 0,
 
-                    'shop_product_variant_ids' => $isScheduled
-                        ? ($itemData['shop_product_variant_ids'] ?? [])
+                    'shop_product_variant_ids' => $isScheduled && !empty($itemData['shop_product_variant_ids'])
+                        ? $itemData['shop_product_variant_ids']
                         : null,
                     'shop_product_variant_id' => $itemData['shop_product_variant_id'],
                     'min_quantity' => 1,
