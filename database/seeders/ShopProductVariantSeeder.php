@@ -31,9 +31,6 @@ class ShopProductVariantSeeder extends Seeder
                     'shop_id' => $shop->id,
                     'quantity' => rand(10, 100),
                     'price' => round($shopPrice),
-                    'discount' => $discount,
-                    'discount_type' => 'percentage',
-                    'final_price' => round($finalPrice),
                 ]);
             }
         }
