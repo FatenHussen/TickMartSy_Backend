@@ -43,6 +43,9 @@ class RatingSeeder extends Seeder
             'سيء',
             'خدمة ممتازة',
             'سعر مناسب',
+            'جودة عالية',
+            'توصيل سريع',
+            'تعامل راقي',
         ];
 
         foreach (range(1, 300) as $i) {
@@ -55,8 +58,8 @@ class RatingSeeder extends Seeder
 
             $rateableId = Arr::random($rateables[$type]);
 
-            // Check if it's a product or not
-            $isProduct = $type === RateableType::PRODUCT->value;
+            // 70% chance to have a comment for all types
+            $hasComment = rand(1, 100) <= 70;
 
             Rating::create([
                 'user_id' => Arr::random($users),
@@ -64,8 +67,8 @@ class RatingSeeder extends Seeder
                 'rateable_type' => $this->resolveRateableClass($type),
                 'rateable_id' => $rateableId,
                 'rating' => rand(1, 5),
-                'comment' => $isProduct ? Arr::random($comments) : null,
-                'image' => $isProduct && rand(0, 1) ? 'ratings/sample.jpg' : null,
+                'comment' => $hasComment ? Arr::random($comments) : null,
+                'image' => ($type === RateableType::PRODUCT->value && rand(0, 1)) ? 'ratings/sample.jpg' : null,
                 'is_verified' => rand(0, 1),
                 'created_at' => now()->subDays(rand(0, 180)),
                 'updated_at' => now(),
