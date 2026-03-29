@@ -32,6 +32,7 @@ class AllResource extends JsonResource
             'offer_ends_at' => $this->offer_ends_at?->format('Y-m-d'),
             'banner_starts_at' => $this->banner_starts_at?->format('Y-m-d'),
             'banner_ends_at' => $this->banner_ends_at?->format('Y-m-d'),
+            'is_active' => $this->is_active,
 
             'is_expired' => $this->isExpired(),
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),

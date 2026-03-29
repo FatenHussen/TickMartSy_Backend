@@ -23,6 +23,8 @@ class OneResource extends JsonResource
                 'id'   => $value->id,
                 'name' => $value->getTranslations('name'),
             ]),
+            'is_active' => $this->is_active,
+
         ];
     }
 }

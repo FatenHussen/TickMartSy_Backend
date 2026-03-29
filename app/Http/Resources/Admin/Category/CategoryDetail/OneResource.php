@@ -21,6 +21,8 @@ class OneResource extends JsonResource
                 'id'   => $this->category->id,
                 'name' => $this->category->getTranslations('name'),
             ],
+            'is_active' => $this->is_active,
+
             'created_at' => $this->created_at,
         ];
     }
