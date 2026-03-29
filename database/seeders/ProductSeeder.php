@@ -25,6 +25,10 @@ class ProductSeeder extends Seeder
         $electronicsCategory = Category::where('name->en', 'Electronics')->first();
         $fashionCategory = Category::where('name->en', 'Fashion')->first();
 
+        // Get countries for origin and sale
+        $countries = \App\Models\Country::all()->pluck('id', 'name.en')->toArray();
+        $saleCountries = \App\Models\SaleCountry::all()->pluck('id', 'name.en')->toArray();
+
         $products = [
             // Rice Products
             [
@@ -38,7 +42,8 @@ class ProductSeeder extends Seeder
                     'ar' => 'أرز بسمتي فاخر معتق بحبات طويلة جداً. مثالي للبرياني والأرز بالخلطة والوجبات اليومية. عطري طبيعياً بنكهة رقيقة.'
                 ],
                 'sku' => 'RICE-BAS-001',
-                'country' => ['en' => 'India', 'ar' => 'الهند'],
+                'country_id' => $countries['India'] ?? null,
+                'sale_country_id' => $saleCountries['Saudi Arabia'] ?? null,
                 'model' => 'BASMATI-PREMIUM',
                 'price' => 25,
                 'cost_price' => 20,
@@ -76,7 +81,8 @@ class ProductSeeder extends Seeder
                     'ar' => 'أرز مصري قصير الحبة فاخر، مثالي للأطباق الشرق أوسطية التقليدية مثل الكبسة والمندي والمحاشي. يمتص النكهات بشكل رائع.'
                 ],
                 'sku' => 'RICE-EGY-002',
-                'country' => ['en' => 'Egypt', 'ar' => 'مصر'],
+                'country_id' => $countries['Egypt'] ?? null,
+                'sale_country_id' => $saleCountries['UAE'] ?? null,
                 'model' => 'EGYPTIAN-SHORT',
                 'price' => 18,
                 'cost_price' => 14,
@@ -114,7 +120,8 @@ class ProductSeeder extends Seeder
                     'ar' => 'أرز ياسمين تايلندي أصلي برائحة زهرية طبيعية. قوام ناعم ولزج قليلاً مثالي للمطبخ الآسيوي. ينضج هشاً وطرياً.'
                 ],
                 'sku' => 'RICE-JAS-003',
-                'country' => ['en' => 'Thailand', 'ar' => 'تايلاند'],
+                'country_id' => $countries['Thailand'] ?? null,
+                'sale_country_id' => $saleCountries['Kuwait'] ?? null,
                 'model' => 'JASMINE-THAI',
                 'price' => 22,
                 'discount' => 0,
@@ -147,7 +154,8 @@ class ProductSeeder extends Seeder
                     'ar' => 'أرز كالروز قصير الحبة فاخر بقوام ناعم ولزج. مثالي للسوشي وأطباق الأرز والأطباق الآسيوية. يمتص النكهات بشكل رائع.'
                 ],
                 'sku' => 'RICE-CAL-009',
-                'country' => ['en' => 'USA', 'ar' => 'أمريكا'],
+                'country_id' => $countries['USA'] ?? null,
+                'sale_country_id' => $saleCountries['Qatar'] ?? null,
                 'model' => 'CALROSE-SHORT',
                 'price' => 19,
                 'cost_price' => 15,
@@ -185,7 +193,8 @@ class ProductSeeder extends Seeder
                     'ar' => 'أرز أربوريو إيطالي أصلي، المعيار الذهبي للريزوتو. محتوى نشا عالي يخلق قواماً كريمياً. حبات قصيرة وممتلئة.'
                 ],
                 'sku' => 'RICE-ARB-010',
-                'country' => ['en' => 'Italy', 'ar' => 'إيطاليا'],
+                'country_id' => $countries['Italy'] ?? null,
+                'sale_country_id' => $saleCountries['Bahrain'] ?? null,
                 'model' => 'ARBORIO-ITALIAN',
                 'price' => 28,
                 'cost_price' => 23,
@@ -225,7 +234,8 @@ class ProductSeeder extends Seeder
                     'ar' => 'أرز أبيض طويل الحبة فاخر ينضج هشاً ومنفصلاً. مثالي للوجبات اليومية والأرز بالخلطة والأطباق الجانبية. متعدد الاستخدامات وموثوق.'
                 ],
                 'sku' => 'RICE-LNG-011',
-                'country' => ['en' => 'Pakistan', 'ar' => 'باكستان'],
+                'country_id' => $countries['Pakistan'] ?? null,
+                'sale_country_id' => $saleCountries['Oman'] ?? null,
                 'model' => 'LONG-GRAIN-WHITE',
                 'price' => 16,
                 'cost_price' => 12,
@@ -263,7 +273,8 @@ class ProductSeeder extends Seeder
                     'ar' => 'أرز بني طويل الحبة مغذي مع النخالة السليمة. غني بالألياف والفيتامينات والمعادن. نكهة جوزية وقوام مطاطي. يستغرق وقتاً أطول للطبخ لكنه يستحق.'
                 ],
                 'sku' => 'RICE-BRN-012',
-                'country' => ['en' => 'USA', 'ar' => 'أمريكا'],
+                'country_id' => $countries['USA'] ?? null,
+                'sale_country_id' => $saleCountries['Saudi Arabia'] ?? null,
                 'model' => 'BROWN-LONG-GRAIN',
                 'price' => 21,
                 'cost_price' => 17,
@@ -303,7 +314,8 @@ class ProductSeeder extends Seeder
                     'ar' => 'سماعات بلوتوث لاسلكية فاخرة مع إلغاء الضوضاء. عمر بطارية 30 ساعة، تصميم مريح، وجودة صوت فائقة.'
                 ],
                 'sku' => 'ELEC-HEAD-013',
-                'country' => ['en' => 'China', 'ar' => 'الصين'],
+                'country_id' => $countries['China'] ?? null,
+                'sale_country_id' => $saleCountries['UAE'] ?? null,
                 'model' => 'BT-HEADPHONE-X1',
                 'price' => 15,
                 'cost_price' => 12,
@@ -341,7 +353,8 @@ class ProductSeeder extends Seeder
                     'ar' => 'ساعة ذكية متقدمة مع مراقب معدل ضربات القلب، تتبع النوم، GPS، وأكثر من 50 وضع رياضي. مقاومة للماء حتى 50م. عمر بطارية 7 أيام.'
                 ],
                 'sku' => 'ELEC-WATCH-014',
-                'country' => ['en' => 'China', 'ar' => 'الصين'],
+                'country_id' => $countries['China'] ?? null,
+                'sale_country_id' => $saleCountries['Kuwait'] ?? null,
                 'model' => 'SMARTWATCH-FIT-PRO',
                 'price' => 85,
                 'cost_price' => 65,
@@ -381,7 +394,8 @@ class ProductSeeder extends Seeder
                     'ar' => 'تيشيرت قطني 100% فاخر بقصة مريحة. قماش قابل للتنفس، خياطة متينة، ومتوفر بألوان متعددة. مثالي للارتداء اليومي.'
                 ],
                 'sku' => 'FASH-TSHIRT-015',
-                'country' => ['en' => 'Turkey', 'ar' => 'تركيا'],
+                'country_id' => $countries['Turkey'] ?? null,
+                'sale_country_id' => $saleCountries['Qatar'] ?? null,
                 'model' => 'COTTON-CLASSIC-TEE',
                 'price' => 35,
                 'cost_price' => 25,
@@ -419,7 +433,8 @@ class ProductSeeder extends Seeder
                     'ar' => 'جينز دينم فاخر بتصميم قصة ضيقة. قماش مطاطي مريح، تصميم كلاسيكي بـ 5 جيوب، وبناء متين. مثالي للإطلالات الكاجوال والسمارت كاجوال.'
                 ],
                 'sku' => 'FASH-JEANS-016',
-                'country' => ['en' => 'Bangladesh', 'ar' => 'بنغلاديش'],
+                'country_id' => $countries['Bangladesh'] ?? null,
+                'sale_country_id' => $saleCountries['Bahrain'] ?? null,
                 'model' => 'DENIM-SLIM-FIT',
                 'price' => 75,
                 'cost_price' => 55,
@@ -459,7 +474,8 @@ class ProductSeeder extends Seeder
                     'ar' => 'برغل قمح ناعم فاخر، مثالي للتبولة والكبة والسلطات. مطبوخ مسبقاً ومجفف للتحضير السريع. غني بالألياف والعناصر الغذائية.'
                 ],
                 'sku' => 'BUL-FINE-004',
-                'country' => ['en' => 'Syria', 'ar' => 'سوريا'],
+                'country_id' => $countries['Syria'] ?? null,
+                'sale_country_id' => $saleCountries['Oman'] ?? null,
                 'model' => 'BULGUR-FINE',
                 'price' => 8,
                 'discount' => 5,
@@ -490,7 +506,8 @@ class ProductSeeder extends Seeder
                     'ar' => 'برغل قمح خشن فاخر، مثالي للبرغل بالخلطة والشوربات والحشوات. قوام قوي بنكهة جوزية. ينضج في 15-20 دقيقة.'
                 ],
                 'sku' => 'BUL-COAR-005',
-                'country' => ['en' => 'Turkey', 'ar' => 'تركيا'],
+                'country_id' => $countries['Turkey'] ?? null,
+                'sale_country_id' => $saleCountries['Saudi Arabia'] ?? null,
                 'model' => 'BULGUR-COARSE',
                 'price' => 9,
                 'discount' => 0,
@@ -523,7 +540,8 @@ class ProductSeeder extends Seeder
                     'ar' => 'عدس أحمر عالي الجودة، مثالي للشوربات واليخنات والدال. ينضج بسرعة بدون نقع. غني بالبروتين والألياف. قوام كريمي عند الطبخ.'
                 ],
                 'sku' => 'LEN-RED-006',
-                'country' => ['en' => 'Canada', 'ar' => 'كندا'],
+                'country_id' => $countries['Canada'] ?? null,
+                'sale_country_id' => $saleCountries['UAE'] ?? null,
                 'model' => 'LENTILS-RED',
                 'price' => 12,
                 'discount' => 20,
@@ -554,7 +572,8 @@ class ProductSeeder extends Seeder
                     'ar' => 'عدس أخضر فاخر بقوام متماسك. مثالي للسلطات والأطباق الجانبية والوجبات الدسمة. يحافظ على شكله عند الطبخ. نكهة ترابية وفلفلية.'
                 ],
                 'sku' => 'LEN-GRN-007',
-                'country' => ['en' => 'France', 'ar' => 'فرنسا'],
+                'country_id' => $countries['France'] ?? null,
+                'sale_country_id' => $saleCountries['Kuwait'] ?? null,
                 'model' => 'LENTILS-GREEN',
                 'price' => 15,
                 'discount' => 0,
@@ -585,7 +604,8 @@ class ProductSeeder extends Seeder
                     'ar' => 'عدس بني متعدد الاستخدامات، النوع الأكثر شيوعاً. رائع للشوربات واليخنات والطبخ اليومي. نكهة ترابية خفيفة. اقتصادي ومغذي.'
                 ],
                 'sku' => 'LEN-BRN-008',
-                'country' => ['en' => 'Turkey', 'ar' => 'تركيا'],
+                'country_id' => $countries['Turkey'] ?? null,
+                'sale_country_id' => $saleCountries['Qatar'] ?? null,
                 'model' => 'LENTILS-BROWN',
                 'price' => 95,
                 'discount' => 10,

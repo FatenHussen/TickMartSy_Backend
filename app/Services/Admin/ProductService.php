@@ -19,6 +19,8 @@ class ProductService extends BaseService
     protected $relations = [
         'category',
         'brand',
+        'originCountry',
+        'saleCountry',
         'variants',
         'variants.shopVariants',
         'categoryDetails.categoryDetail',
@@ -43,15 +45,9 @@ class ProductService extends BaseService
             'collection' => 'variant',
             'type'       => 'multiple',
         ],
-        'seo_image' => [
-            'collection' => 'seo',
-            'type'       => 'single',
-        ],
-        'thumbnail' => [
-            'collection' => 'thumbnail',
-            'type'       => 'single',
-        ],
     ];
+
+    protected $singleImages = ['thumbnail', 'seo_image'];
 
     protected $searchableFields = [
         'category_id',
@@ -218,18 +214,41 @@ class ProductService extends BaseService
             $variantsData = $data['variants'];
             unset($data['variants']);
 
-            $object->variants()->delete();
+            // Build map of existing variants keyed by sorted attributes_values_ids
+            $existingVariants = $object->variants()->get();
+            $existingVariantsMap = [];
+            foreach ($existingVariants as $existingVariant) {
+                $sortedIds = $existingVariant->attributes_values_ids ?? [];
+                sort($sortedIds);
+                $key = json_encode($sortedIds);
+                $existingVariantsMap[$key] = $existingVariant;
+            }
 
             $mediaService = new \App\Services\Base\MediaService();
-
             $variantIndexMap = [];
+            $matchedVariantIds = [];
 
+            // Process incoming variants: update matched, create new
             foreach ($variantsData as $index => $variantItem) {
                 $existingImagesIds = $variantItem['existing_images_ids'] ?? [];
                 $variantImages = $variantItem['images'] ?? [];
                 unset($variantItem['existing_images_ids'], $variantItem['images']);
 
-                $variant = $object->variants()->create($variantItem);
+                // Create matching key for incoming variant
+                $incomingIds = $variantItem['attributes_values_ids'] ?? [];
+                sort($incomingIds);
+                $matchKey = json_encode($incomingIds);
+
+                // Check if variant exists
+                if (isset($existingVariantsMap[$matchKey])) {
+                    // Update existing variant
+                    $variant = $existingVariantsMap[$matchKey];
+                    $variant->update($variantItem);
+                    $matchedVariantIds[] = $variant->id;
+                } else {
+                    // Create new variant
+                    $variant = $object->variants()->create($variantItem);
+                }
 
                 $variantIndexMap[$index] = $variant;
 
@@ -251,6 +270,13 @@ class ProductService extends BaseService
                             $mediaService->upload($variant, $file, 'variant_images');
                         }
                     }
+                }
+            }
+
+            // Soft delete unmatched existing variants
+            foreach ($existingVariants as $existingVariant) {
+                if (!in_array($existingVariant->id, $matchedVariantIds)) {
+                    $existingVariant->delete();
                 }
             }
 

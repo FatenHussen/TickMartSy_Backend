@@ -13,8 +13,18 @@ class Faq extends Model
     protected $fillable = [
         'question',
         'answer',
-        'type'
+        'type',
+        'is_active',
     ];
 
     public array $translatable = ['question', 'answer'];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
 }

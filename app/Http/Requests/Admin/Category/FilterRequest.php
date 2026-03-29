@@ -22,7 +22,21 @@ class FilterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'parent_id' => 'nullable|integer|exists:categories,id'
+            'parent_id' => [
+                'nullable',
+                'integer',
+                function ($attribute, $value, $fail) {
+                    // إذا القيمة 0 أو null، نسمح فيها (للفئات الأب)
+                    if ($value === 0 || $value === '0' || $value === null) {
+                        return;
+                    }
+
+                    // إذا القيمة موجودة، لازم تكون ID موجود بالـ categories
+                    if (!\App\Models\Category::where('id', $value)->exists()) {
+                        $fail(__('validation.exists', ['attribute' => $attribute]));
+                    }
+                }
+            ]
         ];
     }
 }

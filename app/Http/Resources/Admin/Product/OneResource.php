@@ -16,7 +16,6 @@ class OneResource extends JsonResource
             'name' => $this->getTranslations('name'),
             'description' => $this->getTranslations('description'),
             'full_description' => $this->getTranslations('full_description'),
-            'country' => $this->getTranslations('country'),
 
             'price' => $this->price,
             'cost_price' => $this->cost_price,
@@ -50,6 +49,17 @@ class OneResource extends JsonResource
             'brand' => $this->brand ? [
                 'id' => $this->brand->id,
                 'name' => $this->brand->name,
+            ] : null,
+
+            'origin_country' => $this->originCountry ? [
+                'id' => $this->originCountry->id,
+                'name' => $this->originCountry->name,
+            ] : null,
+
+            'sale_country' => $this->saleCountry ? [
+                'id' => $this->saleCountry->id,
+                'name' => $this->saleCountry->name,
+                'icon' => $this->saleCountry->icon_url,
             ] : null,
 
             'vendor' => $this->vendor ? [

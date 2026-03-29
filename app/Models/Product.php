@@ -21,7 +21,8 @@ class Product extends Model implements Sectionable
         'description',
         'full_description',
         'sku',
-        'country',
+        'country_id',
+        'sale_country_id',
         'model',
         'price',
         'cost_price',
@@ -50,7 +51,6 @@ class Product extends Model implements Sectionable
         'name',
         'description',
         'full_description',
-        'country',
         'seo_title',
         'seo_description',
         'seo_keywords',
@@ -131,6 +131,17 @@ class Product extends Model implements Sectionable
     {
         return $this->belongsTo(Brand::class);
     }
+
+    public function originCountry()
+    {
+        return $this->belongsTo(Country::class, 'country_id');
+    }
+
+    public function saleCountry()
+    {
+        return $this->belongsTo(SaleCountry::class, 'sale_country_id');
+    }
+
     public function variants()
     {
         return $this->hasMany(ProductVariant::class);

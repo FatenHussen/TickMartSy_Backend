@@ -20,7 +20,8 @@ class DatabaseSeeder extends Seeder
             // Basic Setup
             BadgeSeeder::class,
             GovernorateSeeder::class,
-            CountrySeeder::class,
+            CountrySeeder::class, // بلدان المنشأ (Origin Countries)
+            SaleCountrySeeder::class, // بلدان المبيع (Sale Countries)
             // CitySeeder::class,
             // AreaSeeder::class,
             // Admin & Permissions
@@ -37,6 +38,7 @@ class DatabaseSeeder extends Seeder
             // Categories & Brands
             CategorySeeder::class,
             BrandSeeder::class,
+            ColorSeeder::class, // جدول الألوان - يجب أن يكون قبل CategoryAttributeSeeder
             CategoryAttributeSeeder::class,
             AttributeValueSeeder::class,
             CategoryDetailSeeder::class,

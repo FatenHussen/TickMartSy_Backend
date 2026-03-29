@@ -82,6 +82,9 @@ Route::prefix('admin')->group(
             Route::apiResource('notifications', NotificationController::class);
             Route::apiResource('legal-documents', LegalDocumentController::class);
 
+            // Toggle Status API - Universal endpoint for toggling is_active
+            Route::post('/toggle-status', [\App\Http\Controllers\Admin\ToggleStatusController::class, 'toggleStatus']);
+
             Route::apiResource('baskets', BasketController::class);
             Route::apiResource('scheduled-baskets',  ScheduledBasketController::class);
             Route::apiResource('schedules', ScheduleCrudController::class);
@@ -198,7 +201,8 @@ Route::prefix('admin')->group(
                     'category-details' => CategoryDetailController::class,
                     'products' => ProductController::class,
                     'product-variants' => ProductVariantController::class,
-                    'shop-product-variants' => ShopProductVariantController::class
+                    'shop-product-variants' => ShopProductVariantController::class,
+                    'sale-countries' => \App\Http\Controllers\Admin\SaleCountry\SaleCountryCrudController::class,
                 ]);
 
                 // Product Approval routes

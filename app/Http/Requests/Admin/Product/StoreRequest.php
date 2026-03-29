@@ -23,7 +23,6 @@ class StoreRequest extends FormRequest
             'name',
             'description',
             'full_description',
-            'country',
             'seo_title',
             'seo_description',
             'seo_keywords',
@@ -74,6 +73,8 @@ class StoreRequest extends FormRequest
             'category_id'           => 'required|exists:categories,id',
             'sku'                   => 'nullable|string|unique:products,sku',
             'model'                 => 'nullable|string|unique:products,model',
+            'country_id'            => 'nullable|exists:countries,id',
+            'sale_country_id'       => 'nullable|exists:sale_countries,id',
             'price'                 => 'required|integer|min:0',
             'cost_price'            => 'nullable|numeric|min:0',
             'discount'              => 'nullable|integer|min:0|max:100',
@@ -138,7 +139,6 @@ class StoreRequest extends FormRequest
             $rules["name.$locale"] = 'nullable|string|max:255';
             $rules["description.$locale"] = 'nullable|string';
             $rules["full_description.$locale"] = 'nullable|string';
-            $rules["country.$locale"] = 'nullable|string';
 
             $rules["category_details.*.detail_value.$locale"] = 'nullable|string';
             $rules["extra_details.*.detail_key.$locale"] = 'nullable|string';
