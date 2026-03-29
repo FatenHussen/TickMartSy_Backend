@@ -168,8 +168,8 @@ class PageSectionSeeder extends Seeder
         }
 
         $page = Page::firstOrCreate(
-            ['slug' => 'home'],
-            ['title' => 'home']
+            ['slug' => 'welcome'],
+            ['title' => 'Welcome']
         );
         PageSection::firstOrCreate([
             'page_id' => $page->id,
