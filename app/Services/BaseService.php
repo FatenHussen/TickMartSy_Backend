@@ -245,7 +245,14 @@ abstract class BaseService
         unset($filters['search']);
 
         foreach ($filters as $key => $value) {
-            if ($value === null) continue;
+            // Skip null values unless it's a specific case like parent_id
+            if ($value === null && $key !== 'parent_id') continue;
+
+            // Handle parent_id = 0 or null (for root categories)
+            if ($key === 'parent_id' && ($value === 0 || $value === '0' || $value === null)) {
+                $query->whereNull('parent_id');
+                continue;
+            }
 
             $query->where($key, $value);
         }
