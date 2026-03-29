@@ -22,7 +22,7 @@ class ToggleStatusController extends Controller
      * @param ToggleStatusRequest $request
      * @return JsonResponse
      */
-    public function toggleStatus(ToggleStatusRequest $request): JsonResponse
+    public function toggleStatus(ToggleStatusRequest $request)
     {
         $result = $this->service->toggleStatus(
             $request->type,
@@ -30,6 +30,6 @@ class ToggleStatusController extends Controller
             $request->is_active
         );
 
-        return response()->json($result);
+        return $this->sendResponse();
     }
 }

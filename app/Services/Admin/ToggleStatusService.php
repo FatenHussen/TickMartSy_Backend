@@ -56,7 +56,7 @@ class ToggleStatusService
      * @return array
      * @throws CustomExceptionWithMessage
      */
-    public function toggleStatus(string $type, int $id, bool $isActive): array
+    public function toggleStatus(string $type, int $id, bool $isActive): bool
     {
         // Get model class from map
         if (!isset($this->modelMap[$type])) {
@@ -76,14 +76,6 @@ class ToggleStatusService
         $record->is_active = $isActive;
         $record->save();
 
-        return [
-            'success' => true,
-            'message' => __('custom.status_updated_successfully'),
-            'data' => [
-                'id' => $record->id,
-                'type' => $type,
-                'is_active' => $record->is_active,
-            ]
-        ];
+        return true;
     }
 }
