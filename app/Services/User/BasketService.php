@@ -111,7 +111,7 @@ class BasketService extends BaseService
             $this->applySortBy($query, $sort);
         }
 
-        return $query;
+        return $query->where('is_active', true);
     }
     public function query(array $filters)
     {
@@ -132,7 +132,7 @@ class BasketService extends BaseService
             ]);
         }
 
-        return $query;
+        return $query->where('is_active', true);
     }
 
 

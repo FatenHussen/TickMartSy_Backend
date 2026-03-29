@@ -40,6 +40,7 @@ class CategoryService extends BaseService
         $parentFilters = $filters;
         unset($parentFilters['type']);
         unset($parentFilters['sort_by']);
+        unset($parentFilters['brand_id']); // Remove brand_id as it's handled via whereHas
         unset($parentFilters['shop_id']); // Remove shop_id as it's handled via whereHas
 
         // Now call parent (won't apply search since searchableFields is empty)
@@ -60,14 +61,20 @@ class CategoryService extends BaseService
             }
         }
 
-        // Shop filter - categories that have products in this shop
-        if (!empty($filters['shop_id'])) {
+        // Product-based filters - categories that have products matching brand/shop conditions
+        if (!empty($filters['brand_id']) || !empty($filters['shop_id'])) {
             $query->whereHas('products', function ($q) use ($filters) {
-                $q->whereHas('variants', function ($vq) use ($filters) {
-                    $vq->whereHas('shopVariants', function ($sq) use ($filters) {
-                        $sq->where('shop_id', $filters['shop_id']);
+                if (!empty($filters['brand_id'])) {
+                    $q->where('brand_id', $filters['brand_id']);
+                }
+
+                if (!empty($filters['shop_id'])) {
+                    $q->whereHas('variants', function ($vq) use ($filters) {
+                        $vq->whereHas('shopVariants', function ($sq) use ($filters) {
+                            $sq->where('shop_id', $filters['shop_id']);
+                        });
                     });
-                });
+                }
             });
         }
 

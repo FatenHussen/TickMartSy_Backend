@@ -83,7 +83,7 @@ class BrandService extends BaseService
         }
 
 
-        return $query;
+        return $query->where('is_active', true);
     }
 
     public function query(array $filters = [])
@@ -97,7 +97,7 @@ class BrandService extends BaseService
         }
 
 
-        return $query;
+        return $query->where('is_active', true);
     }
 
     protected function applySortBy($query, string $sortBy): void

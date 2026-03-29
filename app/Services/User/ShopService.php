@@ -51,7 +51,7 @@ class ShopService extends BaseService
             ]);
         }
 
-        return $query;
+        return $query->where('is_active', true);
     }
 
     /* =========================
@@ -71,10 +71,16 @@ class ShopService extends BaseService
             });
         }
 
-        // Filter by category
-        if (!empty($filters['category_id'])) {
+        // Product-based filters - shops that have products matching category/brand conditions
+        if (!empty($filters['category_id']) || !empty($filters['brand_id'])) {
             $query->whereHas('productVariants.productVariant.product', function ($q) use ($filters) {
-                $q->where('category_id', $filters['category_id']);
+                if (!empty($filters['category_id'])) {
+                    $q->where('category_id', $filters['category_id']);
+                }
+
+                if (!empty($filters['brand_id'])) {
+                    $q->where('brand_id', $filters['brand_id']);
+                }
             });
         }
 
@@ -168,6 +174,6 @@ class ShopService extends BaseService
     {
         $query = Shop::query();
         $query =  $this->queryBuilder($query, $filters);
-        return $query;
+        return $query->where('is_active', true);
     }
 }

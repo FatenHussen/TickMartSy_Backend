@@ -207,7 +207,7 @@ class RecipeService extends BaseService
             ]);
         }
 
-        return $query;
+        return $query->where('is_active', true);
     }
     protected function applySortBy($query, string $sortBy): void
     {

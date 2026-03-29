@@ -18,6 +18,7 @@ class ShopRequest extends FormRequest
             'city_id'        => 'sometimes|exists:cities,id',
             'governorate_id' => 'sometimes|exists:governorates,id',
             'category_id'    => 'sometimes|exists:categories,id',
+            'brand_id'       => 'sometimes|exists:brands,id',
             'vendor_id'      => 'sometimes|exists:vendors,id',
             'is_active'      => 'sometimes|boolean',
             'type'           => 'sometimes|in:nearby,offers,top_rated,active',

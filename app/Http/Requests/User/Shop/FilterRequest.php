@@ -16,6 +16,7 @@ class FilterRequest extends FormRequest
         return [
             'governorate_id' => ['nullable', 'exists:governorates,id'],
             'category_id' => ['nullable', 'exists:categories,id'],
+            'brand_id' => ['nullable', 'exists:brands,id'],
             'search' => ['nullable', 'string', 'max:255'],
             'sort_by' => ['nullable', 'in:newest,oldest,rating_desc,rating_asc'],
         ];

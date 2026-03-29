@@ -78,7 +78,7 @@ class ScheduleBasketService extends BaseService
         }
 
 
-        return $query;
+        return $query->where('is_active', true);
     }
 
     protected function applyTypeFilters($query, $type)
