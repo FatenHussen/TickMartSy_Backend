@@ -33,7 +33,7 @@ return new class extends Migration
 
         // Add is_active to services table
         Schema::table('services', function (Blueprint $table) {
-            $table->boolean('is_active')->default(true)->after('icon');
+            $table->boolean('is_active')->default(true)->after('name');
         });
 
         // Add is_active to areas table
