@@ -14,8 +14,17 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 class Brand extends Model implements Sectionable
 {
     use HasFactory, HasTranslations, SoftDeletes, LogsActivity;
-    protected $fillable = ['name', 'image'];
+    protected $fillable = ['name', 'image', 'is_active'];
     public $translatable = ['name'];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
 
     public function  getImageUrlAttribute()
     {

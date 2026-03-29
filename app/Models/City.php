@@ -9,8 +9,17 @@ use Spatie\Translatable\HasTranslations;
 class City extends Model
 {
     use HasTranslations, LogsActivity;
-    protected $fillable = ['name', 'governorate_id'];
+    protected $fillable = ['name', 'governorate_id', 'is_active'];
     public $translatable = ['name'];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
 
     public function users()
     {

@@ -3,9 +3,13 @@
 namespace App\Services\Admin;
 
 use App\Models\CategoryAttribute;
+use App\Models\ProductVariant;
+use App\Models\AttributeValue;
+use App\Models\Color;
 use App\Http\Resources\Admin\Category\CategoryAttribute\OneResource;
 use App\Http\Resources\Admin\Category\CategoryAttribute\AllResource;
 use App\Services\BaseService;
+use App\Exceptions\CustomExceptionWithMessage;
 
 class CategoryAttributeService extends BaseService
 {
@@ -34,4 +38,74 @@ class CategoryAttributeService extends BaseService
         'type',
         'created_at',
     ];
+
+    /**
+     * Create a new category attribute
+     * If type is 'color', automatically create attribute values from colors table
+     */
+    public function create($data)
+    {
+        // Create the category attribute using parent method
+        $object = $this->model::create($data);
+        $this->handleSingleImages($object, $data);
+        $this->handleRelations($object, $data);
+        $this->handleMedia($object, $data);
+
+        // If type is 'color', automatically create attribute values from colors table
+        if (isset($data['type']) && $data['type'] === 'color') {
+            $this->createColorAttributeValues($object);
+        }
+
+        // Refresh to get updated data including the newly created values
+        $object->refresh();
+
+        return new $this->resource($object) ?? true;
+    }
+
+    /**
+     * Create attribute values for color type from colors table
+     */
+    protected function createColorAttributeValues($categoryAttribute)
+    {
+        $colors = Color::all();
+
+        foreach ($colors as $color) {
+            AttributeValue::create([
+                'category_attribute_id' => $categoryAttribute->id,
+                'name' => ['en' => $color->hex, 'ar' => $color->hex],
+                'color_id' => $color->id,
+            ]);
+        }
+    }
+
+    /**
+     * Delete a category attribute
+     * Prevents deletion if any product variants are using its attribute values
+     */
+    public function delete($id): bool
+    {
+        $categoryAttribute = CategoryAttribute::findOrFail($id);
+
+        // Get all attribute value IDs for this category attribute
+        $attributeValueIds = $categoryAttribute->values()->pluck('id')->toArray();
+
+        if (!empty($attributeValueIds)) {
+            // Check if any product variants are using these attribute values
+            $variantsCount = ProductVariant::where(function ($query) use ($attributeValueIds) {
+                foreach ($attributeValueIds as $valueId) {
+                    $query->orWhereJsonContains('attributes_values_ids', $valueId);
+                }
+            })->count();
+
+            if ($variantsCount > 0) {
+                throw new CustomExceptionWithMessage(
+                    __('custom.cannot_delete_category_attribute_in_use', [
+                        'count' => $variantsCount
+                    ])
+                );
+            }
+        }
+
+        return parent::delete($id);
+    }
 }

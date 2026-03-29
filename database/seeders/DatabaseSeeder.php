@@ -38,6 +38,7 @@ class DatabaseSeeder extends Seeder
             // Categories & Brands
             CategorySeeder::class,
             BrandSeeder::class,
+            ColorSeeder::class, // جدول الألوان - يجب أن يكون قبل CategoryAttributeSeeder
             CategoryAttributeSeeder::class,
             AttributeValueSeeder::class,
             CategoryDetailSeeder::class,

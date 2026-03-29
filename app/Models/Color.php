@@ -2,22 +2,23 @@
 
 namespace App\Models;
 
-use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\Translatable\HasTranslations;
 
-class Faq extends Model
+class Color extends Model
 {
-    use HasTranslations, LogsActivity;
+    use HasFactory, HasTranslations;
 
     protected $fillable = [
-        'question',
-        'answer',
-        'type',
+        'name',
+        'hex',
         'is_active',
     ];
 
-    public array $translatable = ['question', 'answer'];
+    public $translatable = [
+        'name',
+    ];
 
     protected $casts = [
         'is_active' => 'boolean',

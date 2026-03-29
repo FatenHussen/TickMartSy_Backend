@@ -17,6 +17,7 @@ class AttributeValue extends Model
     protected $fillable = [
         'category_attribute_id',
         'name',
+        'color_id',
     ];
 
     public $translatable = [
@@ -34,8 +35,16 @@ class AttributeValue extends Model
     {
         return $this->belongsTo(CategoryAttribute::class);
     }
+
     public function attribute()
     {
         return $this->belongsTo(CategoryAttribute::class);
     }
+
+    public function color()
+    {
+        return $this->belongsTo(Color::class);
+    }
 }
+
+

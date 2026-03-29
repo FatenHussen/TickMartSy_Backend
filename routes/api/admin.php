@@ -82,6 +82,9 @@ Route::prefix('admin')->group(
             Route::apiResource('notifications', NotificationController::class);
             Route::apiResource('legal-documents', LegalDocumentController::class);
 
+            // Toggle Status API - Universal endpoint for toggling is_active
+            Route::post('/toggle-status', [\App\Http\Controllers\Admin\ToggleStatusController::class, 'toggleStatus']);
+
             Route::apiResource('baskets', BasketController::class);
             Route::apiResource('scheduled-baskets',  ScheduledBasketController::class);
             Route::apiResource('schedules', ScheduleCrudController::class);
