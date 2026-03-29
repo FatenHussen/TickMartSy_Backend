@@ -3,17 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductMedia extends Model
 {
     const COLLECTION_PRODUCT = 'product';
     const COLLECTION_VARIANT = 'variant';
-    use SoftDeletes;
+
     protected $fillable = [
         'collection',
         'path',
         'order',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 
     /**

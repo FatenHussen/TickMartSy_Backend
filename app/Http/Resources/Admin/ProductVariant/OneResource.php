@@ -36,6 +36,7 @@ class OneResource extends JsonResource
             'attributes' => $this->getAttributesWithDetails(),
             'attributes_values_ids' => $this->attributes_values_ids,
             'is_trend' => $this->is_trend,
+            'is_active' => (bool) $this->is_active,
             'shop_variants' => $this->shopVariants->map(function ($shopVariant) {
                 return [
                     'id' => $shopVariant->id,

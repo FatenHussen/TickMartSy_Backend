@@ -4,11 +4,9 @@ namespace App\Models;
 
 use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OrderItem extends Model
 {
-    // use SoftDeletes;
     protected $fillable = [
         'order_id',
         'shop_product_variant_id',

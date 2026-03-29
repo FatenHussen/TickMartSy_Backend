@@ -6,20 +6,21 @@ use App\Http\Resources\Product\VariantAttributeResource;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductVariant extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
         'product_id',
         'attributes_values_ids',
-        'is_trend'
+        'is_trend',
+        'is_active',
     ];
 
     protected $casts = [
         'attributes_values_ids' => 'array',
+        'is_active' => 'boolean',
     ];
 
     /**
@@ -29,12 +30,9 @@ class ProductVariant extends Model
     {
         parent::boot();
 
-        // Cascade soft delete to related ShopProductVariants
+        // Cascade delete to related ShopProductVariants
         static::deleting(function ($productVariant) {
-            // Only cascade on soft delete, not on force delete
-            if (!$productVariant->isForceDeleting()) {
-                $productVariant->shopVariants()->delete();
-            }
+            $productVariant->shopVariants()->delete();
         });
     }
 

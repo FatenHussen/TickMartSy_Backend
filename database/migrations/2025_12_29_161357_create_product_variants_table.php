@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
             $table->json('attributes_values_ids');
             $table->boolean('is_trend')->default(false);
-            $table->softDeletes();
             $table->timestamps();
         });
     }

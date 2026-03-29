@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 
 class Order extends Model
 {
-    use LogsActivity;
+    use LogsActivity, SoftDeletes;
     protected $fillable = [
         'user_id',
         'driver_id',

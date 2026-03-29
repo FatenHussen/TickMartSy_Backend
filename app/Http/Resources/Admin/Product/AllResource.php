@@ -28,6 +28,7 @@ class AllResource extends JsonResource
             'unit'                  => $this->unit,
             'warranty_period'       => $this->warranty_period,
             'is_visible'            => $this->is_visible,
+            'is_active'             => (bool) $this->is_active,
             'barcode'               => $this->barcode,
             'time_prepare'          => $this->time_prepare,
             'bought_with'           => $this->bought_with_products_list->map(function($product) {

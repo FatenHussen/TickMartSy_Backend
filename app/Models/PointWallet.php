@@ -16,11 +16,13 @@ class PointWallet extends Model
         'balance',
         'expire_at',
         'last_earned_at',
+        'is_active',
     ];
 
     protected $casts = [
         'expire_at' => 'datetime',
         'last_earned_at' => 'datetime',
+        'is_active' => 'boolean',
     ];
 
     public function user(): BelongsTo

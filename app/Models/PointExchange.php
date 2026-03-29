@@ -17,11 +17,13 @@ class PointExchange extends Model
         'status',
         'delivered_at',
         'notes',
+        'is_active',
     ];
 
     protected $casts = [
         'exchange_data' => 'array',
         'delivered_at' => 'datetime',
+        'is_active' => 'boolean',
     ];
 
     public function user(): BelongsTo

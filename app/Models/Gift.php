@@ -4,12 +4,11 @@ namespace App\Models;
 
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 
 class Gift extends Model
 {
-    use SoftDeletes, HasTranslations, LogsActivity;
+    use HasTranslations, LogsActivity;
     protected $fillable = [
         'name',
         'description',

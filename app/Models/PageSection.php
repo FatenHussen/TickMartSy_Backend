@@ -21,9 +21,13 @@ class PageSection extends Model
         'filters',
         'background_card_color',
         'background_color',
-        'display_type_id'
+        'display_type_id',
+        'is_active',
     ];
-    protected $casts = ['filters' => 'array'];
+    protected $casts = [
+        'filters' => 'array',
+        'is_active' => 'boolean',
+    ];
 
     public function page()
     {

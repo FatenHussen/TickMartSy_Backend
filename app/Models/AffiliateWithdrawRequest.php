@@ -13,6 +13,11 @@ class AffiliateWithdrawRequest extends Model
         'amount',
         'status', // pending / approved / rejected
         'note',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 
     public function affiliate()

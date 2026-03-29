@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Http\Resources\Brand\AllResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 use App\Models\Favorite;
 use App\Traits\LogsActivity;
@@ -13,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Brand extends Model implements Sectionable
 {
-    use HasFactory, HasTranslations, SoftDeletes, LogsActivity;
+    use HasFactory, HasTranslations, LogsActivity;
     protected $fillable = ['name', 'image', 'is_active'];
     public $translatable = ['name'];
 

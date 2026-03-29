@@ -3,12 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UserGift extends Model
 {
-    use SoftDeletes;
-
     protected $fillable = [
         'gift_id',
         'user_id',

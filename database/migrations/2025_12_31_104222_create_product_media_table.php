@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('collection')->default('default'); // cover, logo, slider
             $table->string('path');
             $table->integer('order')->default(0);
-            $table->softDeletes();
             $table->timestamps();
         });
     }

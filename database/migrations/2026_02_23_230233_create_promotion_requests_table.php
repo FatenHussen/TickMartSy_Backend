@@ -39,7 +39,6 @@ return new class extends Migration
             $table->foreignId('approved_by')->nullable()->constrained('admins')->onDelete('set null');
 
             $table->timestamps();
-$table->softDeletes();
         });
     }
 

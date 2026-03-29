@@ -25,6 +25,7 @@ class SellerRegistration extends Model
         'governorate_id',
         'logo',
         'status',
+        'is_active',
     ];
 
 
@@ -35,6 +36,7 @@ class SellerRegistration extends Model
     protected $casts = [
         'registered_at' => 'datetime',
         'commercial_register_date' => 'date',
+        'is_active' => 'boolean',
     ];
     public function governorate()
     {

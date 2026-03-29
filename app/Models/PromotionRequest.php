@@ -6,12 +6,11 @@ use App\Enums\PromotionStatus;
 use App\Enums\PromotionType;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 
 class PromotionRequest extends Model
 {
-    use SoftDeletes, HasTranslations, LogsActivity;
+    use HasTranslations, LogsActivity;
 
     public $translatable = ['title', 'description'];
 
@@ -33,6 +32,7 @@ class PromotionRequest extends Model
         'admin_notes',
         'approved_at',
         'approved_by',
+        'is_active',
     ];
 
     protected $casts = [
@@ -45,6 +45,7 @@ class PromotionRequest extends Model
         'approved_at' => 'datetime',
         'type' => PromotionType::class,
         'status' => PromotionStatus::class,
+        'is_active' => 'boolean',
     ];
 
     public function vendor()

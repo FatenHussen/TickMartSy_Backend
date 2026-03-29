@@ -18,7 +18,6 @@ return new class extends Migration
             $table->text('user_notes')->nullable();
             $table->timestamp('delivered_at')->nullable();
             $table->timestamps();
-            $table->softDeletes();
 
             $table->foreign('address_id')->references('id')->on('user_addresses')->nullOnDelete();
         });
