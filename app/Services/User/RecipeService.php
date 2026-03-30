@@ -66,7 +66,7 @@ class RecipeService extends BaseService
     {
         $query = Recipe::query()->latest();
         $query = $this->queryBuilder($query, $filters);
-        return $query;
+        return $query->where('is_active', true);
     }
 
     // public function queryBuilder($query, $filters = [], $config = [])
@@ -207,7 +207,7 @@ class RecipeService extends BaseService
             ]);
         }
 
-        return $query->where('is_active', true);
+        return $query;
     }
     protected function applySortBy($query, string $sortBy): void
     {

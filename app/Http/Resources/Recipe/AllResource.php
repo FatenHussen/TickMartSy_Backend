@@ -34,6 +34,7 @@ class AllResource extends JsonResource
 
             'discount' => $this->discount,
             'orders_count' => $this->orders_count,
+            'is_active' => (bool) $this->is_active,
             'created_at' => $this->created_at,
             // 'budges'                => OneResource::collection($this->badges),
             'is_favorite' => (bool) ($this->is_favorite ?? false),

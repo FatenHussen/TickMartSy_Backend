@@ -29,6 +29,7 @@ class StoreRequest extends FormRequest
 
             'discount' => ['required', 'numeric', 'min:1'],
             // 'orders_count' => ['nullable', 'integer', 'min:0'],
+            'is_active' => ['sometimes', 'boolean'],
 
             'serves' => 'nullable',
             'prepare_time' => 'nullable',

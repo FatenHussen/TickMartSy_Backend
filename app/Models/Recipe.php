@@ -32,6 +32,7 @@ class Recipe extends Model implements Sectionable
     protected $casts = [
         'name' => 'array',
         'description' => 'array',
+        'is_active' => 'boolean',
     ];
 
 
