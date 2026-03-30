@@ -55,7 +55,7 @@ class StoreRequest extends FormRequest
         $rules = [
             'category_id' => 'required|exists:categories,id',
             'type' => 'required|in:square,circle,color',
-            'values'      => 'required|array|min:1',
+            'values'      => 'nullable|array|min:1',
             'values.*.name' => 'required|array',
         ];
 
