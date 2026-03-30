@@ -3,6 +3,7 @@
 namespace App\Services\Admin;
 
 use App\Exceptions\CustomExceptionWithMessage;
+use App\Models\Basket;
 
 class ToggleStatusService
 {
@@ -14,6 +15,7 @@ class ToggleStatusService
         'area_pricing' => \App\Models\AreaPricing::class,
         'badge' => \App\Models\Badge::class,
         'banner' => \App\Models\Banner::class,
+        'basket' => Basket::class,
         'basket_schedule' => \App\Models\BasketSchedule::class,
         'brand' => \App\Models\Brand::class,
         'category' => \App\Models\Category::class,

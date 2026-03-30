@@ -38,6 +38,7 @@ class BasketSummaryResource extends JsonResource
             'is_on_offer' => $this->offer_ends_at && $this->offer_ends_at->isFuture(),
             'is_paused' => (bool) ($this->pause_at !== null),
             'paused_at' => $this->pause_at?->format('Y-m-d H:i:s') ?? null,
+            'next_run_date' => $this->next_run_date?->format('Y-m-d'),
             'schedules' => $this->is_schedule
                 ? ($this->selected_schedule
                     ? [[ // Return only selected schedule for subscription baskets

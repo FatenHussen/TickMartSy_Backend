@@ -19,6 +19,13 @@ class NotificationResource extends JsonResource
             'title'      => $this->data['title'] ?? null,
             'body'       => $this->data['body'] ?? null,
             'type'       => $this->data['data']['type'] ?? null,
+            'target_screen' => $this->data['data']['target_screen'] ?? null,
+            'basket_id' => $this->data['data']['basket_id'] ?? null,
+            'scheduled_basket_id' => $this->data['data']['scheduled_basket_id'] ?? null,
+            'basket_schedule_id' => $this->data['data']['basket_schedule_id'] ?? null,
+            'order_id' => $this->data['data']['order_id'] ?? null,
+            'next_run_date' => $this->data['data']['next_run_date'] ?? null,
+            'data' => $this->data['data'] ?? [],
 
             'is_fixed'       => $this->data['data']['is_fixed'] ?? 0,
             'read'    => $this->read_at ? true : false,

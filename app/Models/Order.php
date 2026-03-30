@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\CartType;
 use App\Enums\OrderStatus;
 use App\Traits\LogsActivity;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
@@ -113,6 +115,35 @@ class Order extends Model
     public function basketSchedule()
     {
         return $this->belongsTo(BasketSchedule::class);
+    }
+
+    public function getNextRunDateAttribute(): ?Carbon
+    {
+        if (
+            $this->cart_type !== CartType::SCHEDULE_ADMIN_CART->value ||
+            !$this->created_at ||
+            !$this->basketSchedule
+        ) {
+            return null;
+        }
+
+        $intervalDays = (int) $this->basketSchedule->number_of_days;
+
+        if ($intervalDays <= 0) {
+            return null;
+        }
+
+        $startDate = $this->created_at->copy()->startOfDay();
+        $today = Carbon::today();
+
+        if ($startDate->greaterThan($today)) {
+            return $startDate;
+        }
+
+        $daysPassed = $startDate->diffInDays($today);
+        $cycles = intdiv($daysPassed, $intervalDays) + 1;
+
+        return $startDate->copy()->addDays($cycles * $intervalDays);
     }
 
     public function usedCouponExchange()

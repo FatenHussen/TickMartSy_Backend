@@ -65,6 +65,7 @@ class MyBasketService
                     $basket->pause_at = $latestOrder?->pause_at;
                     $basket->is_paused = $latestOrder?->pause_at !== null;
                     $basket->paused_at = $latestOrder?->pause_at;
+                    $basket->next_run_date = $latestOrder?->next_run_date;
 
                     return $basket;
                 });
