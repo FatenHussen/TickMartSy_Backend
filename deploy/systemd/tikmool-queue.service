@@ -1,0 +1,18 @@
+[Unit]
+Description=Tikmool Laravel Queue Worker
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+Restart=always
+RestartSec=5
+WorkingDirectory=/var/www/tikmool
+ExecStart=/usr/bin/php artisan queue:work --queue=default --sleep=3 --tries=3 --timeout=120 --max-time=3600
+ExecReload=/usr/bin/php artisan queue:restart
+StandardOutput=append:/var/www/tikmool/storage/logs/queue-worker.log
+StandardError=append:/var/www/tikmool/storage/logs/queue-worker.log
+
+[Install]
+WantedBy=multi-user.target
