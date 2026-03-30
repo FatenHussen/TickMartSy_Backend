@@ -2,12 +2,15 @@
 
 namespace App\Services\User;
 
-use App\Models\UserBasketSchedule;
 use App\Exceptions\NotFoundException;
 use App\Http\Resources\UserBasketSchedule\AllResource;
 use App\Http\Resources\UserBasketSchedule\OneResource;
-use Illuminate\Support\Facades\DB;
+use App\Models\ScheduledBasketAlert;
+use App\Models\UserBasketSchedule;
 use App\Services\BaseService;
+use App\Services\ScheduledBasketAlertService;
+use App\Services\ScheduledBasketAvailabilityService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class UserBasketScheduleService extends BaseService
@@ -18,25 +21,42 @@ class UserBasketScheduleService extends BaseService
 
     protected $relations = [
         'schedule',
-        // 'category',
         'items.product',
         'items.variant',
     ];
 
     protected $searchableFields = ['id', 'name'];
-    protected $sortableFields  = ['id', 'created_at'];
+    protected $sortableFields = ['id', 'created_at'];
 
     public function getAll($filters = [], $config = [])
     {
-        $query = $this->model::where('user_id', auth('user')->id())->active();
+        $query = $this->model::query()
+            ->with($this->relations)
+            ->where('user_id', auth('user')->id())
+            ->active()
+            ->latest();
 
-        return parent::getAll($filters, $config, $query);
+        $perPage = $config['per_page'] ?? 10;
+        $page = $config['page'] ?? 1;
+        $result = $query->paginate($perPage, ['*'], 'page', $page);
+
+        $items = collect($result->items())
+            ->map(fn(UserBasketSchedule $basket) => $this->decorateBasket($basket));
+
+        return [
+            'items' => AllResource::collection($items),
+            'pagination' => [
+                'current_page' => $result->currentPage(),
+                'last_page' => $result->lastPage(),
+                'per_page' => $result->perPage(),
+                'total' => $result->total(),
+            ],
+        ];
     }
+
     public function query(array $filters)
     {
-        $query = UserBasketSchedule::query()->latest();
-
-        return $query;
+        return UserBasketSchedule::query()->latest();
     }
 
     public function getOne($id)
@@ -46,13 +66,7 @@ class UserBasketScheduleService extends BaseService
             'user_id' => auth('user')->id(),
         ]);
 
-        $basket = $this->model::with($this->relations)
-            //->where('user_id', auth('user')->id())
-            ->find($id);
-
-        Log::info('Basket found', [
-            'basket' => $basket ? $basket->id : null,
-        ]);
+        $basket = $this->model::with($this->relations)->find($id);
 
         if (!$basket) {
             Log::warning('Basket not found', [
@@ -62,7 +76,7 @@ class UserBasketScheduleService extends BaseService
             throw new NotFoundException();
         }
 
-        return new $this->resource($basket);
+        return new $this->resource($this->decorateBasket($basket));
     }
 
     public function create($data)
@@ -75,7 +89,6 @@ class UserBasketScheduleService extends BaseService
             $basket = $this->model::create($data);
 
             foreach ($items as $item) {
-                // Get product_id from shop_product_variant_id if not provided
                 if (!isset($item['product_id']) && isset($item['shop_product_variant_id'])) {
                     $shopVariant = \App\Models\ShopProductVariant::with('productVariant.product')
                         ->find($item['shop_product_variant_id']);
@@ -91,10 +104,8 @@ class UserBasketScheduleService extends BaseService
             return $basket;
         });
 
-        return new $this->resource($basket->load($this->relations));
+        return new $this->resource($this->decorateBasket($basket->load($this->relations)));
     }
-
-
 
     public function update($id, array $data)
     {
@@ -107,11 +118,9 @@ class UserBasketScheduleService extends BaseService
         $basket->update(collect($data)->except('items')->toArray());
 
         $items = $data['items'] ?? [];
-
         $existingItems = $basket->items()->get()->keyBy('id');
 
         foreach ($items as $itemData) {
-            // Get product_id from shop_product_variant_id if not provided
             if (!isset($itemData['product_id']) && isset($itemData['shop_product_variant_id'])) {
                 $shopVariant = \App\Models\ShopProductVariant::with('productVariant.product')
                     ->find($itemData['shop_product_variant_id']);
@@ -133,10 +142,8 @@ class UserBasketScheduleService extends BaseService
             $itemToDelete->delete();
         }
 
-        return new $this->resource($basket->load($this->relations));
+        return new $this->resource($this->decorateBasket($basket->load($this->relations)));
     }
-
-
 
     public function delete($id): bool
     {
@@ -151,9 +158,6 @@ class UserBasketScheduleService extends BaseService
         return true;
     }
 
-    /**
-     * Pause a scheduled basket
-     */
     public function pause($id)
     {
         $basket = $this->model::where('user_id', auth('user')->id())->find($id);
@@ -166,12 +170,9 @@ class UserBasketScheduleService extends BaseService
 
         Log::info('Basket paused', ['id' => $id, 'user_id' => auth('user')->id()]);
 
-        return new $this->resource($basket->load($this->relations));
+        return new $this->resource($this->decorateBasket($basket->load($this->relations)));
     }
 
-    /**
-     * Resume a paused scheduled basket
-     */
     public function resume($id)
     {
         $basket = $this->model::where('user_id', auth('user')->id())->find($id);
@@ -184,6 +185,24 @@ class UserBasketScheduleService extends BaseService
 
         Log::info('Basket resumed', ['id' => $id, 'user_id' => auth('user')->id()]);
 
-        return new $this->resource($basket->load($this->relations));
+        return new $this->resource($this->decorateBasket($basket->load($this->relations)));
+    }
+
+    private function decorateBasket(UserBasketSchedule $basket): UserBasketSchedule
+    {
+        $availabilityService = app(ScheduledBasketAvailabilityService::class);
+        $alertService = app(ScheduledBasketAlertService::class);
+
+        $summary = $availabilityService->evaluateUserSchedule($basket);
+
+        $basket->availability_summary = $summary;
+        $basket->availability_items_by_id = $summary['items_by_id'];
+        $basket->active_alert = $alertService->getOpenAlert(
+            ScheduledBasketAlert::BASKET_TYPE_USER_SCHEDULE,
+            $basket->user_id,
+            $basket->id,
+        );
+
+        return $basket;
     }
 }

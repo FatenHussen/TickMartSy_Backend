@@ -13,9 +13,8 @@ class BasketItemResource extends JsonResource
 
     public function toArray($request): array
     {
-        $user = auth('user')->user();
+        $availability = $this->resource->basket?->availability_items_by_id[$this->id] ?? null;
 
-        // حساب السعر بعد الخصم
         $originalPrice = $this->price;
         $discountValue = $this->basket?->schedule?->discount_value ?? 0;
         $discountType = $this->basket?->schedule?->discount_type ?? null;
@@ -38,9 +37,11 @@ class BasketItemResource extends JsonResource
             ...$this->withCurrency($discountAmount, 'discount_amount'),
             ...$this->withCurrency($priceAfterDiscount, 'price_after_discount'),
             'shop_product_variant_id' => $this->shop_product_variant_id,
-
+            'availability_status' => $availability['status'] ?? 'unknown',
+            'is_available' => $availability['is_available'] ?? true,
+            'available_quantity' => $availability['available_quantity'] ?? null,
+            'resolved_shop_product_variant_id' => $availability['resolved_shop_product_variant_id'] ?? null,
             'product' => new BasketItemProductResource($this->whenLoaded('product')),
-
             'variant' => new BasketItemVariantResource($this->whenLoaded('variant')),
         ];
     }
