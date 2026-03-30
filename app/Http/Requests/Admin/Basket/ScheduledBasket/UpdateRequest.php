@@ -23,6 +23,7 @@ class UpdateRequest extends FormRequest
             'discount_type' => 'sometimes|required|in:fixed,percentage',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif',
             'delivery_price' => 'nullable|numeric|min:0',
+            'is_active' => 'sometimes|boolean',
 
             // Schedules (multiple schedules)
             'schedules' => 'sometimes|required|array|min:1',

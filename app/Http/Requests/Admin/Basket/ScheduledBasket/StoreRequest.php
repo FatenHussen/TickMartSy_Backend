@@ -22,6 +22,7 @@ class StoreRequest extends FormRequest
             'discount_type' => 'required|in:fixed,percentage',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif',
             'delivery_price' => 'nullable|numeric|min:0',
+            'is_active' => 'sometimes|boolean',
 
             // Schedules (multiple schedules)
             'schedules' => 'required|array|min:1',

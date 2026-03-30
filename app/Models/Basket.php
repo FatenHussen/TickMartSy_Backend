@@ -27,6 +27,7 @@ class Basket extends Model implements Sectionable
         'num_sold',
         'image',
         'is_schedule',
+        'is_active',
         'delivery_price'
     ];
 
@@ -38,6 +39,8 @@ class Basket extends Model implements Sectionable
 
     protected $casts = [
         'offer_ends_at' => 'date',
+        'is_schedule' => 'boolean',
+        'is_active' => 'boolean',
     ];
 
     public function category()

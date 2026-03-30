@@ -68,6 +68,7 @@ class SearchController extends Controller
             |--------------------------------------------------------------------------
             */
             'basket' => Basket::deepSearch($search)
+                ->where('is_active', true)
                 ->withAvg('ratings', 'rating')
                 ->orderByDesc('ratings_avg_rating'),
         };
