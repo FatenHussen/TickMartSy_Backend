@@ -93,4 +93,9 @@ class PaymentMethod extends Model
             ? static::query()->active()->find($defaultId)
             : null;
     }
+
+    public function isDefault(): bool
+    {
+        return $this->id === static::resolvedDefaultId();
+    }
 }

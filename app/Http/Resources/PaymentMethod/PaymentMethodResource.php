@@ -15,6 +15,7 @@ class PaymentMethodResource extends JsonResource
             'code' => $this->code,
             'icon' => $this->image_url,
             'is_active' => $this->is_active,
+            'is_default' => $this->isDefault(),
         ];
     }
 }

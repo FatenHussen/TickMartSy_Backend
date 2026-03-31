@@ -13,6 +13,7 @@ class AllResource extends JsonResource
             'id'   => $this->id,
             'name' => $this->name,
             'icon' => $this->image_url,
+            'is_default' => $this->isDefault(),
         ];
     }
 }
