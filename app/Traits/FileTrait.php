@@ -19,7 +19,7 @@ trait FileTrait
     // }
     public function uploadFile($disk, $directory, $file)
     {
-        $allowedfileExtension = ['jpg', 'png', 'jpeg', 'pdf'];
+        $allowedfileExtension = ['jpg', 'png', 'jpeg', 'pdf', 'gif', 'webp'];
 
         if (is_object($file) && method_exists($file, 'getClientOriginalExtension')) {
             $extension = $file->getClientOriginalExtension();

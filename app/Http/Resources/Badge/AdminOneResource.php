@@ -18,7 +18,10 @@ class AdminOneResource extends JsonResource
             'id' => $this->id,
             'name' => $this->getTranslations('name'),
             'color' => $this->color,
-            'postion' => $this->pivot?->position
+            'type' => $this->type,
+            'image' => $this->image_url,
+            'is_active' => (bool) $this->is_active,
+            'position' => $this->pivot?->position,
         ];
     }
 }

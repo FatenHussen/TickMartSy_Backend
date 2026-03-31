@@ -4,12 +4,9 @@ namespace App\Services\Admin;
 
 use App\Http\Resources\Badge\AdminOneResource;
 use App\Http\Resources\Badge\OneResource;
-
-use App\Jobs\SendBulkNotificationJob;
 use App\Models\Badge;
-use App\Models\Faq;
-use App\Models\LegalDocument;
 use App\Services\BaseService;
+use Illuminate\Http\UploadedFile;
 
 class BadgeService extends BaseService
 {
@@ -20,5 +17,40 @@ class BadgeService extends BaseService
         $this->collection = OneResource::class;
         $this->pagination = true;
         $this->searchableFields = ['id'];
+        $this->relations = ['user', 'order'];
+        $this->singleImages = ['image'];
+    }
+
+    public function create($data)
+    {
+        $data['type'] = $this->typeFromImage($data['image'] ?? null) ?? 'text';
+
+        return parent::create($data);
+    }
+
+    public function update($id, array $data)
+    {
+        $type = $this->typeFromImage($data['image'] ?? null);
+        if ($type) {
+            $data['type'] = $type;
+        }
+
+        return parent::update($id, $data);
+    }
+
+    protected function typeFromImage(?UploadedFile $image): ?string
+    {
+        if (!$image) {
+            return null;
+        }
+
+        $extension = strtolower($image->getClientOriginalExtension());
+        $mime = $image->getMimeType();
+
+        if ($extension === 'gif' || str_contains($mime ?? '', 'gif')) {
+            return 'gif';
+        }
+
+        return 'image';
     }
 }

@@ -51,7 +51,22 @@ class SendVendorFcmNotification
         // حول الـ data لـ flat strings (FCM ما بتقبل nested objects)
         $flatData = $this->flattenData($this->data);
 
+        $mediaUrl = $this->resolveMediaUrl();
+
         foreach ($this->fcmTokens as $token) {
+            $notificationPayload = [
+                "title" => $this->title,
+                "body" => $this->body,
+                "icon" => asset('images/notification-icon.png'),
+                "badge" => asset('images/notification-badge.png'),
+                "tag" => "vendor-notification-" . time(),
+                "requireInteraction" => true,
+            ];
+
+            if ($mediaUrl) {
+                $notificationPayload['image'] = $mediaUrl;
+            }
+
             $data = [
                 "message" => [
                     "token" => $token,
@@ -60,14 +75,7 @@ class SendVendorFcmNotification
                         "headers" => [
                             "TTL" => "86400"
                         ],
-                        "notification" => [
-                            "title" => $this->title,
-                            "body" => $this->body,
-                            "icon" => asset('images/notification-icon.png'),
-                            "badge" => asset('images/notification-badge.png'),
-                            "tag" => "vendor-notification-" . time(),
-                            "requireInteraction" => true,
-                        ]
+                        "notification" => $notificationPayload,
                     ]
                 ],
             ];
@@ -136,5 +144,20 @@ class SendVendorFcmNotification
         }
 
         return $result;
+    }
+
+    private function resolveMediaUrl(): ?string
+    {
+        if (! empty($this->data['media']['url'])) {
+            return $this->data['media']['url'];
+        }
+
+        foreach (['media_url', 'image', 'gif'] as $key) {
+            if (! empty($this->data[$key])) {
+                return $this->data[$key];
+            }
+        }
+
+        return null;
     }
 }

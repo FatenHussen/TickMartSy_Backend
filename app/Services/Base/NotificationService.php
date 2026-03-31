@@ -20,6 +20,7 @@ class NotificationService
         try {
             $this->sendFcm($recipient, $title, $body, $data);
             $this->sendDatabase($recipient, $title, $body, $data);
+            //send f
         } catch (\Throwable $e) {
             Log::error(
                 'Notification failed',
@@ -63,6 +64,8 @@ class NotificationService
             new MessageNotification($title, $body, $data)
         );
     }
+
+
 
     public function get(Model $recipient)
     {

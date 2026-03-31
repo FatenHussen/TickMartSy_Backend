@@ -6,22 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('badges', function (Blueprint $table) {
             $table->id();
             $table->json('name');
             $table->string('color')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->enum('type', ['text', 'image', 'gif'])->default('text');
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('badges');

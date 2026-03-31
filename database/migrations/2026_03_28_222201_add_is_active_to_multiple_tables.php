@@ -51,10 +51,6 @@ return new class extends Migration
             $table->boolean('is_active')->default(true)->after('name');
         });
 
-        // Add is_active to badges table
-        Schema::table('badges', function (Blueprint $table) {
-            $table->boolean('is_active')->default(true)->after('color');
-        });
 
         // Add is_active to colors table
         Schema::table('colors', function (Blueprint $table) {
@@ -99,9 +95,6 @@ return new class extends Migration
             $table->dropColumn('is_active');
         });
 
-        Schema::table('badges', function (Blueprint $table) {
-            $table->dropColumn('is_active');
-        });
 
         Schema::table('colors', function (Blueprint $table) {
             $table->dropColumn('is_active');

@@ -8,5 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class AdminNotification extends Model
 {
     use LogsActivity;
-    protected $fillable = ['title', 'body', 'type'];
+    protected $fillable = [
+        'title',
+        'body',
+        'type',
+        'emoji',
+        'media_type',
+        'media_url',
+    ];
 }

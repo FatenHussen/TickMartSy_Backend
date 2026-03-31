@@ -17,7 +17,12 @@ class StoreRequest extends FormRequest
         return [
             'name.en' => 'required|string',
             'name.ar' => 'required|string',
-            'color' => 'required|string',
+            'color' => 'nullable|string',
+            'image' => [
+                'nullable',
+                'file',
+                'mimes:jpeg,jpg,png,gif',
+            ],
         ];
     }
 }

@@ -48,18 +48,29 @@ class SendFCMNotification
         $responses    = [];
 
         foreach ($this->fcmTokens as $token) {
+            $notificationPayload = [
+                "title" => $this->title,
+                "body"  => $this->body,
+            ];
+
+            if ($mediaUrl = $this->resolveMediaUrl()) {
+                $notificationPayload['image'] = $mediaUrl;
+            }
+
             $data = [
                 "message" => [
                     "token"        => $token,
-                    "notification" => [
-                        "title" => $this->title,
-                        "body"  => $this->body,
-                    ],
-                    "data" => $this->data,
+                    "notification" => $notificationPayload,
+                    "data"         => $this->flattenData($this->data),
                 ],
             ];
 
+            Log::debug('FCM payload data', [
+                'fcm_data' => $data['message']['data'],
+            ]);
+
             $payload = json_encode($data);
+            Log::debug('FCM raw payload', ['payload_json' => $payload]);
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/v1/projects/tikmool-app-3241/messages:send');
@@ -71,7 +82,7 @@ class SendFCMNotification
 
             $response = curl_exec($ch);
             $err      = curl_error($ch);
-            curl_close($ch);
+        curl_close($ch);
 
             if ($err) {
                 $failureCount++;
@@ -103,5 +114,37 @@ class SendFCMNotification
             'failure'   => $failureCount,
             'responses' => $responses,
         ]);
+    }
+
+    private function resolveMediaUrl(): ?string
+    {
+        if (! empty($this->data['media']['url'])) {
+            return $this->data['media']['url'];
+        }
+
+        foreach (['media_url', 'image', 'gif'] as $key) {
+            if (! empty($this->data[$key])) {
+                return $this->data[$key];
+            }
+        }
+
+        return null;
+    }
+
+    private function flattenData(array $data, string $prefix = ''): array
+    {
+        $result = [];
+
+        foreach ($data as $key => $value) {
+            $newKey = $prefix ? "{$prefix}_{$key}" : $key;
+
+            if (is_array($value)) {
+                $result = array_merge($result, $this->flattenData($value, $newKey));
+            } else {
+                $result[$newKey] = (string) $value;
+            }
+        }
+
+        return $result;
     }
 }

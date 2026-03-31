@@ -70,6 +70,16 @@ Laravel validation errors return `422` with an `errors` object.
 }
 ```
 
+#### New fields
+
+- `emoji` (optional string): a user-visible emoji appended to the notification text.
+- `media` (optional object): describes an attached visual. Contains:
+  - `type`: always `image` (uploads only support stills/GIFs).
+  - `url`: the signed/public URL delivered with the notification.
+- `payload` (object): the raw `data.data` payload received from the backend and FCM. Look here for `emoji`, `media`, or any custom keys like `order_id` or `points`.
+
+Because admins now upload the media directly, there is no need to set an external `image_url`/`gif_url`. Upload the file once, and the `media.url` echo in the response is the same asset that was delivered in the push notification body.
+
 The response is a Laravel paginated resource collection wrapped by `sendResponse`. Example:
 
 ```json

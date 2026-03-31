@@ -18,7 +18,11 @@ class UpdateRequest extends FormRequest
             'name.en' => 'nullable|string',
             'name.ar' => 'nullable|string',
             'color' => 'nullable|string',
-
+            'image' => [
+                'nullable',
+                'file',
+                'mimes:jpeg,jpg,png,gif',
+            ],
         ];
     }
 }

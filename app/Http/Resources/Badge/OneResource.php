@@ -18,7 +18,9 @@ class OneResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'color' => $this->color,
-            'postion' => $this->pivot?->position
+            'type' => $this->type,
+            'image' => $this->image_url,
+            'position' => $this->pivot?->position,
         ];
     }
 }

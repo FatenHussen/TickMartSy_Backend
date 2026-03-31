@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Models\User;
 use App\Models\Driver;
+use App\Models\User;
 use App\Models\VendorUser;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -19,38 +19,39 @@ class SendBulkNotificationJob implements ShouldQueue
     public string $title;
     public string $body;
     public string $type;
-    public string $is_fixed;
+    public array $data;
 
-    public function __construct(string $title, string $body, string $type, $is_fixed = 0)
+    public function __construct(string $title, string $body, string $type, array $data = [])
     {
         $this->title = $title;
         $this->body  = $body;
         $this->type  = $type;
-        $this->is_fixed  = $is_fixed;
+        $this->data  = $data;
     }
 
     public function handle(NotificationService $notificationService)
     {
+        $payload = $this->data;
+
         if ($this->type === 'user' || $this->type === 'all') {
-            User::query()->each(function (User $user) use ($notificationService) {
-                $notificationService->send($user, $this->title, $this->body, [
-                    'type' => 'admin',
-                    'is_fixed' => $this->is_fixed
-                ]);
+            User::query()->each(function (User $user) use ($notificationService, $payload) {
+                $notificationService->send($user, $this->title, $this->body, $payload);
             });
         }
 
         if ($this->type === 'driver' || $this->type === 'all') {
-            Driver::query()->each(function (Driver $driver) use ($notificationService) {
-                $notificationService->send($driver, $this->title, $this->body, [
-                    'type' => 'admin',
-                ]);
+            Driver::query()->each(function (Driver $driver) use ($notificationService, $payload) {
+                $notificationService->send($driver, $this->title, $this->body, $payload);
             });
         }
 
         if ($this->type === 'vendor' || $this->type === 'all') {
-            VendorUser::query()->each(function (VendorUser $vendor) {
-                // حفظ الإشعار في قاعدة البيانات مع notifiable fields
+            VendorUser::query()->each(function (VendorUser $vendor) use ($payload) {
+                $vendorNotificationData = array_merge($payload, [
+                    'title' => $this->title,
+                    'body' => $this->body,
+                ]);
+
                 \App\Models\VendorNotification::create([
                     'vendor_user_id' => $vendor->id,
                     'notifiable_type' => VendorUser::class,
@@ -58,32 +59,22 @@ class SendBulkNotificationJob implements ShouldQueue
                     'title' => $this->title,
                     'body' => $this->body,
                     'type' => 'admin',
-                    'data' => json_encode([
-                        'type' => 'admin',
-                        'is_fixed' => $this->is_fixed,
-                        'title' => $this->title,
-                        'body' => $this->body,
-                    ]),
+                    'data' => json_encode($vendorNotificationData),
                 ]);
 
-                // إرسال Filament notification (سيظهر كـ toast)
                 \Filament\Notifications\Notification::make()
                     ->title($this->title)
                     ->body($this->body)
                     ->success()
                     ->sendToDatabase($vendor);
 
-                // إرسال FCM
                 $tokens = $vendor->fcmTokens()->pluck('fcm_token')->filter()->values()->toArray();
                 if (!empty($tokens)) {
                     \App\Jobs\SendVendorFcmNotificationJob::dispatch(
                         $tokens,
                         $this->title,
                         $this->body,
-                        [
-                            'type' => 'admin',
-                            'is_fixed' => (string) $this->is_fixed,
-                        ]
+                        $vendorNotificationData
                     );
                 }
             });

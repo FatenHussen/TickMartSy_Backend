@@ -20,6 +20,20 @@ class AllResource extends JsonResource
             'body' => $this->body,
             'type' => $this->type,
             'created_at' => $this->created_at?->format('Y-m-d H:i'),
+            'emoji' => $this->emoji,
+            'media' => $this->mediaPayload(),
         ];
+    }
+
+    private function mediaPayload(): ?array
+    {
+        if (empty($this->media_url)) {
+            return null;
+        }
+
+        return array_filter([
+            'type' => $this->media_type ?? 'image',
+            'url' => $this->media_url,
+        ], fn ($value) => !is_null($value));
     }
 }

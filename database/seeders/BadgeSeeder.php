@@ -18,6 +18,7 @@ class BadgeSeeder extends Seeder
                     'ar' => 'جديد',
                 ],
                 'color' => 'success',
+                'type' => 'text',
             ],
             [
                 'name' => [
@@ -25,6 +26,7 @@ class BadgeSeeder extends Seeder
                     'ar' => 'مميز',
                 ],
                 'color' => 'warning',
+                'type' => 'text',
             ],
             [
                 'name' => [
@@ -32,6 +34,7 @@ class BadgeSeeder extends Seeder
                     'ar' => 'خصم',
                 ],
                 'color' => 'danger',
+                'type' => 'text',
             ],
         ];
 
