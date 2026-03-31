@@ -13,6 +13,11 @@ class SettingSeeder extends Seeder
      */
     public function run(): void
     {
+        Setting::create([
+            'key' => 'payment_default',
+            'value' => '1',
+            'type' => 'integer',
+        ]);
         // جهات الاتصال
         Setting::create([
             'key' => 'whts',

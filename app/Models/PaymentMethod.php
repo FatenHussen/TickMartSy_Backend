@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class PaymentMethod extends Model
 {
+    protected static bool $resolvedDefaultIdLoaded = false;
+    protected static ?int $resolvedDefaultIdCache = null;
+
     protected $fillable = [
         'name',
         'code',
@@ -22,5 +26,71 @@ class PaymentMethod extends Model
     public function  getImageUrlAttribute()
     {
         return asset('storage/' . $this->icon);
+    }
+
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
+    }
+
+    public static function configuredDefaultId(): ?int
+    {
+        $value = Setting::query()
+            ->where('key', 'payment_default')
+            ->value('value');
+
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $value = $decoded;
+            }
+        }
+
+        if (is_array($value)) {
+            $value = $value['id'] ?? $value['value'] ?? null;
+        }
+
+        return is_numeric($value) ? (int) $value : null;
+    }
+
+    public static function resolvedDefaultId(): ?int
+    {
+        if (static::$resolvedDefaultIdLoaded) {
+            return static::$resolvedDefaultIdCache;
+        }
+
+        $configuredId = static::configuredDefaultId();
+
+        $defaultId = null;
+
+        if ($configuredId) {
+            $defaultId = static::query()
+                ->active()
+                ->whereKey($configuredId)
+                ->value('id');
+        }
+
+        if (!$defaultId) {
+            $defaultId = static::query()
+                ->active()
+                ->orderBy('sort_order')
+                ->orderBy('id')
+                ->value('id');
+        }
+
+        static::$resolvedDefaultIdCache = $defaultId ? (int) $defaultId : null;
+        static::$resolvedDefaultIdLoaded = true;
+
+        return static::$resolvedDefaultIdCache;
+    }
+
+    public static function resolveDefault(): ?self
+    {
+        $defaultId = static::resolvedDefaultId();
+
+        return $defaultId
+            ? static::query()->active()->find($defaultId)
+            : null;
     }
 }

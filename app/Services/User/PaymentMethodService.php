@@ -16,4 +16,21 @@ class PaymentMethodService extends BaseService
         $this->pagination = true;
     }
 
+    public function queryBuilder($query, $filters = [], $config = [])
+    {
+        $query = parent::queryBuilder($query, $filters, $config);
+        $query->reorder();
+
+        $defaultId = PaymentMethod::resolvedDefaultId();
+
+        $query->active();
+
+        if ($defaultId) {
+            $query->orderByRaw('CASE WHEN id = ? THEN 0 ELSE 1 END', [$defaultId]);
+        }
+
+        return $query
+            ->orderBy('sort_order')
+            ->orderBy('id');
+    }
 }
