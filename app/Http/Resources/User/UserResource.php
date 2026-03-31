@@ -19,6 +19,7 @@ class UserResource extends JsonResource
                 $this->phone ? 'phone' : 'email' => $this->phone ?? $this->email,
 
                 'addresses' => OneResource::collection($this->addresses),
+                'is_subscription' => $this->hasActiveSubscription(),
 
                 // Affiliate / Marketer info
                 'affiliate' => [

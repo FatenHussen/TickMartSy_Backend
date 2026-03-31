@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -133,6 +134,20 @@ class User extends Authenticatable
     {
         return $this->hasOne(Subscription::class)
             ->where('status', 'active');
+    }
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function hasActiveSubscription(): bool
+    {
+        $subscription = $this->relationLoaded('subscription')
+            ? $this->getRelation('subscription')
+            : $this->subscription()->latest('end_date')->first();
+
+        return (bool) $subscription?->isActive();
     }
 
     public function orders()
