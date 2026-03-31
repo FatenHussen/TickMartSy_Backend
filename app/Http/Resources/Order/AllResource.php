@@ -56,7 +56,13 @@ class AllResource extends JsonResource
             'affiliate_commission' => $this->affiliate_commission,
             'user' => EndUserAllResource::make($this->user),
             'user_address' => AddressOneResource::make($this->address),
-            'shops' => $groupedItems
+            'shops' => $groupedItems,
+            'payment_method' => $this->paymentMethod ? [
+                'id' => $this->paymentMethod->id,
+                'name' => $this->paymentMethod->name,
+                'icon' => $this->paymentMethod->icon,
+
+            ] : null,
 
         ];
     }
