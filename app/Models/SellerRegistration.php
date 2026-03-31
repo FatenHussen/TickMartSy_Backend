@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 
 class SellerRegistration extends Model
@@ -20,7 +21,7 @@ class SellerRegistration extends Model
         'address',
         'commercial_register_number',
         'commercial_register_date',
-        'country',
+        'country_id',
         'city_id',
         'governorate_id',
         'logo',
@@ -42,8 +43,14 @@ class SellerRegistration extends Model
     {
         return $this->belongsTo(Governorate::class);
     }
-    public function city()
+
+    public function city(): BelongsTo
     {
         return $this->belongsTo(City::class);
+    }
+
+    public function country(): BelongsTo
+    {
+        return $this->belongsTo(Country::class);
     }
 }

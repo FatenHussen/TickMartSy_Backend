@@ -14,6 +14,8 @@ class AllResource extends JsonResource
             'seller_name' => $this->seller_name,
             'email' => $this->email,
             'store_name' => $this->store_name,
+            'country_id' => $this->country_id,
+            'country' => $this->country?->name,
             'governorate' => $this->governorate?->name,
             'city' => $this->city?->name,
             'status' => $this->status,

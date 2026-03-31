@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\SellerRegistration;
 
+use App\Http\Resources\Country\OneResource as CountryResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,7 +18,8 @@ class OneResource extends JsonResource
             'address' => $this->address,
             'commercial_register_number' => $this->commercial_register_number,
             'commercial_register_date' => $this->commercial_register_date?->format('Y-m-d'),
-            'country' => $this->country,
+            'country_id' => $this->country_id,
+            'country' => $this->country ? new CountryResource($this->country) : null,
             'governorate' => [
                 'id' => $this->governorate?->id,
                 'name' => $this->governorate?->name,

@@ -13,6 +13,7 @@ class SellerRegistrationService extends BaseService
         'logo',
         'commercial_register_image',
     ];
+    protected $relations = ['country', 'city', 'governorate'];
     protected $model = SellerRegistration::class;
     protected $resource = SellerRegistrationResource::class;
 }
