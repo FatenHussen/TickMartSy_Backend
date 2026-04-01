@@ -204,9 +204,8 @@ Route::prefix('user')->group(
             });
         });
 
-        Route::middleware(['auth:user'])->group(function () {
-            Route::get('/quick-actions', [QuickActionController::class, 'index']);
-        });
+        Route::get('/quick-actions', [QuickActionController::class, 'index']);
+
 
         // User Gifts routes
         Route::middleware(['auth:user'])->prefix('user-gifts')->group(function () {

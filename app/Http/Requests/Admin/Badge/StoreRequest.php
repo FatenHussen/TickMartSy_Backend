@@ -15,8 +15,9 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name.en' => 'required|string',
-            'name.ar' => 'required|string',
+            'name' => 'nullable|array',
+            'name.en' => 'nullable|string',
+            'name.ar' => 'nullable|string',
             'color' => 'nullable|string',
             'image' => [
                 'nullable',
@@ -24,5 +25,24 @@ class StoreRequest extends FormRequest
                 'mimes:jpeg,jpg,png,gif',
             ],
         ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $hasName = $this->filled('name.en') || $this->filled('name.ar');
+            $hasImage = $this->hasFile('image');
+
+            if (! $hasName && ! $hasImage) {
+                $validator->errors()->add('name', __('validation.required_without', [
+                    'attribute' => 'name or image',
+                    'values' => 'image',
+                ]));
+                $validator->errors()->add('image', __('validation.required_without', [
+                    'attribute' => 'image or name',
+                    'values' => 'name',
+                ]));
+            }
+        });
     }
 }

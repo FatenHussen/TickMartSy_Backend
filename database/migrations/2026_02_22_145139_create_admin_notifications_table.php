@@ -16,7 +16,6 @@ return new class extends Migration
             $table->text('title');
             $table->text('body');
             $table->string('type')->default('all');
-            $table->boolean('is_fixed')->default(false);
             $table->string('target_page')->nullable();
             $table->string('emoji')->nullable();
             $table->string('media_type')->nullable();

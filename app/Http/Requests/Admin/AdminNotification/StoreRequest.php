@@ -18,7 +18,6 @@ class StoreRequest extends FormRequest
             'title' => 'required',
             'body'  => 'required',
             'type'  => 'required|in:all,driver,user,vendor',
-            'is_fixed' => 'nullable|boolean',
             'target_page' => [
                 'nullable',
                 'string',

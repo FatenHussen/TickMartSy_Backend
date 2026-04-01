@@ -59,8 +59,8 @@ use App\Http\Controllers\Admin\PointRuleController;
 use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\Setting\SettingController;
 use App\Http\Controllers\Admin\SystemSettingController;
-use App\Http\Controllers\Admin\QuickActionController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\QuickActionController;
 
 Route::prefix('admin')->group(
     function () {
