@@ -66,7 +66,7 @@ class RecipeService extends BaseService
     {
         $query = Recipe::query()->latest();
         $query = $this->queryBuilder($query, $filters);
-        return $query;
+        return $query->where('is_active', true);
     }
 
     // public function queryBuilder($query, $filters = [], $config = [])

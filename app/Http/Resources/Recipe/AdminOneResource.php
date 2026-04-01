@@ -32,6 +32,7 @@ class AdminOneResource extends JsonResource
 
             'rating' => $this->average_rating ?? 0,
             'orders_count' => $this->orders_count,
+            'is_active' => (bool) $this->is_active,
 
             'discount' => $this->discount,
             ...$this->withCurrency($price, 'price'),

@@ -16,8 +16,6 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->json('name');
             $table->enum('type',['square','circle','color'])->nullable()->default('square');
-            $table->softDeletes();
-
             $table->timestamps();
         });
     }

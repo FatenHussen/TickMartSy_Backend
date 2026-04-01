@@ -19,7 +19,6 @@ return new class extends Migration
             $table->foreignId('category_id')->nullable()->constrained(); // electronics, books, vouchers, etc.
             $table->json('terms_conditions')->nullable();
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

@@ -15,6 +15,7 @@ class VendorSubscription extends Model
         'status',
         'notified_at',
         'notes',
+        'is_active',
     ];
 
     protected $casts = [
@@ -22,6 +23,7 @@ class VendorSubscription extends Model
         'ends_at' => 'date',
         'auto_renew' => 'boolean',
         'notified_at' => 'datetime',
+        'is_active' => 'boolean',
     ];
 
     public function vendor()

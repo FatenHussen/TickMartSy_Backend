@@ -25,6 +25,7 @@ class SellerRegistrationService extends BaseService
         $this->model = $model;
         $this->resource = OneResource::class;
         $this->collection = AllResource::class;
+        $this->relations = ['country', 'city', 'governorate'];
         $this->pagination = true;
         $this->searchableFields = ['seller_name', 'email', 'store_name', 'status'];
     }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Schema;
 
 class Shop extends Model implements Sectionable
 {
-    use HasTranslations, LogsActivity;
+    use HasTranslations, LogsActivity, SoftDeletes;
 
     public array $translatable = ['name', 'description', 'address'];
 

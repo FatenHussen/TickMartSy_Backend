@@ -4,4 +4,15 @@ namespace App\Models;
 
 use Spatie\Permission\Models\Role as SpatieRole;
 
-class Role extends SpatieRole {}
+class Role extends SpatieRole
+{
+    protected $fillable = [
+        'name',
+        'guard_name',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+}

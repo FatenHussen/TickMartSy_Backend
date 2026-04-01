@@ -18,7 +18,7 @@ class AllResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'is_active' => $this->is_active,
+            'is_active' => (bool) $this->is_active,
             'roles' => $this->roles->pluck(['name']),
             'created_at' => $this->created_at?->format('Y-m-d H:i'),
 

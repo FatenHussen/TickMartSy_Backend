@@ -14,6 +14,7 @@ class Section extends Model
     protected $casts = [
         'filters' => 'array',
         'see_more_params' => 'array',
+        'is_active' => 'boolean',
     ];
 
 
@@ -25,7 +26,8 @@ class Section extends Model
         'manual_model',
         'see_more',
         'see_more_slug',
-        'details_slug'
+        'details_slug',
+        'is_active',
     ];
 
     public function apiData(?array $filters = null)

@@ -5,19 +5,23 @@ namespace App\Models;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 
 class CategoryAttribute extends Model
 {
-    use HasFactory, HasTranslations, SoftDeletes, LogsActivity;
+    use HasFactory, HasTranslations, LogsActivity;
 
     protected $table = 'category_attributes';
 
     protected $fillable = [
         'category_id',
         'name',
-        'type'
+        'type',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 
     public $translatable = [

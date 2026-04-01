@@ -20,6 +20,7 @@ class AllResource extends JsonResource
             'ends_at' => $this->ends_at?->format('Y-m-d'),
             'auto_renew' => (bool) $this->auto_renew,
             'status' => $this->status,
+            'is_active' => (bool) $this->is_active,
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
         ];
     }

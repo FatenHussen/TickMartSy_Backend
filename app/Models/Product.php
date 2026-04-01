@@ -40,6 +40,7 @@ class Product extends Model implements Sectionable
         'approval_status',
         'rejection_reason',
         'is_visible',
+        'is_active',
         'thumbnail',
         'seo_title',
         'seo_description',
@@ -61,6 +62,7 @@ class Product extends Model implements Sectionable
         'time_prepare' => 'datetime:H:i',
         'approval_status' => \App\Enums\ProductApprovalStatus::class,
         'is_visible' => 'boolean',
+        'is_active' => 'boolean',
     ];
     public function getPriceAfterDiscountAttribute()
     {

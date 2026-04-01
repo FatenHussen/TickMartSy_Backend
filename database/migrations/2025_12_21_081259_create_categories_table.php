@@ -11,8 +11,7 @@ return new class extends Migration {
             $table->id();
             $table->json('name');
             $table->string('icon')->nullable()->default('categories/image1.jpg');
-            $table->foreignId('parent_id')->nullable()->constrained('categories')->nullOnDelete();
-            $table->softDeletes();
+            $table->foreignId('parent_id')->nullable()->constrained('categories')->restrictOnDelete();
             $table->timestamps();
         });
     }

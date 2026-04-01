@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->json('name');
             $table->string('image');
-            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -5,12 +5,11 @@ namespace App\Models;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 
 class AttributeValue extends Model
 {
-    use HasFactory, HasTranslations, SoftDeletes, LogsActivity;
+    use HasFactory, HasTranslations, LogsActivity;
 
     protected $table = 'attribute_values';
 

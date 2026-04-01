@@ -17,10 +17,12 @@ class ActivityLog extends Model
         'model_type',
         'model_id',
         'changes',
+        'is_active',
     ];
 
     protected $casts = [
         'changes' => 'array',
+        'is_active' => 'boolean',
     ];
 
     public function performedBy()

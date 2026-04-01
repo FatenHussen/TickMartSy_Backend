@@ -64,6 +64,7 @@ class SettingController extends Controller
     {
         return match ($type) {
             'boolean' => (bool) $value,
+            'integer' => is_numeric($value) ? (int) $value : 0,
             'number' => is_numeric($value) ? (float) $value : 0,
             'json' => $value,
             default => $value,
@@ -74,6 +75,7 @@ class SettingController extends Controller
     {
         return match ($type) {
             'boolean' => (bool) $value,
+            'integer' => is_numeric($value) ? (int) $value : 0,
             'number' => is_numeric($value) ? (float) $value : 0,
             'json' => is_array($value) ? $value : (json_decode($value, true) ?? $value),
             'file' => $value ? asset('storage/' . $value) : null,

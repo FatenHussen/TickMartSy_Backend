@@ -12,6 +12,7 @@ use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\User\Auth\ProfileController;
 use App\Http\Controllers\User\Basket\BasketController;
 use App\Http\Controllers\User\Basket\UserBasketScheduleController;
+use App\Http\Controllers\User\MyBasket\ScheduledBasketAlertController;
 use App\Http\Controllers\User\MyBasket\MyBasketController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\Category\CategoryController;
@@ -186,6 +187,7 @@ Route::prefix('user')->group(
         Route::get('/my-baskets', [MyBasketController::class, 'index'])->middleware(['auth:user']);
         Route::post('/my-baskets/{basket}/pause-subscription', [MyBasketController::class, 'pauseSubscription']);
         Route::post('/my-baskets/{basket}/resume-subscription', [MyBasketController::class, 'resumeSubscription']);
+        Route::post('/scheduled-basket-alerts/{alert}/decision', [ScheduledBasketAlertController::class, 'decide'])->middleware(['auth:user']);
 
         Route::apiResource('addresses', AddressController::class)->middleware(['auth:user']);
 

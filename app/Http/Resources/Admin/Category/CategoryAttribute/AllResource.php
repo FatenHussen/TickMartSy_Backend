@@ -23,6 +23,8 @@ class AllResource extends JsonResource
                 'id'   => $value->id,
                 'name' => $value->name,
             ]),
+            'is_active' => $this->is_active,
+
         ];
     }
 }

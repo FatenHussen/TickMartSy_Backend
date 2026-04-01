@@ -128,7 +128,7 @@ class UserService
             throw new InvalidVerificationCodeException();
         }
 
-        $user->load('currency');
+        $user->load(['currency', 'subscription']);
 
         return new UserResource($user);
     }

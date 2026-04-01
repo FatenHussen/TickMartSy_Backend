@@ -67,6 +67,8 @@ class OneResource extends JsonResource
             'payment_method' => $this->paymentMethod ? [
                 'id' => $this->paymentMethod->id,
                 'name' => $this->paymentMethod->name,
+                'icon' => $this->paymentMethod->icon,
+
             ] : null,
             // 'baskes' => $this->basket ? BasketAllResource::make($this->basket) : null,
             // 'basket_schedule' => $this->basket_schedule_id ? BasketScheduleAllResource::make($this->basketSchedule) : null,

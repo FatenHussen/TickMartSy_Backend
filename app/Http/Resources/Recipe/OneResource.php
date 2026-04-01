@@ -32,6 +32,7 @@ class OneResource extends JsonResource
 
             'rating' => $this->average_rating ?? 0,
             'orders_count' => $this->orders_count,
+            'is_active' => (bool) $this->is_active,
 
             ...$this->withCurrency($price, 'price'),
             ...$this->withCurrency($priceAfterDiscount, 'price_after_discount'),

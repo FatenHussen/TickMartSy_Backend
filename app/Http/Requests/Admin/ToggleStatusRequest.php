@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Services\Admin\ToggleStatusService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -24,53 +25,10 @@ class ToggleStatusRequest extends FormRequest
             'type' => [
                 'required',
                 'string',
-                Rule::in($this->getAllowedTypes())
+                Rule::in(ToggleStatusService::allowedTypes())
             ],
             'id' => 'required|integer|min:1',
             'is_active' => 'required|boolean',
-        ];
-    }
-
-    /**
-     * Get all allowed model types
-     */
-    protected function getAllowedTypes(): array
-    {
-        return [
-            'vendor_user',
-            'vendor_package',
-            'vendor',
-            'user_basket_schedule',
-            'user',
-            'system_setting',
-            'store_user',
-            'store',
-            'shop',
-            'schedule',
-            'sale_country',
-            'recipe',
-            'promotion',
-            'point_rule',
-            'payment_method',
-            'package',
-            'media',
-            'language',
-            'icon',
-            'currency',
-            'category',
-            'basket_schedule',
-            'driver',
-            'country',
-            'brand',
-            'banner',
-            'faq',
-            'service',
-            'area',
-            'city',
-            'governorate',
-            'badge',
-            'color',
-            'coupon',
         ];
     }
 

@@ -19,6 +19,7 @@ class OneResource extends JsonResource
             'image' => $this->image_url ?? null,
             'num_varieties' => (int) $this->num_varieties,
             'offer_ends_at' => $this->offer_ends_at?->format('Y-m-d'),
+            'is_active' => $this->is_active,
 
             // Pricing
             'original_price' => round($this->calculated_price, 2),

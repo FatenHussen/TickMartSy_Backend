@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\OrderStatus;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class Driver extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens, LogsActivity;
+    use HasFactory, Notifiable, HasApiTokens, LogsActivity, SoftDeletes;
     protected $appends = [
         'average_rating',
         'total_earnings',
@@ -28,7 +29,6 @@ class Driver extends Authenticatable
         'password',
         'name',
         'is_active',
-        'is_deleted',
         'address',
         'status',
         'rate_per_order',

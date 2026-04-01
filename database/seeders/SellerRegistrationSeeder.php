@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\SellerRegistration;
 use App\Models\City;
+use App\Models\Country;
 use App\Models\Governorate;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -18,9 +19,10 @@ class SellerRegistrationSeeder extends Seeder
         // Get some cities and governorates for testing
         $governorate = Governorate::first();
         $city = City::first();
+        $country = Country::first();
 
-        if (!$governorate || !$city) {
-            $this->command->warn('Please seed governorates and cities first!');
+        if (!$governorate || !$city || !$country) {
+            $this->command->warn('Please seed countries, governorates, and cities first!');
             return;
         }
 
@@ -34,7 +36,7 @@ class SellerRegistrationSeeder extends Seeder
                 'address' => 'شارع الملك فهد، حي العليا',
                 'commercial_register_number' => 'CR2024001',
                 'commercial_register_date' => '2024-01-15',
-                'country' => 'Saudi Arabia',
+                'country_id' => $country->id,
                 'city_id' => $city->id,
                 'governorate_id' => $governorate->id,
                 'logo' => null,
@@ -49,7 +51,7 @@ class SellerRegistrationSeeder extends Seeder
                 'address' => 'طريق الأمير محمد بن عبدالعزيز',
                 'commercial_register_number' => 'CR2024002',
                 'commercial_register_date' => '2024-01-20',
-                'country' => 'Saudi Arabia',
+                'country_id' => $country->id,
                 'city_id' => $city->id,
                 'governorate_id' => $governorate->id,
                 'logo' => null,
@@ -64,7 +66,7 @@ class SellerRegistrationSeeder extends Seeder
                 'address' => 'شارع التحلية، حي السليمانية',
                 'commercial_register_number' => 'CR2024003',
                 'commercial_register_date' => '2024-01-10',
-                'country' => 'Saudi Arabia',
+                'country_id' => $country->id,
                 'city_id' => $city->id,
                 'governorate_id' => $governorate->id,
                 'logo' => null,
@@ -79,7 +81,7 @@ class SellerRegistrationSeeder extends Seeder
                 'address' => 'طريق الملك عبدالله، حي الربوة',
                 'commercial_register_number' => 'CR2024004',
                 'commercial_register_date' => '2024-01-05',
-                'country' => 'Saudi Arabia',
+                'country_id' => $country->id,
                 'city_id' => $city->id,
                 'governorate_id' => $governorate->id,
                 'logo' => null,
@@ -94,7 +96,7 @@ class SellerRegistrationSeeder extends Seeder
                 'address' => 'شارع العروبة، حي المروج',
                 'commercial_register_number' => 'CR2024005',
                 'commercial_register_date' => '2024-02-01',
-                'country' => 'Saudi Arabia',
+                'country_id' => $country->id,
                 'city_id' => $city->id,
                 'governorate_id' => $governorate->id,
                 'logo' => null,
@@ -109,7 +111,7 @@ class SellerRegistrationSeeder extends Seeder
                 'address' => 'طريق الملك فيصل، حي النزهة',
                 'commercial_register_number' => 'CR2024006',
                 'commercial_register_date' => '2024-01-25',
-                'country' => 'Saudi Arabia',
+                'country_id' => $country->id,
                 'city_id' => $city->id,
                 'governorate_id' => $governorate->id,
                 'logo' => null,
@@ -124,7 +126,7 @@ class SellerRegistrationSeeder extends Seeder
                 'address' => 'شارع الأمير سلطان، حي الملز',
                 'commercial_register_number' => 'CR2024007',
                 'commercial_register_date' => '2024-01-18',
-                'country' => 'Saudi Arabia',
+                'country_id' => $country->id,
                 'city_id' => $city->id,
                 'governorate_id' => $governorate->id,
                 'logo' => null,
@@ -139,7 +141,7 @@ class SellerRegistrationSeeder extends Seeder
                 'address' => 'طريق الملك خالد، حي الياسمين',
                 'commercial_register_number' => 'CR2024008',
                 'commercial_register_date' => '2024-01-12',
-                'country' => 'Saudi Arabia',
+                'country_id' => $country->id,
                 'city_id' => $city->id,
                 'governorate_id' => $governorate->id,
                 'logo' => null,
@@ -154,7 +156,7 @@ class SellerRegistrationSeeder extends Seeder
                 'address' => 'شارع الأمير ماجد، حي الروضة',
                 'commercial_register_number' => 'CR2024009',
                 'commercial_register_date' => '2024-02-05',
-                'country' => 'Saudi Arabia',
+                'country_id' => $country->id,
                 'city_id' => $city->id,
                 'governorate_id' => $governorate->id,
                 'logo' => null,
@@ -169,7 +171,7 @@ class SellerRegistrationSeeder extends Seeder
                 'address' => 'طريق الملك عبدالله، حي الورود',
                 'commercial_register_number' => 'CR2024010',
                 'commercial_register_date' => '2024-01-08',
-                'country' => 'Saudi Arabia',
+                'country_id' => $country->id,
                 'city_id' => $city->id,
                 'governorate_id' => $governorate->id,
                 'logo' => null,

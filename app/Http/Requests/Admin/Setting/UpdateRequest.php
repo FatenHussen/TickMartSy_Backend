@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin\Setting;
 
 use App\Models\Setting;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateRequest extends FormRequest
 {
@@ -23,6 +24,9 @@ class UpdateRequest extends FormRequest
             case 'boolean':
                 $valueRules[] = 'boolean';
                 break;
+            case 'integer':
+                $valueRules[] = 'integer';
+                break;
             case 'number':
                 $valueRules[] = 'numeric';
                 break;
@@ -39,7 +43,14 @@ class UpdateRequest extends FormRequest
         }
 
         return [
-            'value' => $valueRules,
+            'value' => array_merge(
+                $valueRules,
+                $this->route('key') === 'payment_default'
+                    ? [
+                        Rule::exists('payment_methods', 'id')->where(fn($query) => $query->where('is_active', true)),
+                    ]
+                    : []
+            ),
         ];
     }
 }

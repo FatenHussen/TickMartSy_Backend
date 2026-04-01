@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 use App\Models\Favorite;
 use App\Traits\LogsActivity;
@@ -28,6 +27,7 @@ class Basket extends Model implements Sectionable
         'num_sold',
         'image',
         'is_schedule',
+        'is_active',
         'delivery_price'
     ];
 
@@ -39,6 +39,8 @@ class Basket extends Model implements Sectionable
 
     protected $casts = [
         'offer_ends_at' => 'date',
+        'is_schedule' => 'boolean',
+        'is_active' => 'boolean',
     ];
 
     public function category()

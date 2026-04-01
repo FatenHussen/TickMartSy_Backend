@@ -42,6 +42,11 @@ Complete API documentation for Tikmool e-commerce platform.
 - React component examples
 - Error handling
 
+### 7. Admin Colors API (`ADMIN_COLORS_API.md`)
+- Colors CRUD for admin
+- Request validation rules
+- Request/response examples
+
 
 ## Quick Start
 

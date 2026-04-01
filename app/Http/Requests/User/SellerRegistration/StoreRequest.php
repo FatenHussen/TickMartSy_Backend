@@ -23,7 +23,7 @@ class StoreRequest extends FormRequest
             'address' => 'required|string|max:500',
             'commercial_register_number' => 'nullable|string|max:255',
             'commercial_register_date' => 'nullable|date',
-            'country' => 'nullable|string|max:100',
+            'country_id' => 'nullable|exists:countries,id',
             'city_id' => 'required|exists:cities,id',
             'governorate_id' => 'required|exists:governorates,id',
             'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp',

@@ -23,10 +23,12 @@ class PointTransaction extends Model
         'reference_id',
         'expires_at',
         'reason',
+        'is_active',
     ];
 
     protected $casts = [
         'expires_at' => 'datetime',
+        'is_active' => 'boolean',
     ];
 
     public function user(): BelongsTo

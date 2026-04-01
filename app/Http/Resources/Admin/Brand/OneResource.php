@@ -22,6 +22,8 @@ class OneResource extends JsonResource
             'image' => $this->image_url,
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
+            'is_active' => $this->is_active,
+
         ];
     }
 }

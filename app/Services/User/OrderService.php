@@ -13,6 +13,7 @@ use App\Http\Resources\Order\AllResource;
 use App\Models\AffiliateWalletTransaction;
 use App\Models\Basket;
 use App\Models\Order;
+use App\Models\PaymentMethod;
 use App\Models\Recipe;
 use App\Models\ShopProductVariant;
 use App\Models\User;
@@ -232,8 +233,31 @@ class OrderService extends BaseService
             'cart_type' => $data['cart_type'] ?? CartType::DEFAULT->value,
             'is_instant_delivery' => $data['is_instant_delivery'] ?? false,
             'status' => OrderStatus::PENDING->value,
-            'payment_method_id' => $data['payment_method_id']
+            'payment_method_id' => $this->resolvePaymentMethodId($data),
         ]);
+    }
+
+    private function resolvePaymentMethodId(array $data): int
+    {
+        if (!empty($data['payment_method_id'])) {
+            $paymentMethod = PaymentMethod::query()
+                ->active()
+                ->find($data['payment_method_id']);
+
+            if (!$paymentMethod) {
+                throw new CustomExceptionWithMessage('طريقة الدفع المختارة غير متاحة حالياً', 422);
+            }
+
+            return (int) $paymentMethod->id;
+        }
+
+        $defaultPaymentMethod = PaymentMethod::resolveDefault();
+
+        if (!$defaultPaymentMethod) {
+            throw new CustomExceptionWithMessage('لا توجد بوابة دفع افتراضية مفعلة في النظام', 422);
+        }
+
+        return (int) $defaultPaymentMethod->id;
     }
 
     private function applyExternalDiscounts(

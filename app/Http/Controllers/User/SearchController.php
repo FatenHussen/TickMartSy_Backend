@@ -58,6 +58,7 @@ class SearchController extends Controller
             |--------------------------------------------------------------------------
             */
             'recipe' => Recipe::deepSearch($search)
+                ->where('is_active', true)
                 ->withAvg('ratings', 'rating')
                 ->orderByDesc('ratings_avg_rating'),
 
@@ -67,6 +68,7 @@ class SearchController extends Controller
             |--------------------------------------------------------------------------
             */
             'basket' => Basket::deepSearch($search)
+                ->where('is_active', true)
                 ->withAvg('ratings', 'rating')
                 ->orderByDesc('ratings_avg_rating'),
         };

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('email');
             $table->decimal('lat', 10, 8)->nullable();
             $table->decimal('lng', 11, 8)->nullable();
-            $table->foreignId('area_id')->nullable()->constrained('areas')->cascadeOnDelete();
+            $table->foreignId('area_id')->nullable()->constrained('areas')->nullOnDelete();
             $table->json('working_hours')->nullable();
             $table->string('logo')->nullable();
             $table->json('cover_images')->nullable();

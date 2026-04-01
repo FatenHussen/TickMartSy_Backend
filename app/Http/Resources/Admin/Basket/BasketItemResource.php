@@ -35,6 +35,7 @@ class BasketItemResource extends JsonResource
             'quantity' => (int) $this->quantity,
             'unit_price' => round($this->price, 2),
             'subtotal' => $this->subtotal,
+            'is_active' => $this->is_active,
 
             // Timestamps
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),

@@ -38,6 +38,7 @@ class AllResource extends JsonResource
             // Schedule info
             'has_schedule' => $this->schedules->isNotEmpty(),
             'schedule_count' => $this->schedules->count(),
+            'is_active' => $this->is_active,
 
             // Timestamps
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),

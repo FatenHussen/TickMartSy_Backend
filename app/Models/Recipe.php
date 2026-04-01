@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Http\Resources\Recipe\AllResource;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 use App\Models\Favorite;
 use App\Traits\LogsActivity;
@@ -33,6 +32,7 @@ class Recipe extends Model implements Sectionable
     protected $casts = [
         'name' => 'array',
         'description' => 'array',
+        'is_active' => 'boolean',
     ];
 
 

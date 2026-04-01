@@ -18,6 +18,7 @@ class AllResource extends JsonResource
         return [
             'id'       => $this->id,
             'name'     => $this->getTranslation('name', $locale),
+            'is_active' => $this->is_active,
             'category' => $this->category->getTranslation('name', $locale)
         ];
     }

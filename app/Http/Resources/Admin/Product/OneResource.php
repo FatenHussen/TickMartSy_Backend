@@ -26,6 +26,7 @@ class OneResource extends JsonResource
             'unit' => $this->unit,
             'warranty_period' => $this->warranty_period,
             'is_visible' => $this->is_visible,
+            'is_active' => (bool) $this->is_active,
 
             'sku' => $this->sku,
             'model' => $this->model,
@@ -89,6 +90,7 @@ class OneResource extends JsonResource
 
                     'shops' => ($variant->shopVariants ?? collect())->map(function ($sv) {
                         return [
+                            'id' => $sv->id,
                             'shop_id' => $sv->shop_id,
                             'shop_name' => $sv->shop?->name,
                             'price' => $sv->price,
