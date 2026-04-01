@@ -65,8 +65,7 @@ class RecipeService extends BaseService
     public function query(array $filters = [])
     {
         $query = Recipe::query()->latest();
-        $query = $this->queryBuilder($query, $filters);
-        return $query->where('is_active', true);
+        return $query = $this->queryBuilder($query, $filters);
     }
 
     // public function queryBuilder($query, $filters = [], $config = [])
@@ -116,6 +115,7 @@ class RecipeService extends BaseService
         // نحسب أقل سعر مكون داخل الوصفة
         $query->withMin('variants', 'price');
 
+        $query->where('is_active', true);
         /* ================= SEARCH ================= */
 
         if (!empty($filters['search'])) {

@@ -26,6 +26,10 @@ class StoreRequest extends FormRequest
 
             'image' => ['required', 'image'],
             'video_url' => ['required', 'url'],
+            'video_title' => ['nullable', 'array'],
+            'video_title.*' => ['required', 'string', 'max:255'],
+            'video_desc' => ['nullable', 'array'],
+            'video_desc.*' => ['required', 'string'],
 
             'discount' => ['required', 'numeric', 'min:1'],
             // 'orders_count' => ['nullable', 'integer', 'min:0'],

@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Admin\Banner;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Log;
 
 class UpdateRequest extends FormRequest
 {
@@ -27,9 +26,10 @@ class UpdateRequest extends FormRequest
             'title.*' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'array'],
             'description.*' => ['required', 'string', 'max:255'],
-            'image'                 => 'nullable|image|mimes:jpeg,png,jpg,gif,webp',
-            // 'is_active'            => 'nullable|boolean',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp',
+            'is_active' => ['nullable', 'boolean'],
             'link' => 'nullable|string|url',
+            'expires_at' => ['nullable', 'date', 'after:now'],
         ];
     }
 }
