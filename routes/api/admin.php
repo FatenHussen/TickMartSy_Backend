@@ -58,6 +58,7 @@ use App\Http\Controllers\Admin\PointRuleController;
 use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\Setting\SettingController;
 use App\Http\Controllers\Admin\SystemSettingController;
+use App\Http\Controllers\Admin\QuickActionController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(
@@ -113,6 +114,7 @@ Route::prefix('admin')->group(
 
             // Icons Management
             Route::apiResource('icons', \App\Http\Controllers\Admin\IconController::class);
+            Route::apiResource('quick-actions', QuickActionController::class);
 
             // Statistics & Reports
             Route::prefix('statistics')->group(function () {

@@ -17,7 +17,6 @@ class BadgeService extends BaseService
         $this->collection = OneResource::class;
         $this->pagination = true;
         $this->searchableFields = ['id'];
-        $this->relations = ['user', 'order'];
         $this->singleImages = ['image'];
     }
 

@@ -13,6 +13,7 @@ class OrderItem extends Model
         'order_id',
         'shop_product_variant_id',
         'product_name',           // snapshot
+        'product_image',          // snapshot
         'variant_attributes',     // snapshot JSON
         'quantity',
         'price',

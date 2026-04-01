@@ -188,6 +188,7 @@ class OrderService extends BaseService
             return [
                 "shop_product_variant_id" => $item["shop_product_variant_id"],
                 "product_name" => $item["product_name"],
+                "product_image" => $item["product_image"] ?? null,
                 "quantity" => $item["quantity"],
                 "price" => $this->convertFormattedPrice($item["price"]),
                 "product_discount" => $this->convertFormattedPrice($item["product_discount"]),
@@ -591,6 +592,7 @@ class OrderService extends BaseService
                     'shop_product_variant_id' => $shopVariant->id,
                     'product_name' => $product->name,
                     'variant_attributes' => $shopVariant->productVariant->getAttributesValuesAttribute(),
+                    'product_image' => $product->image_url,
                     'quantity' => $quantity,
                     'price' => $price,
                     'discount' => $productDiscount,
@@ -617,6 +619,7 @@ class OrderService extends BaseService
             $orderItems->push([
                 'shop_product_variant_id' => $shopVariant->id,
                 'product_name' => $product->name,
+                'product_image' => $product->image_url,
                 'quantity' => $quantity,
                 'price' => $price,
                 'product_discount' => $productDiscount,

@@ -19,6 +19,8 @@ class AllResource extends JsonResource
             'title' => $this->title,
             'body' => $this->body,
             'type' => $this->type,
+            'is_fixed' => $this->is_fixed,
+            'target_page' => $this->target_page,
             'created_at' => $this->created_at?->format('Y-m-d H:i'),
             'emoji' => $this->emoji,
             'media' => $this->mediaPayload(),

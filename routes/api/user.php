@@ -33,6 +33,7 @@ use App\Http\Controllers\User\Schedule\ScheduleController;
 use App\Http\Controllers\User\SellerRegistrationController;
 use App\Http\Controllers\User\Currency\CurrencyController;
 use App\Http\Controllers\User\SearchController;
+use App\Http\Controllers\User\QuickActionController;
 
 Route::prefix('user')->group(
     function () {
@@ -199,6 +200,10 @@ Route::prefix('user')->group(
                 Route::get('/', [FavoriteController::class, 'index']);
                 Route::post('/toggle', [FavoriteController::class, 'toggle']);
             });
+        });
+
+        Route::middleware(['auth:user'])->group(function () {
+            Route::get('/quick-actions', [QuickActionController::class, 'index']);
         });
 
         // User Gifts routes

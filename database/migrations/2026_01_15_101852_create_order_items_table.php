@@ -19,6 +19,8 @@ return new class extends Migration
             $table->foreignId('shop_product_variant_id')->constrained()->cascadeOnDelete();
 
             $table->string('product_name');
+            $table->string('product_image')->nullable();
+
             $table->json('variant_attributes')->nullable();
 
             $table->string('item_status')->default(OrderStatus::PENDING->value);
@@ -35,6 +37,8 @@ return new class extends Migration
             $table->timestamp('preparing_at')->nullable();
             $table->timestamp('out_delivery_at')->nullable();
             $table->timestamp('delivered_at')->nullable();
+
+
 
             $table->timestamps();
         });

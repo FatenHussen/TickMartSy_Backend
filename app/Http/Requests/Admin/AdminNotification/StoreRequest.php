@@ -18,7 +18,12 @@ class StoreRequest extends FormRequest
             'title' => 'required',
             'body'  => 'required',
             'type'  => 'required|in:all,driver,user,vendor',
-            'is_fixed' => 'nullable|in:0,1',
+            'is_fixed' => 'nullable|boolean',
+            'target_page' => [
+                'nullable',
+                'string',
+                Rule::exists('pages', 'slug'),
+            ],
             'emoji' => 'nullable|string|max:10',
             'media' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp',
         ];

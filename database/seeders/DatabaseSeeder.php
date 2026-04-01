@@ -63,6 +63,7 @@ class DatabaseSeeder extends Seeder
             // Pages & Services
             PageSectionSeeder::class,
             ServiceSeeder::class,
+            QuickActionSeeder::class,
 
             // Recipes & Baskets
             RecipeSeeder::class,

@@ -47,8 +47,11 @@ class NotificationController extends Controller
             }
         }
 
-        if ($request->has('is_fixed')) {
-            $query->where('data->data->type', 'admin')->where('data->data->is_fixed', 1)->whereNull('read_at');
+        if ($request->filled('target_page')) {
+            $query->where('data->data->type', 'admin')
+                ->where('data->data->is_fixed', 1)
+                ->whereNull('read_at')
+                ->where('data->data->target_page', $request->input('target_page'));
         }
 
         $notifications = $query->paginate(20);
