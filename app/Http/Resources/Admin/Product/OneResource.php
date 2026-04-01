@@ -90,6 +90,7 @@ class OneResource extends JsonResource
 
                     'shops' => ($variant->shopVariants ?? collect())->map(function ($sv) {
                         return [
+                            'id' => $sv->id,
                             'shop_id' => $sv->shop_id,
                             'shop_name' => $sv->shop?->name,
                             'price' => $sv->price,
