@@ -155,6 +155,7 @@ return [
 
     // Products
     'products' => [
+        'cannot_delete_has_active_orders' => 'لا يمكن حذف هذا المتغير لأنه مرتبط بطلبات نشطة',
         'title' => 'المنتجات',
         'singular' => 'منتج',
         'image' => 'الصورة',

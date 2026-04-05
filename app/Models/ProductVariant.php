@@ -30,9 +30,19 @@ class ProductVariant extends Model
     {
         parent::boot();
 
-        // Cascade delete to related ShopProductVariants
         static::deleting(function ($productVariant) {
-            $productVariant->shopVariants()->delete();
+            // Cascade to basket_items
+            $productVariant->basketItems()->delete();
+
+            // Cascade to shop_product_variants
+            $productVariant->shopVariants()->each(function ($shopVariant) {
+                $shopVariant->delete();
+            });
+
+            // Delete media
+            $productVariant->media()->each(function ($media) {
+                (new \App\Services\Base\MediaService())->delete($media);
+            });
         });
     }
 
@@ -50,6 +60,11 @@ class ProductVariant extends Model
     public function shopVariants()
     {
         return $this->hasMany(ShopProductVariant::class, 'product_variant_id');
+    }
+
+    public function basketItems()
+    {
+        return $this->hasMany(BasketItem::class, 'variant_id');
     }
 
     public function getAttributesWithDetails()

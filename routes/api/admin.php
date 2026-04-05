@@ -92,6 +92,7 @@ Route::prefix('admin')->group(
             Route::apiResource('schedules', ScheduleCrudController::class);
             Route::apiResource('packages', PackageController::class);
             Route::apiResource('subscriptions', SubscriptionController::class);
+            Route::post('gifts/bulk', [GiftController::class, 'bulkStore']);
             Route::apiResource('gifts', GiftController::class);
             Route::apiResource('user-gifts', AdminUserGiftController::class);
             Route::apiResource('point-exchanges', PointExchangeController::class)->only(['index', 'show', 'update']);
