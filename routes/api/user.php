@@ -125,6 +125,7 @@ Route::prefix('user')->group(
         Route::prefix('categories')->group(function () {
             // Public routes
             Route::get('/', [CategoryController::class, 'index']);
+            Route::get('/{categoryId}/attributes', [CategoryController::class, 'attributes']);
         });
         Route::prefix('payment-methods')->group(function () {
             // Public routes
@@ -228,6 +229,7 @@ Route::prefix('user')->group(
 
                 Route::prefix('exchange')->group(function () {
                     Route::get('/options', [\App\Http\Controllers\User\Point\ExchangeController::class, 'options']);
+                    Route::get('/gifts', [\App\Http\Controllers\User\Point\ExchangeController::class, 'gifts']);
                     Route::post('/coupon', [\App\Http\Controllers\User\Point\ExchangeController::class, 'exchangeForCoupon']);
                     Route::post('/free-delivery', [\App\Http\Controllers\User\Point\ExchangeController::class, 'exchangeForFreeDelivery']);
                     Route::post('/gift', [\App\Http\Controllers\User\Point\ExchangeController::class, 'exchangeForGift']);

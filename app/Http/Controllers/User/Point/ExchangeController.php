@@ -13,6 +13,20 @@ class ExchangeController extends Controller
     ) {}
 
     /**
+     * Get all available gifts for exchange (with affordability flag)
+     */
+    public function gifts()
+    {
+        $userId = auth('user')->id();
+        $gifts = $this->exchangeService->getAvailableGifts($userId);
+
+        return response()->json([
+            'success' => true,
+            'data' => $gifts,
+        ]);
+    }
+
+    /**
      * Get available exchange options
      */
     public function options()

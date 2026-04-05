@@ -17,6 +17,45 @@ class PointExchangeService
     ) {}
 
     /**
+     * Get all available gifts with affordability info for the user
+     */
+    public function getAvailableGifts(int $userId): array
+    {
+        $wallet = $this->pointService->getOrCreateWallet($userId);
+        $balance = $wallet->balance ?? 0;
+
+        $gifts = Gift::available()
+            ->with(['shopProductVariant.productVariant.product.media'])
+            ->orderBy('points_required')
+            ->get();
+
+        return [
+            'current_balance' => $balance,
+            'gifts' => $gifts->map(function ($gift) use ($balance) {
+                $image = null;
+                if ($gift->image) {
+                    $image = asset('storage/' . $gift->image);
+                } elseif ($gift->shopProductVariant?->productVariant?->product) {
+                    $media = $gift->shopProductVariant->productVariant->product->media()->first();
+                    $image = $media ? asset('storage/' . $media->path) : null;
+                }
+
+                return [
+                    'id'               => $gift->id,
+                    'name'             => $gift->name,
+                    'description'      => $gift->description,
+                    'image'            => $image,
+                    'points_required'  => $gift->points_required,
+                    'stock_quantity'   => $gift->stock_quantity,
+                    'terms_conditions' => $gift->terms_conditions,
+                    'can_afford'       => $balance >= $gift->points_required,
+                    'points_needed'    => max(0, $gift->points_required - $balance),
+                ];
+            }),
+        ];
+    }
+
+    /**
      * Get available exchange options for user
      */
     public function getExchangeOptions(int $userId): array
