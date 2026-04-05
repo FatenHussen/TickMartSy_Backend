@@ -29,6 +29,8 @@ class OneResource extends JsonResource
 
             'image' => $this->image_url,
             'video_url' => $this->video_url,
+            'video_title' => $this->video_title,
+            'video_desc' => $this->video_desc,
 
             'rating' => $this->average_rating ?? 0,
             'orders_count' => $this->orders_count,

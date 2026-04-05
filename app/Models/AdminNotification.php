@@ -12,14 +12,9 @@ class AdminNotification extends Model
         'title',
         'body',
         'type',
-        'is_fixed',
         'target_page',
         'emoji',
         'media_type',
         'media_url',
-    ];
-
-    protected $casts = [
-        'is_fixed' => 'boolean',
     ];
 }

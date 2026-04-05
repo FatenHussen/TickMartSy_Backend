@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\LogsActivity;
+use App\Jobs\DeleteBannerJob;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
 
@@ -16,15 +17,33 @@ class Banner extends Model
         'image',
         'link',
         'is_active',
+        'expires_at',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'expires_at' => 'datetime',
     ];
 
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    protected static function booted()
+    {
+        static::saved(function (Banner $banner) {
+            $banner->scheduleDeletionJob();
+        });
+    }
+
+    public function scheduleDeletionJob(): void
+    {
+        if (!$this->expires_at || $this->expires_at->isPast()) {
+            return;
+        }
+
+        DeleteBannerJob::dispatch($this->id)->delay($this->expires_at);
     }
 
     public function pageSections()

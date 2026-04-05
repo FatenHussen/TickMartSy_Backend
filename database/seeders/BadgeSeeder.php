@@ -13,12 +13,9 @@ class BadgeSeeder extends Seeder
     {
         $badges = [
             [
-                'name' => [
-                    'en' => 'New',
-                    'ar' => 'جديد',
-                ],
-                'color' => 'success',
-                'type' => 'text',
+                'name' => [],
+                'type' => 'gif',
+                'image' => 'badge/badge1.gif'
             ],
             [
                 'name' => [
@@ -35,6 +32,11 @@ class BadgeSeeder extends Seeder
                 ],
                 'color' => 'danger',
                 'type' => 'text',
+            ],
+            [
+                'name' => [],
+                'type' => 'gif',
+                'image' => 'badge/badge2.gif'
             ],
         ];
 

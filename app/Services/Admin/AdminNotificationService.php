@@ -26,7 +26,6 @@ class AdminNotificationService extends BaseService
             'title' => $data['title'],
             'body' => $data['body'],
             'type' => $data['type'],
-            'is_fixed' => (bool) ($data['is_fixed'] ?? false),
             'target_page' => $data['target_page'] ?? null,
             'emoji' => $data['emoji'] ?? null,
             'media_type' => $mediaPayload['type'] ?? null,
@@ -78,7 +77,6 @@ class AdminNotificationService extends BaseService
     {
         return [
             'type' => 'admin',
-            'is_fixed' => (bool) ($data['is_fixed'] ?? false),
             'target_page' => $data['target_page'] ?? null,
             'emoji' => $data['emoji'] ?? null,
             'media_type' => $media['type'] ?? null,

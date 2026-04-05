@@ -18,7 +18,11 @@ class SectionController extends Controller
     {
         $page = Page::where('slug', $request->page_slug)->firstOrFail();
 
-        $sections = $page->pageSections()->with('section.sectionItems.item')->get();
+        $sections = $page->pageSections()
+            ->where('page_sections.is_active', true)
+            ->whereHas('section', fn ($query) => $query->where('is_active', true))
+            ->with('section.sectionItems.item')
+            ->get();
 
         return $this->sendResponse(data: OneResource::collection($sections));
     }

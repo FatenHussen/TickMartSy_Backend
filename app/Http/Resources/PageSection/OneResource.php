@@ -2,8 +2,9 @@
 
 namespace App\Http\Resources\PageSection;
 
-use App\Http\Resources\Section\SectionApiItemResource;
 use App\Http\Resources\SectionItem\OneResource as SectionItemOneResource;
+use App\Http\Resources\Section\SectionApiItemResource;
+use App\Models\SectionItem;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -44,9 +45,32 @@ class OneResource extends JsonResource
                     $this->section->apiData($this->filters) ?? collect()
                 )
                 : SectionItemOneResource::collection(
-                    $this->section->sectionItems ?? collect()
+                    $this->visibleSectionItems()
                 ),
 
         ];
+    }
+
+    private function visibleSectionItems()
+    {
+        return collect($this->section->sectionItems ?? collect())
+            ->filter(fn (SectionItem $sectionItem) => $this->isSectionItemActive($sectionItem));
+    }
+
+    private function isSectionItemActive(SectionItem $sectionItem): bool
+    {
+        $item = $sectionItem->item;
+
+        if (!$item) {
+            return false;
+        }
+
+        if (array_key_exists('is_active', $item->getAttributes())) {
+            if (!(bool) $item->is_active) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

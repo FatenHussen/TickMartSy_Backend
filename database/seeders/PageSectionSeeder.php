@@ -80,6 +80,7 @@ class PageSectionSeeder extends Seeder
             'description' => ['en' => 'New arrivals', 'ar' => 'وصل حديثا'],
             'image' => 'banner/image.png',
             'link'  => 'https://tickmartsy.com/shops',
+            'expires_at' => now()->addMonth(),
         ]);
 
         $banner2 = Banner::create([
@@ -87,6 +88,7 @@ class PageSectionSeeder extends Seeder
             'description' => ['en' => 'Browse our stores', 'ar' => 'تصفح متاجرنا'],
             'image' => 'banner/image.png',
             'link'  => 'https://tickmartsy.com/categories?category=13',
+            'expires_at' => now()->addMonth(),
         ]);
 
         /*

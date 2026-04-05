@@ -19,7 +19,6 @@ class AllResource extends JsonResource
             'title' => $this->title,
             'body' => $this->body,
             'type' => $this->type,
-            'is_fixed' => $this->is_fixed,
             'target_page' => $this->target_page,
             'created_at' => $this->created_at?->format('Y-m-d H:i'),
             'emoji' => $this->emoji,
@@ -36,6 +35,6 @@ class AllResource extends JsonResource
         return array_filter([
             'type' => $this->media_type ?? 'image',
             'url' => $this->media_url,
-        ], fn ($value) => !is_null($value));
+        ], fn($value) => !is_null($value));
     }
 }

@@ -22,7 +22,6 @@ class NotificationResource extends JsonResource
             'body'       => $this->data['body'] ?? null,
             'type'       => $payload['type'] ?? null,
             'read'       => $this->read_at ? true : false,
-            // 'is_fixed'   => $payload['is_fixed'] ?? 0,
             // 'emoji'      => $payload['emoji'] ?? null,
             // 'media'      => $this->extractMedia($payload),
             'payload'    => $payload,

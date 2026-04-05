@@ -26,6 +26,10 @@ class UpdateRequest extends FormRequest
 
             'image' => ['nullable', 'image'],
             'video_url' => ['nullable', 'url'],
+            'video_title' => ['nullable', 'array'],
+            'video_title.*' => ['required', 'string', 'max:255'],
+            'video_desc' => ['nullable', 'array'],
+            'video_desc.*' => ['required', 'string'],
 
             'discount' => ['nullable', 'numeric', 'min:1'],
             // 'orders_count' => ['nullable', 'integer', 'min:0'],

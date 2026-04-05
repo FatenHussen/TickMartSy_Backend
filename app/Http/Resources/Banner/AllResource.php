@@ -22,6 +22,7 @@ class AllResource extends JsonResource
             'description'            => $this->description,
             'image_url'                => $this->image_url,
             'link' =>                  $this->link,
+            'expires_at' =>           $this->expires_at?->format('Y-m-d H:i'),
             // 'is_active'             => $this->is_active,
             // 'order'             => $this->order,
             'created_at'            => $this->created_at?->format('Y-m-d H:i'),

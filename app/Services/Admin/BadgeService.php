@@ -24,6 +24,10 @@ class BadgeService extends BaseService
     {
         $data['type'] = $this->typeFromImage($data['image'] ?? null) ?? 'text';
 
+        if (! array_key_exists('name', $data)) {
+            $data['name'] = [];
+        }
+
         return parent::create($data);
     }
 

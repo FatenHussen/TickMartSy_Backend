@@ -13,13 +13,15 @@ class Recipe extends Model implements Sectionable
 {
     use HasTranslations, LogsActivity;
 
-    public $translatable = ['name', 'description'];
+    public $translatable = ['name', 'description', 'video_title', 'video_desc'];
 
     protected $fillable = [
         'name',
         'description',
         'image',
         'video_url',
+        'video_title',
+        'video_desc',
         'discount',
         'rating',
         'orders_count',
@@ -33,6 +35,8 @@ class Recipe extends Model implements Sectionable
         'name' => 'array',
         'description' => 'array',
         'is_active' => 'boolean',
+        'video_title' => 'array',
+        'video_desc' => 'array',
     ];
 
 
