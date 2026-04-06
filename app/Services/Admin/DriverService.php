@@ -16,7 +16,7 @@ class DriverService extends BaseService
         $this->resource   = OneResource::class;
         $this->collection = AllResource::class;
         $this->pagination = true;
-        $this->searchableFields = ['id', 'name', 'phone', 'address', 'status'];
+        $this->searchableFields = ['id', 'name', 'phone', 'email', 'address', 'status'];
         $this->syncRelations = [
             'areas'   => 'area_ids',
         ];

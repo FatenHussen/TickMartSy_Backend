@@ -13,6 +13,7 @@ class AllResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'phone' => $this->phone,
+            'email' => $this->email,
             'status' => $this->status,
             'image' => $this->image_url,
             'rate_per_order' => (float) $this->rate_per_order,

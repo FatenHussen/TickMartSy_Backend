@@ -26,6 +26,7 @@ class UpdateRequest extends FormRequest
         return [
             'name'              => 'nullable|string|max:255',
             'phone' => ['nullable', 'unique:drivers,phone,' . $Id],
+            'email' => ['nullable', 'email', 'unique:drivers,email,' . $Id],
             'password' => ['nullable'],
             'is_active'            => 'nullable|boolean',
             'address' => 'nullable|string',

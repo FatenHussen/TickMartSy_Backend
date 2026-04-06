@@ -14,6 +14,7 @@ class DriverResource extends JsonResource
             'driver' => [
                 'id' => $this->id,
                 'phone' => $this->phone,
+                'email' => $this->email,
                 'image' => $this->image_url
             ],
         ];

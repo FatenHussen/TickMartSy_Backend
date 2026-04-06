@@ -25,6 +25,7 @@ class UpdateRequest extends FormRequest
         $adminId = $this->route('admin');
         return [
             'name'              => 'required|string|max:255',
+            'phone' => ['required', 'string', 'unique:admins,phone,' . $adminId],
             'email' => ['required', 'email', 'unique:admins,email,' . $adminId],
             'password' => ['nullable'],
             'is_active'            => 'nullable|boolean',

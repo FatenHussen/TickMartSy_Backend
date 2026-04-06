@@ -17,7 +17,7 @@ class AdminService extends BaseService
         $this->resource   = OneResource::class;
         $this->collection = AllResource::class;
         $this->pagination = true;
-        $this->searchableFields = ['id', 'name', 'email'];
+        $this->searchableFields = ['id', 'name', 'phone', 'email'];
         $this->syncRelations = [
             'roles'   => 'roles',
         ];

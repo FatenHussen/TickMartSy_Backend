@@ -14,6 +14,7 @@ class OneResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'phone' => $this->phone,
+            'email' => $this->email,
             'status' => $this->status,
             'image' => $this->image_url,
             'address' => $this->address,
