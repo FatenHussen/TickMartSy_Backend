@@ -121,13 +121,9 @@ class GiftService extends BaseService
         $productVariant = $shopProductVariant->productVariant;
         $product = $productVariant->product;
 
-        // Auto-fill name from product + variant
-        $shouldFillName = !isset($data['name']) ||
-                         empty($data['name']) ||
-                         (is_array($data['name']) &&
-                          (empty(array_filter($data['name'], fn($v) => !empty($v))) ||
-                           (isset($data['name']['ar']) && $data['name']['ar'] === '') ||
-                           (isset($data['name']['en']) && $data['name']['en'] === '')));
+        // When shop_product_variant_id is provided, always auto-fill name from product
+        // (ignore any name sent by the user)
+        $shouldFillName = true;
 
         if ($shouldFillName) {
             // Build name like ShopProductVariant label
@@ -198,13 +194,8 @@ class GiftService extends BaseService
             ];
         }
 
-        // Auto-fill description from product
-        $shouldFillDescription = !isset($data['description']) ||
-                                empty($data['description']) ||
-                                (is_array($data['description']) &&
-                                 (empty(array_filter($data['description'], fn($v) => !empty($v))) ||
-                                  (isset($data['description']['ar']) && $data['description']['ar'] === '') ||
-                                  (isset($data['description']['en']) && $data['description']['en'] === '')));
+        // Always auto-fill description from product when variant is provided
+        $shouldFillDescription = true;
 
         if ($shouldFillDescription) {
             $data['description'] = $product->getTranslations('description') ?? ['ar' => '', 'en' => ''];
