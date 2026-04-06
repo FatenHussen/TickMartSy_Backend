@@ -18,6 +18,12 @@ class SettingSeeder extends Seeder
             'value' => '1',
             'type' => 'integer',
         ]);
+
+        // إعدادات النقاط
+        Setting::updateOrCreate(['key' => 'point_to_currency_rate'], [
+            'value' => '10',   // كل 100 ليرة سورية = نقطة واحدة
+            'type'  => 'integer',
+        ]);
         // جهات الاتصال
         Setting::create([
             'key' => 'whts',
