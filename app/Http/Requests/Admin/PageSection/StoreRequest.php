@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests\Admin\PageSection;
 
-
+use App\Enums\VariantSection;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
@@ -27,6 +28,7 @@ class StoreRequest extends FormRequest
 
             'position' => ['required', 'in:before,after'],
             'order' => ['required', 'integer', 'min:1'],
+            'variant' => ['nullable', Rule::in(VariantSection::values())],
 
             'background_color' => ['nullable', 'string', 'max:50'],
             'background_card_color' => ['nullable', 'string', 'max:50'],

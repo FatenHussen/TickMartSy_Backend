@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\VariantSection;
 use App\Services\Base\Section\SectionApiService;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
@@ -23,6 +24,10 @@ class PageSection extends Model
         'background_color',
         'display_type_id',
         'is_active',
+        'variant',
+    ];
+    protected $attributes = [
+        'variant' => VariantSection::Horizontal->value,
     ];
     protected $casts = [
         'filters' => 'array',

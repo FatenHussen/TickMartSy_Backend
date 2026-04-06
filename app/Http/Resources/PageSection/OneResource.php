@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\PageSection;
 
+use App\Enums\VariantSection;
 use App\Http\Resources\SectionItem\OneResource as SectionItemOneResource;
 use App\Http\Resources\Section\SectionApiItemResource;
 use App\Models\SectionItem;
@@ -24,6 +25,7 @@ class OneResource extends JsonResource
             'position' => $this->position,
             'order' => $this->order,
             'display_type_id' => $this->display_type_id,
+            'variant' => $this->variant ?? VariantSection::Horizontal->value,
             'background_color' => $this->background_color,
             'background_card_color' => $this->background_card_color,
             'see_more' => $this->section->see_more
