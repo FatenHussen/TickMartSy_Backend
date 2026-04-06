@@ -6,13 +6,18 @@ use App\Http\Resources\Product\VariantAttributeResource;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Spatie\Translatable\HasTranslations;
 
 class ProductVariant extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
+
+    public array $translatable = ['name'];
 
     protected $fillable = [
         'product_id',
+        'name',
+        'sku',
         'attributes_values_ids',
         'is_trend',
         'is_active',
@@ -30,9 +35,19 @@ class ProductVariant extends Model
     {
         parent::boot();
 
-        // Cascade delete to related ShopProductVariants
         static::deleting(function ($productVariant) {
-            $productVariant->shopVariants()->delete();
+            // Cascade to basket_items
+            $productVariant->basketItems()->delete();
+
+            // Cascade to shop_product_variants
+            $productVariant->shopVariants()->each(function ($shopVariant) {
+                $shopVariant->delete();
+            });
+
+            // Delete media
+            $productVariant->media()->each(function ($media) {
+                (new \App\Services\Base\MediaService())->delete($media);
+            });
         });
     }
 
@@ -50,6 +65,11 @@ class ProductVariant extends Model
     public function shopVariants()
     {
         return $this->hasMany(ShopProductVariant::class, 'product_variant_id');
+    }
+
+    public function basketItems()
+    {
+        return $this->hasMany(BasketItem::class, 'variant_id');
     }
 
     public function getAttributesWithDetails()

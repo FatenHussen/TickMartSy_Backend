@@ -6,6 +6,7 @@ use App\Http\Resources\Admin\ShopProductVariant\AllResource;
 use App\Http\Resources\Admin\ShopProductVariant\OneResource;
 use App\Models\ShopProductVariant;
 use App\Services\BaseService;
+use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Builder;
 
 class ShopProductVariantService extends BaseService
@@ -62,6 +63,34 @@ class ShopProductVariantService extends BaseService
         $query = ShopProductVariant::query();
         $query = $this->queryBuilder($query, $filters);
         return $query;
+    }
+
+    public function delete($id): bool
+    {
+        $shopVariant = ShopProductVariant::findOrFail($id);
+
+        $activeStatuses = [
+            \App\Enums\OrderStatus::PENDING->value,
+            \App\Enums\OrderStatus::PREPARING->value,
+            \App\Enums\OrderStatus::OUT_DELIVERY->value,
+        ];
+
+        $hasActiveOrders = \App\Models\OrderItem::where('shop_product_variant_id', $id)
+            ->whereHas('order', fn($q) => $q->whereIn('status', $activeStatuses))
+            ->exists();
+
+        if ($hasActiveOrders) {
+            throw new \App\Exceptions\CustomExceptionWithMessage(
+                'custom.products.cannot_delete_has_active_orders',
+                422
+            );
+        }
+
+        // The ShopProductVariant::deleted event in the model handles
+        // removing this ID from basket_items.shop_product_variant_ids JSON
+        $shopVariant->delete();
+
+        return true;
     }
 }
 

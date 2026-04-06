@@ -88,8 +88,11 @@ class UpdateRequest extends FormRequest
             'quantity'              => 'nullable|integer|min:0',
             'unit'                  => 'nullable|string|max:50',
             'warranty_period'       => 'nullable|integer|min:0',
+            'stock'                 => 'nullable|integer|min:0',
+            'max_purchase_quantity' => 'nullable|integer|min:1',
             'barcode'               => 'nullable|string',
             'time_prepare'          => 'nullable|string',
+            'delivery_time'         => 'nullable|string|max:100',
             'bought_with'           => 'nullable|array',
             'bought_with.*'         => 'nullable|integer|exists:products,id',
             'is_instant_delivery'   => 'nullable|boolean',
@@ -97,15 +100,15 @@ class UpdateRequest extends FormRequest
             'thumbnail'             => 'nullable|image',
 
             // Variants
-            'variants'                      => 'nullable|array',
-            'variants.*.id'                  => 'nullable|exists:product_variants,id',
-            'variants.*.attributes_values_ids' => 'nullable|array',
-            'variants.*.attributes_values_ids.*' => 'required|integer|exists:attribute_values,id',
-            'variants.*.price'              => 'nullable|integer|min:0',
-            'variants.*.existing_images_ids' => 'nullable|array',
-            'variants.*.existing_images_ids.*' => 'integer',
-            'variants.*.images' => 'nullable|array',
-            'variants.*.images.*' => 'image',
+            // 'variants'                      => 'nullable|array',
+            // 'variants.*.id'                  => 'nullable|exists:product_variants,id',
+            // 'variants.*.attributes_values_ids' => 'nullable|array',
+            // 'variants.*.attributes_values_ids.*' => 'required|integer|exists:attribute_values,id',
+            // 'variants.*.price'              => 'nullable|integer|min:0',
+            // 'variants.*.existing_images_ids' => 'nullable|array',
+            // 'variants.*.existing_images_ids.*' => 'integer',
+            // 'variants.*.images' => 'nullable|array',
+            // 'variants.*.images.*' => 'image',
             // Category Details
             'category_details'              => 'nullable|array',
             'category_details.*.id'         => 'nullable|exists:product_category_details,id',
@@ -126,11 +129,11 @@ class UpdateRequest extends FormRequest
             'media.*' => 'image',
 
             // Shop Product Variants (اختياري)
-            'shop_variants'                 => 'nullable|array',
-            'shop_variants.*.shop_id'           => 'required|exists:shops,id',
-            'shop_variants.*.variant_index'     => 'required|integer|min:0',
-            'shop_variants.*.price'             => 'nullable|integer|min:0',
-            'shop_variants.*.quantity'          => 'nullable|integer|min:0',
+            // 'shop_variants'                 => 'nullable|array',
+            // 'shop_variants.*.shop_id'           => 'required|exists:shops,id',
+            // 'shop_variants.*.variant_index'     => 'required|integer|min:0',
+            // 'shop_variants.*.price'             => 'nullable|integer|min:0',
+            // 'shop_variants.*.quantity'          => 'nullable|integer|min:0',
 
 
             'badges'          => 'nullable|array',

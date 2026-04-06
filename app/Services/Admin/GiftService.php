@@ -223,8 +223,22 @@ class GiftService extends BaseService
         return $data;
     }
 
-    public function queryBuilder($query, $filters = [], $config = [])
+    public function bulkCreate(array $data): array
     {
+        $variantIds = $data['shop_product_variant_ids'];
+        unset($data['shop_product_variant_ids']);
+
+        $created = [];
+
+        foreach ($variantIds as $variantId) {
+            $itemData = array_merge($data, ['shop_product_variant_id' => $variantId]);
+            $created[] = $this->create($itemData);
+        }
+
+        return $created;
+    }
+
+    public function queryBuilder($query, $filters = [], $config = [])    {
         // Filter by is_active
         if (isset($filters['is_active'])) {
             $query->where('is_active', $filters['is_active']);

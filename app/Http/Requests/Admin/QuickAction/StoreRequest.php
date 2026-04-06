@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Requests\Admin\QuickAction;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -25,3 +24,4 @@ class StoreRequest extends FormRequest
         ];
     }
 }
+

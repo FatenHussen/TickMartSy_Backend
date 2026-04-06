@@ -7,44 +7,40 @@ use App\Models\Currency;
 class CurrencyHelper
 {
     /**
-     * تحويل السعر من عملة اليوزر إلى دولار (للفلترة)
-     *
-     * @param float $price السعر بعملة اليوزر
-     * @param int|null $currencyId معرف العملة (إذا null يأخذ من اليوزر المسجل)
-     * @return float السعر بالدولار
+     * تحويل السعر من عملة اليوزر إلى الليرة السورية (العملة الأساسية)
      */
-    public static function convertToUSD(float $price, ?int $currencyId = null): float
+    public static function convertToBase(float $price, ?int $currencyId = null): float
     {
-        // إذا ما في currency_id، نجيبه من اليوزر
         if (!$currencyId) {
             $user = auth('user')->user();
             $currencyId = $user?->currency_id;
         }
 
-        // إذا ما في عملة أو العملة دولار، نرجع السعر كما هو
         if (!$currencyId) {
             return $price;
         }
 
         $currency = Currency::find($currencyId);
 
-        // إذا العملة دولار أو مش موجودة، نرجع السعر كما هو
-        if (!$currency || $currency->code === 'USD') {
+        if (!$currency || $currency->is_default) {
             return $price;
         }
 
-        // نحول من عملة اليوزر للدولار
-        return $currency->convertToUSD($price);
+        return (float) $currency->convertToBase($price);
     }
 
     /**
-     * تحويل السعر من دولار إلى عملة اليوزر (للعرض)
-     *
-     * @param float $priceInUSD السعر بالدولار
-     * @param int|null $currencyId معرف العملة
-     * @return array معلومات السعر المحول
+     * للتوافق مع الكود القديم
      */
-    public static function convertFromUSD(float $priceInUSD, ?int $currencyId = null): array
+    public static function convertToUSD(float $price, ?int $currencyId = null): float
+    {
+        return self::convertToBase($price, $currencyId);
+    }
+
+    /**
+     * تحويل السعر من الليرة السورية (الأساسية) إلى عملة اليوزر
+     */
+    public static function convertFromBase(float $priceInSYP, ?int $currencyId = null): array
     {
         if (!$currencyId) {
             $user = auth('user')->user();
@@ -52,59 +48,73 @@ class CurrencyHelper
         }
 
         if (!$currencyId) {
-            $currency = Currency::default()->first() ?? Currency::where('code', 'USD')->first();
+            $currency = Currency::default()->first();
         } else {
             $currency = Currency::find($currencyId);
         }
 
-        if (!$currency || $currency->code === 'USD') {
+        // fallback للعملة الافتراضية
+        if (!$currency) {
+            $currency = Currency::default()->first();
+        }
+
+        if (!$currency || $currency->is_default) {
             return [
-                'amount' => round($priceInUSD, 2),
-                'currency' => 'USD',
-                'symbol' => '$',
-                'formatted' => '$' . number_format($priceInUSD, 2)
+                'amount'    => round($priceInSYP, 2),
+                'currency'  => $currency?->code ?? 'SYP',
+                'symbol'    => $currency?->symbol ?? 'ل.س',
+                'formatted' => ($currency?->symbol ?? 'ل.س') . ' ' . number_format($priceInSYP, 2),
             ];
         }
 
-        $convertedAmount = $currency->convertFromUSD($priceInUSD);
+        $convertedAmount = $currency->convertFromBase($priceInSYP);
 
         return [
-            'amount' => $convertedAmount,
-            'currency' => $currency->code,
-            'symbol' => $currency->symbol,
-            'formatted' => $currency->symbol . ' ' . number_format($convertedAmount, 2)
+            'amount'    => $convertedAmount,
+            'currency'  => $currency->code,
+            'symbol'    => $currency->symbol,
+            'formatted' => $currency->symbol . ' ' . number_format($convertedAmount, 2),
         ];
     }
 
     /**
+     * للتوافق مع الكود القديم
+     */
+    public static function convertFromUSD(float $priceInBase, ?int $currencyId = null): array
+    {
+        return self::convertFromBase($priceInBase, $currencyId);
+    }
+
+    /**
      * الحصول على عملة اليوزر
-     *
-     * @return Currency|null
      */
     public static function getUserCurrency(): ?Currency
     {
         $user = auth('user')->user();
 
         if (!$user || !$user->currency_id) {
-            return Currency::default()->first() ?? Currency::where('code', 'USD')->first();
+            return Currency::default()->first();
         }
 
         return Currency::find($user->currency_id);
     }
 
     /**
-     * تحويل نطاق أسعار من عملة اليوزر للدولار
-     *
-     * @param float|null $minPrice
-     * @param float|null $maxPrice
-     * @param int|null $currencyId
-     * @return array ['min' => float|null, 'max' => float|null]
+     * تحويل نطاق أسعار من عملة اليوزر للليرة السورية
      */
     public static function convertPriceRangeToUSD(?float $minPrice, ?float $maxPrice, ?int $currencyId = null): array
     {
         return [
-            'min' => $minPrice ? self::convertToUSD($minPrice, $currencyId) : null,
-            'max' => $maxPrice ? self::convertToUSD($maxPrice, $currencyId) : null,
+            'min' => $minPrice ? self::convertToBase($minPrice, $currencyId) : null,
+            'max' => $maxPrice ? self::convertToBase($maxPrice, $currencyId) : null,
         ];
+    }
+
+    /**
+     * للتوافق مع الكود القديم
+     */
+    public static function convertPriceRangeToBase(?float $minPrice, ?float $maxPrice, ?int $currencyId = null): array
+    {
+        return self::convertPriceRangeToUSD($minPrice, $maxPrice, $currencyId);
     }
 }

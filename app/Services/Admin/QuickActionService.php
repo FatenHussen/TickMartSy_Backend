@@ -21,3 +21,5 @@ class QuickActionService extends BaseService
         $this->sortableFields = ['id', 'order', 'created_at'];
     }
 }
+
+

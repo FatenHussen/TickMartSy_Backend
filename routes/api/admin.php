@@ -92,6 +92,7 @@ Route::prefix('admin')->group(
             Route::apiResource('schedules', ScheduleCrudController::class);
             Route::apiResource('packages', PackageController::class);
             Route::apiResource('subscriptions', SubscriptionController::class);
+            Route::post('gifts/bulk', [GiftController::class, 'bulkStore']);
             Route::apiResource('gifts', GiftController::class);
             Route::apiResource('user-gifts', AdminUserGiftController::class);
             Route::apiResource('point-exchanges', PointExchangeController::class)->only(['index', 'show', 'update']);
@@ -235,6 +236,9 @@ Route::prefix('admin')->group(
                 Route::apiResource('areas', AreaCrudController::class);
                 Route::apiResource('countries', CountryCrudController::class);
                 Route::apiResource('services', ServiceCrudController::class);
+                Route::apiResource('vendor-service-types', \App\Http\Controllers\Admin\VendorServiceType\VendorServiceTypeCrudController::class);
+                Route::apiResource('vendor-services', \App\Http\Controllers\Admin\VendorService\VendorServiceCrudController::class);
+                Route::apiResource('shop-vendor-services', \App\Http\Controllers\Admin\ShopVendorService\ShopVendorServiceCrudController::class);
                 Route::apiResource('sections', SectionCrudController::class);
                 Route::apiResource('page-sections', PageSectionCrudController::class);
                 Route::apiResource('coupons', CouponCrudController::class);

@@ -17,3 +17,4 @@ class QuickActionController extends BaseCRUDController
         $this->updateRequest = UpdateRequest::class;
     }
 }
+

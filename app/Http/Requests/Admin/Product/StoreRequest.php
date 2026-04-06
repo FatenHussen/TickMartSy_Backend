@@ -82,8 +82,11 @@ class StoreRequest extends FormRequest
             'quantity'              => 'nullable|integer|min:0',
             'unit'                  => 'nullable|string|max:50',
             'warranty_period'       => 'nullable|integer|min:0',
+            'stock'                 => 'nullable|integer|min:0',
+            'max_purchase_quantity' => 'nullable|integer|min:1',
             'barcode'               => 'nullable|string',
             'time_prepare'          => 'nullable|string',
+            'delivery_time'         => 'nullable|string|max:100',
             'bought_with'           => 'nullable|array',
             'bought_with.*'         => 'nullable|integer|exists:products,id',
             'is_instant_delivery'   => 'nullable|boolean',
@@ -92,6 +95,10 @@ class StoreRequest extends FormRequest
 
             // Variants
             'variants'                      => 'nullable|array',
+            'variants.*.name'               => 'nullable|array',
+            'variants.*.name.ar'            => 'nullable|string|max:255',
+            'variants.*.name.en'            => 'nullable|string|max:255',
+            'variants.*.sku'                => 'nullable|string|unique:product_variants,sku',
             'variants.*.attributes_values_ids' => 'nullable|array',
             'variants.*.attributes_values_ids.*' => 'required|integer|exists:attribute_values,id',
             'variants.*.images' => 'nullable|array',

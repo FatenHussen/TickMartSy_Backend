@@ -24,3 +24,4 @@ class UpdateRequest extends FormRequest
         ];
     }
 }
+

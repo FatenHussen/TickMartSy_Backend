@@ -95,19 +95,24 @@ class AwardPointsListener
      */
     public function handleOrderStatusChanged(OrderStatusChanged $event): void
     {
-        // Only award points when order becomes delivered
+        $order = $event->order;
+        $userId = $order->user_id;
+        $user = $order->user;
+
+        // Award points immediately when order is CREATED (pending)
+        if ($event->to === OrderStatus::PENDING->value && $event->from === null) {
+            $this->awardPurchasePoints($order, $userId, $user);
+            return;
+        }
+
+        // Only award completion bonus when order becomes delivered
         if ($event->to !== OrderStatus::DELIVERED->value) {
             return;
         }
 
-        // Prevent duplicate awards if status was already delivered
         if ($event->from === OrderStatus::DELIVERED->value) {
             return;
         }
-
-        $order = $event->order;
-        $userId = $order->user_id;
-        $user = $order->user;
 
         try {
             // Check if points already awarded for this order to prevent duplicates
@@ -196,6 +201,78 @@ class AwardPointsListener
             Log::error("Failed to award points for order {$order->id}", [
                 'error' => $e->getMessage(),
                 'user_id' => $userId
+            ]);
+        }
+    }
+
+    /**
+     * Award points immediately upon order creation based on order total
+     */
+    private function awardPurchasePoints($order, int $userId, $user): void
+    {
+        try {
+            // Prevent duplicate awards
+            $alreadyAwarded = \App\Models\PointTransaction::where('reference_type', 'order')
+                ->where('reference_id', $order->id)
+                ->where('source', 'order_purchase')
+                ->exists();
+
+            if ($alreadyAwarded) {
+                return;
+            }
+
+            $settings = \App\Helpers\SettingsHelper::getPointsSettings();
+
+            if (!$settings['enabled']) {
+                return;
+            }
+
+            $currencyRate = (float) $settings['currency_rate'];
+
+            if ($currencyRate <= 0 || $order->total <= 0) {
+                return;
+            }
+
+            // points = floor(total / currency_rate)
+            // e.g. total=500 SYP, rate=10 SYP/point => 50 points
+            $points = (int) floor($order->total / $currencyRate);
+
+            if ($points <= 0) {
+                return;
+            }
+
+            $transaction = $this->pointService->addPointsToWallet(
+                userId: $userId,
+                points: $points,
+                source: 'order_purchase',
+                status: 'earned',
+                referenceType: 'order',
+                referenceId: $order->id,
+                reason: "نقاط شراء - طلب #{$order->order_code}"
+            );
+
+            if ($transaction && $user) {
+                $this->notificationService->send(
+                    recipient: $user,
+                    title: '🎉 حصلت على نقاط!',
+                    body: "حصلت على {$points} نقطة مقابل طلبك بقيمة {$order->total}",
+                    data: [
+                        'type'     => 'points_earned',
+                        'points'   => $points,
+                        'order_id' => $order->id,
+                    ]
+                );
+            }
+
+            Log::info("Purchase points awarded", [
+                'user_id'  => $userId,
+                'order_id' => $order->id,
+                'points'   => $points,
+                'total'    => $order->total,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error("Failed to award purchase points for order {$order->id}", [
+                'error' => $e->getMessage(),
             ]);
         }
     }

@@ -155,6 +155,7 @@ return [
 
     // Products
     'products' => [
+        'cannot_delete_has_active_orders' => 'لا يمكن حذف هذا المتغير لأنه مرتبط بطلبات نشطة',
         'title' => 'المنتجات',
         'singular' => 'منتج',
         'image' => 'الصورة',
@@ -289,6 +290,17 @@ return [
             'warranty_period' => 'مدة الضمان',
             'warranty_period_help' => 'مدة الضمان بالأشهر (مثال: 12 شهر)',
             'warranty_months' => 'شهر',
+            'stock' => 'المخزون الكلي',
+            'stock_help' => 'الكمية الإجمالية المتوفرة في المخزن',
+            'max_purchase_quantity' => 'الحد الأقصى للشراء',
+            'max_purchase_quantity_help' => 'أقصى كمية يمكن للعميل شراؤها في طلب واحد',
+            'delivery_time' => 'وقت التوصيل',
+            'delivery_time_help' => 'وقت التوصيل المتوقع (مثال: 12-48 ساعة، 3-5 أيام)',
+            'variant_name' => 'اسم المتغير',
+            'variant_name_placeholder' => 'مثال: أحمر - كبير',
+            'variant_name_ar' => 'اسم المتغير (عربي)',
+            'variant_name_en' => 'اسم المتغير (إنجليزي)',
+            'variant_sku' => 'رمز المتغير (SKU)',
             'is_visible' => 'إظهار المنتج',
             'is_visible_help' => 'هل تريد إظهار هذا المنتج للعملاء؟',
             'icons' => 'الأيقونات',

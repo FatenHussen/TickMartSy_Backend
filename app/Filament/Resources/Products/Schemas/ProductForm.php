@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Products\Schemas;
 
 use App\Models\VendorUser;
 use Filament\Forms;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
@@ -284,6 +285,20 @@ class ProductForm
                                         ->suffix(__('custom.products.form.warranty_months'))
                                         ->helperText(__('custom.products.form.warranty_period_help'))
                                         ->columnSpan(1),
+
+                                    Forms\Components\TextInput::make('stock')
+                                        ->label(__('custom.products.form.stock'))
+                                        ->numeric()
+                                        ->minValue(0)
+                                        ->helperText(__('custom.products.form.stock_help'))
+                                        ->columnSpan(1),
+
+                                    Forms\Components\TextInput::make('max_purchase_quantity')
+                                        ->label(__('custom.products.form.max_purchase_quantity'))
+                                        ->numeric()
+                                        ->minValue(1)
+                                        ->helperText(__('custom.products.form.max_purchase_quantity_help'))
+                                        ->columnSpan(1),
                                 ])
                                 ->columns(2)
                                 ->collapsible(),
@@ -357,6 +372,20 @@ class ProductForm
                                     Forms\Components\TimePicker::make('time_prepare')
                                         ->label(__('custom.products.form.preparation_time'))
                                         ->seconds(false),
+
+                                    Forms\Components\TextInput::make('delivery_time')
+                                        ->label(__('custom.products.form.delivery_time'))
+                                        ->placeholder('مثال: 12-48 ساعة')
+                                        ->maxLength(100)
+                                        ->helperText(__('custom.products.form.delivery_time_help'))
+                                        ->hidden(fn (callable $get) => $get('vendor_id') == 1)
+                                        ->columnSpan(1),
+
+                                    Forms\Components\Placeholder::make('delivery_time_tikmool')
+                                        ->label(__('custom.products.form.delivery_time'))
+                                        ->content('12-48 ساعة (تيك مول)')
+                                        ->visible(fn (callable $get) => $get('vendor_id') == 1)
+                                        ->columnSpan(1),
                                 ])
                                 ->columns(2)
                                 ->collapsible(),
@@ -430,6 +459,25 @@ class ProductForm
                                         ->label('')
                                         ->relationship('variants')
                                         ->schema([
+                                            Grid::make(2)
+                                                ->schema([
+                                                    Forms\Components\TextInput::make('name.ar')
+                                                        ->label(__('custom.products.form.variant_name_ar'))
+                                                        ->maxLength(255)
+                                                        ->columnSpan(1),
+
+                                                    Forms\Components\TextInput::make('name.en')
+                                                        ->label(__('custom.products.form.variant_name_en'))
+                                                        ->maxLength(255)
+                                                        ->columnSpan(1),
+
+                                                    Forms\Components\TextInput::make('sku')
+                                                        ->label(__('custom.products.form.variant_sku'))
+                                                        ->maxLength(255)
+                                                        ->unique(table: 'product_variants', column: 'sku', ignoreRecord: true)
+                                                        ->columnSpan(1),
+                                                ]),
+
                                             Section::make(__('custom.products.sections.attributes'))
                                                 ->schema([
                                                     Forms\Components\Repeater::make('attribute_selections')

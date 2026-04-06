@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Resources\Admin\QuickAction;
 
 use Illuminate\Http\Request;
@@ -27,3 +26,5 @@ class AllResource extends JsonResource
         ];
     }
 }
+
+

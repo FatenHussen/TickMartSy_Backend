@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 class Brand extends Model implements Sectionable
 {
     use HasFactory, HasTranslations, LogsActivity;
-    protected $fillable = ['name', 'image', 'is_active'];
+    protected $fillable = ['name', 'image', 'is_active', 'governorate_id', 'city_id', 'category_id'];
     public $translatable = ['name'];
 
     protected $casts = [
@@ -50,6 +50,21 @@ class Brand extends Model implements Sectionable
     {
         return $this->hasMany(Product::class);
     }
+
+    public function governorate()
+    {
+        return $this->belongsTo(Governorate::class);
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
     public function ratings()
     {
         return $this->morphMany(Rating::class, 'rateable');
@@ -77,6 +92,14 @@ class Brand extends Model implements Sectionable
     public function favorites(): MorphMany
     {
         return $this->morphMany(Favorite::class, 'favoriteable');
+    }
+
+    public function getOrdersCountAttribute(): int
+    {
+        return OrderItem::whereHas(
+            'shopProductVariant.productVariant.product',
+            fn($q) => $q->where('brand_id', $this->id)
+        )->count();
     }
 
     public function scopeDeepSearch($query, $search)

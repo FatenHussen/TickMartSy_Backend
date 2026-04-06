@@ -26,3 +26,5 @@ class OneResource extends JsonResource
         ];
     }
 }
+
+

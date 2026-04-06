@@ -17,10 +17,11 @@ class AllResource extends JsonResource
         $locale = app()->getLocale();
 
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'image' => $this->image_url,
-            'rating' => $this->average_rating
+            'id'     => $this->id,
+            'name'   => $this->name,
+            'image'  => $this->image_url,
+            'rating' => $this->average_rating,
+            'orders_count' => $this->orders_count,
         ];
     }
 }

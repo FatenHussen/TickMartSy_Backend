@@ -83,6 +83,8 @@ class ProductService extends BaseService
         'country',
         'model',
         'quantity',
+        'stock',
+        'vendor_id',
         'time_prepare',
     ];
 
@@ -106,6 +108,19 @@ class ProductService extends BaseService
                 $q->where('shop_id', $filters['shop_id']);
             });
             unset($filters['shop_id']);
+        }
+
+        // Filter by vendor_id
+        if (!empty($filters['vendor_id'])) {
+            $query->where('vendor_id', $filters['vendor_id']);
+            unset($filters['vendor_id']);
+        }
+
+        // Sort by stock
+        if (!empty($filters['stock_sort'])) {
+            $order = $filters['stock_sort'] === 'desc' ? 'desc' : 'asc';
+            $query->orderBy('stock', $order);
+            unset($filters['stock_sort']);
         }
 
         // Apply other filters
@@ -210,97 +225,97 @@ class ProductService extends BaseService
             }
         }
 
-        if (isset($data['variants']) && is_array($data['variants'])) {
-            $variantsData = $data['variants'];
-            unset($data['variants']);
+        // if (isset($data['variants']) && is_array($data['variants'])) {
+        //     $variantsData = $data['variants'];
+        //     unset($data['variants']);
 
-            // Build map of existing variants keyed by sorted attributes_values_ids
-            $existingVariants = $object->variants()->get();
-            $existingVariantsMap = [];
-            foreach ($existingVariants as $existingVariant) {
-                $sortedIds = $existingVariant->attributes_values_ids ?? [];
-                sort($sortedIds);
-                $key = json_encode($sortedIds);
-                $existingVariantsMap[$key] = $existingVariant;
-            }
+        //     // Build map of existing variants keyed by sorted attributes_values_ids
+        //     $existingVariants = $object->variants()->get();
+        //     $existingVariantsMap = [];
+        //     foreach ($existingVariants as $existingVariant) {
+        //         $sortedIds = $existingVariant->attributes_values_ids ?? [];
+        //         sort($sortedIds);
+        //         $key = json_encode($sortedIds);
+        //         $existingVariantsMap[$key] = $existingVariant;
+        //     }
 
-            $mediaService = new \App\Services\Base\MediaService();
-            $variantIndexMap = [];
-            $matchedVariantIds = [];
+        //     $mediaService = new \App\Services\Base\MediaService();
+        //     $variantIndexMap = [];
+        //     $matchedVariantIds = [];
 
-            // Process incoming variants: update matched, create new
-            foreach ($variantsData as $index => $variantItem) {
-                $existingImagesIds = $variantItem['existing_images_ids'] ?? [];
-                $variantImages = $variantItem['images'] ?? [];
-                unset($variantItem['existing_images_ids'], $variantItem['images']);
+        //     // Process incoming variants: update matched, create new
+        //     foreach ($variantsData as $index => $variantItem) {
+        //         $existingImagesIds = $variantItem['existing_images_ids'] ?? [];
+        //         $variantImages = $variantItem['images'] ?? [];
+        //         unset($variantItem['existing_images_ids'], $variantItem['images']);
 
-                // Create matching key for incoming variant
-                $incomingIds = $variantItem['attributes_values_ids'] ?? [];
-                sort($incomingIds);
-                $matchKey = json_encode($incomingIds);
+        //         // Create matching key for incoming variant
+        //         $incomingIds = $variantItem['attributes_values_ids'] ?? [];
+        //         sort($incomingIds);
+        //         $matchKey = json_encode($incomingIds);
 
-                // Check if variant exists
-                if (isset($existingVariantsMap[$matchKey])) {
-                    // Update existing variant
-                    $variant = $existingVariantsMap[$matchKey];
-                    $variant->update($variantItem);
-                    $matchedVariantIds[] = $variant->id;
-                } else {
-                    // Create new variant
-                    $variant = $object->variants()->create($variantItem);
-                }
+        //         // Check if variant exists
+        //         if (isset($existingVariantsMap[$matchKey])) {
+        //             // Update existing variant
+        //             $variant = $existingVariantsMap[$matchKey];
+        //             $variant->update($variantItem);
+        //             $matchedVariantIds[] = $variant->id;
+        //         } else {
+        //             // Create new variant
+        //             $variant = $object->variants()->create($variantItem);
+        //         }
 
-                $variantIndexMap[$index] = $variant;
+        //         $variantIndexMap[$index] = $variant;
 
-                // Handle variant images with existing_images_ids
-                if (!empty($existingImagesIds)) {
-                    // This is an update - delete images not in existing list
-                    $currentMedia = $variant->media()->where('collection', 'variant_images')->get();
-                    foreach ($currentMedia as $media) {
-                        if (!in_array($media->id, $existingImagesIds)) {
-                            $media->delete();
-                        }
-                    }
-                }
+        //         // Handle variant images with existing_images_ids
+        //         if (!empty($existingImagesIds)) {
+        //             // This is an update - delete images not in existing list
+        //             $currentMedia = $variant->media()->where('collection', 'variant_images')->get();
+        //             foreach ($currentMedia as $media) {
+        //                 if (!in_array($media->id, $existingImagesIds)) {
+        //                     $media->delete();
+        //                 }
+        //             }
+        //         }
 
-                // Upload new images
-                if (!empty($variantImages)) {
-                    foreach ($variantImages as $file) {
-                        if ($file instanceof \Illuminate\Http\UploadedFile) {
-                            $mediaService->upload($variant, $file, 'variant_images');
-                        }
-                    }
-                }
-            }
+        //         // Upload new images
+        //         if (!empty($variantImages)) {
+        //             foreach ($variantImages as $file) {
+        //                 if ($file instanceof \Illuminate\Http\UploadedFile) {
+        //                     $mediaService->upload($variant, $file, 'variant_images');
+        //                 }
+        //             }
+        //         }
+        //     }
 
-            // Soft delete unmatched existing variants
-            foreach ($existingVariants as $existingVariant) {
-                if (!in_array($existingVariant->id, $matchedVariantIds)) {
-                    $existingVariant->delete();
-                }
-            }
+        //     // Soft delete unmatched existing variants
+        //     foreach ($existingVariants as $existingVariant) {
+        //         if (!in_array($existingVariant->id, $matchedVariantIds)) {
+        //             $existingVariant->delete();
+        //         }
+        //     }
 
-            if (isset($data['shop_variants']) && is_array($data['shop_variants'])) {
-                $shopVariantsData = $data['shop_variants'];
-                unset($data['shop_variants']);
+        //     if (isset($data['shop_variants']) && is_array($data['shop_variants'])) {
+        //         $shopVariantsData = $data['shop_variants'];
+        //         unset($data['shop_variants']);
 
-                foreach ($shopVariantsData as $svItem) {
-                    $variantIndex = $svItem['variant_index'] ?? null;
+        //         foreach ($shopVariantsData as $svItem) {
+        //             $variantIndex = $svItem['variant_index'] ?? null;
 
-                    if ($variantIndex === null || !isset($variantIndexMap[$variantIndex])) {
-                        continue;
-                    }
+        //             if ($variantIndex === null || !isset($variantIndexMap[$variantIndex])) {
+        //                 continue;
+        //             }
 
-                    $variant = $variantIndexMap[$variantIndex];
+        //             $variant = $variantIndexMap[$variantIndex];
 
-                    $variant->shopVariants()->create([
-                        'shop_id'  => $svItem['shop_id'],
-                        'price'    => $svItem['price'] ?? null,
-                        'quantity' => $svItem['quantity'] ?? null,
-                    ]);
-                }
-            }
-        }
+        //             $variant->shopVariants()->create([
+        //                 'shop_id'  => $svItem['shop_id'],
+        //                 'price'    => $svItem['price'] ?? null,
+        //                 'quantity' => $svItem['quantity'] ?? null,
+        //             ]);
+        //         }
+        //     }
+        // }
     }
 
     /**

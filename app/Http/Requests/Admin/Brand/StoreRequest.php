@@ -40,7 +40,10 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'image' => 'required|file',
+            'image'          => 'required|file',
+            'governorate_id' => 'nullable|integer|exists:governorates,id',
+            'city_id'        => 'nullable|integer|exists:cities,id',
+            'category_id'    => 'nullable|integer|exists:categories,id',
         ];
 
         foreach ($this->locales as $locale) {

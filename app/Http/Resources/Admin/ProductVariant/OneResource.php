@@ -12,6 +12,8 @@ class OneResource extends JsonResource
         return [
             'id' => $this->id,
             'product_id' => $this->product_id,
+            'name' => $this->getTranslations('name'),
+            'sku' => $this->sku,
             'product' => [
                 'id' => $this->product->id,
                 'name' => $this->product->name,
