@@ -22,6 +22,8 @@ class AdminNotificationService extends BaseService
     {
         $mediaPayload = $this->resolveMediaPayload($data);
 
+        $channels = $data['channels'] ?? ['fcm'];
+
         $object = AdminNotification::create([
             'title' => $data['title'],
             'body' => $data['body'],
@@ -30,12 +32,14 @@ class AdminNotificationService extends BaseService
             'emoji' => $data['emoji'] ?? null,
             'media_type' => $mediaPayload['type'] ?? null,
             'media_url' => $mediaPayload['url'] ?? null,
+            'channels' => $channels,
         ]);
 
         SendBulkNotificationJob::dispatch(
             $object->title,
             $object->body,
             $object->type,
+            $channels,
             $this->prepareJobData($data, $mediaPayload)
         );
 

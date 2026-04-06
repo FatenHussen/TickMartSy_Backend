@@ -110,6 +110,7 @@ class ShopService extends BaseService
             'offers'    => $this->filterOffers($query),
             'top_rated' => $this->filterTopRated($query),
             'active'    => $this->filterActive($query),
+            'free_delivery' => $this->filterFreeDelivery($query),
             default     => null,
         };
     }
@@ -123,7 +124,7 @@ class ShopService extends BaseService
             return;
         }
 
-        $distance = $filters['max_distance'] ?? 20;
+        $distance = $filters['max_distance'] ?? 100;
 
         $query->selectRaw(
             "shops.*,
@@ -157,6 +158,11 @@ class ShopService extends BaseService
     protected function filterActive(Builder $query)
     {
         $query->where('is_active', true);
+    }
+
+    protected function filterFreeDelivery(Builder $query)
+    {
+        $query->where('is_free_delivery', true);
     }
 
     protected function applySortBy(Builder $query, string $sortBy): void

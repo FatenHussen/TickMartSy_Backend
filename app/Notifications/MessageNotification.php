@@ -3,26 +3,28 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
-use Illuminate\Support\Str;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
-class MessageNotification extends Notification
+class MessageNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
     private $title;
     private $body;
     private $data;
+    private array $channels;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(string $title, string $body, array $data)
+    public function __construct(string $title, string $body, array $data, array $channels = [])
     {
         $this->title = $title;
         $this->body  = $body;
         $this->data = $data;
+        $this->channels = array_map('strtolower', $channels);
     }
 
     /**
@@ -32,7 +34,13 @@ class MessageNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database'];
+        $channels = ['database'];
+
+        if (in_array('email', $this->channels, true)) {
+            $channels[] = 'mail';
+        }
+
+        return $channels;
     }
 
     /**
@@ -41,7 +49,12 @@ class MessageNotification extends Notification
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    public function toMail($notifiable) {}
+    public function toMail($notifiable): MailMessage
+    {
+        return (new MailMessage())
+            ->subject($this->title)
+            ->line($this->body);
+    }
 
     /**
      * Get the array representation of the notification.

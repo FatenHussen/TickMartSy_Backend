@@ -18,6 +18,7 @@ class DriverSeeder extends Seeder
             [
                 'name' => 'حمزة فواز',
                 'phone' => '0993359825',
+                'email' => 'hamzafz888@gmail.com',
                 'password' => Hash::make('123456'),
                 'address' => 'شارع الملك فيصل، وسط البلد',
                 'status' => 'available',

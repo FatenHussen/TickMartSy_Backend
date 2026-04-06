@@ -24,7 +24,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'محمد خزعة',
                 'phone' => '0957432443',
-                'email' => 'mhmd@gmail.com',
+                'email' => 'mhmd.hasan.khaza@gmail.com',
                 'password' => Hash::make('123456'),
                 'phone_verified_at' => now(),
                 'email_verified_at' => now(),
@@ -39,7 +39,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'حمزة فواز',
                 'phone' => '0993359825',
-                'email' => 'hamza@gmail.com',
+                'email' => 'hamzafz888@gmail.com',
                 'password' => Hash::make('123456'),
                 'phone_verified_at' => now(),
                 'email_verified_at' => now(),

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Enums\VariantSection;
 use App\Models\{
     Page,
     Section,
@@ -69,6 +70,8 @@ class PageSectionSeeder extends Seeder
             'image' => 'images/display/banner.png',
             'fields' => ['image', 'title', 'price']
         ]);
+
+        $defaultVariant = VariantSection::Horizontal->value;
 
         /*
         |--------------------------------------------------------------------------
@@ -166,6 +169,7 @@ class PageSectionSeeder extends Seeder
             ], [
                 'display_type_id' => $bannerDisplayType->id,
                 'position' => $bannerPositions[$page->slug] ?? 'before',
+                'variant' => $defaultVariant,
             ]);
         }
 
@@ -179,6 +183,7 @@ class PageSectionSeeder extends Seeder
         ], [
             'display_type_id' => $bannerDisplayType2->id,
             'position' =>  'after',
+            'variant' => $defaultVariant,
         ]);
 
 
@@ -210,6 +215,7 @@ class PageSectionSeeder extends Seeder
             'section_id' => $brandsSection->id,
             'display_type_id' => $brandsDisplayType->id,
             'position' => 'before',
+            'variant' => VariantSection::Vertical->value,
             'order' => 4,
             'filters' => []
         ]);
@@ -236,6 +242,7 @@ class PageSectionSeeder extends Seeder
             'section_id' => $recipeSection->id,
             'display_type_id' => $recipeDisplayType->id,
             'position' => 'after',
+            'variant' => VariantSection::Square->value,
             'order' => 5,
             'filters' => []
         ]);
@@ -262,6 +269,7 @@ class PageSectionSeeder extends Seeder
             'section_id' => $basketSection->id,
             'display_type_id' => $basketsDisplayType->id,
             'position' => 'after',
+            'variant' => VariantSection::Horizontal->value,
             'order' => 6,
             'filters' => []
         ]);
@@ -283,6 +291,7 @@ class PageSectionSeeder extends Seeder
             'section_id' => $schedulebasketSection->id,
             'display_type_id' => $basketsDisplayType->id,
             'position' => 'after',
+            'variant' => VariantSection::Square->value,
             'order' => 7,
             'filters' => []
         ]);
@@ -329,6 +338,7 @@ class PageSectionSeeder extends Seeder
             'section_id' => $productsSection->id,
             'display_type_id' => $productDisplayType->id,
             'position' => 'after',
+            'variant' => VariantSection::Vertical->value,
             'order' => 5,
             'filters' => [
                 'type' => 'trend',
@@ -340,6 +350,7 @@ class PageSectionSeeder extends Seeder
             'section_id' => $productsSection->id,
             'display_type_id' => $productDisplayType->id,
             'position' => 'after',
+            'variant' => VariantSection::Horizontal->value,
             'order' => 6,
             'filters' => [
                 'type' => 'new',
@@ -351,6 +362,7 @@ class PageSectionSeeder extends Seeder
             'section_id' => $productsSection->id,
             'display_type_id' => $productDisplayType->id,
             'position' => 'after',
+            'variant' => VariantSection::Square->value,
             'order' => 7,
             'filters' => [
                 'type' => 'top_rated',
@@ -363,6 +375,7 @@ class PageSectionSeeder extends Seeder
             'section_id' => $productsSection->id,
             'display_type_id' => $productDisplayType->id,
             'position' => 'after',
+            'variant' => VariantSection::Vertical->value,
             'order' => 8,
             'filters' => [
                 'type' => 'offers',
@@ -418,6 +431,7 @@ class PageSectionSeeder extends Seeder
             'section_id' => $shopSection->id,
             'display_type_id' => $shopDisplayType->id,
             'position' => 'after',
+            'variant' => VariantSection::Square->value,
             'order' => 9,
             'filters' => [
                 'type' => 'nearby',
@@ -442,8 +456,33 @@ class PageSectionSeeder extends Seeder
             'section_id' => $suggestedShopSection->id,
             'display_type_id' => $shopDisplayType->id,
             'position' => 'after',
+            'variant' => VariantSection::Horizontal->value,
             'order' => 9,
             'filters' => []
+        ]);
+
+        $freeDeliverySection = Section::create([
+            'name' => ['en' => 'Free delivery shops', 'ar' => 'المتاجر ذات التوصيل المجاني'],
+            'type' => 'api',
+            'api_method' => 'shops',
+            'filters' => [],
+            'see_more' => true,
+            'see_more_slug' => 'shops',
+            'details_slug' => 'shop_details',
+            'manual_model' => 'shop'
+        ]);
+
+        PageSection::create([
+            'name' => ['en' => 'Shops with free delivery', 'ar' => 'المتاجر ذات التوصيل المجاني'],
+            'page_id' => $homePage->id,
+            'section_id' => $freeDeliverySection->id,
+            'display_type_id' => $shopDisplayType->id,
+            'position' => 'after',
+            'variant' => VariantSection::Vertical->value,
+            'order' => 12,
+            'filters' => [
+                'type' => 'free_delivery',
+            ]
         ]);
 
         $suggestedProductSection = Section::create([
@@ -463,6 +502,7 @@ class PageSectionSeeder extends Seeder
             'section_id' => $suggestedProductSection->id,
             'display_type_id' => $productDisplayType->id,
             'position' => 'after',
+            'variant' => VariantSection::Square->value,
             'order' => 10,
             'filters' => []
         ]);
@@ -484,6 +524,7 @@ class PageSectionSeeder extends Seeder
             'section_id' => $suggestedBasketSection->id,
             'display_type_id' => $basketsDisplayType->id,
             'position' => 'after',
+            'variant' => VariantSection::Horizontal->value,
             'order' => 11,
             'filters' => []
         ]);
