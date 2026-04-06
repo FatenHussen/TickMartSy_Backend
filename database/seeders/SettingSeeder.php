@@ -69,19 +69,37 @@ class SettingSeeder extends Seeder
         // ألوان الواجهة
         Setting::create([
             'key' => 'main_color',
-            'value' => '#E4F0FB',
+            'value' => '#FFA000',
             'type' => 'string',
         ]);
 
         Setting::create([
             'key' => 'text_color',
-            'value' => '#2A2A2A',
+            'value' => '#1F2937',
             'type' => 'string',
         ]);
 
         Setting::create([
             'key' => 'second_color',
-            'value' => '#e27676',
+            'value' => '#F3F4F6',
+            'type' => 'string',
+        ]);
+
+        Setting::create([
+            'key' => 'dark_main_color',
+            'value' => '#F1F1F1',
+            'type' => 'string',
+        ]);
+
+        Setting::create([
+            'key' => 'dark_text_color',
+            'value' => '#FFE8A3',
+            'type' => 'string',
+        ]);
+
+        Setting::create([
+            'key' => 'dark_second_color',
+            'value' => '#FFF4CC',
             'type' => 'string',
         ]);
     }
