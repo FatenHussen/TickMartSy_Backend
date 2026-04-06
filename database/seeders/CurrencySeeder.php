@@ -30,7 +30,7 @@ class CurrencySeeder extends Seeder
                 'code'          => 'USD',
                 'name'          => ['en' => 'US Dollar', 'ar' => 'دولار أمريكي'],
                 'symbol'        => '$',
-                'exchange_rate' => 0.000077,   // 1 ليرة = 0.000077 دولار (1 دولار ≈ 13000 ليرة)
+                'exchange_rate' => 0.0077,   // 1 ليرة = 0.000077 دولار (1 دولار ≈ 13000 ليرة)
                 'is_default'    => false,
                 'is_active'     => true,
             ],
@@ -38,7 +38,7 @@ class CurrencySeeder extends Seeder
                 'code'          => 'AED',
                 'name'          => ['en' => 'UAE Dirham', 'ar' => 'درهم إماراتي'],
                 'symbol'        => 'د.إ',
-                'exchange_rate' => 0.000283,   // 1 ليرة ≈ 0.000283 درهم (1 درهم ≈ 3540 ليرة)
+                'exchange_rate' => 0.0283,   // 1 ليرة ≈ 0.000283 درهم (1 درهم ≈ 3540 ليرة)
                 'is_default'    => false,
                 'is_active'     => true,
             ],
@@ -46,7 +46,7 @@ class CurrencySeeder extends Seeder
                 'code'          => 'SAR',
                 'name'          => ['en' => 'Saudi Riyal', 'ar' => 'ريال سعودي'],
                 'symbol'        => 'ر.س',
-                'exchange_rate' => 0.000288,   // 1 ليرة ≈ 0.000288 ريال (1 ريال ≈ 3467 ليرة)
+                'exchange_rate' => 0.0288,   // 1 ليرة ≈ 0.000288 ريال (1 ريال ≈ 3467 ليرة)
                 'is_default'    => false,
                 'is_active'     => true,
             ],
@@ -54,7 +54,7 @@ class CurrencySeeder extends Seeder
                 'code'          => 'EGP',
                 'name'          => ['en' => 'Egyptian Pound', 'ar' => 'جنيه مصري'],
                 'symbol'        => 'ج.م',
-                'exchange_rate' => 0.002375,   // 1 ليرة ≈ 0.002375 جنيه (1 جنيه ≈ 421 ليرة)
+                'exchange_rate' => 0.2375,   // 1 ليرة ≈ 0.002375 جنيه (1 جنيه ≈ 421 ليرة)
                 'is_default'    => false,
                 'is_active'     => true,
             ],
@@ -62,7 +62,7 @@ class CurrencySeeder extends Seeder
                 'code'          => 'TRY',
                 'name'          => ['en' => 'Turkish Lira', 'ar' => 'ليرة تركية'],
                 'symbol'        => '₺',
-                'exchange_rate' => 0.002500,   // 1 ليرة سورية ≈ 0.0025 ليرة تركية (1 تركية ≈ 400 سورية)
+                'exchange_rate' => 0.2500,   // 1 ليرة سورية ≈ 0.0025 ليرة تركية (1 تركية ≈ 400 سورية)
                 'is_default'    => false,
                 'is_active'     => true,
             ],
