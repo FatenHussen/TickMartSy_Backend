@@ -6,13 +6,18 @@ use App\Http\Resources\Product\VariantAttributeResource;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Spatie\Translatable\HasTranslations;
 
 class ProductVariant extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
+
+    public array $translatable = ['name'];
 
     protected $fillable = [
         'product_id',
+        'name',
+        'sku',
         'attributes_values_ids',
         'is_trend',
         'is_active',

@@ -83,6 +83,8 @@ class ProductService extends BaseService
         'country',
         'model',
         'quantity',
+        'stock',
+        'vendor_id',
         'time_prepare',
     ];
 
@@ -106,6 +108,19 @@ class ProductService extends BaseService
                 $q->where('shop_id', $filters['shop_id']);
             });
             unset($filters['shop_id']);
+        }
+
+        // Filter by vendor_id
+        if (!empty($filters['vendor_id'])) {
+            $query->where('vendor_id', $filters['vendor_id']);
+            unset($filters['vendor_id']);
+        }
+
+        // Sort by stock
+        if (!empty($filters['stock_sort'])) {
+            $order = $filters['stock_sort'] === 'desc' ? 'desc' : 'asc';
+            $query->orderBy('stock', $order);
+            unset($filters['stock_sort']);
         }
 
         // Apply other filters

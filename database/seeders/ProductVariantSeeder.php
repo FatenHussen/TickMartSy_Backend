@@ -42,10 +42,27 @@ class ProductVariantSeeder extends Seeder
             $combinations = $this->generateCombinations($attributeValuesByAttribute, 4);
 
             foreach ($combinations as $index => $combination) {
+                // Build variant name from attribute values
+                $nameAr = [];
+                $nameEn = [];
+                foreach ($combination as $valueId) {
+                    $attrValue = \App\Models\AttributeValue::find($valueId);
+                    if ($attrValue) {
+                        $nameAr[] = $attrValue->getTranslation('name', 'ar', false) ?? '';
+                        $nameEn[] = $attrValue->getTranslation('name', 'en', false) ?? '';
+                    }
+                }
+
                 $variant = ProductVariant::create([
-                    'product_id' => $product->id,
+                    'product_id'            => $product->id,
+                    'name'                  => [
+                        'ar' => implode(' - ', array_filter($nameAr)) ?: null,
+                        'en' => implode(' - ', array_filter($nameEn)) ?: null,
+                    ],
+                    'sku'                   => 'VAR-' . $product->id . '-' . ($index + 1) . '-' . strtoupper(substr(md5(uniqid()), 0, 6)),
                     'attributes_values_ids' => $combination,
-                    'is_trend' => $index < 2 ? 1 : 0, // First 2 variants are trending
+                    'is_trend'              => $index < 2 ? 1 : 0,
+                    'is_active'             => true,
                 ]);
 
                 $this->addRandomImages($variant, $files);

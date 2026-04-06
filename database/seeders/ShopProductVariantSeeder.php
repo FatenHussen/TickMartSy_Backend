@@ -12,25 +12,35 @@ class ShopProductVariantSeeder extends Seeder
     public function run(): void
     {
         $shops = Shop::all();
+
+        if ($shops->isEmpty()) {
+            return;
+        }
+
         $variants = ProductVariant::with('product')->get();
 
         foreach ($variants as $variant) {
             $basePrice = $variant->product->price ?? 100;
 
-            foreach ($shops as $shop) {
-                // Each shop has slightly different price (±20%)
-                $priceVariation = rand(-20, 20);
-                $shopPrice = $basePrice + ($basePrice * $priceVariation / 100);
+            // Assign variant to 1-3 random shops (not all shops)
+            $assignedShops = $shops->random(min(rand(1, 3), $shops->count()));
 
-                // Random discount (0-30%)
-                $discount = rand(0, 30);
-                $finalPrice = $shopPrice - ($shopPrice * $discount / 100);
+            foreach ($assignedShops as $shop) {
+                // Skip if already exists
+                if (ShopProductVariant::where('product_variant_id', $variant->id)
+                    ->where('shop_id', $shop->id)->exists()) {
+                    continue;
+                }
+
+                // Price variation ±15%
+                $variation = rand(-15, 15);
+                $shopPrice = round($basePrice + ($basePrice * $variation / 100));
 
                 ShopProductVariant::create([
                     'product_variant_id' => $variant->id,
-                    'shop_id' => $shop->id,
-                    'quantity' => rand(10, 100),
-                    'price' => round($shopPrice),
+                    'shop_id'            => $shop->id,
+                    'quantity'           => rand(10, 200),
+                    'price'              => max(1, $shopPrice),
                 ]);
             }
         }

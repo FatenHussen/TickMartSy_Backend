@@ -25,6 +25,8 @@ class OneResource extends JsonResource
             'quantity' => $this->quantity,
             'unit' => $this->unit,
             'warranty_period' => $this->warranty_period,
+            'stock' => $this->stock,
+            'max_purchase_quantity' => $this->max_purchase_quantity,
             'is_visible' => $this->is_visible,
             'is_active' => (bool) $this->is_active,
 
@@ -32,6 +34,7 @@ class OneResource extends JsonResource
             'model' => $this->model,
             'barcode' => $this->barcode,
             'time_prepare' => optional($this->time_prepare)->format('H:i'),
+            'delivery_time' => $this->effective_delivery_time,
             'bought_with'           => $this->bought_with_products_list->map(function ($product) {
                 return [
                     'id' => $product->id,
@@ -80,6 +83,8 @@ class OneResource extends JsonResource
             'variants' => ($this->variants ?? collect())->map(function ($variant) {
                 return [
                     'id' => $variant->id,
+                    'name' => $variant->getTranslations('name'),
+                    'sku' => $variant->sku,
                     'attributes' => collect($variant->attributesValues)->map(function ($value) {
                         return [
                             'attribute' => $value->categoryAttribute?->name,

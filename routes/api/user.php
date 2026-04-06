@@ -286,5 +286,8 @@ Route::prefix('user')->group(
         Route::get('faqs', [HelpCenterController::class, 'faqs']);
         Route::get('settings', [HelpCenterController::class, 'settings']);
         Route::post('contactus', [HelpCenterController::class, 'contactus']);
+
+        // Vendor Services
+        Route::get('vendor-services', [\App\Http\Controllers\User\VendorService\VendorServiceController::class, 'index']);
     }
 );

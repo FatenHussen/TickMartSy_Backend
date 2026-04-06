@@ -22,7 +22,9 @@ class FilterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'shop_id' => 'nullable|integer'
+            'shop_id'        => 'nullable|integer',
+            'vendor_id'      => 'nullable|integer|exists:vendors,id',
+            'stock_sort'     => 'nullable|in:asc,desc',
         ];
     }
 }

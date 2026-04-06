@@ -637,6 +637,12 @@ class ProductSeeder extends Seeder
             $product = Product::create($productData);
             $createdProducts[] = $product;
 
+            // Update stock & max_purchase_quantity after creation
+            $product->update([
+                'stock'                 => rand(50, 500),
+                'max_purchase_quantity' => rand(5, 20),
+            ]);
+
             // Add extra details
             foreach ($extraDetails as $detail) {
                 ProductExtraDetail::create([

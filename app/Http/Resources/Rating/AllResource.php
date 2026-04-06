@@ -13,7 +13,7 @@ class AllResource extends JsonResource
             'id' => $this->id,
             'rating' => $this->rating,
             'comment' => $this->comment,
-            'image' => $this->image,
+            'image' => $this->image ? asset('storage/' . $this->image) : null,
             'type' => $this->type,
             'is_verified' => $this->is_verified,
             'created_at' => $this->created_at?->format('Y-m-d'),
@@ -21,7 +21,7 @@ class AllResource extends JsonResource
                 'id' => $this->user?->id,
                 'name' => $this->user?->name,
                 'image' => $this->user?->image_url
-            ], 
+            ],
 
             // 'rateable' => $this->whenLoaded('rateable'),
         ];

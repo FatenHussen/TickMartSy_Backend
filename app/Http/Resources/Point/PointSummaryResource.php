@@ -24,12 +24,12 @@ class PointSummaryResource extends JsonResource
         }
 
         if (!$currency) {
-            $currency = Currency::default()->first() ?? Currency::where('code', 'USD')->first();
+            $currency = Currency::default()->first();
         }
 
-        // تحويل قيمة النقطة للعملة المختارة
-        $currencyRateUSD = $pointsSettings['currency_rate']; // قيمة النقطة بالدولار
-        $currencyRate = $currency->convertFromUSD($currencyRateUSD);
+        // تحويل قيمة النقطة للعملة المختارة (currency_rate مخزن بالليرة السورية)
+        $currencyRateBase = $pointsSettings['currency_rate']; // قيمة النقطة بالليرة السورية
+        $currencyRate = $currency->convertFromBase($currencyRateBase);
         $currencySymbol = $currency->symbol;
         $currencyCode = $currency->code;
 
@@ -44,12 +44,12 @@ class PointSummaryResource extends JsonResource
         return [
             'points' =>  $balance,
             'value' => [
-                'point_value' => "1 pt = {$currencyRate} {$currencySymbol}",
-                'point_value_usd' => "1 pt = {$currencyRateUSD} USD",
-                'estimated_value' => number_format($estimatedValue, 2) . " {$currencySymbol}",
-                'estimated_value_formatted' => "{$currencySymbol} " . number_format($estimatedValue, 2),
-                'currency_code' => $currencyCode,
-                'currency_symbol' => $currencySymbol,
+                'point_value'              => "1 pt = {$currencyRate} {$currencySymbol}",
+                'point_value_base'         => "1 pt = {$currencyRateBase} ل.س",
+                'estimated_value'          => number_format($estimatedValue, 2) . " {$currencySymbol}",
+                'estimated_value_formatted'=> "{$currencySymbol} " . number_format($estimatedValue, 2),
+                'currency_code'            => $currencyCode,
+                'currency_symbol'          => $currencySymbol,
             ],
             'next_reward' => "Next reward at " . number_format($nextReward, 0) . " pts",
 

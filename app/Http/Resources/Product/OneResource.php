@@ -31,6 +31,8 @@ class OneResource extends JsonResource
             'quantity' => $this->quantity,
             'unit' => $this->unit,
             'warranty_period' => $this->warranty_period,
+            'stock' => $this->stock,
+            'max_purchase_quantity' => $this->max_purchase_quantity,
             'is_visible' => $this->is_visible,
             'discount_type' => $this->discount_type,
 
@@ -38,6 +40,7 @@ class OneResource extends JsonResource
             'model' => $this->model,
             'barcode' => $this->barcode,
             'time_prepare' => optional($this->time_prepare)->format('H:i'),
+            'delivery_time' => $this->effective_delivery_time,
             'bought_with' => AllResource::collection($this->bought_with_products_list ?? []),
             'is_instant_delivery' => $this->is_instant_delivery,
             'rating' => $this->average_rating ?? 0,

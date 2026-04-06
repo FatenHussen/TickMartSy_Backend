@@ -73,6 +73,14 @@ class ProductVariantService extends BaseService
     {
         $variant = ProductVariant::findOrFail($id);
 
+        // Handle translatable name
+        if (isset($data['name']) && is_array($data['name'])) {
+            foreach ($data['name'] as $locale => $value) {
+                $variant->setTranslation('name', $locale, $value ?? '');
+            }
+            unset($data['name']);
+        }
+
         // Handle image deletions
         if (isset($data['existing_images_ids'])) {
             $existingIds = $data['existing_images_ids'];

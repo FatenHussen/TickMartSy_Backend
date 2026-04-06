@@ -7,55 +7,57 @@ use App\Models\Currency;
 trait HasCurrencyConversion
 {
     /**
-     * تحويل السعر من دولار للعملة المطلوبة
+     * تحويل السعر من الليرة السورية (الأساسية) للعملة المطلوبة
      */
-    public function convertPrice($priceInUSD, $currencyId = null)
+    public function convertPrice($priceInBase, $currencyId = null)
     {
-        // Handle null price
-        if ($priceInUSD === null) {
+        if ($priceInBase === null) {
+            $defaultCurrency = Currency::default()->first();
             return [
-                'amount' => null,
-                'currency' => 'USD',
-                'symbol' => '$',
-                'formatted' => null
+                'amount'    => null,
+                'currency'  => $defaultCurrency?->code ?? 'SYP',
+                'symbol'    => $defaultCurrency?->symbol ?? 'ل.س',
+                'formatted' => null,
             ];
         }
 
-        // Convert to float if needed
-        $priceInUSD = (float) $priceInUSD;
+        $priceInBase = (float) $priceInBase;
 
         if (!$currencyId) {
             $user = auth('user')->user();
             $currencyId = $user?->currency_id;
         }
 
-        if (!$currencyId) {
-            $currency = Currency::default()->first() ?? Currency::where('code', 'USD')->first();
-        } else {
-            $currency = Currency::find($currencyId);
+        $currency = $currencyId
+            ? Currency::find($currencyId)
+            : Currency::default()->first();
+
+        if (!$currency) {
+            $currency = Currency::default()->first();
         }
 
-        if (!$currency || $currency->code === 'USD') {
+        if (!$currency || $currency->is_default) {
             return [
-                'amount' => round($priceInUSD, 2),
-                'currency' => 'USD',
-                'symbol' => '$',
-                'formatted' => '$' . number_format($priceInUSD, 2)
+                'amount'    => round($priceInBase, 2),
+                'currency'  => $currency?->code ?? 'SYP',
+                'symbol'    => $currency?->symbol ?? 'ل.س',
+                'formatted' => ($currency?->symbol ?? 'ل.س') . ' ' . number_format($priceInBase, 2),
             ];
         }
 
-        $convertedAmount = $currency->convertFromUSD($priceInUSD);
+        $convertedAmount = $currency->convertFromBase($priceInBase);
 
         return [
-            'amount' => $convertedAmount,
-            'currency' => $currency->code,
-            'symbol' => $currency->symbol,
-            'formatted' => $currency->symbol . ' ' . number_format($convertedAmount, 2)
+            'amount'    => $convertedAmount,
+            'currency'  => $currency->code,
+            'symbol'    => $currency->symbol,
+            'formatted' => $currency->symbol . ' ' . number_format($convertedAmount, 2),
         ];
     }
-    public function convertFormattedPrice($priceInUSD, $currencyId = null)
+
+    public function convertFormattedPrice($priceInBase, $currencyId = null)
     {
-        $converted = $this->convertPrice($priceInUSD, $currencyId);
+        $converted = $this->convertPrice($priceInBase, $currencyId);
         return $converted['formatted'];
     }
 
@@ -74,15 +76,15 @@ trait HasCurrencyConversion
     /**
      * إضافة معلومات العملة للـ Resource
      */
-    protected function withCurrency($priceInUSD, $key = 'price')
+    protected function withCurrency($priceInBase, $key = 'price')
     {
-        $converted = $this->convertPrice($priceInUSD);
+        $converted = $this->convertPrice($priceInBase);
 
         return [
-            $key => $converted['amount'],
-            'currency' => $converted['currency'],
-            'currency_symbol' => $converted['symbol'],
-            $key . '_formatted' => $converted['formatted'],
+            $key                  => $converted['amount'],
+            'currency'            => $converted['currency'],
+            'currency_symbol'     => $converted['symbol'],
+            $key . '_formatted'   => $converted['formatted'],
         ];
     }
 }

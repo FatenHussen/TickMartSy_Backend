@@ -236,6 +236,9 @@ Route::prefix('admin')->group(
                 Route::apiResource('areas', AreaCrudController::class);
                 Route::apiResource('countries', CountryCrudController::class);
                 Route::apiResource('services', ServiceCrudController::class);
+                Route::apiResource('vendor-service-types', \App\Http\Controllers\Admin\VendorServiceType\VendorServiceTypeCrudController::class);
+                Route::apiResource('vendor-services', \App\Http\Controllers\Admin\VendorService\VendorServiceCrudController::class);
+                Route::apiResource('shop-vendor-services', \App\Http\Controllers\Admin\ShopVendorService\ShopVendorServiceCrudController::class);
                 Route::apiResource('sections', SectionCrudController::class);
                 Route::apiResource('page-sections', PageSectionCrudController::class);
                 Route::apiResource('coupons', CouponCrudController::class);

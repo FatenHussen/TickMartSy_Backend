@@ -15,7 +15,8 @@ class BrandService extends BaseService
         $this->resource     = OneResource::class;
         $this->collection   = AllResource::class;
         $this->singleImages = ['image'];
-        $this->pagination = true;
+        $this->pagination   = true;
+        $this->relations    = ['governorate', 'city', 'category'];
         $this->searchableFields = ['name'];
         $this->sortableFields = ['id', 'created_at'];
     }

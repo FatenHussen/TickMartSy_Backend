@@ -29,8 +29,11 @@ class Product extends Model implements Sectionable
         'quantity',
         'unit',
         'warranty_period',
+        'stock',
+        'max_purchase_quantity',
         'barcode',
         'time_prepare',
+        'delivery_time',
         'bought_with',
         'is_instant_delivery',
         'vendor_id',
@@ -64,6 +67,16 @@ class Product extends Model implements Sectionable
         'is_visible' => 'boolean',
         'is_active' => 'boolean',
     ];
+    public function getEffectiveDeliveryTimeAttribute(): ?string
+    {
+        // Tikmool vendor (id=1) always gets fixed delivery time
+        if ($this->vendor_id === 1) {
+            return '12-48 ساعة';
+        }
+
+        return $this->delivery_time;
+    }
+
     public function getPriceAfterDiscountAttribute()
     {
         if (!$this->discount || !$this->price) {
