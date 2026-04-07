@@ -25,19 +25,22 @@ class SellerRegistration extends Model
         'city_id',
         'governorate_id',
         'logo',
+        'is_service_provider',
+        'service_type_ids',
         'status',
         'is_active',
     ];
-
 
     protected $hidden = [
         'password',
     ];
 
     protected $casts = [
-        'registered_at' => 'datetime',
+        'registered_at'            => 'datetime',
         'commercial_register_date' => 'date',
-        'is_active' => 'boolean',
+        'is_active'                => 'boolean',
+        'is_service_provider'      => 'boolean',
+        'service_type_ids'         => 'array',
     ];
     public function governorate()
     {

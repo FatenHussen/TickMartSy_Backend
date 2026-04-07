@@ -21,6 +21,7 @@ class ShopRequest extends FormRequest
             'brand_id'       => 'sometimes|exists:brands,id',
             'vendor_id'      => 'sometimes|exists:vendors,id',
             'is_active'      => 'sometimes|boolean',
+            'is_service_provider' => 'sometimes|boolean',
             'type'           => 'sometimes|in:nearby,offers,top_rated,active',
             'search'         => 'sometimes|string|max:255',
             'lat'            => 'required_if:type,nearby|numeric|between:-90,90',

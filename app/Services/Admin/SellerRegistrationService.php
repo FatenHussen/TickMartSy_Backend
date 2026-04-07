@@ -8,6 +8,7 @@ use App\Models\SellerRegistration;
 use App\Models\Vendor;
 use App\Models\Shop;
 use App\Models\VendorUser;
+use App\Mail\ServiceProviderApprovedMail;
 use App\Mail\VendorCredentialsMail;
 use App\Models\VendorPackage;
 use App\Models\VendorSubscription;
@@ -42,8 +43,7 @@ class SellerRegistrationService extends BaseService
         }
 
         return DB::transaction(function () use ($registration, $data) {
-            // Generate random password
-            $password = Str::random(12);
+            $isServiceProvider = (bool) $registration->is_service_provider;
 
             // Create Vendor
             $vendor = Vendor::create([
@@ -68,6 +68,7 @@ class SellerRegistrationService extends BaseService
                 'mobile' => $registration->email, // Using email as placeholder, should be phone number
                 'area_id' => null,
                 'is_active' => true,
+                'is_service_provider' => $isServiceProvider,
             ]);
 
             // Handle logo if exists
@@ -75,6 +76,29 @@ class SellerRegistrationService extends BaseService
                 // Copy logo to vendor/shop media
                 // You can implement media handling here
             }
+
+            if ($isServiceProvider) {
+                // Update registration status
+                $registration->update(['status' => 'approved']);
+
+                // Send service provider approval email (no dashboard credentials)
+                Mail::to($registration->email)->send(
+                    new ServiceProviderApprovedMail(
+                        $registration->seller_name,
+                        $registration->store_name
+                    )
+                );
+
+                return [
+                    'vendor_id' => $vendor->id,
+                    'shop_id' => $shop->id,
+                    'user_id' => null,
+                    'is_service_provider' => true,
+                ];
+            }
+
+            // Generate random password
+            $password = Str::random(12);
 
             // Create VendorUser (Shop User)
             $vendorUser = VendorUser::create([
@@ -117,6 +141,7 @@ class SellerRegistrationService extends BaseService
                 'vendor_id' => $vendor->id,
                 'shop_id' => $shop->id,
                 'user_id' => $vendorUser->id,
+                'is_service_provider' => false,
             ];
         });
     }

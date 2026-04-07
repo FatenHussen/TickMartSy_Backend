@@ -26,6 +26,7 @@ class AllResource extends JsonResource
             'logo_url'              => $this->logo_url,
             'is_active'             => $this->is_active,
             'is_open_now'           => $this->isOpenNow(),
+            'is_service_provider'   => (bool) $this->is_service_provider,
             'created_at'            => $this->created_at?->format('Y-m-d H:i'),
             'is_favorite'           => (bool) ($this->is_favorite ?? false),
             'average_rating'        => $this->average_rating ?? 0,

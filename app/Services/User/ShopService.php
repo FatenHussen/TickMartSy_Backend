@@ -34,6 +34,7 @@ class ShopService extends BaseService
         // $query = parent::queryBuilder($query, $filters, $config);
 
         $this->applyGeographicalFilters($query, $filters);
+        $this->applyServiceProviderFilter($query, $filters);
         $this->applyTypeFilters($query, $filters);
         if (!empty($filters['sort_by'])) {
             $this->applySortBy($query, $filters['sort_by']);
@@ -52,6 +53,15 @@ class ShopService extends BaseService
         }
 
         return $query->where('is_active', true);
+    }
+
+    protected function applyServiceProviderFilter(Builder $query, array $filters): void
+    {
+        if (!array_key_exists('is_service_provider', $filters) || $filters['is_service_provider'] === null) {
+            return;
+        }
+
+        $query->where('is_service_provider', (bool) $filters['is_service_provider']);
     }
 
     /* =========================
