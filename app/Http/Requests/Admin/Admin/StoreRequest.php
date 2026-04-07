@@ -15,6 +15,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'name'              => 'required|string',
+            'phone' => ['required', 'string', 'unique:admins,phone'],
             'email' => ['required', 'email', 'unique:admins,email'],
             'password' => ['required', 'min:8'],
             'is_active'            => 'nullable|boolean',

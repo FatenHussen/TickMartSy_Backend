@@ -16,6 +16,7 @@ class StoreRequest extends FormRequest
         return [
             'name'              => 'required|string|max:255',
             'phone' => ['required', 'unique:drivers,phone'],
+            'email' => ['nullable', 'email', 'unique:drivers,email'],
             'password' => ['required', 'min:8'],
             'is_active'            => 'nullable|boolean',
             'address' => 'nullable|string',

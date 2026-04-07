@@ -18,7 +18,7 @@ class StoreRequest extends FormRequest
             'title.*' => ['required', 'string'],
             'description' => ['nullable', 'array'],
             'description.*' => ['required', 'string'],
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp',
+            'image' => 'required|file|mimes:jpeg,png,jpg,gif,webp,mp4,mov,avi,webm',
             'link' => 'nullable|string|url',
             'is_active' => ['sometimes', 'boolean'],
             'expires_at' => ['required', 'date', 'after:now'],

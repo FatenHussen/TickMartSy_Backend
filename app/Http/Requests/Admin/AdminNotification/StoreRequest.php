@@ -18,6 +18,8 @@ class StoreRequest extends FormRequest
             'title' => 'required',
             'body'  => 'required',
             'type'  => 'required|in:all,driver,user,vendor',
+            'channels' => 'required|array|min:1',
+            'channels.*' => 'required|string|in:fcm,sms,email',
             'target_page' => [
                 'nullable',
                 'string',

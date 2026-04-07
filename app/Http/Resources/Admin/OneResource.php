@@ -17,6 +17,7 @@ class OneResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'phone' => $this->phone,
             'email' => $this->email,
             'is_active' => (bool) $this->is_active,
             'roles' => $this->roles->pluck(['name']),

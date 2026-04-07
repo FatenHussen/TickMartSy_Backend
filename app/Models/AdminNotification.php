@@ -16,5 +16,10 @@ class AdminNotification extends Model
         'emoji',
         'media_type',
         'media_url',
+        'channels',
+    ];
+
+    protected $casts = [
+        'channels' => 'array',
     ];
 }

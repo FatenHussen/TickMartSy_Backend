@@ -26,7 +26,7 @@ class UpdateRequest extends FormRequest
             'title.*' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'array'],
             'description.*' => ['required', 'string', 'max:255'],
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp',
+            'image' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,mp4,mov,avi,webm',
             'is_active' => ['nullable', 'boolean'],
             'link' => 'nullable|string|url',
             'expires_at' => ['nullable', 'date', 'after:now'],

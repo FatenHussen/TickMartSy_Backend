@@ -2,11 +2,14 @@
 
 namespace App\Jobs;
 
+use App\Models\Admin;
 use App\Models\Driver;
 use App\Models\User;
 use App\Models\VendorUser;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -20,12 +23,19 @@ class SendBulkNotificationJob implements ShouldQueue
     public string $body;
     public string $type;
     public array $data;
+    public array $channels;
 
-    public function __construct(string $title, string $body, string $type, array $data = [])
-    {
+    public function __construct(
+        string $title,
+        string $body,
+        string $type,
+        array $channels = ['fcm'],
+        array $data = []
+    ) {
         $this->title = $title;
         $this->body  = $body;
         $this->type  = $type;
+        $this->channels = $this->normalizeChannels($channels);
         $this->data  = $data;
     }
 
@@ -33,51 +43,40 @@ class SendBulkNotificationJob implements ShouldQueue
     {
         $payload = $this->data;
 
-        if ($this->type === 'user' || $this->type === 'all') {
-            User::query()->each(function (User $user) use ($notificationService, $payload) {
-                $notificationService->send($user, $this->title, $this->body, $payload);
-            });
-        }
-
-        if ($this->type === 'driver' || $this->type === 'all') {
-            Driver::query()->each(function (Driver $driver) use ($notificationService, $payload) {
-                $notificationService->send($driver, $this->title, $this->body, $payload);
-            });
-        }
-
-        if ($this->type === 'vendor' || $this->type === 'all') {
-            VendorUser::query()->each(function (VendorUser $vendor) use ($payload) {
-                $vendorNotificationData = array_merge($payload, [
-                    'title' => $this->title,
-                    'body' => $this->body,
-                ]);
-
-                \App\Models\VendorNotification::create([
-                    'vendor_user_id' => $vendor->id,
-                    'notifiable_type' => VendorUser::class,
-                    'notifiable_id' => $vendor->id,
-                    'title' => $this->title,
-                    'body' => $this->body,
-                    'type' => 'admin',
-                    'data' => json_encode($vendorNotificationData),
-                ]);
-
-                \Filament\Notifications\Notification::make()
-                    ->title($this->title)
-                    ->body($this->body)
-                    ->success()
-                    ->sendToDatabase($vendor);
-
-                $tokens = $vendor->fcmTokens()->pluck('fcm_token')->filter()->values()->toArray();
-                if (!empty($tokens)) {
-                    \App\Jobs\SendVendorFcmNotificationJob::dispatch(
-                        $tokens,
+        foreach ($this->resolveRecipientClasses() as $recipientClass) {
+            $recipientClass::query()->chunkById(200, function (Collection $recipients) use ($notificationService, $payload) {
+                $recipients->each(function (Model $recipient) use ($notificationService, $payload) {
+                    $notificationService->send(
+                        $recipient,
                         $this->title,
                         $this->body,
-                        $vendorNotificationData
+                        $payload,
+                        $this->channels
                     );
-                }
+                });
             });
         }
+    }
+
+    private function resolveRecipientClasses(): array
+    {
+        return match ($this->type) {
+            'user' => [User::class],
+            'driver' => [Driver::class],
+            'admin' => [Admin::class],
+            'all' => [User::class, Driver::class, Admin::class],
+            default => [],
+        };
+    }
+
+    private function normalizeChannels(array $channels): array
+    {
+        return array_values(
+            array_unique(
+                array_filter(
+                    array_map('strtolower', $channels)
+                )
+            )
+        );
     }
 }

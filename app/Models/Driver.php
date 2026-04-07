@@ -26,6 +26,7 @@ class Driver extends Authenticatable
     ];
     protected $fillable = [
         'phone',
+        'email',
         'password',
         'name',
         'is_active',

@@ -20,6 +20,7 @@ class AllResource extends JsonResource
             'body' => $this->body,
             'type' => $this->type,
             'target_page' => $this->target_page,
+            'channels' => $this->channels,
             'created_at' => $this->created_at?->format('Y-m-d H:i'),
             'emoji' => $this->emoji,
             'media' => $this->mediaPayload(),
