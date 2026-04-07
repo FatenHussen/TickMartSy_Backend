@@ -51,4 +51,9 @@ class ShopVendorService extends Model
         $now = now()->format('H:i');
         return $now >= ($hours['open'] ?? '00:00') && $now <= ($hours['close'] ?? '23:59');
     }
+
+    public function serviceOrders()
+    {
+        return $this->hasMany(ServiceOrder::class);
+    }
 }

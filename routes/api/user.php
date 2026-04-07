@@ -35,6 +35,7 @@ use App\Http\Controllers\User\SellerRegistrationController;
 use App\Http\Controllers\User\Currency\CurrencyController;
 use App\Http\Controllers\User\SearchController;
 use App\Http\Controllers\User\QuickActionController;
+use App\Http\Controllers\User\ServiceOrder\ServiceOrderController;
 
 Route::prefix('user')->group(
     function () {
@@ -174,6 +175,11 @@ Route::prefix('user')->group(
         });
 
         Route::apiResource('orders', OrderController::class)->middleware(['auth:user']);
+
+        Route::middleware(['auth:user'])->group(function () {
+            Route::apiResource('service-orders', ServiceOrderController::class)
+                ->only(['index', 'show', 'store']);
+        });
 
         // Scheduled Baskets - سلال المستخدم المجدولة (CRUD كامل)
         Route::middleware(['auth:user'])->group(function () {

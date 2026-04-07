@@ -61,6 +61,7 @@ use App\Http\Controllers\Admin\Setting\SettingController;
 use App\Http\Controllers\Admin\SystemSettingController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\QuickActionController;
+use App\Http\Controllers\Admin\ServiceOrder\ServiceOrderController;
 
 Route::prefix('admin')->group(
     function () {
@@ -279,6 +280,12 @@ Route::prefix('admin')->group(
             Route::post('{orderId}/assign-driver', [OrderController::class, 'assignDriver']);
 
             Route::patch('items/{itemId}/change-status', [OrderController::class, 'changeItemStatus']);
+        });
+
+        Route::prefix('service-orders')->group(function () {
+            Route::get('/', [ServiceOrderController::class, 'index']);
+            Route::get('{id}/get_one', [ServiceOrderController::class, 'get_one']);
+            Route::patch('{orderId}/change-status', [ServiceOrderController::class, 'changeStatus']);
         });
     }
 );

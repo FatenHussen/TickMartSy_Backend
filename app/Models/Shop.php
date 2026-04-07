@@ -213,6 +213,10 @@ class Shop extends Model implements Sectionable
     {
         return $this->hasMany(ShopVendorService::class);
     }
+    public function serviceOrders()
+    {
+        return $this->hasMany(ServiceOrder::class);
+    }
     public function productVariants()
     {
         return $this->hasMany(ShopProductVariant::class);

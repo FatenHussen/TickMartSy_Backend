@@ -155,6 +155,11 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
+    public function serviceOrders()
+    {
+        return $this->hasMany(ServiceOrder::class);
+    }
+
     public function userBasketSchedules()
     {
         return $this->hasMany(UserBasketSchedule::class);

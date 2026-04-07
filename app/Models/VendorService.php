@@ -21,4 +21,9 @@ class VendorService extends Model
     {
         return $this->belongsTo(VendorServiceType::class, 'vendor_service_type_id');
     }
+
+    public function serviceOrders()
+    {
+        return $this->hasMany(ServiceOrder::class);
+    }
 }

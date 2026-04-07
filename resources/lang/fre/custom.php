@@ -38,4 +38,10 @@ return [
     'otp_valid' => 'The verification code is invalid or has expired.',
 
     'password_valid' => 'The reset code is invalid or has expired.',
+
+    'service_orders' => [
+        'status_updated_successfully' => 'Statut de la commande de service mis à jour avec succès.',
+        'cannot_change_final_status' => 'Impossible de modifier le statut d\'une commande de service clôturée.',
+        'service_not_available' => 'Le service demandé n\'est pas disponible dans la boutique sélectionnée.',
+    ],
 ];

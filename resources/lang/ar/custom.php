@@ -1057,6 +1057,12 @@ return [
         'address_update_not_allowed' => 'لا يمكن تحديث العنوان بعد بدء معالجة الهدية.',
     ],
 
+    'service_orders' => [
+        'status_updated_successfully' => 'تم تحديث حالة طلب الخدمة بنجاح.',
+        'cannot_change_final_status' => 'لا يمكن تغيير حالة طلب الخدمة المغلق.',
+        'service_not_available' => 'الخدمة المطلوبة غير متوفرة في المتجر المحدد.',
+    ],
+
     // Languages
     'languages' => [
         'source_not_found' => 'لغة المصدر [:lang] غير موجودة.',

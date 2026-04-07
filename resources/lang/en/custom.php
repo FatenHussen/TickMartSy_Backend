@@ -1039,6 +1039,12 @@ return [
         'address_update_not_allowed' => 'Address cannot be updated after gift processing starts.',
     ],
 
+    'service_orders' => [
+        'status_updated_successfully' => 'Service order status updated successfully.',
+        'cannot_change_final_status' => 'Cannot change the status of a service order that is already closed.',
+        'service_not_available' => 'The requested service is not available for the selected shop.',
+    ],
+
     // Languages
     'languages' => [
         'source_not_found' => 'Source language [:lang] does not exist.',
