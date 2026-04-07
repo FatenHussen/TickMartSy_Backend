@@ -118,6 +118,7 @@ Route::prefix('user')->group(
             // Public routes
             Route::get('/', [ShopController::class, 'index']);
             Route::get('/{id}', [ShopController::class, 'get_one']);
+            Route::get('/{id}/services', [ShopController::class, 'services']);
         });
 
 

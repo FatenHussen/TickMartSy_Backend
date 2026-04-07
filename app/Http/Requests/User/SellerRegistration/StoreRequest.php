@@ -27,6 +27,9 @@ class StoreRequest extends FormRequest
             'city_id' => 'required|exists:cities,id',
             'governorate_id' => 'required|exists:governorates,id',
             'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp',
+            'is_service_provider'  => 'nullable|boolean',
+            'service_type_ids'     => 'required_if:is_service_provider,true|nullable|array',
+            'service_type_ids.*'   => 'integer|exists:vendor_service_types,id',
         ];
     }
 }

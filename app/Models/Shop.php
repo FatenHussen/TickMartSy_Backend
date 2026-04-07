@@ -34,6 +34,7 @@ class Shop extends Model implements Sectionable
         'vendor_id',
         'is_default',
         'is_free_delivery',
+        'is_service_provider',
         'logo'
     ];
     public function vendor()
@@ -58,7 +59,8 @@ class Shop extends Model implements Sectionable
         'working_hours'     => 'array',
         'cover_images'      => 'array',
         'is_active'         => 'boolean',
-        'is_free_delivery'         => 'boolean',
+        'is_free_delivery'  => 'boolean',
+        'is_service_provider' => 'boolean',
         'ratings_count'     => 'integer',
         'ratings_sum'       => 'integer',
     ];
