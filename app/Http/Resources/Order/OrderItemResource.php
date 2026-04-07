@@ -25,6 +25,7 @@ class OrderItemResource extends JsonResource
             'final_price_with_extras' => $finalPriceWithExtras,
             'status' => $this->item_status,
             'variant_attributes' => $this->variant_attributes,
+            'delivery_time' => $this->getDeliveryTime(),
             'extras' => $this->extras->map(function ($extra) {
                 return [
                     'id' => $extra->extraDetail->id,
@@ -34,5 +35,16 @@ class OrderItemResource extends JsonResource
                 ] ?? [];
             }),
         ];
+    }
+
+    private function getDeliveryTime(): ?string
+    {
+        $product = $this->shopProductVariant?->productVariant?->product;
+
+        if (!$product) {
+            return null;
+        }
+
+        return $product->effective_delivery_time;
     }
 }

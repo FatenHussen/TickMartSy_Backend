@@ -38,7 +38,12 @@ class OrderService extends BaseService
 
         $this->searchableFields = ['total', 'total_quantity'];
         $this->sortableFields   = ['id', 'total', 'total_quantity'];
-        $this->relations        = ['items', 'items.extras', 'items.extras.extraDetail'];
+        $this->relations = [
+            'items',
+            'items.extras',
+            'items.extras.extraDetail',
+            'items.shopProductVariant.productVariant.product',
+        ];
         $this->pagination       = true;
     }
 
