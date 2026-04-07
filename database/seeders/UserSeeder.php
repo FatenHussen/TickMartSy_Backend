@@ -114,28 +114,7 @@ class UserSeeder extends Seeder
                 'created_at' => Carbon::now()->subDays(10),
                 'updated_at' => Carbon::now()->subDays(10),
             ],
-            [
-                'name' => 'ليلى محمود',
-                'phone' => '0333444555',
-                'email' => 'layla@example.com',
-                'password' => Hash::make('123456'),
-                'phone_verified_at' => now(),
-                'email_verified_at' => now(),
-                'area_id' => !empty($cityIds) && count($cityIds) > 1 ? $cityIds[1] : $defaultCityId,
-                'created_at' => Carbon::now()->subDays(5),
-                'updated_at' => Carbon::now()->subDays(5),
-            ],
-            [
-                'name' => 'عمر سالم',
-                'phone' => '0222333444',
-                'email' => 'omar@example.com',
-                'password' => Hash::make('123456'),
-                'phone_verified_at' => now(),
-                'email_verified_at' => now(),
-                'area_id' => $defaultCityId,
-                'created_at' => Carbon::now()->subDays(3),
-                'updated_at' => Carbon::now()->subDays(3),
-            ],
+
         ];
 
         foreach ($users as $userData) {

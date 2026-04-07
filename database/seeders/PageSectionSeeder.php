@@ -250,6 +250,27 @@ class PageSectionSeeder extends Seeder
             'order' => 4,
             'filters' => []
         ]));
+        //ex
+        PageSection::create($fillPageSectionColors([
+            'page_id' => $homePage->id,
+            'section_id' => $brandsSection->id,
+            'display_type_id' => $brandsDisplayType->id,
+            'position' => 'before',
+            'variant' => VariantSection::Horizontal->value,
+            'order' => 4,
+            'filters' => []
+        ]));
+        //ex
+        PageSection::create($fillPageSectionColors([
+            'page_id' => $homePage->id,
+            'section_id' => $brandsSection->id,
+            'display_type_id' => $brandsDisplayType->id,
+            'position' => 'before',
+            'variant' => VariantSection::Square->value,
+            'order' => 4,
+            'filters' => []
+        ]));
+
 
         /*
         |--------------------------------------------------------------------------
@@ -274,6 +295,24 @@ class PageSectionSeeder extends Seeder
             'display_type_id' => $recipeDisplayType->id,
             'position' => 'after',
             'variant' => VariantSection::Square->value,
+            'order' => 5,
+            'filters' => []
+        ]));
+        PageSection::create($fillPageSectionColors([
+            'page_id' => $homePage->id,
+            'section_id' => $recipeSection->id,
+            'display_type_id' => $recipeDisplayType->id,
+            'position' => 'after',
+            'variant' => VariantSection::Horizontal->value,
+            'order' => 5,
+            'filters' => []
+        ]));
+        PageSection::create($fillPageSectionColors([
+            'page_id' => $homePage->id,
+            'section_id' => $recipeSection->id,
+            'display_type_id' => $recipeDisplayType->id,
+            'position' => 'after',
+            'variant' => VariantSection::Vertical->value,
             'order' => 5,
             'filters' => []
         ]));
@@ -304,6 +343,24 @@ class PageSectionSeeder extends Seeder
             'order' => 6,
             'filters' => []
         ]));
+        PageSection::create($fillPageSectionColors([
+            'page_id' => $homePage->id,
+            'section_id' => $basketSection->id,
+            'display_type_id' => $basketsDisplayType->id,
+            'position' => 'after',
+            'variant' => VariantSection::Square->value,
+            'order' => 6,
+            'filters' => []
+        ]));
+        PageSection::create($fillPageSectionColors([
+            'page_id' => $homePage->id,
+            'section_id' => $basketSection->id,
+            'display_type_id' => $basketsDisplayType->id,
+            'position' => 'after',
+            'variant' => VariantSection::Vertical->value,
+            'order' => 6,
+            'filters' => []
+        ]));
 
         $schedulebasketSection = Section::create([
             'name' => ['en' => 'schedule basket', 'ar' => 'قسم السلات المجدولة'],
@@ -317,16 +374,41 @@ class PageSectionSeeder extends Seeder
         ]);
 
         PageSection::create($fillPageSectionColors([
-            'name' => ['en' => 'schedule basket', 'ar' => 'قسم السلات المجدولة'],
+            'name' => ['en' => 'Scheduled baskets for the week', 'ar' => 'قسم السلات المجدولة ل شهر'],
             'page_id' => $homePage->id,
             'section_id' => $schedulebasketSection->id,
             'display_type_id' => $basketsDisplayType->id,
             'position' => 'after',
             'variant' => VariantSection::Square->value,
             'order' => 7,
-            'filters' => []
+            'filters' => [
+                'schedule_days' => 30
+            ]
         ]));
-
+        PageSection::create($fillPageSectionColors([
+            'name' => ['en' => 'Baskets scheduled for two weeks', 'ar' => 'قسم السلات المجدولة ل أسبوعين'],
+            'page_id' => $homePage->id,
+            'section_id' => $schedulebasketSection->id,
+            'display_type_id' => $basketsDisplayType->id,
+            'position' => 'after',
+            'variant' => VariantSection::Vertical->value,
+            'order' => 7,
+            'filters' => [
+                'schedule_days' => 15
+            ]
+        ]));
+        PageSection::create($fillPageSectionColors([
+            'name' => ['en' => 'Scheduled baskets for the week ', 'ar' => ' السلات المجدولة ل أسبوع'],
+            'page_id' => $homePage->id,
+            'section_id' => $schedulebasketSection->id,
+            'display_type_id' => $basketsDisplayType->id,
+            'position' => 'after',
+            'variant' => VariantSection::Horizontal->value,
+            'order' => 7,
+            'filters' => [
+                'schedule_days' => 30
+            ]
+        ]));
 
         /*
         |--------------------------------------------------------------------------
