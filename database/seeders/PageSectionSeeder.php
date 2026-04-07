@@ -72,6 +72,37 @@ class PageSectionSeeder extends Seeder
         ]);
 
         $defaultVariant = VariantSection::Horizontal->value;
+        $defaultPageSectionColors = [
+            'background_color' => '#f8f9ff',
+            'background_card_color' => '#ffffff',
+        ];
+        $colorPalette = [
+            ['background_color' => '#f9fbff', 'background_card_color' => '#ffffff'],
+            ['background_color' => '#fff7f0', 'background_card_color' => '#ffe5d9'],
+            ['background_color' => '#f5fbf7', 'background_card_color' => '#e7fff1'],
+            ['background_color' => '#f1f5ff', 'background_card_color' => '#f2f9ff'],
+            ['background_color' => '#fff3f8', 'background_card_color' => '#ffe9f3'],
+            ['background_color' => '#f7f4ff', 'background_card_color' => '#efe9ff'],
+            ['background_color' => '#fef9f3', 'background_card_color' => '#fff1e0'],
+            ['background_color' => '#f6fff7', 'background_card_color' => '#e8fff0'],
+            ['background_color' => '#fffaf2', 'background_card_color' => '#fff5e6'],
+            ['background_color' => '#eef8ff', 'background_card_color' => '#e5f2ff'],
+            ['background_color' => '#fff4f4', 'background_card_color' => '#ffe5e5'],
+            ['background_color' => '#f3f9ff', 'background_card_color' => '#e8f0ff'],
+            ['background_color' => '#fefaf1', 'background_card_color' => '#fff2de'],
+            ['background_color' => '#f2fbff', 'background_card_color' => '#e6f5ff'],
+            ['background_color' => '#f5f4ff', 'background_card_color' => '#ece9ff'],
+        ];
+        $paletteIndex = 0;
+        $nextSectionColors = function () use (&$paletteIndex, $colorPalette) {
+            $colors = $colorPalette[$paletteIndex % count($colorPalette)];
+            $paletteIndex++;
+            return $colors;
+        };
+        $fillPageSectionColors = function (array $attributes, array $customColors = []) use ($defaultPageSectionColors, $nextSectionColors) {
+            $sectionColors = $customColors ?: $nextSectionColors();
+            return array_merge($defaultPageSectionColors, $sectionColors, $attributes);
+        };
 
         /*
         |--------------------------------------------------------------------------
@@ -166,11 +197,11 @@ class PageSectionSeeder extends Seeder
             PageSection::firstOrCreate([
                 'page_id' => $page->id,
                 'section_id' => $bannerSection->id,
-            ], [
+            ], $fillPageSectionColors([
                 'display_type_id' => $bannerDisplayType->id,
                 'position' => $bannerPositions[$page->slug] ?? 'before',
                 'variant' => $defaultVariant,
-            ]);
+            ]));
         }
 
         $page = Page::firstOrCreate(
@@ -180,11 +211,11 @@ class PageSectionSeeder extends Seeder
         PageSection::firstOrCreate([
             'page_id' => $page->id,
             'section_id' => $bannerSection->id,
-        ], [
+        ], $fillPageSectionColors([
             'display_type_id' => $bannerDisplayType2->id,
-            'position' =>  'after',
+            'position' => 'after',
             'variant' => $defaultVariant,
-        ]);
+        ]));
 
 
         /*
@@ -210,7 +241,7 @@ class PageSectionSeeder extends Seeder
             'manual_model' => 'brand'
         ]);
 
-        PageSection::create([
+        PageSection::create($fillPageSectionColors([
             'page_id' => $homePage->id,
             'section_id' => $brandsSection->id,
             'display_type_id' => $brandsDisplayType->id,
@@ -218,7 +249,7 @@ class PageSectionSeeder extends Seeder
             'variant' => VariantSection::Vertical->value,
             'order' => 4,
             'filters' => []
-        ]);
+        ]));
 
         /*
         |--------------------------------------------------------------------------
@@ -237,7 +268,7 @@ class PageSectionSeeder extends Seeder
 
         ]);
 
-        PageSection::create([
+        PageSection::create($fillPageSectionColors([
             'page_id' => $homePage->id,
             'section_id' => $recipeSection->id,
             'display_type_id' => $recipeDisplayType->id,
@@ -245,7 +276,7 @@ class PageSectionSeeder extends Seeder
             'variant' => VariantSection::Square->value,
             'order' => 5,
             'filters' => []
-        ]);
+        ]));
 
         /*
         |--------------------------------------------------------------------------
@@ -264,7 +295,7 @@ class PageSectionSeeder extends Seeder
         ]);
 
 
-        PageSection::create([
+        PageSection::create($fillPageSectionColors([
             'page_id' => $homePage->id,
             'section_id' => $basketSection->id,
             'display_type_id' => $basketsDisplayType->id,
@@ -272,7 +303,7 @@ class PageSectionSeeder extends Seeder
             'variant' => VariantSection::Horizontal->value,
             'order' => 6,
             'filters' => []
-        ]);
+        ]));
 
         $schedulebasketSection = Section::create([
             'name' => ['en' => 'schedule basket', 'ar' => 'قسم السلات المجدولة'],
@@ -285,7 +316,7 @@ class PageSectionSeeder extends Seeder
             'manual_model' => 'schedule-basket'
         ]);
 
-        PageSection::create([
+        PageSection::create($fillPageSectionColors([
             'name' => ['en' => 'schedule basket', 'ar' => 'قسم السلات المجدولة'],
             'page_id' => $homePage->id,
             'section_id' => $schedulebasketSection->id,
@@ -294,7 +325,7 @@ class PageSectionSeeder extends Seeder
             'variant' => VariantSection::Square->value,
             'order' => 7,
             'filters' => []
-        ]);
+        ]));
 
 
         /*
@@ -332,7 +363,7 @@ class PageSectionSeeder extends Seeder
             'manual_model' => 'product'
         ]);
 
-        PageSection::create([
+        PageSection::create($fillPageSectionColors([
             'name' => ['en' => 'Trend Products', 'ar' => 'المنتجات التريند'],
             'page_id' => $homePage->id,
             'section_id' => $productsSection->id,
@@ -343,8 +374,8 @@ class PageSectionSeeder extends Seeder
             'filters' => [
                 'type' => 'trend',
             ]
-        ]);
-        PageSection::create([
+        ]));
+        PageSection::create($fillPageSectionColors([
             'name' => ['en' => 'New arrival products', 'ar' => 'منتجات وصلت حديثا'],
             'page_id' => $homePage->id,
             'section_id' => $productsSection->id,
@@ -355,8 +386,8 @@ class PageSectionSeeder extends Seeder
             'filters' => [
                 'type' => 'new',
             ]
-        ]);
-        PageSection::create([
+        ]));
+        PageSection::create($fillPageSectionColors([
             'name' => ['en' => 'Top rated products', 'ar' => 'منتجات اعلى تقييما'],
             'page_id' => $homePage->id,
             'section_id' => $productsSection->id,
@@ -367,9 +398,9 @@ class PageSectionSeeder extends Seeder
             'filters' => [
                 'type' => 'top_rated',
             ]
-        ]);
+        ]));
 
-        PageSection::create([
+        PageSection::create($fillPageSectionColors([
             'name' => ['en' => 'Offers', 'ar' => 'العروض'],
             'page_id' => $homePage->id,
             'section_id' => $productsSection->id,
@@ -380,7 +411,7 @@ class PageSectionSeeder extends Seeder
             'filters' => [
                 'type' => 'offers',
             ]
-        ]);
+        ]));
 
         //   $suggestedSection = Section::create([
         //     'name' => ['en' => 'Suggested', 'ar' => 'المقترحات'],
@@ -425,7 +456,7 @@ class PageSectionSeeder extends Seeder
             'manual_model' => 'shop'
         ]);
 
-        PageSection::create([
+        PageSection::create($fillPageSectionColors([
             'name' => ['en' => 'Nearby Shops', 'ar' => 'المتاجر القريبة'],
             'page_id' => $homePage->id,
             'section_id' => $shopSection->id,
@@ -436,7 +467,7 @@ class PageSectionSeeder extends Seeder
             'filters' => [
                 'type' => 'nearby',
             ]
-        ]);
+        ]));
 
 
         $suggestedShopSection = Section::create([
@@ -450,7 +481,7 @@ class PageSectionSeeder extends Seeder
             'manual_model' => 'shop'
         ]);
 
-        PageSection::create([
+        PageSection::create($fillPageSectionColors([
             'name' => ['en' => 'Suggested Shops', 'ar' => 'المتاجر المقترحة لك'],
             'page_id' => $homePage->id,
             'section_id' => $suggestedShopSection->id,
@@ -459,7 +490,7 @@ class PageSectionSeeder extends Seeder
             'variant' => VariantSection::Horizontal->value,
             'order' => 9,
             'filters' => []
-        ]);
+        ]));
 
         $freeDeliverySection = Section::create([
             'name' => ['en' => 'Free delivery shops', 'ar' => 'المتاجر ذات التوصيل المجاني'],
@@ -472,7 +503,7 @@ class PageSectionSeeder extends Seeder
             'manual_model' => 'shop'
         ]);
 
-        PageSection::create([
+        PageSection::create($fillPageSectionColors([
             'name' => ['en' => 'Shops with free delivery', 'ar' => 'المتاجر ذات التوصيل المجاني'],
             'page_id' => $homePage->id,
             'section_id' => $freeDeliverySection->id,
@@ -483,7 +514,7 @@ class PageSectionSeeder extends Seeder
             'filters' => [
                 'type' => 'free_delivery',
             ]
-        ]);
+        ]));
 
         $suggestedProductSection = Section::create([
             'name' => ['en' => 'Suggested Products', 'ar' => 'المنتجات المقترحة لك'],
@@ -496,7 +527,7 @@ class PageSectionSeeder extends Seeder
             'manual_model' => 'product'
         ]);
 
-        PageSection::create([
+        PageSection::create($fillPageSectionColors([
             'name' => ['en' => 'Suggested Products', 'ar' => 'المنتجات المقترحة لك'],
             'page_id' => $homePage->id,
             'section_id' => $suggestedProductSection->id,
@@ -505,7 +536,7 @@ class PageSectionSeeder extends Seeder
             'variant' => VariantSection::Square->value,
             'order' => 10,
             'filters' => []
-        ]);
+        ]));
 
         $suggestedBasketSection = Section::create([
             'name' => ['en' => 'Suggested Baskets', 'ar' => 'السلات المقترحة لك'],
@@ -518,7 +549,7 @@ class PageSectionSeeder extends Seeder
             'manual_model' => 'basket'
         ]);
 
-        PageSection::create([
+        PageSection::create($fillPageSectionColors([
             'name' => ['en' => 'Suggested Baskets', 'ar' => 'السلات المقترحة لك'],
             'page_id' => $homePage->id,
             'section_id' => $suggestedBasketSection->id,
@@ -527,6 +558,6 @@ class PageSectionSeeder extends Seeder
             'variant' => VariantSection::Horizontal->value,
             'order' => 11,
             'filters' => []
-        ]);
+        ]));
     }
 }
