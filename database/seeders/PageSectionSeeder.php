@@ -250,28 +250,6 @@ class PageSectionSeeder extends Seeder
             'order' => 4,
             'filters' => []
         ]));
-        //ex
-        PageSection::create($fillPageSectionColors([
-            'page_id' => $homePage->id,
-            'section_id' => $brandsSection->id,
-            'display_type_id' => $brandsDisplayType->id,
-            'position' => 'before',
-            'variant' => VariantSection::Horizontal->value,
-            'order' => 4,
-            'filters' => []
-        ]));
-        //ex
-        PageSection::create($fillPageSectionColors([
-            'page_id' => $homePage->id,
-            'section_id' => $brandsSection->id,
-            'display_type_id' => $brandsDisplayType->id,
-            'position' => 'before',
-            'variant' => VariantSection::Square->value,
-            'order' => 4,
-            'filters' => []
-        ]));
-
-
         /*
         |--------------------------------------------------------------------------
         | Recipes Section
@@ -298,24 +276,7 @@ class PageSectionSeeder extends Seeder
             'order' => 5,
             'filters' => []
         ]));
-        PageSection::create($fillPageSectionColors([
-            'page_id' => $homePage->id,
-            'section_id' => $recipeSection->id,
-            'display_type_id' => $recipeDisplayType->id,
-            'position' => 'after',
-            'variant' => VariantSection::Horizontal->value,
-            'order' => 5,
-            'filters' => []
-        ]));
-        PageSection::create($fillPageSectionColors([
-            'page_id' => $homePage->id,
-            'section_id' => $recipeSection->id,
-            'display_type_id' => $recipeDisplayType->id,
-            'position' => 'after',
-            'variant' => VariantSection::Vertical->value,
-            'order' => 5,
-            'filters' => []
-        ]));
+
 
         /*
         |--------------------------------------------------------------------------
@@ -343,25 +304,6 @@ class PageSectionSeeder extends Seeder
             'order' => 6,
             'filters' => []
         ]));
-        PageSection::create($fillPageSectionColors([
-            'page_id' => $homePage->id,
-            'section_id' => $basketSection->id,
-            'display_type_id' => $basketsDisplayType->id,
-            'position' => 'after',
-            'variant' => VariantSection::Square->value,
-            'order' => 6,
-            'filters' => []
-        ]));
-        PageSection::create($fillPageSectionColors([
-            'page_id' => $homePage->id,
-            'section_id' => $basketSection->id,
-            'display_type_id' => $basketsDisplayType->id,
-            'position' => 'after',
-            'variant' => VariantSection::Vertical->value,
-            'order' => 6,
-            'filters' => []
-        ]));
-
         $schedulebasketSection = Section::create([
             'name' => ['en' => 'schedule basket', 'ar' => 'قسم السلات المجدولة'],
             'type' => 'api',
@@ -415,7 +357,6 @@ class PageSectionSeeder extends Seeder
         | Trending Products Section
         |--------------------------------------------------------------------------
         */
-
         $productsSection = Section::create([
             'name' => ['en' => 'Products', 'ar' => 'المنتجات'],
             'type' => 'api',
@@ -574,21 +515,11 @@ class PageSectionSeeder extends Seeder
             'filters' => []
         ]));
 
-        $freeDeliverySection = Section::create([
-            'name' => ['en' => 'Free delivery shops', 'ar' => 'المتاجر ذات التوصيل المجاني'],
-            'type' => 'api',
-            'api_method' => 'shops',
-            'filters' => [],
-            'see_more' => true,
-            'see_more_slug' => 'shops',
-            'details_slug' => 'shop_details',
-            'manual_model' => 'shop'
-        ]);
 
         PageSection::create($fillPageSectionColors([
             'name' => ['en' => 'Shops with free delivery', 'ar' => 'المتاجر ذات التوصيل المجاني'],
             'page_id' => $homePage->id,
-            'section_id' => $freeDeliverySection->id,
+            'section_id' => $shopSection->id,
             'display_type_id' => $shopDisplayType->id,
             'position' => 'after',
             'variant' => VariantSection::Vertical->value,
