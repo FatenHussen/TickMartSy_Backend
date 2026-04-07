@@ -29,6 +29,8 @@ class ScheduleBasketService extends BaseService
 
     public function query(array $filters)
     {
+        $scheduleDays = $filters['schedule_days'] ?? null;
+
         $query = Basket::query()->latest();
 
 
@@ -37,6 +39,14 @@ class ScheduleBasketService extends BaseService
         //     $query->where('is_schedule', $filters['is_schedule']);
         // }
         $query->where('is_schedule', 1);
+
+        // Filter by schedule days
+        if ($scheduleDays !== null) {
+            $query->whereHas('schedules', function ($q) use ($scheduleDays) {
+                $q->where('number_of_days', $scheduleDays)
+                    ->where('is_active', true);
+            });
+        }
 
         // Category filter
         if (!empty($filters['category_id'])) {
