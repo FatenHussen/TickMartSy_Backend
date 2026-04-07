@@ -99,6 +99,8 @@ class StoreRequest extends FormRequest
             'variants.*.name.ar'            => 'nullable|string|max:255',
             'variants.*.name.en'            => 'nullable|string|max:255',
             'variants.*.sku'                => 'nullable|string|unique:product_variants,sku',
+            'variants.*.is_trend'           => 'nullable|boolean',
+            'variants.*.is_active'          => 'nullable|boolean',
             'variants.*.attributes_values_ids' => 'nullable|array',
             'variants.*.attributes_values_ids.*' => 'required|integer|exists:attribute_values,id',
             'variants.*.images' => 'nullable|array',

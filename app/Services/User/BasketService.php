@@ -31,6 +31,7 @@ class BasketService extends BaseService
         $sort = $filters['sort_by'] ?? null;
         $isSchedule = $filters['is_schedule'] ?? null;
         $categoryId = $filters['category_id'] ?? null;
+        $scheduleDays = $filters['schedule_days'] ?? null;
         $priceMin = $filters['price_min'] ?? null;
         $priceMax = $filters['price_max'] ?? null;
         $ratingMin = $filters['rating_min'] ?? null;
@@ -43,6 +44,7 @@ class BasketService extends BaseService
             $filters['sort_by'],
             $filters['is_schedule'],
             $filters['category_id'],
+            $filters['schedule_days'],
             $filters['price_min'],
             $filters['price_max'],
             $filters['rating_min'],
@@ -64,6 +66,14 @@ class BasketService extends BaseService
         // Filter by schedule status
         if ($isSchedule !== null) {
             $query->where('is_schedule', $isSchedule);
+        }
+
+        // Filter by schedule days
+        if ($scheduleDays !== null) {
+            $query->whereHas('schedules', function ($q) use ($scheduleDays) {
+                $q->where('number_of_days', $scheduleDays)
+                  ->where('is_active', true);
+            });
         }
 
         // Category filter

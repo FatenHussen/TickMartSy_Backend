@@ -85,6 +85,8 @@ class OneResource extends JsonResource
                     'id' => $variant->id,
                     'name' => $variant->getTranslations('name'),
                     'sku' => $variant->sku,
+                    'is_trend' => (bool) $variant->is_trend,
+                    'is_active' => (bool) $variant->is_active,
                     'attributes' => collect($variant->attributesValues)->map(function ($value) {
                         return [
                             'attribute' => $value->categoryAttribute?->name,
