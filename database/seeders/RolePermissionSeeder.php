@@ -41,7 +41,8 @@ class RolePermissionSeeder extends Seeder
             'LegalDocument',
             'Notification',
             'VendorPackage',
-
+            'ServiceOrder',
+            'VendorService'
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];
