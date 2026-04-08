@@ -48,6 +48,7 @@ class StoreRequest extends FormRequest
             'parent_id' => 'nullable|integer|exists:categories,id',
             'order' => 'nullable|integer|min:0',
             'is_active' => 'nullable|boolean',
+            'is_restaurant' => 'nullable|boolean',
         ];
 
         foreach ($this->locales as $locale) {

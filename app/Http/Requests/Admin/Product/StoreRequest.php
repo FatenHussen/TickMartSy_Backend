@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Category;
 use App\Models\Language;
 
 class StoreRequest extends FormRequest
@@ -64,6 +65,34 @@ class StoreRequest extends FormRequest
         }
         $this->merge([
             'vendor_id' => auth('vendor-user')->user()->id ?? 1,
+        ]);
+
+        $this->normalizeRestrictedFieldsForRestaurantCategory();
+    }
+
+    private function normalizeRestrictedFieldsForRestaurantCategory(): void
+    {
+        $categoryId = $this->input('category_id');
+
+        if (!$categoryId) {
+            return;
+        }
+
+        $isRestaurant = Category::query()
+            ->whereKey($categoryId)
+            ->value('is_restaurant');
+
+        if (!$isRestaurant) {
+            return;
+        }
+
+        $this->merge([
+            'country_id' => null,
+            'sale_country_id' => null,
+            'sku' => null,
+            'model' => null,
+            'barcode' => null,
+            'country' => null,
         ]);
     }
 

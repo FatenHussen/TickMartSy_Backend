@@ -44,12 +44,16 @@ class ProductForm
                                         ->label(__('custom.products.form.model_number'))
                                         ->unique(ignoreRecord: true)
                                         ->maxLength(255)
+                                        ->visible(fn(callable $get): bool => !static::isRestaurantCategory($get('category_id')))
+                                        ->dehydrated(fn(callable $get): bool => !static::isRestaurantCategory($get('category_id')))
                                         ->columnSpan(1),
 
                                     Forms\Components\TextInput::make('sku')
                                         ->label(__('custom.products.form.product_code'))
                                         ->unique(ignoreRecord: true)
                                         ->maxLength(255)
+                                        ->visible(fn(callable $get): bool => !static::isRestaurantCategory($get('category_id')))
+                                        ->dehydrated(fn(callable $get): bool => !static::isRestaurantCategory($get('category_id')))
                                         ->columnSpan(1),
 
                                     Forms\Components\Select::make('category_id')
@@ -59,11 +63,26 @@ class ProductForm
                                         ->searchable()
                                         ->preload()
                                         ->live(onBlur: true)
+                                        ->afterStateUpdated(function ($state, callable $set): void {
+                                            if (!static::isRestaurantCategory($state)) {
+                                                return;
+                                            }
+
+                                            $set('model', null);
+                                            $set('sku', null);
+                                            $set('barcode', null);
+                                            $set('country.ar', null);
+                                            $set('country.en', null);
+                                            $set('country_id', null);
+                                            $set('sale_country_id', null);
+                                        })
                                         ->columnSpan(1),
 
                                     Forms\Components\TextInput::make('barcode')
                                         ->label(__('custom.products.form.barcode_label'))
                                         ->maxLength(255)
+                                        ->visible(fn(callable $get): bool => !static::isRestaurantCategory($get('category_id')))
+                                        ->dehydrated(fn(callable $get): bool => !static::isRestaurantCategory($get('category_id')))
                                         ->columnSpan(1),
 
                                     Forms\Components\Select::make('brand_id')
@@ -76,11 +95,15 @@ class ProductForm
                                     Forms\Components\TextInput::make('country.ar')
                                         ->label(__('custom.products.form.country_ar'))
                                         ->maxLength(255)
+                                        ->visible(fn(callable $get): bool => !static::isRestaurantCategory($get('category_id')))
+                                        ->dehydrated(fn(callable $get): bool => !static::isRestaurantCategory($get('category_id')))
                                         ->columnSpan(1),
 
                                     Forms\Components\TextInput::make('country.en')
                                         ->label(__( 'custom.products.form.country_en'))
                                         ->maxLength(255)
+                                        ->visible(fn(callable $get): bool => !static::isRestaurantCategory($get('category_id')))
+                                        ->dehydrated(fn(callable $get): bool => !static::isRestaurantCategory($get('category_id')))
                                         ->columnSpan(1),
 
                                     Forms\Components\Hidden::make('vendor_id')
@@ -726,6 +749,17 @@ class ProductForm
                 ])
                 ->columnSpanFull(),
         ]);
+    }
+
+    private static function isRestaurantCategory($categoryId): bool
+    {
+        if (!$categoryId) {
+            return false;
+        }
+
+        return (bool) \App\Models\Category::query()
+            ->whereKey($categoryId)
+            ->value('is_restaurant');
     }
 
     private static function isColorAttribute($attributeId): bool

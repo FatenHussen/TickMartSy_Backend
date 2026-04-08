@@ -18,12 +18,14 @@ class AllResource extends JsonResource
             'name' => $this->name,
             'icon' => $this->image_url,
             'order' => $this->order,
+            'is_restaurant' => (bool) $this->is_restaurant,
             'children' => $this->whenLoaded('activeChildren', function () {
                 return $this->activeChildren->map(function ($child)  {
                     return [
                         'id' => $child->id,
                         'name' => $child->name,
                         'order' => $child->order,
+                        'is_restaurant' => (bool) $child->is_restaurant,
                     ];
                 });
             }),

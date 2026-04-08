@@ -20,6 +20,7 @@ class AllResource extends JsonResource
             'icon' => $this->image_url,
             'parent_id' => $this->parent_id,
             'is_active' => $this->is_active,
+            'is_restaurant' => (bool) $this->is_restaurant,
 
             'parent' => $this->whenLoaded('parent', function () use ($locale) {
                 return [

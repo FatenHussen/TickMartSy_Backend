@@ -48,6 +48,7 @@ class OneResource extends JsonResource
             'category' => [
                 'id' => $this->category?->id,
                 'name' => $this->category?->name,
+                'is_restaurant' => (bool) ($this->category?->is_restaurant ?? false),
             ],
 
             'brand' => $this->brand ? [

@@ -3,7 +3,9 @@
 namespace App\Http\Requests\Admin\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Category;
 use App\Models\Language;
+use App\Models\Product;
 
 class UpdateRequest extends FormRequest
 {
@@ -69,11 +71,57 @@ class UpdateRequest extends FormRequest
         $this->merge([
             'vendor_id' => auth('vendor-user')->user()->id ?? 1,
         ]);
+
+        $this->normalizeRestrictedFieldsForRestaurantCategory();
+    }
+
+    private function normalizeRestrictedFieldsForRestaurantCategory(): void
+    {
+        $categoryId = $this->input('category_id');
+
+        if (!$categoryId) {
+            $routeProduct = $this->route('product') ?? $this->route('products');
+            $productId = null;
+
+            if ($routeProduct instanceof Product) {
+                $productId = $routeProduct->id;
+            } elseif (is_numeric($routeProduct)) {
+                $productId = (int) $routeProduct;
+            }
+
+            if ($productId) {
+                $categoryId = Product::query()->whereKey($productId)->value('category_id');
+            }
+        }
+
+        if (!$categoryId) {
+            return;
+        }
+
+        $isRestaurant = Category::query()
+            ->whereKey($categoryId)
+            ->value('is_restaurant');
+
+        if (!$isRestaurant) {
+            return;
+        }
+
+        $this->merge([
+            'country_id' => null,
+            'sale_country_id' => null,
+            'sku' => null,
+            'model' => null,
+            'barcode' => null,
+            'country' => null,
+        ]);
     }
 
     public function rules(): array
     {
-        $productId = $this->route('product'); // assuming route parameter 'product'
+        $routeProduct = $this->route('product');
+        $productId = $routeProduct instanceof Product
+            ? $routeProduct->id
+            : $routeProduct;
 
         $rules = [
             'category_id'           => 'nullable|exists:categories,id',

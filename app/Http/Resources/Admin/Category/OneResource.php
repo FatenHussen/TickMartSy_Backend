@@ -21,6 +21,7 @@ class OneResource extends JsonResource
             'parent_id' => $this->parent_id,
             'order' => $this->order,
             'is_active' => $this->is_active,
+            'is_restaurant' => (bool) $this->is_restaurant,
             'parent' => $this->whenLoaded('parent', function () use ($locale) {
                 return [
                     'id' => $this->parent?->id,
@@ -32,6 +33,7 @@ class OneResource extends JsonResource
                     return [
                         'id' => $child->id,
                         'name' => $child->getTranslation('name', $locale),
+                        'is_restaurant' => (bool) $child->is_restaurant,
                     ];
                 });
             }),
