@@ -13,17 +13,20 @@ class BadgeSeeder extends Seeder
     {
         $badges = [
             [
-                'name' => [],
+                'name' => [
+                ],
                 'type' => 'gif',
-                'image' => 'badge/badge1.gif'
+                'image'  => 'badge/bage1.gif',
             ],
             [
                 'name' => [
                     'en' => 'Featured',
                     'ar' => 'مميز',
+
                 ],
                 'color' => 'warning',
                 'type' => 'text',
+
             ],
             [
                 'name' => [
@@ -32,24 +35,18 @@ class BadgeSeeder extends Seeder
                 ],
                 'color' => 'danger',
                 'type' => 'text',
+
             ],
             [
                 'name' => [],
                 'type' => 'gif',
                 'image' => 'badge/badge2.gif'
+
             ],
         ];
 
         $badgeModels = collect($badges)->map(fn($badge) => Badge::create($badge));
 
-        // $products = Product::take(5)->get();
 
-        // foreach ($products as $index => $product) {
-        //     $product->badges()->attach([
-        //         $badgeModels[0]->id => ['position' => 'top'],
-        //         $badgeModels[1]->id => ['position' => 'bottom'],
-        //         $badgeModels[2]->id => ['position' => 'bottom'],
-        //     ]);
-        // }
     }
 }
