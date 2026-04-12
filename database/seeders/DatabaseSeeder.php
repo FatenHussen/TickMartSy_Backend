@@ -64,6 +64,7 @@ class DatabaseSeeder extends Seeder
             PageSectionSeeder::class,
             ServiceSeeder::class,
             QuickActionSeeder::class,
+            VendorServiceSeeder::class,
 
             // Recipes & Baskets
             RecipeSeeder::class,
@@ -101,6 +102,7 @@ class DatabaseSeeder extends Seeder
             PaymentMethodSeeder::class,
             DriverSeeder::class,
             OrderWithItemsSeeder::class,
+            ServiceOrderSeeder::class,
             UserBasketsAndOrdersSeeder::class,
 
             // Ratings & Reviews

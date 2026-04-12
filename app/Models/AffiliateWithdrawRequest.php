@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\AppliesAreaScope;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 
 class AffiliateWithdrawRequest extends Model
 {
-    use LogsActivity;
+    use LogsActivity, AppliesAreaScope;
+    protected static array $areaRelationPaths = ['affiliate'];
     protected $fillable = [
         'affiliate_id',
         'amount',

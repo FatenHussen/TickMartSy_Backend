@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\AppliesAreaScope;
 use Illuminate\Database\Eloquent\Model;
 
 class AffiliateWalletTransaction extends Model
 {
+    use AppliesAreaScope;
+    protected static array $areaRelationPaths = ['order.address'];
 
     protected $fillable = [
         'affiliate_id',
-        'type',           // commission / withdraw
-        'amount',         // موجب للعمولة، سالب للسحب
+        'type',
+        'amount',
         'order_id',
     ];
 

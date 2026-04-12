@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\AppliesAreaScope;
 use Illuminate\Database\Eloquent\Model;
 
 class UserGift extends Model
 {
+    use AppliesAreaScope;
+    protected static array $areaRelationPaths = ['address'];
     protected $fillable = [
         'gift_id',
         'user_id',

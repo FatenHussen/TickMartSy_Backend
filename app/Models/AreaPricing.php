@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\AppliesAreaScope;
 use Illuminate\Database\Eloquent\Model;
 
 class AreaPricing extends Model
 {
+    use AppliesAreaScope;
     protected $table = 'area_pricing';
 
     protected $fillable = [

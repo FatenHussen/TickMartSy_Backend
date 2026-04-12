@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\AppliesAreaScope;
 use App\Enums\OrderStatus;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class Driver extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens, LogsActivity, SoftDeletes;
+    use HasFactory, Notifiable, HasApiTokens, LogsActivity, SoftDeletes, AppliesAreaScope;
     protected $appends = [
         'average_rating',
         'total_earnings',

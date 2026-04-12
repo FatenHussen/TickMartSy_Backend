@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
-use Laravel\Sanctum\HasApiTokens;
+use App\Models\Concerns\AppliesAreaScope;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class VendorUser extends Authenticatable
 {
-    use HasApiTokens, HasRoles, Notifiable, SoftDeletes;
+    use HasApiTokens, HasRoles, Notifiable, SoftDeletes, AppliesAreaScope;
+    protected static array $areaRelationPaths = ['shops'];
     public $table = "vendor_users";
     protected $guard_name = 'vendor-user';
     protected $fillable = [

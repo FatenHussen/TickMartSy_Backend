@@ -6,10 +6,12 @@ namespace App\Models;
 
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
@@ -74,5 +76,18 @@ class Admin extends Authenticatable
     public function fcmTokens(): MorphMany
     {
         return $this->morphMany(UserToken::class, 'tokenable');
+    }
+
+    public function areas(): BelongsToMany
+    {
+        return $this->belongsToMany(Area::class, 'admin_area');
+    }
+
+    public function areaIds(): Collection
+    {
+        return $this->areas()
+            ->pluck('areas.id')
+            ->unique()
+            ->values();
     }
 }

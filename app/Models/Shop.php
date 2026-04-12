@@ -2,18 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Spatie\Translatable\HasTranslations;
-use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
+use App\Models\Concerns\AppliesAreaScope;
 use App\Http\Resources\Shop\AllResource;
 use App\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Schema;
+use Spatie\Translatable\HasTranslations;
 
 class Shop extends Model implements Sectionable
 {
-    use HasTranslations, LogsActivity, SoftDeletes;
+    use HasTranslations, LogsActivity, SoftDeletes, AppliesAreaScope;
 
     public array $translatable = ['name', 'description', 'address'];
 
