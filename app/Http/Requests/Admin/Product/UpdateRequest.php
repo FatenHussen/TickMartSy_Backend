@@ -20,6 +20,14 @@ class UpdateRequest extends FormRequest
     {
         $this->locales = Language::active()->pluck('code')->toArray();
         $data = $this->all();
+        $routeProduct = $this->route('product') ?? $this->route('products');
+        $existingProduct = null;
+
+        if ($routeProduct instanceof Product) {
+            $existingProduct = $routeProduct;
+        } elseif (is_numeric($routeProduct)) {
+            $existingProduct = Product::find((int) $routeProduct);
+        }
 
         $translatableFields = [
             'name',
@@ -31,14 +39,21 @@ class UpdateRequest extends FormRequest
         ];
 
         foreach ($translatableFields as $field) {
+            if (!array_key_exists($field, $data) || !is_array($data[$field])) {
+                continue;
+            }
+
             $prepared = [];
+            $existingTranslations = $existingProduct ? ($existingProduct->getTranslations($field) ?? []) : [];
+
             foreach ($this->locales as $locale) {
-                if (isset($data[$field][$locale])) {
+                if (array_key_exists($locale, $data[$field])) {
                     $prepared[$locale] = $data[$field][$locale];
-                } else {
-                    $prepared[$locale] = null;
+                } elseif (array_key_exists($locale, $existingTranslations)) {
+                    $prepared[$locale] = $existingTranslations[$locale];
                 }
             }
+
             $this->merge([$field => $prepared]);
         }
 
@@ -68,9 +83,11 @@ class UpdateRequest extends FormRequest
             $this->merge(['extra_details' => $data['extra_details']]);
         }
 
-        $this->merge([
-            'vendor_id' => auth('vendor-user')->user()->id ?? 1,
-        ]);
+        if (auth('vendor-user')->check()) {
+            $this->merge([
+                'vendor_id' => auth('vendor-user')->id(),
+            ]);
+        }
 
         $this->normalizeRestrictedFieldsForRestaurantCategory();
     }
