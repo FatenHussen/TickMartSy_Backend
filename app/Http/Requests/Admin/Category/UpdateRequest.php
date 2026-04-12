@@ -23,8 +23,8 @@ class UpdateRequest extends FormRequest
 
     public function rules(): array
     {
-        $categoryId = $this->route('categories.update')?->id
-            ?? $this->route('categories.update');
+        $routeCategory = $this->route('categories.update');
+        $categoryId = is_object($routeCategory) ? ($routeCategory->id ?? null) : $routeCategory;
 
         $locales = Language::active()->pluck('code')->toArray();
 
@@ -38,6 +38,7 @@ class UpdateRequest extends FormRequest
             ],
             'order' => 'nullable|integer|min:0',
             'is_active' => 'nullable|boolean',
+            'is_restaurant' => 'nullable|boolean',
         ];
 
         foreach ($locales as $locale) {

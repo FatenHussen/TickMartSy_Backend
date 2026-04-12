@@ -7,7 +7,7 @@ use App\Models\Currency;
 class CurrencyHelper
 {
     /**
-     * تحويل السعر من عملة اليوزر إلى الليرة السورية (العملة الأساسية)
+     * تحويل السعر من عملة اليوزر إلى الدولار (العملة الأساسية)
      */
     public static function convertToBase(float $price, ?int $currencyId = null): float
     {
@@ -38,9 +38,9 @@ class CurrencyHelper
     }
 
     /**
-     * تحويل السعر من الليرة السورية (الأساسية) إلى عملة اليوزر
+     * تحويل السعر من الدولار (الأساسية) إلى عملة اليوزر
      */
-    public static function convertFromBase(float $priceInSYP, ?int $currencyId = null): array
+    public static function convertFromBase(float $priceInBase, ?int $currencyId = null): array
     {
         if (!$currencyId) {
             $user = auth('user')->user();
@@ -60,14 +60,14 @@ class CurrencyHelper
 
         if (!$currency || $currency->is_default) {
             return [
-                'amount'    => round($priceInSYP, 2),
-                'currency'  => $currency?->code ?? 'SYP',
-                'symbol'    => $currency?->symbol ?? 'ل.س',
-                'formatted' => ($currency?->symbol ?? 'ل.س') . ' ' . number_format($priceInSYP, 2),
+                'amount'    => round($priceInBase, 2),
+                'currency'  => $currency?->code ?? 'USD',
+                'symbol'    => $currency?->symbol ?? '$',
+                'formatted' => ($currency?->symbol ?? '$') . ' ' . number_format($priceInBase, 2),
             ];
         }
 
-        $convertedAmount = $currency->convertFromBase($priceInSYP);
+        $convertedAmount = $currency->convertFromBase($priceInBase);
 
         return [
             'amount'    => $convertedAmount,
@@ -100,7 +100,7 @@ class CurrencyHelper
     }
 
     /**
-     * تحويل نطاق أسعار من عملة اليوزر للليرة السورية
+     * تحويل نطاق أسعار من عملة اليوزر للدولار
      */
     public static function convertPriceRangeToUSD(?float $minPrice, ?float $maxPrice, ?int $currencyId = null): array
     {

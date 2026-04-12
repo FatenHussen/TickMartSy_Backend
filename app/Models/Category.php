@@ -19,10 +19,12 @@ class Category extends Model implements Sectionable
         'parent_id',
         'order',
         'is_active',
+        'is_restaurant',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'is_restaurant' => 'boolean',
     ];
 
     public function scopeActive($query)

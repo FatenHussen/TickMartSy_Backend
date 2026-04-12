@@ -37,22 +37,22 @@ class Currency extends Model
         return $this->name[$locale] ?? $this->name['en'] ?? $this->code;
     }
 
-    // تحويل من الليرة السورية (العملة الأساسية) للعملة الحالية
-    public function convertFromBase(?float $amountInSYP): ?float
+    // تحويل من الدولار (العملة الأساسية) للعملة الحالية
+    public function convertFromBase(?float $amountInBase): ?float
     {
-        if ($amountInSYP === null) {
+        if ($amountInBase === null) {
             return null;
         }
 
-        // إذا العملة هي الليرة السورية (الأساسية)، نرجع كما هو
+        // إذا العملة هي الدولار (الأساسية)، نرجع كما هو
         if ($this->is_default) {
-            return round($amountInSYP, 2);
+            return round($amountInBase, 2);
         }
 
-        return round($amountInSYP * $this->exchange_rate, 2);
+        return round($amountInBase * $this->exchange_rate, 2);
     }
 
-    // تحويل من العملة الحالية للليرة السورية (العملة الأساسية)
+    // تحويل من العملة الحالية للدولار (العملة الأساسية)
     public function convertToBase(?float $amount): ?float
     {
         if ($amount === null) {
@@ -66,13 +66,13 @@ class Currency extends Model
         return round($amount / $this->exchange_rate, 2);
     }
 
-    // للتوافق مع الكود القديم - تحويل من الليرة السورية
+    // للتوافق مع الكود القديم - تحويل من الدولار
     public function convertFromUSD(?float $amountInBase): ?float
     {
         return $this->convertFromBase($amountInBase);
     }
 
-    // للتوافق مع الكود القديم - تحويل للليرة السورية
+    // للتوافق مع الكود القديم - تحويل للدولار
     public function convertToUSD(?float $amount): ?float
     {
         return $this->convertToBase($amount);

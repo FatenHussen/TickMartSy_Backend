@@ -67,6 +67,30 @@ class Product extends Model implements Sectionable
         'is_visible' => 'boolean',
         'is_active' => 'boolean',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (self $product) {
+            if (!$product->category_id) {
+                return;
+            }
+
+            $isRestaurant = Category::query()
+                ->whereKey($product->category_id)
+                ->value('is_restaurant');
+
+            if (!$isRestaurant) {
+                return;
+            }
+
+            $product->country_id = null;
+            $product->sale_country_id = null;
+            $product->sku = null;
+            $product->model = null;
+            $product->barcode = null;
+        });
+    }
+
     public function getEffectiveDeliveryTimeAttribute(): ?string
     {
         // Tikmool vendor (id=1) always gets fixed delivery time

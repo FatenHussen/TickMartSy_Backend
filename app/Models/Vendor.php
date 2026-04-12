@@ -166,4 +166,9 @@ class Vendor extends Model
     {
         return $this->hasMany(VendorFcmToken::class);
     }
+
+    public function withdrawRequests()
+    {
+        return $this->hasMany(VendorWithdrawRequest::class);
+    }
 }

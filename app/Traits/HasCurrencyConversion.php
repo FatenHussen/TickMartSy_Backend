@@ -7,7 +7,7 @@ use App\Models\Currency;
 trait HasCurrencyConversion
 {
     /**
-     * تحويل السعر من الليرة السورية (الأساسية) للعملة المطلوبة
+     * تحويل السعر من الدولار (الأساسية) للعملة المطلوبة
      */
     public function convertPrice($priceInBase, $currencyId = null)
     {
@@ -15,8 +15,8 @@ trait HasCurrencyConversion
             $defaultCurrency = Currency::default()->first();
             return [
                 'amount'    => null,
-                'currency'  => $defaultCurrency?->code ?? 'SYP',
-                'symbol'    => $defaultCurrency?->symbol ?? 'ل.س',
+                'currency'  => $defaultCurrency?->code ?? 'USD',
+                'symbol'    => $defaultCurrency?->symbol ?? '$',
                 'formatted' => null,
             ];
         }
@@ -39,9 +39,9 @@ trait HasCurrencyConversion
         if (!$currency || $currency->is_default) {
             return [
                 'amount'    => round($priceInBase, 2),
-                'currency'  => $currency?->code ?? 'SYP',
-                'symbol'    => $currency?->symbol ?? 'ل.س',
-                'formatted' => ($currency?->symbol ?? 'ل.س') . ' ' . number_format($priceInBase, 2),
+                'currency'  => $currency?->code ?? 'USD',
+                'symbol'    => $currency?->symbol ?? '$',
+                'formatted' => ($currency?->symbol ?? '$') . ' ' . number_format($priceInBase, 2),
             ];
         }
 

@@ -27,8 +27,8 @@ class PointSummaryResource extends JsonResource
             $currency = Currency::default()->first();
         }
 
-        // تحويل قيمة النقطة للعملة المختارة (currency_rate مخزن بالليرة السورية)
-        $currencyRateBase = $pointsSettings['currency_rate']; // قيمة النقطة بالليرة السورية
+        // تحويل قيمة النقطة للعملة المختارة (currency_rate مخزن بالدولار)
+        $currencyRateBase = $pointsSettings['currency_rate']; // قيمة النقطة بالدولار
         $currencyRate = $currency->convertFromBase($currencyRateBase);
         $currencySymbol = $currency->symbol;
         $currencyCode = $currency->code;
@@ -45,7 +45,7 @@ class PointSummaryResource extends JsonResource
             'points' =>  $balance,
             'value' => [
                 'point_value'              => "1 pt = {$currencyRate} {$currencySymbol}",
-                'point_value_base'         => "1 pt = {$currencyRateBase} ل.س",
+                'point_value_base'         => "1 pt = {$currencyRateBase} USD",
                 'estimated_value'          => number_format($estimatedValue, 2) . " {$currencySymbol}",
                 'estimated_value_formatted'=> "{$currencySymbol} " . number_format($estimatedValue, 2),
                 'currency_code'            => $currencyCode,

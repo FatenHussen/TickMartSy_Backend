@@ -40,6 +40,7 @@ use App\Http\Controllers\Admin\User\UserCrudController;
 use App\Http\Controllers\Admin\Recipe\RecipeCrudController;
 use App\Http\Controllers\Admin\UserBasketSchedule\UserBasketScheduleController;
 use App\Http\Controllers\Admin\Vendor\VendorCrudController;
+use App\Http\Controllers\Admin\VendorAccounting\VendorAccountingController;
 use App\Http\Controllers\Admin\Package\PackageController;
 use App\Http\Controllers\Admin\Subscription\SubscriptionController;
 use App\Http\Controllers\Admin\Gift\GiftController;
@@ -49,6 +50,7 @@ use App\Http\Controllers\Admin\UserPoint\UserPointController;
 use App\Http\Controllers\Admin\Currency\CurrencyController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\VendorPackage\VendorPackageController;
+use App\Http\Controllers\Admin\VendorWithdrawRequest\VendorWithdrawRequestController;
 use App\Http\Controllers\Admin\VendorSubscription\VendorSubscriptionController;
 use App\Http\Controllers\Admin\SellerRegistration\SellerRegistrationCrudController;
 use App\Http\Controllers\Admin\VendorUser\VendorUserCrudController;
@@ -249,6 +251,13 @@ Route::prefix('admin')->group(
                 Route::apiResource('badges', BadgeController::class);
                 Route::apiResource('promotions', PromotionController::class);
                 Route::apiResource('affiliate-withdraw-requests', AffiliateWithdrawRequestController::class)->only(['index', 'show', 'update']);
+                Route::apiResource('vendor-withdraw-requests', VendorWithdrawRequestController::class)->only(['index', 'show', 'update']);
+
+                Route::prefix('vendor-accounting')->group(function () {
+                    Route::get('/summary', [VendorAccountingController::class, 'summary']);
+                    Route::get('/vendors', [VendorAccountingController::class, 'index']);
+                    Route::get('/vendors/{vendorId}', [VendorAccountingController::class, 'show']);
+                });
 
                 // Seller Registration routes
                 Route::apiResource('seller-registrations', SellerRegistrationCrudController::class)->only(['index', 'show', 'destroy']);
