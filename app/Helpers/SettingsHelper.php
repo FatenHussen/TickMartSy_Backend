@@ -101,10 +101,11 @@ class SettingsHelper
     {
         $rate = (float) self::getSetting('point_to_currency_rate', 100);
         $value = $points * $rate;
+        $symbol = self::get('currency_symbol', '$');
 
         return [
             'value'     => $value,
-            'formatted' => 'ل.س ' . number_format($value, 2),
+            'formatted' => $symbol . ' ' . number_format($value, 2),
         ];
     }
 }
