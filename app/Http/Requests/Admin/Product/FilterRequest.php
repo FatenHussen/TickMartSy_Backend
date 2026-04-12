@@ -23,6 +23,7 @@ class FilterRequest extends FormRequest
     {
         return [
             'shop_id'        => 'nullable|integer',
+            'category_id'    => 'nullable|integer|exists:categories,id',
             'vendor_id'      => 'nullable|integer|exists:vendors,id',
             'stock_sort'     => 'nullable|in:asc,desc',
         ];
