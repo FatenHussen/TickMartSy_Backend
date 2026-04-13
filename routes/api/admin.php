@@ -49,6 +49,7 @@ use App\Http\Controllers\Admin\PointExchange\PointExchangeController;
 use App\Http\Controllers\Admin\UserPoint\UserPointController;
 use App\Http\Controllers\Admin\Currency\CurrencyController;
 use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\Governorate\AreaCrudController as GovernorateAreaCrudController;
 use App\Http\Controllers\Admin\VendorPackage\VendorPackageController;
 use App\Http\Controllers\Admin\VendorWithdrawRequest\VendorWithdrawRequestController;
 use App\Http\Controllers\Admin\VendorSubscription\VendorSubscriptionController;
@@ -238,7 +239,7 @@ Route::prefix('admin')->group(
                 Route::apiResource('drivers', DriverCrudController::class);
                 Route::apiResource('governorates', GovernorateCrudController::class);
                 Route::apiResource('cities', CityCrudController::class);
-                Route::apiResource('areas', AreaCrudController::class);
+                Route::apiResource('areas', GovernorateAreaCrudController::class);
                 Route::apiResource('countries', CountryCrudController::class);
                 Route::apiResource('services', ServiceCrudController::class);
                 Route::apiResource('vendor-service-types', \App\Http\Controllers\Admin\VendorServiceType\VendorServiceTypeCrudController::class);
