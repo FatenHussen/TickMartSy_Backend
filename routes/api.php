@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\User\PopupCampaignController;
 
 Route::middleware('auth:user,admin,driver')->group(function () {
 
@@ -21,5 +22,9 @@ require base_path('routes/api/user.php');
 require base_path('routes/api/driver.php');
 
 require base_path('routes/api/vendor.php');
+
+Route::get('/popups/active', [PopupCampaignController::class, 'active']);
+Route::post('/popups/{popupCampaign}/track-view', [PopupCampaignController::class, 'trackView']);
+Route::post('/popups/{popupCampaign}/track-click', [PopupCampaignController::class, 'trackClick']);
 
 Route::prefix('socket')->group(base_path('routes/api/socket.php'));

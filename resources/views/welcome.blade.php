@@ -276,7 +276,9 @@
             <div class="h-14.5 hidden lg:block"></div>
         @endif
 
-            <script>
+        @include('components.popup-campaign')
+
+        <script>
     window.Echo.channel('order.6')
         .listen('.driver.location.updated', (e) => {
             console.log('🔥 RECEIVED:', e);

@@ -49,6 +49,7 @@ use App\Http\Controllers\Admin\PointExchange\PointExchangeController;
 use App\Http\Controllers\Admin\UserPoint\UserPointController;
 use App\Http\Controllers\Admin\Currency\CurrencyController;
 use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\PopupCampaignController;
 use App\Http\Controllers\Admin\VendorPackage\VendorPackageController;
 use App\Http\Controllers\Admin\VendorWithdrawRequest\VendorWithdrawRequestController;
 use App\Http\Controllers\Admin\VendorSubscription\VendorSubscriptionController;
@@ -248,6 +249,7 @@ Route::prefix('admin')->group(
                 Route::apiResource('complaints', ComplaintController::class);
                 Route::apiResource('recipes', RecipeCrudController::class);
                 Route::apiResource('faqs', FaqController::class);
+                Route::apiResource('popup-campaigns', PopupCampaignController::class);
                 Route::apiResource('badges', BadgeController::class);
                 Route::apiResource('promotions', PromotionController::class);
                 Route::apiResource('affiliate-withdraw-requests', AffiliateWithdrawRequestController::class)->only(['index', 'show', 'update']);

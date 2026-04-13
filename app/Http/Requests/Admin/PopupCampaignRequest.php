@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Http\Requests\Admin;
+
+use App\Models\PopupCampaign;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Arr;
+
+class PopupCampaignRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        $campaign = $this->route('popup_campaign');
+        $campaignId = $campaign?->id;
+
+        $slugRule = 'unique:popup_campaigns,slug' . ($campaignId ? ',' . $campaignId : '');
+
+        return [
+            'title' => ['required', 'string', 'max:255'],
+            'slug' => ['required', 'string', 'max:255', $slugRule],
+            'type' => ['required', 'in:' . implode(',', PopupCampaign::TYPES)],
+            'status' => ['required', 'in:' . implode(',', PopupCampaign::STATUSES)],
+            'priority' => ['required', 'integer', 'min:0'],
+            'headline' => ['required', 'string', 'max:255'],
+            'subheadline' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'button_text' => ['required', 'in:' . implode(',', PopupCampaign::BUTTON_OPTIONS)],
+            'secondary_button_text' => ['nullable', 'string', 'max:255'],
+            'cta_type' => ['required', 'in:' . implode(',', PopupCampaign::CTA_TYPES)],
+            'cta_value' => ['required', 'string'],
+            'media_type' => ['required', 'in:' . implode(',', PopupCampaign::MEDIA_TYPES)],
+            'media_path' => ['required', 'string'],
+            'form_enabled' => ['sometimes', 'boolean'],
+            'form_fields' => ['nullable', 'array'],
+            'form_fields.*' => ['string', 'max:255'],
+            'show_on_pages' => ['nullable', 'array'],
+            'show_on_pages.*' => ['string', 'exists:pages,slug'],
+            'audience_type' => ['required', 'in:' . implode(',', PopupCampaign::AUDIENCE_TYPES)],
+            'trigger_type' => ['required', 'in:' . implode(',', PopupCampaign::TRIGGER_TYPES)],
+            'trigger_value' => ['nullable', 'integer', 'min:0'],
+            'show_every' => ['required', 'integer', 'min:0'],
+            'max_impressions' => ['required', 'integer', 'min:0'],
+        ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'form_fields' => $this->normalizeArray($this->input('form_fields')),
+            'show_on_pages' => $this->normalizeArray($this->input('show_on_pages')),
+            'form_enabled' => (bool) $this->input('form_enabled'),
+        ]);
+    }
+
+    protected function normalizeArray($value): ?array
+    {
+        if (is_null($value)) {
+            return null;
+        }
+
+        $normalized = [];
+
+        foreach (Arr::wrap($value) as $item) {
+            if (is_string($item)) {
+                $trimmed = trim($item);
+                if ($trimmed !== '') {
+                    $normalized[] = $trimmed;
+                }
+            } elseif (is_array($item)) {
+                $normalized[] = $item;
+            }
+        }
+
+        return $normalized ?: null;
+    }
+}
