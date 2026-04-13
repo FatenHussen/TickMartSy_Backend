@@ -14,18 +14,26 @@ class AllResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $defaultAddress = $this->addresses?->firstWhere('is_default', true)
+            ?? $this->addresses?->first();
+
         return [
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
             'phone' => $this->phone,
             'area_id' => $this->area_id,
+            'address' => $defaultAddress?->full_address,
+            'is_active' => (bool) $this->is_active,
 
             // Affiliate / Marketer info
             'affiliate' => [
                 'is_affiliate' => (bool) $this->is_affiliate,
                 'affiliate_approved'     => (bool) $this->affiliate_approved,
                 'affiliate_id' => $this->affiliate_approved ? $this->affiliate_id : null,
+                'coupon_code' => ($this->affiliate_approved && $this->is_affiliate)
+                    ? $this->marketerCoupon?->code
+                    : null,
             ],
             'created_at' => $this->created_at?->format('Y-m-d H:i'),
 

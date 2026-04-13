@@ -22,7 +22,7 @@ class UserService extends BaseService
         $this->resource   = OneResource::class;
         $this->collection = AllResource::class;
         $this->pagination = true;
-        $this->relations = ['area', 'addresses'];
+        $this->relations = ['area', 'addresses.area', 'marketerCoupon'];
         $this->searchableFields = ['id', 'name', 'code'];
     }
 
