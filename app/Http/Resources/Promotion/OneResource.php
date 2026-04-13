@@ -28,6 +28,7 @@ class OneResource extends JsonResource
             'discount_value' => $this->discount_value,
             'discount_type' => $this->discount_type,
             'gift_product_ids' => $this->gift_product_ids,
+            'reward_points' => $this->reward_points,
         ];
     }
 }

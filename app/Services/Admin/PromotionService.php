@@ -50,6 +50,32 @@ class PromotionService extends BaseService
                 'starts_at',
                 'ends_at'
             ],
+            'spend_x_get_gift' => [
+                'name',
+                'description',
+                'min_spend',
+                'gift_product_ids',
+                'is_active',
+                'starts_at',
+                'ends_at'
+            ],
+            'spend_x_get_points' => [
+                'name',
+                'description',
+                'min_spend',
+                'reward_points',
+                'is_active',
+                'starts_at',
+                'ends_at'
+            ],
+            'free_shipping' => [
+                'name',
+                'description',
+                'min_spend',
+                'is_active',
+                'starts_at',
+                'ends_at'
+            ],
             default => ['name', 'description', 'is_active', 'starts_at', 'ends_at']
         };
     }

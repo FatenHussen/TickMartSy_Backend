@@ -114,9 +114,11 @@ class OrderServiceNew extends BaseService
 
                 $promotionService->applyNonDiscountPromotions(
                     $order,
+                    collect($orderItems),
                     $data['promotion_id'],
-                    $orderItems,
-                    $subtotalBeforeDiscount
+                    $subtotalBeforeDiscount,
+                    $user->id,
+                    false
                 );
             }
 

@@ -22,6 +22,7 @@ use App\Models\PointExchange;
 use App\Services\BaseService;
 use App\Services\PointExchangeService;
 use App\Services\User\CalculateDeliveryPriceService;
+use App\Services\User\PromotionService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Services\InventoryService;
@@ -88,6 +89,8 @@ class OrderService extends BaseService
                 $orderItems
             ] = $this->addItemsToOrder($order, $data);
 
+            $promotionService = app(PromotionService::class);
+
             $discounts = $this->applyExternalDiscounts(
                 $order,
                 $user,
@@ -99,6 +102,20 @@ class OrderService extends BaseService
 
             $externalDiscount = $discounts['total_discount'];
             $deliveryPrice = $discounts['delivery_price'];
+
+            $nonDiscountPromotion = $promotionService->applyNonDiscountPromotions(
+                $order,
+                collect($orderItems),
+                $data['promotion_id'] ?? null,
+                $subtotalBeforeDiscount,
+                $user->id,
+                false
+            );
+
+            if (!empty($nonDiscountPromotion['free_shipping'])) {
+                $deliveryPrice = 0;
+                $discounts['delivery_price'] = 0;
+            }
 
             $basketDiscount = $this->calculateBasketDiscount(
                 $basketDiscountPercent,
@@ -120,14 +137,11 @@ class OrderService extends BaseService
                 $subtotalBeforeDiscount,
                 $totalQuantity,
                 $deliveryPrice,
-                $finalTotal
+                $finalTotal,
+                $data['promotion_id'] ?? null
             );
 
             $this->maybeIncrementRecipeOrdersCount($order, $data);
-
-            $promotionService = app(\App\Services\User\PromotionService::class);
-            $nonDiscountPromotion = $promotionService
-                ->applyNonDiscountPromotions($order, collect($orderItems));
 
 
             $this->dispatchOrderCreatedEvent($order);
@@ -152,6 +166,7 @@ class OrderService extends BaseService
             $totalQuantity,
             $orderItems
         ] = $this->addItemsToOrder(null, $data);
+        $promotionService = app(PromotionService::class);
         // خصومات عامة + نقاط + اشتراك
         $discounts = $this->applyExternalDiscounts(
             null,
@@ -163,6 +178,21 @@ class OrderService extends BaseService
         );
 
         $externalDiscount = $discounts['total_discount'];
+        $deliveryPrice = $discounts['delivery_price'];
+
+        $nonDiscountPromotion = $promotionService->applyNonDiscountPromotions(
+            null,
+            collect($orderItems),
+            $data['promotion_id'] ?? null,
+            $subtotalBeforeDiscount,
+            $user->id,
+            true
+        );
+
+        if (!empty($nonDiscountPromotion['free_shipping'])) {
+            $deliveryPrice = 0;
+            $discounts['delivery_price'] = 0;
+        }
 
         $basketDiscount = $this->calculateBasketDiscount(
             $basketDiscountPercent,
@@ -171,15 +201,9 @@ class OrderService extends BaseService
         );
 
         $finalTotal =
-            $subtotalAfterProductDiscount - $basketDiscount - $externalDiscount + $discounts['delivery_price'];
-        // العروض المالية القابلة للاختيار
-        $promotionService = app(\App\Services\User\PromotionService::class);
+            $subtotalAfterProductDiscount - $basketDiscount - $externalDiscount + $deliveryPrice;
         $availablePromotions = $promotionService
             ->getAvailablePromotions($subtotalBeforeDiscount, collect($orderItems));
-
-        // الهدايا / buy_x_get_y المطبقة تلقائياً
-        $nonDiscountPromotion = $promotionService
-            ->applyNonDiscountPromotions(null, collect($orderItems));
 
         $discounts['basketDiscount'] = $basketDiscount;
 
@@ -275,7 +299,6 @@ class OrderService extends BaseService
     ): array {
 
         $promotionService = app(PromotionService::class);
-
         $couponDiscount = 0;
         $pointsDiscount = 0;
         $subscriptionDiscount = 0;
@@ -401,7 +424,8 @@ class OrderService extends BaseService
         float $subtotal,
         int $totalQuantity,
         float $deliveryPrice,
-        float $finalTotal
+        float $finalTotal,
+        ?int $promotionId = null
     ): void {
 
         $order->update([
@@ -419,6 +443,7 @@ class OrderService extends BaseService
             'delivery_price' => $deliveryPrice,
             'total_quantity' => $totalQuantity,
             'total' => $finalTotal,
+            'promotion_id' => $promotionId,
         ]);
     }
 

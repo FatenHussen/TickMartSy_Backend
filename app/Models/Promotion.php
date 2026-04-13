@@ -23,6 +23,7 @@ class Promotion extends Model
         'discount_value',
         'discount_type',
         'gift_product_ids',
+        'reward_points',
     ];
 
     public $translatable = ['name', 'description'];
@@ -36,6 +37,7 @@ class Promotion extends Model
         // 'description' => 'array',
         'min_spend' => 'decimal:2',
         'discount_value' => 'decimal:2',
+        'reward_points' => 'integer',
     ];
 
     /*

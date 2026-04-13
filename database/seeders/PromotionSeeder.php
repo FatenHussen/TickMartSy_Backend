@@ -35,6 +35,69 @@ class PromotionSeeder extends Seeder
             'gift_product_ids' => [],
         ]);
 
+        // Example: spend X grant gift
+        Promotion::create([
+            'name' => [
+                'en' => 'Spend 200 Get a Gift',
+                'ar' => 'أنفق 200 و احصل على هدية'
+            ],
+            'description' => [
+                'en' => 'Receive a curated gift when you spend 200 or more.',
+                'ar' => 'احصل على هدية مختارة عند الإنفاق 200 أو أكثر.'
+            ],
+            'type' => 'spend_x_get_gift',
+            'is_active' => true,
+            'starts_at' => Carbon::now()->subDays(1),
+            'ends_at' => Carbon::now()->addDays(30),
+            'min_spend' => 200,
+            'gift_product_ids' => [1],
+            'reward_points' => null,
+            'discount_value' => null,
+            'discount_type' => null,
+        ]);
+
+        // Example: spend X get points
+        Promotion::create([
+            'name' => [
+                'en' => 'Spend 150 to earn 50 points',
+                'ar' => 'أنفق 150 لتحصل على 50 نقطة'
+            ],
+            'description' => [
+                'en' => 'Earn 50 loyalty points when you spend 150 or more.',
+                'ar' => 'احصل على 50 نقطة ولاء عند الإنفاق 150 أو أكثر.'
+            ],
+            'type' => 'spend_x_get_points',
+            'is_active' => true,
+            'starts_at' => Carbon::now()->subDays(1),
+            'ends_at' => Carbon::now()->addDays(30),
+            'min_spend' => 150,
+            'reward_points' => 50,
+            'gift_product_ids' => [],
+            'discount_value' => null,
+            'discount_type' => null,
+        ]);
+
+        // Example: free shipping after spend threshold
+        Promotion::create([
+            'name' => [
+                'en' => 'Free Shipping Over 300',
+                'ar' => 'توصيل مجاني عند الإنفاق أكثر من 300'
+            ],
+            'description' => [
+                'en' => 'Enjoy free delivery whenever you spend at least 300.',
+                'ar' => 'استمتع بتوصيل مجاني عند الإنفاق 300 أو أكثر.'
+            ],
+            'type' => 'free_shipping',
+            'is_active' => true,
+            'starts_at' => Carbon::now()->subDays(1),
+            'ends_at' => Carbon::now()->addDays(30),
+            'min_spend' => 300,
+            'gift_product_ids' => [],
+            'reward_points' => null,
+            'discount_value' => null,
+            'discount_type' => null,
+        ]);
+
         // Example: spend X discount
         Promotion::create([
             'name' => [
@@ -55,28 +118,6 @@ class PromotionSeeder extends Seeder
             'buy_quantity' => null,
             'get_quantity' => null,
             'gift_product_ids' => [],
-        ]);
-
-        // Example: buy X get Y free promotion
-        Promotion::create([
-            'name' => [
-                'en' => 'Buy 3 Get 1 Free',
-                'ar' => 'اشتري 3 واحصل على 1 مجاناً'
-            ],
-            'description' => [
-                'en' => 'Buy 3 products and get 1 free.',
-                'ar' => 'اشتري 3 منتجات واحصل على واحد مجاناً.'
-            ],
-            'type' => 'buy_x_get_y',
-            'is_active' => true,
-            'starts_at' => Carbon::now()->subDays(1),
-            'ends_at' => Carbon::now()->addDays(30),
-            'discount_value' => 0,
-            'discount_type' => null,
-            'min_spend' => 0,
-            'buy_quantity' => 3,
-            'get_quantity' => 1,
-            'gift_product_ids' => [1], // replace with real product IDs
         ]);
     }
 }
