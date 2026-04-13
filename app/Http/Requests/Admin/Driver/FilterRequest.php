@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Admin\Driver;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Log;
 
 class FilterRequest extends FormRequest
 {
@@ -23,7 +22,8 @@ class FilterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'is_active'            => 'nullable|boolean',
+            'status' => 'nullable|in:available,busy,inactive',
+            'is_active' => 'nullable|boolean',
         ];
     }
 }
