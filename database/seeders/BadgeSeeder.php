@@ -13,8 +13,7 @@ class BadgeSeeder extends Seeder
     {
         $badges = [
             [
-                'name' => [
-                ],
+                'name' => [],
                 'type' => 'gif',
                 'image'  => 'badge/bage1.gif',
             ],

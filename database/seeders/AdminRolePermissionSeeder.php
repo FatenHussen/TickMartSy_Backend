@@ -59,7 +59,8 @@ class AdminRolePermissionSeeder extends Seeder
             'Subscription',
             'Schedule',
             'SaleCountry',
-            'Color'
+            'Color',
+            'QuickAction'
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];
