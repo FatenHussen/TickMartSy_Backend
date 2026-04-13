@@ -67,9 +67,17 @@ class UpdateRequest extends FormRequest
                 'min:1',
             ],
 
+            'governorate_id' => [
+                'nullable',
+                'exists:governorates,id',
+            ],
+
             'city_id' => [
                 'nullable',
-                'exists:cities,id',
+                Rule::exists('cities', 'id')->when(
+                    $this->filled('governorate_id'),
+                    fn($query) => $query->where('governorate_id', $this->governorate_id)
+                ),
             ],
 
             'user_id' => [

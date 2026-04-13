@@ -35,7 +35,16 @@ class AllResource extends JsonResource
             'is_valid'   => $this->isValid(),
 
             // Relations
+            'governorate_id' => $this->governorate_id,
             'city_id' => $this->city_id,
+            'governorate' => $this->governorate ? [
+                'id' => $this->governorate->id,
+                'name' => $this->governorate->name,
+            ] : null,
+            'city' => $this->city ? [
+                'id' => $this->city->id,
+                'name' => $this->city->name,
+            ] : null,
             'user_id' => $this->user_id,
 
 

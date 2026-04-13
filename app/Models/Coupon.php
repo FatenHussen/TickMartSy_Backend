@@ -20,6 +20,7 @@ class Coupon extends Model
         'end_at',
         'max_uses',
         'used_count',
+        'governorate_id',
         'city_id',
         'user_id',
         'is_active',
@@ -68,6 +69,17 @@ class Coupon extends Model
     {
         return $this->morphedByMany(Vendor::class, 'couponable');
     }
+
+    public function governorate()
+    {
+        return $this->belongsTo(Governorate::class);
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
     public function calculateDiscount(float $amount): float
     {
         if (!$this->isValid()) {
