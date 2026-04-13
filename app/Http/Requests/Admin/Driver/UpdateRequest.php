@@ -33,6 +33,8 @@ class UpdateRequest extends FormRequest
             'status' => 'nullable|in:available,busy,inactive',
             'area_ids' => 'nullable|array',
             'area_ids.*.id' => 'required|integer|exists:areas,id',
+            'shop_ids' => 'nullable|array',
+            'shop_ids.*.id' => 'required|integer|exists:shops,id',
             'rate_per_order' => 'nullable',
             'vehicle_type' => 'nullable|string|max:100',
             'vehicle_name' => 'nullable|string|max:255',

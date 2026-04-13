@@ -19,8 +19,9 @@ class DriverService extends BaseService
         $this->searchableFields = ['id', 'name', 'phone', 'email', 'address', 'status', 'vehicle_type', 'vehicle_name'];
         $this->syncRelations = [
             'areas'   => 'area_ids',
+            'shops'   => 'shop_ids',
         ];
-        $this->relations = ['areas'];
+        $this->relations = ['areas', 'shops'];
 
         $this->singleImages = ['image', 'vehicle_image'];
     }

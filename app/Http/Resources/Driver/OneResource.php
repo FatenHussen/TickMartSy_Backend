@@ -46,6 +46,13 @@ class OneResource extends JsonResource
                 ];
             }),
 
+            'shops' => ($this->shops ?? collect())->map(function ($shop) {
+                return [
+                    'id' => $shop->id,
+                    'name' => $shop->name,
+                ];
+            })->values(),
+
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

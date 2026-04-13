@@ -19,6 +19,12 @@ class AllResource extends JsonResource
             'vehicle_name' => $this->vehicle_name,
             'vehicle_type' => $this->vehicle_type,
             'vehicle_image' => $this->vehicle_image_url,
+            'shops' => ($this->shops ?? collect())->map(function ($shop) {
+                return [
+                    'id' => $shop->id,
+                    'name' => $shop->name,
+                ];
+            })->values(),
             'rate_per_order' => (float) $this->rate_per_order,
             'is_active' => (bool) $this->is_active,
             // Statistics

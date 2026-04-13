@@ -23,6 +23,8 @@ class StoreRequest extends FormRequest
             'status' => 'nullable|in:available,busy,inactive',
             'area_ids' => 'nullable|array',
             'area_ids.*.id' => 'required|integer|exists:areas,id',
+            'shop_ids' => 'nullable|array',
+            'shop_ids.*.id' => 'required|integer|exists:shops,id',
             'rate_per_order' => 'required',
             'vehicle_type' => 'required|string|max:100',
             'vehicle_name' => 'required|string|max:255',

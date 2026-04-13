@@ -217,6 +217,12 @@ class Shop extends Model implements Sectionable
     {
         return $this->hasMany(ServiceOrder::class);
     }
+
+    public function drivers()
+    {
+        return $this->belongsToMany(Driver::class, 'driver_shop');
+    }
+
     public function productVariants()
     {
         return $this->hasMany(ShopProductVariant::class);
