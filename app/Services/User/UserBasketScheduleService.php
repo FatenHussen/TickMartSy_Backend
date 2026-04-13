@@ -33,7 +33,6 @@ class UserBasketScheduleService extends BaseService
         $query = $this->model::query()
             ->with($this->relations)
             ->where('user_id', auth('user')->id())
-            ->active()
             ->latest();
 
         $perPage = $config['per_page'] ?? 10;

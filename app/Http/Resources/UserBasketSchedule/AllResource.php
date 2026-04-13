@@ -31,6 +31,7 @@ class AllResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'is_active' => (bool) $this->is_active,
             'image' => $this->category?->image_url ?? null,
             'num_varieties' => $this->items?->count() ?? 0,
             'is_paused' => $this->isPaused(),

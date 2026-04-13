@@ -2,7 +2,9 @@
 
 namespace App\Services\Admin;
 
+use App\Exceptions\NotFoundException;
 use App\Models\UserBasketSchedule;
+use App\Models\ScheduledBasketAlert;
 use App\Services\BaseService;
 use App\Http\Resources\Admin\UserBasketSchedule\OneResource;
 use App\Http\Resources\Admin\UserBasketSchedule\AllResource;
@@ -65,6 +67,42 @@ class UserBasketScheduleService extends BaseService
         }
 
         return parent::queryBuilder($query, $filters, $config);
+    }
+
+    public function disable(int $id)
+    {
+        return $this->setActiveStatus($id, false);
+    }
+
+    public function enable(int $id)
+    {
+        return $this->setActiveStatus($id, true);
+    }
+
+    private function setActiveStatus(int $id, bool $isActive)
+    {
+        $basket = $this->model::with($this->relations)->find($id);
+
+        if (!$basket) {
+            throw new NotFoundException();
+        }
+
+        $basket->update(['is_active' => $isActive]);
+
+        if (!$isActive) {
+            ScheduledBasketAlert::query()
+                ->where('basket_type', ScheduledBasketAlert::BASKET_TYPE_USER_SCHEDULE)
+                ->where('basket_reference_id', $basket->id)
+                ->where('status', ScheduledBasketAlert::STATUS_OPEN)
+                ->update([
+                    'status' => ScheduledBasketAlert::STATUS_DISMISSED,
+                    'user_decision' => ScheduledBasketAlert::DECISION_DISMISSED,
+                    'decision_at' => now(),
+                    'resolved_at' => now(),
+                ]);
+        }
+
+        return new $this->resource($basket->fresh($this->relations));
     }
 
 

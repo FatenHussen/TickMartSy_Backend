@@ -181,6 +181,8 @@ Route::prefix('admin')->group(
             Route::prefix('user-basket-schedules')->group(function () {
                 Route::get('/', [UserBasketScheduleController::class, 'index']);
                 Route::get('/{id}', [UserBasketScheduleController::class, 'get_one']);
+                Route::post('/{id}/disable', [UserBasketScheduleController::class, 'disable']);
+                Route::post('/{id}/enable', [UserBasketScheduleController::class, 'enable']);
             });
 
             Route::prefix('sections')->group(
