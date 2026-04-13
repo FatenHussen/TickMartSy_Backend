@@ -16,6 +16,9 @@ class AllResource extends JsonResource
             'email' => $this->email,
             'status' => $this->status,
             'image' => $this->image_url,
+            'vehicle_name' => $this->vehicle_name,
+            'vehicle_type' => $this->vehicle_type,
+            'vehicle_image' => $this->vehicle_image_url,
             'rate_per_order' => (float) $this->rate_per_order,
             'is_active' => (bool) $this->is_active,
             // Statistics

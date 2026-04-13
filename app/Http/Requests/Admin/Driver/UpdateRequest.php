@@ -34,9 +34,11 @@ class UpdateRequest extends FormRequest
             'area_ids' => 'nullable|array',
             'area_ids.*.id' => 'required|integer|exists:areas,id',
             'rate_per_order' => 'nullable',
-            'vehicle_type' => 'nullable',
+            'vehicle_type' => 'nullable|string|max:100',
+            'vehicle_name' => 'nullable|string|max:255',
             'vehicle_number' => 'nullable',
             'image'                 => 'nullable|image|mimes:jpeg,png,jpg,gif,webp',
+            'vehicle_image'         => 'nullable|image|mimes:jpeg,png,jpg,gif,webp',
 
         ];
     }

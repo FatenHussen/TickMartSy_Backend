@@ -23,7 +23,9 @@ class OneResource extends JsonResource
 
             // Vehicle information
             'vehicle_type' => $this->vehicle_type,
+            'vehicle_name' => $this->vehicle_name,
             'vehicle_number' => $this->vehicle_number,
+            'vehicle_image' => $this->vehicle_image_url,
 
             // Statistics
             'average_rating' => $this->average_rating,
