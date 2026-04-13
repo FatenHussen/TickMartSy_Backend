@@ -158,6 +158,7 @@ class UpdateRequest extends FormRequest
             'barcode'               => 'nullable|string',
             'time_prepare'          => 'nullable|string',
             'delivery_time'         => 'nullable|string|max:100',
+            'expiry_date'           => 'nullable|date',
             'bought_with'           => 'nullable|array',
             'bought_with.*'         => 'nullable|integer|exists:products,id',
             'is_instant_delivery'   => 'nullable|boolean',

@@ -64,6 +64,7 @@ class ProductService extends BaseService
         'unit',
         'barcode',
         'time_prepare',
+        'expiry_date',
         'bought_with',
         'is_instant_delivery',
         'is_visible',
@@ -87,6 +88,7 @@ class ProductService extends BaseService
         'stock',
         'vendor_id',
         'time_prepare',
+        'expiry_date',
     ];
 
     public function create($data)

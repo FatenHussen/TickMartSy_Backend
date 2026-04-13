@@ -28,6 +28,7 @@ class AllResource extends JsonResource
             'quantity'              => $this->quantity,
             'unit'                  => $this->unit,
             'warranty_period'       => $this->warranty_period,
+            'expiry_date'           => $this->expiry_date?->format('Y-m-d'),
             'is_visible'            => $this->is_visible,
             'is_active'             => (bool) $this->is_active,
             'barcode'               => $this->barcode,
