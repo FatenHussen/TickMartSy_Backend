@@ -17,6 +17,7 @@ class FilterRequest extends FormRequest
             'vendor_id' => 'nullable|integer|exists:vendors,id',
             'area_id' => 'nullable|integer|exists:areas,id',
             'is_active' => 'nullable|boolean',
+            'shop_status' => 'nullable|in:open,closed,active,inactive',
         ];
     }
 }
