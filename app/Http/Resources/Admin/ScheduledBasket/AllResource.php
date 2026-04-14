@@ -44,11 +44,11 @@ class AllResource extends JsonResource
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
              'top_badges' => BadgeOneResource::collection(
-                ($this->badges ?? collect())->where('pivot.position', 'top')->values()
+                ($this->badges ?? collect())->where('position', 'top')->values()
             ),
 
             'bottom_badges' => BadgeOneResource::collection(
-                ($this->badges ?? collect())->where('pivot.position', 'bottom')->values()
+                ($this->badges ?? collect())->where('position', 'bottom')->values()
             ),
 
         ];

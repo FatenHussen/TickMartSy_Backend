@@ -71,11 +71,11 @@ class AllResource extends JsonResource
             'paused_at' => $this->paused_at?->format('Y-m-d H:i:s'),
             'is_schedule' => $this->is_schedule,
             'top_badges' => BadgeOneResource::collection(
-                ($this->badges ?? collect())->where('pivot.position', 'top')->values()
+                ($this->badges ?? collect())->where('position', 'top')->values()
             ),
 
             'bottom_badges' => BadgeOneResource::collection(
-                ($this->badges ?? collect())->where('pivot.position', 'bottom')->values()
+                ($this->badges ?? collect())->where('position', 'bottom')->values()
             ),
 
         ];

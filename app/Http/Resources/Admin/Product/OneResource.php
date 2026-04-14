@@ -155,7 +155,6 @@ class OneResource extends JsonResource
                     'id' => $badge->id,
                     'name' => $badge->name,
                     'icon' => $badge->icon ? asset('storage/' . $badge->icon) : null,
-                    'position' => $badge->pivot?->position,
                 ];
             })->values(),
 

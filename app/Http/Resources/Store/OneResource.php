@@ -24,11 +24,11 @@ class OneResource extends JsonResource
             'description'           => $this->description,
             'address'               => $this->address,
             'top_badges' => BadgeOneResource::collection(
-                $this->badges->where('pivot.position', 'top')->values()
+                $this->badges->where('position', 'top')->values()
             ),
 
             'bottom_badges' => BadgeOneResource::collection(
-                $this->badges->where('pivot.position', 'bottom')->values()
+                $this->badges->where('position', 'bottom')->values()
             ),
 
             // 'phone'                 => $this->phone,

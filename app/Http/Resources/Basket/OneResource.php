@@ -96,12 +96,12 @@ class OneResource extends JsonResource
             'is_favorite' => (bool) ($this->is_favorite ?? false),
 
             'top_badges' => BadgeOneResource::collection(
-                ($this->badges ?? collect())->where('pivot.position', 'top')->values()
+                ($this->badges ?? collect())->where('position', 'top')->values()
             ),
             'next_delivery_date' => $nextDelivery,
 
             'bottom_badges' => BadgeOneResource::collection(
-                ($this->badges ?? collect())->where('pivot.position', 'bottom')->values()
+                ($this->badges ?? collect())->where('position', 'bottom')->values()
             ),
 
 

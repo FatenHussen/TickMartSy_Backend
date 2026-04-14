@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\Basket;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 class UpdateRequest extends FormRequest
 {
@@ -24,7 +25,7 @@ class UpdateRequest extends FormRequest
             }
         }
 
-        \Log::info('UpdateRequest::prepareForValidation - AFTER', [
+        Log::info('UpdateRequest::prepareForValidation - AFTER', [
             'all_data' => $this->all(),
             'has_items' => $this->has('items'),
             'items' => $this->input('items'),
@@ -51,8 +52,7 @@ class UpdateRequest extends FormRequest
 
 
             'badges'          => 'nullable|array',
-            'badges.*.id'  => 'required|integer|exists:badges,id',
-            'badges.*.position'  => 'required|in:top,bottom',
+            'badges.*' => 'integer|exists:badges,id',
         ];
     }
 

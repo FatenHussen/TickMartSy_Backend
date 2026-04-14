@@ -15,6 +15,7 @@ class Badge extends Model
     protected $fillable = [
         'name',
         'color',
+        'position',
         'is_active',
         'type',
         'image',

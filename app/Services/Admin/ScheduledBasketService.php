@@ -106,7 +106,11 @@ class ScheduledBasketService extends BaseService
             if (!empty($badgesData)) {
                 $badgeSync = [];
                 foreach ($badgesData as $badge) {
-                    $badgeSync[$badge['id']] = ['position' => $badge['position']];
+                    if (is_array($badge) && isset($badge['id'])) {
+                        $badgeSync[$badge['id']] = [];
+                    } elseif (is_numeric($badge)) {
+                        $badgeSync[$badge] = [];
+                    }
                 }
                 $basket->badges()->sync($badgeSync);
             }
@@ -195,7 +199,11 @@ class ScheduledBasketService extends BaseService
             if (!empty($badgesData)) {
                 $badgeSync = [];
                 foreach ($badgesData as $badge) {
-                    $badgeSync[$badge['id']] = ['position' => $badge['position']];
+                    if (is_array($badge) && isset($badge['id'])) {
+                        $badgeSync[$badge['id']] = [];
+                    } elseif (is_numeric($badge)) {
+                        $badgeSync[$badge] = [];
+                    }
                 }
                 $basket->badges()->sync($badgeSync);
             }

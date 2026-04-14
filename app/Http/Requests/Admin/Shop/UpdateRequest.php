@@ -56,8 +56,7 @@ class UpdateRequest extends FormRequest
             'service_ids.*'        => 'exists:services,id',
 
             'badges'          => 'nullable|array',
-            'badges.*.id'  => 'required|integer|exists:badges,id',
-            'badges.*.position'  => 'required|in:top,bottom',
+            'badges.*' => 'integer|exists:badges,id',
         ];
     }
 
