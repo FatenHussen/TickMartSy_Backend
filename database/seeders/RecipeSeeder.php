@@ -309,11 +309,7 @@ class RecipeSeeder extends Seeder
              * Badges
              * ======================= */
 
-            $recipe->badges()->attach([
-                1 => ['position' => 'top'],
-                2 => ['position' => 'bottom'],
-                3 => ['position' => 'bottom'],
-            ]);
+            $recipe->badges()->sync([1, 2, 3]);
         }
     }
 

@@ -16,6 +16,7 @@ class FilterRequest extends FormRequest
     {
         return [
             'type'   => 'nullable|in:orders,delivery,payments,account,stores&drivers,other',
+            'position' => 'nullable|in:top,bottom',
         ];
     }
 }

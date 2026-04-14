@@ -25,6 +25,7 @@ class OneResource extends JsonResource
             'quantity' => $this->quantity,
             'unit' => $this->unit,
             'warranty_period' => $this->warranty_period,
+            'expiry_date' => $this->expiry_date?->format('Y-m-d'),
             'stock' => $this->stock,
             'max_purchase_quantity' => $this->max_purchase_quantity,
             'is_visible' => $this->is_visible,
@@ -154,7 +155,6 @@ class OneResource extends JsonResource
                     'id' => $badge->id,
                     'name' => $badge->name,
                     'icon' => $badge->icon ? asset('storage/' . $badge->icon) : null,
-                    'position' => $badge->pivot?->position,
                 ];
             })->values(),
 

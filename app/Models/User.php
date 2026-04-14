@@ -107,6 +107,14 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Coupon::class);
     }
+
+    public function marketerCoupon()
+    {
+        return $this->hasOne(Coupon::class, 'affiliate_id', 'affiliate_id')
+            ->where('is_active', true)
+            ->latestOfMany();
+    }
+
     public function currency()
     {
         return $this->belongsTo(Currency::class);

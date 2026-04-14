@@ -23,7 +23,9 @@ class OneResource extends JsonResource
 
             // Vehicle information
             'vehicle_type' => $this->vehicle_type,
+            'vehicle_name' => $this->vehicle_name,
             'vehicle_number' => $this->vehicle_number,
+            'vehicle_image' => $this->vehicle_image_url,
 
             // Statistics
             'average_rating' => $this->average_rating,
@@ -43,6 +45,13 @@ class OneResource extends JsonResource
                     'name' => $area->name,
                 ];
             }),
+
+            'shops' => ($this->shops ?? collect())->map(function ($shop) {
+                return [
+                    'id' => $shop->id,
+                    'name' => $shop->name,
+                ];
+            })->values(),
 
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

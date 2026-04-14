@@ -35,6 +35,7 @@ class AllResource extends JsonResource
             'id' => $this->id,
             'order_code' => $this->order_code ?? $this->id,
             'status' => $this->status,
+            'rejection_reason' => $this->rejection_reason,
             'cart_type' => $this->cart_type,
             'is_instant_delivery' => $this->is_instant_delivery,
             'delivery_price' => $this->delivery_price,
@@ -44,6 +45,16 @@ class AllResource extends JsonResource
             'total_quantity' => $this->total_quantity,
             'basket_discount' => $this->basket_discount,
             'coupon_discount' => $this->coupon_discount,
+            'coupon' => $this->when(
+                !empty($this->coupon_id) || !empty($this->coupon_code),
+                fn() => [
+                    'id' => $this->coupon?->id ?? $this->coupon_id,
+                    'code' => $this->coupon?->code ?? $this->coupon_code,
+                    'name' => $this->coupon?->name,
+                    'discount_type' => $this->coupon?->discount_type,
+                    'discount_value' => $this->coupon?->discount_value,
+                ]
+            ),
 
             // Subscription benefits used
             'subscription_discount' => $this->subscription_discount ?? 0,

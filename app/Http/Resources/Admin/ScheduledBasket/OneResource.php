@@ -50,11 +50,11 @@ class OneResource extends JsonResource
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
 
            'top_badges' => BadgeOneResource::collection(
-                ($this->badges ?? collect())->where('pivot.position', 'top')->values()
+                ($this->badges ?? collect())->where('position', 'top')->values()
             ),
 
             'bottom_badges' => BadgeOneResource::collection(
-                ($this->badges ?? collect())->where('pivot.position', 'bottom')->values()
+                ($this->badges ?? collect())->where('position', 'bottom')->values()
             ),
 
         ];

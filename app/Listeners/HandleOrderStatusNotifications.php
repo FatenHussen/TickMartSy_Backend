@@ -27,7 +27,7 @@ class HandleOrderStatusNotifications implements ShouldQueue
 
         $order = $event->order;
 
-        $this->notifyUser($order, $event->to);
+        $this->notifyUser($order, $event);
         $this->notifyAdmins($order, $event);
         $this->notifyDrivers($order, $event);
         if ($event->from === null && $event->to === OrderStatus::PENDING->value) {
@@ -40,9 +40,9 @@ class HandleOrderStatusNotifications implements ShouldQueue
     | User Notifications
     |--------------------------------------------------------------------------
     */
-    private function notifyUser($order, string $status): void
+    private function notifyUser($order, OrderStatusChanged $event): void
     {
-        $message = $this->userMessageForStatus($status, $order);
+        $message = $this->userMessageForStatus($event, $order);
 
         if (!$message) {
             return;
@@ -60,8 +60,24 @@ class HandleOrderStatusNotifications implements ShouldQueue
         );
     }
 
-    private function userMessageForStatus(string $status, $order): ?array
+    private function userMessageForStatus(OrderStatusChanged $event, $order): ?array
     {
+        if (
+            $event->changedBy === 'admin' &&
+            $event->to === OrderStatus::CANCELLED->value
+        ) {
+            $reason = trim((string) $order->rejection_reason);
+
+            return [
+                'title' => 'تم رفض الطلب ⚠️',
+                'body'  => $reason !== ''
+                    ? "تم رفض طلبك رقم {$order->order_code}. السبب: {$reason}"
+                    : "تم رفض طلبك رقم {$order->order_code}",
+            ];
+        }
+
+        $status = $event->to;
+
         return match ($status) {
 
             // OrderStatus::ACCEPTED->value => [
@@ -189,7 +205,7 @@ class HandleOrderStatusNotifications implements ShouldQueue
             ];
         }
 
-        // 
+        //
         if ($event->to === OrderStatus::FAILDDELIVER->value) {
             return [
                 'title' => 'فشل في تسليم الطلب',

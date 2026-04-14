@@ -53,6 +53,8 @@ class Product extends Model implements Sectionable
         'seo_description',
         'seo_keywords',
         'seo_image',
+        'expiry_date',
+        'expiry_notified_at',
     ];
 
     public array $translatable = [
@@ -71,6 +73,8 @@ class Product extends Model implements Sectionable
         'is_visible' => 'boolean',
         'is_active' => 'boolean',
         'flash_sale_id' => 'integer',
+        'expiry_date' => 'date',
+        'expiry_notified_at' => 'datetime',
     ];
 
     protected bool $activeFlashSaleResolved = false;
@@ -79,6 +83,10 @@ class Product extends Model implements Sectionable
     protected static function booted(): void
     {
         static::saving(function (self $product) {
+            if ($product->isDirty('expiry_date')) {
+                $product->expiry_notified_at = null;
+            }
+
             if (!$product->category_id) {
                 return;
             }

@@ -26,10 +26,6 @@ class VendorSeeder extends Seeder
             'ratings_sum' => 0,
         ]);
 
-        $vendor->badges()->attach([
-            1 => ['position' => 'top'],
-            2 => ['position' => 'bottom'],
-            3 => ['position' => 'bottom'],
-        ]);
+        $vendor->badges()->sync([1, 2, 3]);
     }
 }

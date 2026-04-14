@@ -43,4 +43,48 @@ class ShopService extends BaseService
             'logo'  => 'logo',
         ];
     }
+
+    public function queryBuilder($query, $filters = [], $config = [])
+    {
+        if (!empty($filters['shop_status'])) {
+            $shopStatus = $filters['shop_status'];
+            unset($filters['shop_status']);
+
+            if ($shopStatus === 'active') {
+                $query->where('is_active', true);
+            }
+
+            if ($shopStatus === 'inactive') {
+                $query->where('is_active', false);
+            }
+
+            if (in_array($shopStatus, ['open', 'closed'], true)) {
+                $day = strtolower(now()->englishDayOfWeek);
+                $nowTime = now()->format('H:i');
+                $dayPath = '$."' . $day . '"';
+
+                $applyOpenCondition = function ($q) use ($dayPath, $nowTime): void {
+                    $q->whereRaw("JSON_EXTRACT(working_hours, ?) IS NOT NULL", [$dayPath])
+                        ->whereRaw(
+                            "COALESCE(JSON_UNQUOTE(JSON_EXTRACT(working_hours, ?)), 'false') IN ('false', '0')",
+                            [$dayPath . '.closed']
+                        )
+                        ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(working_hours, ?)) <= ?", [$dayPath . '.open', $nowTime])
+                        ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(working_hours, ?)) >= ?", [$dayPath . '.close', $nowTime]);
+                };
+
+                if ($shopStatus === 'open') {
+                    $query->where($applyOpenCondition);
+                }
+
+                if ($shopStatus === 'closed') {
+                    $query->where(function ($q) use ($applyOpenCondition): void {
+                        $q->whereNot($applyOpenCondition);
+                    });
+                }
+            }
+        }
+
+        return parent::queryBuilder($query, $filters, $config);
+    }
 }

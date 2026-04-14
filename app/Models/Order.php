@@ -45,7 +45,8 @@ class Order extends Model
         'pause_at',
         'start_todelivery',
         'order_code',
-        'assigned_by'
+        'assigned_by',
+        'rejection_reason'
 
     ];
     protected $casts = [

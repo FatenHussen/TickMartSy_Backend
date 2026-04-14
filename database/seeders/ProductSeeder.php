@@ -657,10 +657,7 @@ class ProductSeeder extends Seeder
             $this->attachRandomMedia($product, $files);
 
             // Attach badges
-            $product->badges()->attach([
-                1 => ['position' => 'top'],
-                2 => ['position' => 'bottom'],
-            ]);
+            $product->badges()->sync([1, 2]);
 
             // Attach random icons (1-3 icons) - only if icons exist
             $availableIcons = \App\Models\Icon::pluck('id')->toArray();

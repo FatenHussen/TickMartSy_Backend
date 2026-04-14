@@ -36,12 +36,15 @@ class OrderService extends BaseService
         $allowed = [
             OrderStatus::PENDING->value => [
                 OrderStatus::PREPARING->value,
+                OrderStatus::CANCELLED->value,
             ],
             OrderStatus::PREPARING->value => [
                 OrderStatus::OUT_DELIVERY->value,
+                OrderStatus::CANCELLED->value,
             ],
             OrderStatus::OUT_DELIVERY->value => [
                 OrderStatus::DELIVERED->value,
+                OrderStatus::CANCELLED->value,
             ],
         ];
 
@@ -83,9 +86,9 @@ class OrderService extends BaseService
     /* =======================
        🔄 CHANGE ORDER STATUS
     ======================= */
-    public function changeOrderStatus(int $orderId, string $newStatus)
+    public function changeOrderStatus(int $orderId, string $newStatus, ?string $rejectionReason = null)
     {
-        return DB::transaction(function () use ($orderId, $newStatus) {
+        return DB::transaction(function () use ($orderId, $newStatus, $rejectionReason) {
 
             $order = Order::with('items')
                 ->lockForUpdate()
@@ -102,28 +105,22 @@ class OrderService extends BaseService
                 $newStatus
             );
 
-            $order->update([
-                'status' => $newStatus,
-            ]);
-
-            $order->items()->update([
-                'item_status' => $newStatus,
-            ]);
-            // $statusLabel = OrderStatus::from($newStatus)->labelAr();
-
-            // $title = 'تغيير حالة طلبك ' . $order->id;
-
-            // $body = "تم تحديث حالة طلبك رقم {$order->id} إلى {$statusLabel}";
-
-            // (new NotificationService)->send($order->user, $title, $body, [
-            //     'order_id' => $order->id,
-            //     'type' => 'order'
-            // ]);
+            if (
+                $newStatus === OrderStatus::CANCELLED->value &&
+                blank($rejectionReason)
+            ) {
+                throw new CustomExceptionWithMessage(
+                    'custom.orders.rejection_reason_required'
+                );
+            }
 
             $oldStatus = $order->status;
 
             $order->update([
                 'status' => $newStatus,
+                'rejection_reason' => $newStatus === OrderStatus::CANCELLED->value
+                    ? $rejectionReason
+                    : null,
             ]);
 
             $order->items()->update([

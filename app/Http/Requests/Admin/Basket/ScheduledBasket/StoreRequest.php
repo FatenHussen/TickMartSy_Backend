@@ -47,8 +47,7 @@ class StoreRequest extends FormRequest
 
 
             'badges'          => 'nullable|array',
-            'badges.*.id'  => 'required|integer|exists:badges,id',
-            'badges.*.position'  => 'required|in:top,bottom',
+            'badges.*' => 'integer|exists:badges,id',
         ];
     }
 

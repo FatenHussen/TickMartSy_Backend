@@ -47,11 +47,11 @@ class OneResource extends JsonResource
             'next_delivery_date' => $this->next_delivery_date,
 
              'top_badges' => BadgeOneResource::collection(
-                ($this->badges ?? collect())->where('pivot.position', 'top')->values()
+                ($this->badges ?? collect())->where('position', 'top')->values()
             ),
 
             'bottom_badges' => BadgeOneResource::collection(
-                ($this->badges ?? collect())->where('pivot.position', 'bottom')->values()
+                ($this->badges ?? collect())->where('position', 'bottom')->values()
             ),
 
             'schedules' => \App\Http\Resources\Admin\Schedule\OneResource::collection(

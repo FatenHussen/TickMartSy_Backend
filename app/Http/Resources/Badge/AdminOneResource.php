@@ -21,7 +21,7 @@ class AdminOneResource extends JsonResource
             'type' => $this->type,
             'image' => $this->image_url,
             'is_active' => (bool) $this->is_active,
-            'position' => $this->pivot?->position,
+            'position' => $this->position,
         ];
     }
 }

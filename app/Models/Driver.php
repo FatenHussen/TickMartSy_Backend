@@ -36,7 +36,9 @@ class Driver extends Authenticatable
         'rate_per_order',
         'image',
         'vehicle_type',
+        'vehicle_name',
         'vehicle_number',
+        'vehicle_image',
     ];
     protected $hidden = [
         'password',
@@ -67,6 +69,11 @@ class Driver extends Authenticatable
     public function getImageUrlAttribute()
     {
         return $this->image ? asset('storage/' . $this->image) : null;
+    }
+
+    public function getVehicleImageUrlAttribute()
+    {
+        return $this->vehicle_image ? asset('storage/' . $this->vehicle_image) : null;
     }
 
     public function getAverageRatingAttribute(): float
@@ -139,6 +146,11 @@ class Driver extends Authenticatable
     public function areas()
     {
         return $this->belongsToMany(Area::class, 'area_driver');
+    }
+
+    public function shops()
+    {
+        return $this->belongsToMany(Shop::class, 'driver_shop');
     }
 
     private function earningsMultiplier(): float

@@ -19,6 +19,7 @@ class StoreRequest extends FormRequest
             'name.en' => 'nullable|string',
             'name.ar' => 'nullable|string',
             'color' => 'nullable|string',
+            'position' => 'required|in:top,bottom',
             'image' => [
                 'nullable',
                 'file',

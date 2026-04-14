@@ -17,7 +17,7 @@ use App\Http\Controllers\Admin\Color\ColorController;
 use App\Http\Controllers\Admin\Driver\DriverCrudController;
 use App\Http\Controllers\Admin\Category\CategoryDetailController;
 use App\Http\Controllers\Admin\Complaint\ComplaintController;
-use App\Http\Controllers\Admin\Governorate\AreaCrudController;
+use App\Http\Contffrollers\Admin\Governorate\AreaCrudController;
 use App\Http\Controllers\Admin\Governorate\CityCrudController;
 use App\Http\Controllers\Admin\Governorate\GovernorateCrudController;
 use App\Http\Controllers\Admin\Country\CountryCrudController;
@@ -50,6 +50,7 @@ use App\Http\Controllers\Admin\UserPoint\UserPointController;
 use App\Http\Controllers\Admin\Currency\CurrencyController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\PopupCampaignController;
+use App\Http\Controllers\Admin\Governorate\AreaCrudController as GovernorateAreaCrudController;
 use App\Http\Controllers\Admin\VendorPackage\VendorPackageController;
 use App\Http\Controllers\Admin\VendorWithdrawRequest\VendorWithdrawRequestController;
 use App\Http\Controllers\Admin\VendorSubscription\VendorSubscriptionController;
@@ -183,6 +184,8 @@ Route::prefix('admin')->group(
             Route::prefix('user-basket-schedules')->group(function () {
                 Route::get('/', [UserBasketScheduleController::class, 'index']);
                 Route::get('/{id}', [UserBasketScheduleController::class, 'get_one']);
+                Route::post('/{id}/disable', [UserBasketScheduleController::class, 'disable']);
+                Route::post('/{id}/enable', [UserBasketScheduleController::class, 'enable']);
             });
 
             Route::prefix('sections')->group(
@@ -238,7 +241,7 @@ Route::prefix('admin')->group(
                 Route::apiResource('drivers', DriverCrudController::class);
                 Route::apiResource('governorates', GovernorateCrudController::class);
                 Route::apiResource('cities', CityCrudController::class);
-                Route::apiResource('areas', AreaCrudController::class);
+                Route::apiResource('areas', GovernorateAreaCrudController::class);
                 Route::apiResource('countries', CountryCrudController::class);
                 Route::apiResource('services', ServiceCrudController::class);
                 Route::apiResource('vendor-service-types', \App\Http\Controllers\Admin\VendorServiceType\VendorServiceTypeCrudController::class);

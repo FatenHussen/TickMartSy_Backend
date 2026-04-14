@@ -16,14 +16,13 @@ class DriverService extends BaseService
         $this->resource   = OneResource::class;
         $this->collection = AllResource::class;
         $this->pagination = true;
-        $this->searchableFields = ['id', 'name', 'phone', 'email', 'address', 'status'];
+        $this->searchableFields = ['id', 'name', 'phone', 'email', 'address', 'status', 'vehicle_type', 'vehicle_name'];
         $this->syncRelations = [
             'areas'   => 'area_ids',
+            'shops'   => 'shop_ids',
         ];
-        $this->relations = ['areas'];
+        $this->relations = ['areas', 'shops'];
 
-        $this->singleImages = [
-            'image'  => 'image',
-        ];
+        $this->singleImages = ['image', 'vehicle_image'];
     }
 }

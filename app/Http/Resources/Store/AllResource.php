@@ -27,11 +27,11 @@ class AllResource extends JsonResource
             'is_open_now'           => $this->isOpenNow(),
             'created_at'            => $this->created_at?->format('Y-m-d H:i'),
             'top_badges' => BadgeOneResource::collection(
-                $this->badges->where('pivot.position', 'top')->values()
+                $this->badges->where('position', 'top')->values()
             ),
 
             'bottom_badges' => BadgeOneResource::collection(
-                $this->badges->where('pivot.position', 'bottom')->values()
+                $this->badges->where('position', 'bottom')->values()
             ),
 
         ];

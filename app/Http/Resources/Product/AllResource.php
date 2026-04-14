@@ -29,8 +29,9 @@ class AllResource extends JsonResource
 
         return [
             'id'                    => $this->id,
-            'category'              => $this->category->name,
             'name'                  => $this->name,
+
+            'category'              => $this->category->name,
             'description'           => $this->description,
             'country'               => $this->country,
             ...$this->withCurrency($this->price, 'price'),
@@ -45,12 +46,13 @@ class AllResource extends JsonResource
             'is_favorite' => (bool) ($this->is_favorite ?? false),
             'shop_product_variant_id' => $shopProductVariantId,
 
+            'vendor' => $this->vendor->name,
             'top_badges' => BadgeOneResource::collection(
-                $this->badges->where('pivot.position', 'top')->values()
+                $this->badges->where('position', 'top')->values()
             ),
 
             'bottom_badges' => BadgeOneResource::collection(
-                $this->badges->where('pivot.position', 'bottom')->values()
+                $this->badges->where('position', 'bottom')->values()
             ),
 
         ];
