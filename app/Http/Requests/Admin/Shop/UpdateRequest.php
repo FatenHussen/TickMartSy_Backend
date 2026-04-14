@@ -50,6 +50,11 @@ class UpdateRequest extends FormRequest
             'cover_images.*'       => 'image|mimes:jpeg,png,jpg,gif,webp',
 
             'is_active'            => 'nullable|boolean',
+            'is_restaurant'        => 'nullable|boolean',
+            'payment_methods'      => 'nullable|array',
+            'payment_methods.*'    => 'required|string|in:cash,online',
+            'pricing_tier'         => 'nullable|in:cheap,medium,expensive',
+            'is_recommended'       => 'nullable|boolean',
             'area_id'           => 'nullable|exists:areas,id',
             'vendor_id' => 'nullable|exists:vendors,id',
             'service_ids'          => 'nullable|array',
@@ -57,6 +62,8 @@ class UpdateRequest extends FormRequest
 
             'badges'          => 'nullable|array',
             'badges.*' => 'integer|exists:badges,id',
+            'coupon_ids'      => 'nullable|array',
+            'coupon_ids.*'    => 'integer|exists:coupons,id',
         ];
     }
 

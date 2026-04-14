@@ -99,6 +99,9 @@ class UpdateRequest extends FormRequest
 
             'vendors' => ['sometimes', 'array'],
             'vendors.*' => ['exists:vendors,id'],
+
+            'shops' => ['sometimes', 'array'],
+            'shops.*' => ['exists:shops,id'],
         ];
     }
 }

@@ -46,6 +46,12 @@ class AllResource extends JsonResource
                 'name' => $this->city->name,
             ] : null,
             'user_id' => $this->user_id,
+            'shops' => $this->whenLoaded('shops', fn() => $this->shops->map(function ($shop) {
+                return [
+                    'id' => $shop->id,
+                    'name' => $shop->name,
+                ];
+            })->values()),
 
 
             'created_at' => optional($this->created_at)->toDateTimeString(),

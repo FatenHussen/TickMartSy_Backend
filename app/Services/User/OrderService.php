@@ -679,7 +679,7 @@ class OrderService extends BaseService
             ]);
         }
 
-    
+
         return [
             $subtotalBeforeDiscount,
             $subtotalAfterProductDiscount,
@@ -712,7 +712,7 @@ class OrderService extends BaseService
         if (!$couponCode) return [null, 0, [], null];
 
         $coupon = Coupon::valid()
-            ->with(['products', 'categories', 'vendors'])
+            ->with(['products', 'categories', 'vendors', 'shops'])
             ->where('code', $couponCode)
             ->first();
 
@@ -734,6 +734,10 @@ class OrderService extends BaseService
             }
 
             if ($coupon->vendors->isNotEmpty() && !$coupon->vendors->contains('id', $item['vendor_id'])) {
+                $allowed = false;
+            }
+
+            if ($coupon->shops->isNotEmpty() && !$coupon->shops->contains('id', $item['shop_id'])) {
                 $allowed = false;
             }
 

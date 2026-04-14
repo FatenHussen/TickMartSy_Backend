@@ -129,6 +129,7 @@ class UpdateRequest extends FormRequest
             'sku' => null,
             'model' => null,
             'barcode' => null,
+            'brand_id' => null,
             'country' => null,
         ]);
     }

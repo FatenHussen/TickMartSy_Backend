@@ -34,7 +34,7 @@ class ShopService extends BaseService
         // $query = parent::queryBuilder($query, $filters, $config);
 
         $this->applyGeographicalFilters($query, $filters);
-        $this->applyServiceProviderFilter($query, $filters);
+        $this->applyShopClassificationFilters($query, $filters);
         $this->applyTypeFilters($query, $filters);
         if (!empty($filters['sort_by'])) {
             $this->applySortBy($query, $filters['sort_by']);
@@ -55,13 +55,28 @@ class ShopService extends BaseService
         return $query->where('is_active', true);
     }
 
-    protected function applyServiceProviderFilter(Builder $query, array $filters): void
+    protected function applyShopClassificationFilters(Builder $query, array $filters): void
     {
-        if (!array_key_exists('is_service_provider', $filters) || $filters['is_service_provider'] === null) {
+        if (array_key_exists('is_service_provider', $filters) && $filters['is_service_provider'] !== null) {
+            $query->where('is_service_provider', (bool) $filters['is_service_provider']);
+        }
+
+        if (array_key_exists('is_restaurant', $filters) && $filters['is_restaurant'] !== null) {
+            $query->where('is_restaurant', (bool) $filters['is_restaurant']);
+        }
+
+        if (empty($filters['shop_type'])) {
             return;
         }
 
-        $query->where('is_service_provider', (bool) $filters['is_service_provider']);
+        match ($filters['shop_type']) {
+            'restaurant' => $query->where('is_restaurant', true),
+            'service_provider' => $query->where('is_service_provider', true),
+            'store' => $query
+                ->where('is_restaurant', false)
+                ->where('is_service_provider', false),
+            default => null,
+        };
     }
 
     /* =========================
@@ -190,6 +205,6 @@ class ShopService extends BaseService
     {
         $query = Shop::query();
         $query =  $this->queryBuilder($query, $filters);
-        return $query->where('is_active', true);
+        return $query;
     }
 }

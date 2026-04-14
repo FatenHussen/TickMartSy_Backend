@@ -61,6 +61,14 @@ class OneResource extends JsonResource
                 $this->whenLoaded('vendors')
             ),
 
+            'shops' => $this->whenLoaded('shops', fn() => $this->shops->map(function ($shop) {
+                return [
+                    'id' => $shop->id,
+                    'name' => $shop->name,
+                    'is_active' => (bool) $shop->is_active,
+                ];
+            })->values()),
+
             'created_at' => optional($this->created_at)->toDateTimeString(),
             'updated_at' => optional($this->updated_at)->toDateTimeString(),
         ];

@@ -39,6 +39,11 @@ class StoreRequest extends FormRequest
             'cover_images.*'       => 'image|mimes:jpeg,png,jpg,gif,webp',
 
             'is_active'            => 'sometimes|boolean',
+            'is_restaurant'        => 'sometimes|boolean',
+            'payment_methods'      => 'nullable|array',
+            'payment_methods.*'    => 'required|string|in:cash,online',
+            'pricing_tier'         => 'nullable|in:cheap,medium,expensive',
+            'is_recommended'       => 'sometimes|boolean',
 
             'area_id'           => 'required|exists:areas,id',
             'vendor_id' => 'required|exists:vendors,id',
@@ -49,6 +54,8 @@ class StoreRequest extends FormRequest
 
             'badges'          => 'nullable|array',
             'badges.*' => 'integer|exists:badges,id',
+            'coupon_ids'      => 'nullable|array',
+            'coupon_ids.*'    => 'integer|exists:coupons,id',
 
         ];
     }
