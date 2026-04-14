@@ -16,6 +16,7 @@ class BadgeSeeder extends Seeder
                 'name' => [],
                 'type' => 'gif',
                 'image'  => 'badge/bage1.gif',
+                'position' => 'top',
             ],
             [
                 'name' => [
@@ -25,6 +26,7 @@ class BadgeSeeder extends Seeder
                 ],
                 'color' => 'warning',
                 'type' => 'text',
+                'position' => 'bottom',
 
             ],
             [
@@ -34,12 +36,14 @@ class BadgeSeeder extends Seeder
                 ],
                 'color' => 'danger',
                 'type' => 'text',
+                'position' => 'bottom',
 
             ],
             [
                 'name' => [],
                 'type' => 'gif',
-                'image' => 'badge/badge2.gif'
+                'image' => 'badge/badge2.gif',
+                'position' => 'top',
 
             ],
         ];

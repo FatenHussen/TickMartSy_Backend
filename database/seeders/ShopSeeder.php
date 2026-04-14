@@ -76,11 +76,7 @@ class ShopSeeder extends Seeder
             ]);
 
 
-            $shop->badges()->attach([
-                1 => ['position' => 'top'],
-                2 => ['position' => 'bottom'],
-                3 => ['position' => 'bottom'],
-            ]);
+            $shop->badges()->sync([1, 2, 3]);
         }
     }
 }
