@@ -14,8 +14,12 @@ class OrderItem extends Model
         'product_image',          // snapshot
         'variant_attributes',     // snapshot JSON
         'quantity',
-        'price',
-        'discount',
+        'price',                  // legacy alias of unit_price
+        'unit_price',
+        'final_price',
+        'subtotal',
+        'extras_total',
+        'total',
         'item_status',
         'pending_at',
         'preparing_at',
@@ -45,6 +49,12 @@ class OrderItem extends Model
     // لو حاب تحوّل variant_attributes من JSON تلقائياً
     protected $casts = [
         'variant_attributes' => 'array',
+        'price' => 'float',
+        'unit_price' => 'float',
+        'final_price' => 'float',
+        'subtotal' => 'float',
+        'extras_total' => 'float',
+        'total' => 'float',
     ];
 
     protected static function booted()

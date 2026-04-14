@@ -313,7 +313,7 @@ class MarketService
         $locale = app()->getLocale();
 
         $topProducts = OrderItem::query()
-            ->selectRaw('products.id as product_id, products.name, SUM(order_items.quantity) as total_quantity, SUM(order_items.price * order_items.quantity) as total_sales')
+            ->selectRaw('products.id as product_id, products.name, SUM(order_items.quantity) as total_quantity, SUM(order_items.total) as total_sales')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->join('shop_product_variants', 'order_items.shop_product_variant_id', '=', 'shop_product_variants.id')
             ->join('product_variants', 'shop_product_variants.product_variant_id', '=', 'product_variants.id')

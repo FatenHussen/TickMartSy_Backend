@@ -272,7 +272,7 @@ class StatisticsService
             ->join('products', 'product_variants.product_id', '=', 'products.id')
             ->join('categories', 'products.category_id', '=', 'categories.id')
             ->where('orders.status', OrderStatus::DELIVERED->value)
-            ->selectRaw('categories.id, categories.name, SUM(order_items.price * order_items.quantity) as revenue')
+            ->selectRaw('categories.id, categories.name, SUM(order_items.total) as revenue')
             ->groupBy('categories.id', 'categories.name')
             ->orderByDesc('revenue')
             ->limit($limit)

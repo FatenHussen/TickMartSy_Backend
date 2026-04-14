@@ -136,12 +136,23 @@ class UserBasketsAndOrdersSeeder extends Seeder
             }
             // Add order items from basket items
             foreach ($basket->items as $item) {
+                $unitPrice = (float) $item->price;
+                $finalPrice = $unitPrice;
+                $subtotal = $finalPrice * (int) $item->quantity;
+                $extrasTotal = 0;
+                $total = $subtotal + $extrasTotal;
+
                 OrderItem::create([
                     'order_id' => $order->id,
                     'shop_product_variant_id' => $item->shop_product_variant_id,
                     'product_name' => $item->product->name ?? 'Product',
                     'quantity' => $item->quantity,
-                    'price' => $item->price,
+                    'price' => $unitPrice,
+                    'unit_price' => $unitPrice,
+                    'final_price' => $finalPrice,
+                    'subtotal' => $subtotal,
+                    'extras_total' => $extrasTotal,
+                    'total' => $total,
                     'item_status' => OrderStatus::DELIVERED->value,
                 ]);
             }
@@ -185,12 +196,23 @@ class UserBasketsAndOrdersSeeder extends Seeder
 
             // Add order items from basket items
             foreach ($basket->items as $item) {
+                $unitPrice = (float) $item->price;
+                $finalPrice = $unitPrice;
+                $subtotal = $finalPrice * (int) $item->quantity;
+                $extrasTotal = 0;
+                $total = $subtotal + $extrasTotal;
+
                 OrderItem::create([
                     'order_id' => $order->id,
                     'shop_product_variant_id' => $item->shop_product_variant_id,
                     'product_name' => $item->product->name ?? 'Product',
                     'quantity' => $item->quantity,
-                    'price' => $item->price,
+                    'price' => $unitPrice,
+                    'unit_price' => $unitPrice,
+                    'final_price' => $finalPrice,
+                    'subtotal' => $subtotal,
+                    'extras_total' => $extrasTotal,
+                    'total' => $total,
                     'item_status' => OrderStatus::DELIVERED->value,
                 ]);
             }

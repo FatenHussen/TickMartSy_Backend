@@ -170,6 +170,13 @@ class OrderWithItemsSeeder extends Seeder
 
             // 🧾 items (2 لكل order)
             foreach ([1, 2, 3] as $i) {
+                $quantity = 1;
+                $unitPrice = 15000;
+                $finalPrice = $unitPrice;
+                $subtotal = $finalPrice * $quantity;
+                $extrasTotal = 0;
+                $total = $subtotal + $extrasTotal;
+
                 OrderItem::create([
                     'order_id' => $order->id,
                     'shop_product_variant_id' => $i,
@@ -177,9 +184,13 @@ class OrderWithItemsSeeder extends Seeder
                     'variant_attributes' => [
                         'size' => 'medium',
                     ],
-                    'quantity' => 1,
-                    'price' => 15000,
-                    'discount' => 0,
+                    'quantity' => $quantity,
+                    'price' => $unitPrice,
+                    'unit_price' => $unitPrice,
+                    'final_price' => $finalPrice,
+                    'subtotal' => $subtotal,
+                    'extras_total' => $extrasTotal,
+                    'total' => $total,
 
                     'item_status' => $data['status'],
                     ...$data['timestamps'],

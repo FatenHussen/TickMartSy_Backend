@@ -220,10 +220,11 @@ class OrderService extends BaseService
                 "product_name" => $item["product_name"],
                 "product_image" => $item["product_image"] ?? null,
                 "quantity" => $item["quantity"],
-                "price" => $this->convertFormattedPrice($item["price"]),
-                "product_discount" => $this->convertFormattedPrice($item["product_discount"]),
-                "price_after_discount" => $this->convertFormattedPrice($item["price_after_discount"]),
-                "total" => $this->convertFormattedPrice($item["price_after_discount"] * $item["quantity"]),
+                "unit_price" => $this->convertFormattedPrice($item["unit_price"]),
+                "final_price" => $this->convertFormattedPrice($item["final_price"]),
+                "subtotal" => $this->convertFormattedPrice($item["subtotal"]),
+                "extras_total" => $this->convertFormattedPrice($item["extras_total"]),
+                "total" => $this->convertFormattedPrice($item["total"]),
                 "variant" => $item["variant"],
             ];
         }, $orderItems->toArray());
@@ -529,7 +530,6 @@ class OrderService extends BaseService
             case CartType::DEFAULT->value:
             default:
                 $variantIds = collect($data['items'])->pluck('shop_product_variant_id')->values()->toArray();
-                Log::info("Helooooooooooooo");
 
                 $deliveryPrice = CalculateDeliveryPriceService::handle(
                     user: $user,
@@ -564,10 +564,6 @@ class OrderService extends BaseService
 
         $isPreview = !$order;
 
-        Log::info('ADD ITEMS START', [
-            'mode' => $isPreview ? 'preview' : 'create'
-        ]);
-
         // تحديد إذا في خصم خارجي
         $hasExternalDiscount = !empty($data['coupon'])
             || !empty($data['point_coupon_exchange_id'])
@@ -593,11 +589,11 @@ class OrderService extends BaseService
             }
 
             $product = $shopVariant->productVariant->product;
-            $price = $shopVariant->price;
+            $unitPrice = $shopVariant->price;
             $quantity = $item['quantity'];
 
             // حساب سعر الـ extras
-            $extrasPrice = 0;
+            $extrasTotal = 0;
             $extrasData = [];
 
             if (!empty($item['extras']) && is_array($item['extras'])) {
@@ -606,7 +602,7 @@ class OrderService extends BaseService
                     ->get();
 
                 foreach ($extraDetails as $extra) {
-                    $extrasPrice += $extra->price;
+                    $extrasTotal += $extra->price;
                     $extrasData[] = [
                         'id' => $extra->id,
                         'detail_key' => $extra->detail_key,
@@ -616,40 +612,30 @@ class OrderService extends BaseService
                 }
             }
 
-            // تطبيق خصم المنتج فقط في حالة عدم وجود خصم خارجي
-            $productDiscount = 0;
+            $finalPrice = $this->resolveFinalPrice(
+                unitPrice: $unitPrice,
+                productDiscountPercent: $product->discount,
+                hasExternalDiscount: $hasExternalDiscount,
+                hasBasket: $hasBasket,
+                cartType: $cartType
+            );
 
-            if (!$hasExternalDiscount && !$hasBasket && $cartType === CartType::DEFAULT->value) {
-                $productDiscount = $product->discount;
-            }
+            $subtotal = $finalPrice * $quantity;
+            $total = $subtotal + $extrasTotal;
 
-            $priceAfterDiscount = $price * (1 - ($productDiscount / 100));
-            $finalPriceWithExtras = $priceAfterDiscount + $extrasPrice;
-
-            Log::info('ITEM CALCULATION', [
-                'product' => $product->name,
-                'price' => $price,
-                'quantity' => $quantity,
-                'product_discount' => $productDiscount,
-                'price_after_discount' => $priceAfterDiscount,
-                'extras_price' => $extrasPrice,
-                'final_price_with_extras' => $finalPriceWithExtras,
-                'variant' => $shopVariant->productVariant->attributes_values->pluck('name')->toArray()
-            ]);
-
-            /**
-             * حفظ في قاعدة البيانات فقط إذا كان order موجود
-             */
             if ($order) {
-
                 $orderItem = $order->items()->create([
                     'shop_product_variant_id' => $shopVariant->id,
                     'product_name' => $product->name,
                     'variant_attributes' => $shopVariant->productVariant->getAttributesValuesAttribute(),
                     'product_image' => $product->image_url,
                     'quantity' => $quantity,
-                    'price' => $price,
-                    'discount' => $productDiscount,
+                    'price' => $unitPrice,
+                    'unit_price' => $unitPrice,
+                    'final_price' => $finalPrice,
+                    'subtotal' => $subtotal,
+                    'extras_total' => $extrasTotal,
+                    'total' => $total,
                 ]);
 
                 // حفظ الـ extras
@@ -666,8 +652,8 @@ class OrderService extends BaseService
                     ->decreaseStock($shopVariant->id, $quantity);
             }
 
-            $subtotalBeforeDiscount += $price * $quantity;
-            $subtotalAfterProductDiscount += $finalPriceWithExtras * $quantity;
+            $subtotalBeforeDiscount += $unitPrice * $quantity;
+            $subtotalAfterProductDiscount += $total;
             $totalQuantity += $quantity;
 
             $orderItems->push([
@@ -675,11 +661,11 @@ class OrderService extends BaseService
                 'product_name' => $product->name,
                 'product_image' => $product->image_url,
                 'quantity' => $quantity,
-                'price' => $price,
-                'product_discount' => $productDiscount,
-                'price_after_discount' => $priceAfterDiscount,
-                'extras_price' => $extrasPrice,
-                'final_price_with_extras' => $finalPriceWithExtras,
+                'unit_price' => $unitPrice,
+                'final_price' => $finalPrice,
+                'subtotal' => $subtotal,
+                'extras_total' => $extrasTotal,
+                'total' => $total,
                 'extras' => $extrasData,
                 'vendor_id' => $product->vendor_id,
                 'category_id' => $product->category_id,
@@ -689,12 +675,7 @@ class OrderService extends BaseService
             ]);
         }
 
-        Log::info('ITEMS RESULT', [
-            'subtotal_before_discount' => $subtotalBeforeDiscount,
-            'subtotal_after_product_discount' => $subtotalAfterProductDiscount,
-            'total_quantity' => $totalQuantity
-        ]);
-
+    
         return [
             $subtotalBeforeDiscount,
             $subtotalAfterProductDiscount,
@@ -702,6 +683,26 @@ class OrderService extends BaseService
             $orderItems
         ];
     }
+
+    protected function resolveFinalPrice(
+        float $unitPrice,
+        float $productDiscountPercent,
+        bool $hasExternalDiscount,
+        bool $hasBasket,
+        string $cartType
+    ): float {
+        $shouldApplyProductDiscount =
+            !$hasExternalDiscount
+            && !$hasBasket
+            && $cartType === CartType::DEFAULT->value;
+
+        if (!$shouldApplyProductDiscount) {
+            return $unitPrice;
+        }
+
+        return $unitPrice * (1 - ($productDiscountPercent / 100));
+    }
+
     protected function applyCoupon($orderOrNull, $basketItemsCollection, $couponCode, $basketDiscount)
     {
         if (!$couponCode) return [null, 0, [], null];
@@ -739,7 +740,7 @@ class OrderService extends BaseService
 
         $eligibleSubtotal = collect($basketItemsCollection)
             ->whereNotIn('shop_product_variant_id', $excludedItems)
-            ->sum(fn($i) => $i['price_after_discount'] * $i['quantity']);
+            ->sum(fn($i) => $i['subtotal']);
 
         $couponDiscountAmount = $coupon->calculateDiscount($eligibleSubtotal);
 
@@ -942,8 +943,12 @@ class OrderService extends BaseService
                     'variant_attributes' => $item->variant_attributes,
                     'item_status' => OrderStatus::PENDING->value,
                     'quantity' => $item->quantity,
-                    'price' => $item->price,
-                    'discount' => $item->discount,
+                    'price' => $item->unit_price,
+                    'unit_price' => $item->unit_price,
+                    'final_price' => $item->final_price,
+                    'subtotal' => $item->subtotal,
+                    'extras_total' => $item->extras_total,
+                    'total' => $item->total,
                     'pending_at' => now(),
                     'preparing_at' => null,
                     'out_delivery_at' => null,

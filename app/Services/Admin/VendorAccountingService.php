@@ -224,20 +224,7 @@ class VendorAccountingService
             $query->whereDate(DB::raw('COALESCE(o.delivered_at, o.created_at)'), '<=', $filters['to_date']);
         }
 
-        $extrasSumExpression = '0';
-        if (Schema::hasTable('order_item_extras')) {
-            $extrasSubQuery = DB::table('order_item_extras')
-                ->selectRaw('order_item_id, SUM(price) as extras_total')
-                ->groupBy('order_item_id');
-
-            $query->leftJoinSub($extrasSubQuery, 'oie', function ($join) {
-                $join->on('oie.order_item_id', '=', 'oi.id');
-            });
-
-            $extrasSumExpression = 'COALESCE(oie.extras_total, 0)';
-        }
-
-        $lineGrossExpression = "((oi.price * oi.quantity) + ({$extrasSumExpression} * oi.quantity))";
+        $lineGrossExpression = 'COALESCE(oi.total, 0)';
         $orderDiscountExpression = "(
             COALESCE(o.basket_discount, 0) +
             COALESCE(o.coupon_discount, 0) +

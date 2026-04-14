@@ -118,6 +118,7 @@ class DatabaseSeeder extends Seeder
             IconSeeder::class,
 
             PromotionSeeder::class,
+            FlashSaleSeeder::class,
             PopupCampaignSeeder::class
 
         ]);

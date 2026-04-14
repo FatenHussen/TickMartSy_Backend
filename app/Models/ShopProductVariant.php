@@ -11,6 +11,13 @@ class ShopProductVariant extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $fillable = [
+        'shop_id',
+        'quantity',
+        'price',
+        'product_variant_id'
+    ];
+
     protected static function boot()
     {
         parent::boot();
@@ -35,12 +42,6 @@ class ShopProductVariant extends Model
         });
     }
 
-    protected $fillable = [
-        'shop_id',
-        'quantity',
-        'price',
-        'product_variant_id'
-    ];
 
     public function productVariant()
     {
@@ -65,5 +66,30 @@ class ShopProductVariant extends Model
     public function getAverageRatingAttribute(): float
     {
         return round((float) $this->ratings()->avg('rating'), 1);
+    }
+
+    public function getFinalPriceAttribute(): float
+    {
+        // 1. Base price (shop overrides product price)
+        $price = (float)$this->price;
+
+
+        // 2. Get product final discount
+        $discount = $this->productVariant?->product?->final_discount;
+
+        if (!$discount || !$discount['type'] || $discount['value'] <= 0) {
+            return round($price, 2);
+        }
+
+        // 3. Apply discount
+        if ($discount['type'] === 'percentage') {
+            $price -= ($price * ($discount['value'] / 100));
+        }
+
+        if ($discount['type'] === 'fixed') {
+            $price -= $discount['value'];
+        }
+
+        return (float) round(max(0, $price), 2);
     }
 }

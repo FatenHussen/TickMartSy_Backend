@@ -59,6 +59,7 @@ use App\Http\Controllers\Admin\Schedule\ScheduleCrudController;
 use App\Http\Controllers\Admin\Statistics\StatisticsController;
 use App\Http\Controllers\Admin\Reports\ReportsController;
 use App\Http\Controllers\Admin\PointRuleController;
+use App\Http\Controllers\Admin\FlashSaleController;
 use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\Setting\SettingController;
 use App\Http\Controllers\Admin\SystemSettingController;
@@ -252,6 +253,7 @@ Route::prefix('admin')->group(
                 Route::apiResource('popup-campaigns', PopupCampaignController::class);
                 Route::apiResource('badges', BadgeController::class);
                 Route::apiResource('promotions', PromotionController::class);
+                Route::apiResource('flash-sales', FlashSaleController::class)->only(['index','store', 'update']);
                 Route::apiResource('affiliate-withdraw-requests', AffiliateWithdrawRequestController::class)->only(['index', 'show', 'update']);
                 Route::apiResource('vendor-withdraw-requests', VendorWithdrawRequestController::class)->only(['index', 'show', 'update']);
 

@@ -10,6 +10,9 @@ use App\Http\Resources\Product\AllResource;
 use App\Models\Favorite;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Builder;
+use App\Models\FlashSale;
+use App\Models\Category;
 
 class Product extends Model implements Sectionable
 {
@@ -37,6 +40,7 @@ class Product extends Model implements Sectionable
         'bought_with',
         'is_instant_delivery',
         'vendor_id',
+        'flash_sale_id',
         'discount',
         'discount_type',
         'brand_id',
@@ -66,7 +70,11 @@ class Product extends Model implements Sectionable
         'approval_status' => \App\Enums\ProductApprovalStatus::class,
         'is_visible' => 'boolean',
         'is_active' => 'boolean',
+        'flash_sale_id' => 'integer',
     ];
+
+    protected bool $activeFlashSaleResolved = false;
+    protected ?FlashSale $activeFlashSaleCache = null;
 
     protected static function booted(): void
     {
@@ -103,17 +111,107 @@ class Product extends Model implements Sectionable
 
     public function getPriceAfterDiscountAttribute()
     {
-        if (!$this->discount || !$this->price) {
+        if (!$this->price) {
             return $this->price;
         }
 
-        if ($this->discount_type === 'percentage') {
-            return round($this->price - ($this->price * $this->discount / 100), 2);
-        } elseif ($this->discount_type === 'fixed') {
-            return max(0, round($this->price - $this->discount, 2));
+        $finalDiscount = $this->final_discount;
+
+        if (!$finalDiscount['type'] || $finalDiscount['value'] <= 0) {
+            return $this->price;
         }
 
-        return $this->price;
+        return $this->applyDiscount(
+            $this->price,
+            $finalDiscount['type'],
+            $finalDiscount['value']
+        );
+    }
+
+    public function getFinalDiscountAttribute(): array
+    {
+        if ($flash = $this->getFlashSaleDiscountDetails()) {
+            return $flash;
+        }
+
+        if ($product = $this->getProductDiscountDetails()) {
+            return $product;
+        }
+
+        return [
+            'source' => 'none',
+            'type' => null,
+            'value' => 0,
+        ];
+    }
+
+    protected function getFlashSaleDiscountDetails(): ?array
+    {
+        $flashSale = $this->resolveActiveFlashSale();
+
+        if (!$flashSale || !$flashSale->discount) {
+            return null;
+        }
+
+        return [
+            'source' => 'flash_sale',
+            'type' => $this->normalizeDiscountType($flashSale->discount_type),
+            'value' => (float) $flashSale->discount,
+        ];
+    }
+
+    protected function getProductDiscountDetails(): ?array
+    {
+        if (!$this->discount || !$this->discount_type || $this->discount_type === 'none') {
+            return null;
+        }
+
+        return [
+            'source' => 'product',
+            'type' => $this->normalizeDiscountType($this->discount_type),
+            'value' => (float) $this->discount,
+        ];
+    }
+
+    protected function resolveActiveFlashSale(): ?FlashSale
+    {
+        if ($this->activeFlashSaleResolved) {
+            return $this->activeFlashSaleCache;
+        }
+
+        $flashSale = $this->flashSale;
+
+        $isValidFlashSale = $flashSale
+            && $flashSale->is_active
+            && $flashSale->end_date
+            && $flashSale->end_date->greaterThan(now());
+
+        $this->activeFlashSaleCache = $isValidFlashSale ? $flashSale : null;
+        $this->activeFlashSaleResolved = true;
+
+        return $this->activeFlashSaleCache;
+    }
+
+    protected function normalizeDiscountType(?string $type): ?string
+    {
+        if (!$type) {
+            return null;
+        }
+
+        return $type === 'percent' ? 'percentage' : $type;
+    }
+
+    protected function applyDiscount(float $price, string $type, float $value): float
+    {
+        if ($type === 'percentage') {
+            return round($price - ($price * ($value / 100)), 2);
+        }
+
+        if ($type === 'fixed') {
+            return max(0, round($price - $value, 2));
+        }
+
+        return $price;
     }
     public function ratings()
     {
@@ -156,7 +254,6 @@ class Product extends Model implements Sectionable
     | Relationships
     |--------------------------------------------------------------------------
     */
-
 
     public function category()
     {
@@ -228,6 +325,12 @@ class Product extends Model implements Sectionable
     {
         return $this->morphToMany(Badge::class, 'badgeable')->withPivot('position');
     }
+
+    public function flashSale()
+    {
+        return $this->belongsTo(FlashSale::class);
+    }
+
 
     public function toSectionArray()
     {

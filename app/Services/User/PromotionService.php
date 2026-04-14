@@ -257,7 +257,11 @@ class PromotionService
                 'variant_attributes' => $shopVariant->productVariant->getAttributesValuesAttribute(),
                 'quantity' => $gift['free_quantity'],
                 'price' => 0,
-                'discount' => 100,
+                'unit_price' => 0,
+                'final_price' => 0,
+                'subtotal' => 0,
+                'extras_total' => 0,
+                'total' => 0,
             ]);
         }
     }

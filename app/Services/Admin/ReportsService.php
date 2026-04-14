@@ -344,7 +344,7 @@ class ReportsService
                 'category' => $category,
                 'total_quantity' => $items->sum('quantity'),
                 'total_revenue' => $items->sum(function ($item) {
-                    return $item->price * $item->quantity;
+                    return $item->total;
                 }),
             ];
         })->values();

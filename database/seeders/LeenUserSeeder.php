@@ -350,6 +350,12 @@ class LeenUserSeeder extends Seeder
 
         foreach ($items as $item) {
             $variant = $item['variant'];
+            $unitPrice = (float) $item['price'];
+            $finalPrice = $unitPrice;
+            $subtotal = $finalPrice * (int) $item['quantity'];
+            $extrasTotal = 0;
+            $total = $subtotal + $extrasTotal;
+
             OrderItem::create([
                 'order_id' => $order->id,
                 'shop_product_variant_id' => $variant->id,
@@ -358,8 +364,12 @@ class LeenUserSeeder extends Seeder
                     'size' => 'M',
                 ],
                 'quantity' => $item['quantity'],
-                'price' => $item['price'],
-                'discount' => 0,
+                'price' => $unitPrice,
+                'unit_price' => $unitPrice,
+                'final_price' => $finalPrice,
+                'subtotal' => $subtotal,
+                'extras_total' => $extrasTotal,
+                'total' => $total,
                 'item_status' => $status,
                 'pending_at' => $timestamps['pending_at'] ?? null,
                 'preparing_at' => $timestamps['preparing_at'] ?? null,
