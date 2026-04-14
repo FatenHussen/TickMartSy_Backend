@@ -35,6 +35,7 @@ class AllResource extends JsonResource
             'id' => $this->id,
             'order_code' => $this->order_code ?? $this->id,
             'status' => $this->status,
+            'rejection_reason' => $this->rejection_reason,
             'cart_type' => $this->cart_type,
             'is_instant_delivery' => $this->is_instant_delivery,
             'delivery_price' => $this->delivery_price,

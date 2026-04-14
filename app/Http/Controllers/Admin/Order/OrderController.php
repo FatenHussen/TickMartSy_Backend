@@ -26,12 +26,14 @@ class OrderController extends BaseIndexController
     public function changeStatus(Request $request, int $orderId)
     {
         $data = $request->validate([
-            'status' => 'required|in:pending,preparing,out_delivery,delivered',
+            'status' => 'required|in:pending,preparing,out_delivery,delivered,cancelled',
+            'rejection_reason' => 'nullable|string|max:1000|required_if:status,cancelled',
         ]);
 
         $order = $this->service->changeOrderStatus(
             $orderId,
-            $data['status']
+            $data['status'],
+            $data['rejection_reason'] ?? null
         );
 
         return $this->sendResponse(
