@@ -60,7 +60,8 @@ class AdminRolePermissionSeeder extends Seeder
             'Schedule',
             'SaleCountry',
             'Color',
-            'QuickAction'
+            'QuickAction',
+            'PopupCampaign'
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];

@@ -35,6 +35,11 @@ class Shop extends Model implements Sectionable
         'is_default',
         'is_free_delivery',
         'is_service_provider',
+        //add is restaurant & pyement methods (cash, online)
+        // add category_ids for main category (for filtering) and subcategories through pivot tabl
+        //is verify or expencive or normal prices
+        // add coupon code for shop level offers
+        
         'logo'
     ];
     public function vendor()
