@@ -49,7 +49,26 @@ trait AppliesAreaScope
 
     protected static function currentAdmin(): ?Admin
     {
+        if (!static::shouldResolveAdminContext()) {
+            return null;
+        }
+
         return Auth::guard('admin')->user();
+    }
+
+    protected static function shouldResolveAdminContext(): bool
+    {
+        if (app()->runningInConsole() || !app()->bound('request')) {
+            return false;
+        }
+
+        $request = request();
+        if (!$request) {
+            return false;
+        }
+
+        // Avoid touching admin guard while Sanctum validates non-admin tokens.
+        return $request->is('api/admin/*') || $request->is('admin/*');
     }
 
     protected static function hasDirectAreaColumn(Model $model): bool
@@ -60,9 +79,10 @@ trait AppliesAreaScope
     protected static function configuredAreaRelationPaths(Model $model): array
     {
         $defaults = ['area', 'areas'];
+        $modelClass = $model::class;
 
-        if (property_exists($model, 'areaRelationPaths')) {
-            $paths = (array) $model::$areaRelationPaths;
+        if (property_exists($modelClass, 'areaRelationPaths')) {
+            $paths = (array) ($modelClass::$areaRelationPaths ?? []);
             return array_unique(array_merge($paths, $defaults));
         }
 
