@@ -39,6 +39,10 @@ class OrderService extends BaseService
         $this->searchableFields = ['total', 'total_quantity'];
         $this->sortableFields   = ['id', 'total', 'total_quantity'];
         $this->relations = [
+            'user',
+            'address',
+            'paymentMethod',
+            'coupon',
             'items',
             'items.extras',
             'items.extras.extraDetail',
