@@ -258,6 +258,7 @@ class RestaurantAndServiceProviderSeeder extends Seeder
                         [
                             'quantity' => 70 + ($shopIndex * 20) + ($variantIndex * 10),
                             'price' => $basePrice + ($shopIndex * 1000),
+                            'cost_price' => max(1, (int) floor(($basePrice + ($shopIndex * 1000)) * 0.72)),
                         ]
                     );
                 }

@@ -103,6 +103,7 @@ class OneResource extends JsonResource
                             'shop_id' => $sv->shop_id,
                             'shop_name' => $sv->shop?->name,
                             'price' => $sv->price,
+                            'cost_price' => $sv->cost_price,
                             'quantity' => $sv->quantity,
                         ];
                     })->values(),

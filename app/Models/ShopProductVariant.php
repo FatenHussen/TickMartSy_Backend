@@ -15,7 +15,14 @@ class ShopProductVariant extends Model
         'shop_id',
         'quantity',
         'price',
+        'cost_price',
         'product_variant_id'
+    ];
+
+    protected $casts = [
+        'price' => 'float',
+        'cost_price' => 'float',
+        'quantity' => 'integer',
     ];
 
     protected static function boot()

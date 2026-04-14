@@ -47,6 +47,7 @@ class OrderService extends BaseService
             'items',
             'items.extras',
             'items.extras.extraDetail',
+            'items.shopProductVariant.shop',
             'items.shopProductVariant.productVariant.product',
         ];
         $this->pagination       = true;
@@ -61,11 +62,38 @@ class OrderService extends BaseService
 
     public function queryBuilder($query, $filters = [], $config = [])
     {
+        $status = $filters['status'] ?? null;
+        $isRestaurant = array_key_exists('is_restaurant', $filters) ? $filters['is_restaurant'] : null;
+        $shopType = $filters['shop_type'] ?? null;
+
+        unset($filters['status'], $filters['is_restaurant'], $filters['shop_type']);
+
         $query = parent::queryBuilder($query, $filters, $config);
 
         // Status filter
-        if (!empty($filters['status'])) {
-            $query->where('status', $filters['status']);
+        if (!empty($status)) {
+            $query->where('status', $status);
+        }
+
+        if ($isRestaurant !== null) {
+            $query->whereHas('items.shopProductVariant.shop', function ($shopQuery) use ($isRestaurant) {
+                $shopQuery->where('is_restaurant', filter_var($isRestaurant, FILTER_VALIDATE_BOOLEAN));
+            });
+        }
+
+        if (!empty($shopType)) {
+            $query->whereHas('items.shopProductVariant.shop', function ($shopQuery) use ($shopType) {
+                if ($shopType === 'restaurant') {
+                    $shopQuery->where('is_restaurant', true);
+                    return;
+                }
+
+                if ($shopType === 'store') {
+                    $shopQuery
+                        ->where('is_restaurant', false)
+                        ->where('is_service_provider', false);
+                }
+            });
         }
 
         return $query;

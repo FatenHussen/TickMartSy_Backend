@@ -49,6 +49,7 @@ class OneResource extends JsonResource
                         'address' => $shopVariant->shop->address,
                     ],
                     'price' => $shopVariant->price,
+                    'cost_price' => $shopVariant->cost_price,
                     'quantity' => $shopVariant->quantity,
                     'sku' => $shopVariant->sku,
                     'barcode' => $shopVariant->barcode,

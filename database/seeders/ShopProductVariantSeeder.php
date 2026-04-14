@@ -41,6 +41,7 @@ class ShopProductVariantSeeder extends Seeder
                     'shop_id'            => $shop->id,
                     'quantity'           => rand(10, 200),
                     'price'              => max(1, $shopPrice),
+                    'cost_price'         => max(1, (int) round($shopPrice * 0.75)),
                 ]);
             }
         }

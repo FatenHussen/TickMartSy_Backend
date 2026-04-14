@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 class Brand extends Model implements Sectionable
 {
     use HasFactory, HasTranslations, LogsActivity;
-    protected $fillable = ['name', 'image', 'is_active', 'governorate_id', 'city_id', 'category_id'];
+    protected $fillable = ['name', 'image', 'is_active', 'governorate_id', 'city_id', 'category_id', 'origin_country_id'];
     public $translatable = ['name'];
 
     protected $casts = [
@@ -64,6 +64,11 @@ class Brand extends Model implements Sectionable
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function originCountry()
+    {
+        return $this->belongsTo(Country::class, 'origin_country_id');
     }
     public function ratings()
     {
