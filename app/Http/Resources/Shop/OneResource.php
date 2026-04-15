@@ -16,6 +16,8 @@ class OneResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $coverImages = $this->getCoverImagesUrls();
+
         return [
             'id'                    => $this->id,
             'name'                  => $this->name,
@@ -26,6 +28,7 @@ class OneResource extends JsonResource
             'email'                 => $this->email,
             'working_hours'         => $this->working_hours,
             'logo_url'              => $this->logo_url,
+            'cover_image'           => $coverImages[0] ?? null,
             'cover_images_urls'      => $this->getCoverImagesUrls(),
             'is_active'             => $this->is_active,
             'average_rating'        => $this->average_rating,
@@ -37,6 +40,7 @@ class OneResource extends JsonResource
             'pricing_tier'          => $this->pricing_tier?? null ,
             'is_recommended'        => (bool) $this->is_recommended,
             'is_favorite' => (bool) ($this->is_favorite ?? false),
+            'badges'                => BadgeOneResource::collection($this->badges),
 
             'area'                 => $this->area->name,
             'categories'           => $this->getShopCategories(),

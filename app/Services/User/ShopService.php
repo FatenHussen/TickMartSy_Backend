@@ -17,6 +17,7 @@ class ShopService extends BaseService
     protected $relations = [
         'area.city',
         'vendor',
+        'badges',
         'services',
         'productVariants.productVariant.product',
         'media',
