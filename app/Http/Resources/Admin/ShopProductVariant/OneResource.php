@@ -37,14 +37,14 @@ class OneResource extends JsonResource
             'attributes' => $this->productVariant->getAttributesWithDetails(),
             'attributes_values_ids' => $this->productVariant->attributes_values_ids,
             'is_trend' => $this->productVariant->is_trend,
-            'shop' => [
+            'shop' => $this->shop ? [
                 'id' => $this->shop->id,
                 'name' => $this->shop->name,
                 'logo' => $this->shop->logo,
                 'address' => $this->shop->address,
                 'email' => $this->shop->email,
                 'mobile' => $this->shop->mobile,
-            ],
+            ] : null,
             'price' => $this->price,
             'cost_price' => $this->cost_price,
             'quantity' => $this->quantity,
