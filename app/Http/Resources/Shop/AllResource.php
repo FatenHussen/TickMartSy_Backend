@@ -17,13 +17,17 @@ class AllResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $coverImages = $this->getCoverImagesUrls();
+
         return [
             'id'                    => $this->id,
             'name'                  => $this->name,
             'description'           => $this->description,
+            'address'               => $this->address,
             'email'                 => $this->email,
             'mobile'                => $this->mobile,
             'logo_url'              => $this->logo_url,
+            'cover_image'           => $coverImages[0] ?? null,
             'is_active'             => $this->is_active,
             'is_open_now'           => $this->isOpenNow(),
             'is_service_provider'   => (bool) $this->is_service_provider,
@@ -34,6 +38,7 @@ class AllResource extends JsonResource
             'created_at'            => $this->created_at?->format('Y-m-d H:i'),
             'is_favorite'           => (bool) ($this->is_favorite ?? false),
             'average_rating'        => $this->average_rating ?? 0,
+            'badges'                => BadgeOneResource::collection($this->badges),
             // 'ratings_count'      => $this->ratings_count,
             'categories'            => $this->getShopCategories(),
             'vendor'                => VendorAllResource::make($this->vendor),

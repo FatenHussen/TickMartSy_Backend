@@ -222,6 +222,7 @@ Route::prefix('admin')->group(
                 // Product Approval routes
                 Route::post('products/{id}/approve', [ProductController::class, 'approve']);
                 Route::post('products/{id}/reject', [ProductController::class, 'reject']);
+                Route::get('products/{product}/variants', [ProductVariantController::class, 'byProduct']);
 
                 //     }
                 // );
