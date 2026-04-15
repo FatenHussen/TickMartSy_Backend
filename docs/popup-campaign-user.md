@@ -1,24 +1,121 @@
-## Popup Campaigns (User-facing)
+## PopupCampaign User API
 
-### API Endpoints
-- `GET /api/popups/active`: returns the highest-priority active campaign matching the request context.  
-- `POST /api/popups/{id}/track-view` & `POST /api/popups/{id}/track-click`: log impressions and interactions in `popup_campaign_events`.
+### Endpoints
+- `GET /api/popups/active`
+- `POST /api/popups/{popupCampaign}/track-view`
+- `POST /api/popups/{popupCampaign}/track-click`
 
-### Request Inputs
-- `page_slug` (preferred): used by `PopupCampaignSelector` to fetch the related `Page` model and match `show_on_pages`.  
-- `page_type`, `current_url`: optional fallbacks for type-based targeting.  
-- `visitorType` is inferred server-side via session to classify new vs returning visitors without extra client logic.
+> هذه endpoints متاحة للمستخدم النهائي لتحديد الحملة المناسبة وتسجيل الـ analytics events.
 
-### Response Structure
-- Wrapped in `App\Http\Resources\User\PopupCampaignResource`.  
-- Includes content (`headline`, `description`), buttons, CTA metadata (`type`, `value`), media info, form configuration, trigger/frequency settings, and audience details.
+---
 
-### Frontend Behavior
-- Blade component `resources/views/components/popup-campaign.blade.php` fetches `/api/popups/active` and renders modal/slide-in/fullscreen experiences.  
-- The component respects triggers (on load, delay, scroll, exit intent), throttling (`show_every`, `max_impressions` via `localStorage`), and fires track-view/track-click when shown or interacted with.  
-- Forms are dynamically built from `form_fields`, while CTA actions include navigation, coupon copy, or form submission hooks.
+### 1) Get Active Popup
+- `GET /api/popups/active`
 
-### Configuration Tips
-- Set `window.popupCampaignOptions = { pageType: 'product', currentUrl: '/products/42', page_slug: 'product' };` before including the component for per-page accuracy.  
-- Media paths should be accessible (e.g., `/storage/popups/...`).  
-- Ensure the repeated view/click endpoints are protected by CSRF tokens if needed (the Blade component already includes `credentials: 'include'`).
+**Query Params (اختيارية):**
+- `page_type` مثل: `home`, `product`, `cart`
+- `current_url` رابط الصفحة الحالي
+
+**Response عند عدم وجود حملة مطابقة:**
+```json
+{
+  "data": null
+}
+```
+
+**Response عند وجود حملة مطابقة:**
+```json
+{
+  "data": {
+    "id": 1,
+    "title": {
+      "ar": "عرض الربيع",
+      "en": "Spring Offer"
+    },
+    "slug": "spring-offer-popup",
+    "type": "modal",
+    "status": "active",
+    "priority": 90,
+    "content": {
+      "headline": {
+        "ar": "خصم 20%",
+        "en": "20% Discount"
+      },
+      "subheadline": {
+        "ar": "لفترة محدودة",
+        "en": "Limited Time"
+      },
+      "description": {
+        "ar": "استفد من الخصم اليوم.",
+        "en": "Get your discount today."
+      }
+    },
+    "buttons": {
+      "primary": "Shop Now",
+      "secondary": "Learn More",
+      "url": "https://example.com/sale"
+    },
+    "media": {
+      "type": "image",
+      "path": "https://your-domain.com/storage/popups/spring.jpg"
+    },
+    "form": {
+      "enabled": false,
+      "fields": ["name", "email"]
+    },
+    "display": {
+      "pages": ["home", "category"],
+      "audience_type": "all_visitors"
+    },
+    "trigger": {
+      "type": "delay",
+      "value": 5
+    },
+    "frequency": {
+      "show_every": 60,
+      "max_impressions": 3
+    }
+  }
+}
+```
+
+---
+
+### 2) Track Popup View
+- `POST /api/popups/{popupCampaign}/track-view`
+
+**Body (اختياري):**
+```json
+{
+  "page_type": "home",
+  "current_url": "https://example.com",
+  "referrer": "https://google.com"
+}
+```
+
+**Response:**
+- `204 No Content`
+
+---
+
+### 3) Track Popup Click
+- `POST /api/popups/{popupCampaign}/track-click`
+
+**Body (اختياري):**
+```json
+{
+  "page_type": "home",
+  "current_url": "https://example.com",
+  "referrer": "https://google.com"
+}
+```
+
+**Response:**
+- `204 No Content`
+
+---
+
+### Notes
+- لا يوجد validation صارم لهذه endpoints على body، ويتم حفظ القيم المتاحة داخل `payload`.
+- تم إلغاء الحقول القديمة `cta_type` و`cta_value`.
+- رابط الإجراء في الـ response هو `buttons.url`.

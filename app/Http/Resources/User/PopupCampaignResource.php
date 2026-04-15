@@ -24,10 +24,7 @@ class PopupCampaignResource extends JsonResource
             'buttons' => [
                 'primary' => $this->button_text,
                 'secondary' => $this->secondary_button_text,
-            ],
-            'cta' => [
-                'type' => $this->cta_type,
-                'value' => $this->cta_value,
+                'url' => $this->button_url,
             ],
             'media' => [
                 'type' => $this->media_type,

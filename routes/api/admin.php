@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\Banner\BannerCrudController;
 use App\Http\Controllers\Admin\Basket\BasketController;
 use App\Http\Controllers\Admin\Basket\ScheduledBasketController;
 use App\Http\Controllers\Admin\AffiliateWithdrawRequest\AffiliateWithdrawRequestController;
+use App\Http\Controllers\Admin\AffiliateWalletTransaction\AffiliateWalletTransactionController;
 use App\Http\Controllers\Admin\Role_Permission\PermissionIndexController;
 use App\Http\Controllers\Admin\Role_Permission\RoleCrudController;
 use App\Http\Controllers\Admin\Brand\BrandController;
@@ -259,6 +260,7 @@ Route::prefix('admin')->group(
                 Route::apiResource('promotions', PromotionController::class);
                 Route::apiResource('flash-sales', FlashSaleController::class)->only(['index','store', 'update']);
                 Route::apiResource('affiliate-withdraw-requests', AffiliateWithdrawRequestController::class)->only(['index', 'show', 'update']);
+                Route::apiResource('affiliate-wallet-transactions', AffiliateWalletTransactionController::class)->only(['index', 'show']);
                 Route::apiResource('vendor-withdraw-requests', VendorWithdrawRequestController::class)->only(['index', 'show', 'update']);
 
                 Route::prefix('vendor-accounting')->group(function () {
@@ -281,6 +283,7 @@ Route::prefix('admin')->group(
                 // Vendor User Management routes (includes shop assignments)
                 Route::apiResource('vendor-users', VendorUserCrudController::class);
                 Route::get('users/markters', [UserCrudController::class, 'markters']);
+                Route::post('users/{id}/demote-affiliate', [UserCrudController::class, 'demoteAffiliate']);
                 Route::apiResource('users', UserCrudController::class);
             }
 

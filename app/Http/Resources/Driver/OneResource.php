@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources\Driver;
 
-use App\Http\Resources\Area\OneResource as AreaOneResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -38,13 +37,13 @@ class OneResource extends JsonResource
             'average_delivery_time_minutes' => $this->average_delivery_time,
             // 'cancellation_rate_percent' => $this->cancellation_rate,
 
-            // Areas served
-            'areas' => $this->areas->map(function ($area) {
+            // Cities served
+            'cities' => ($this->cities ?? collect())->map(function ($city) {
                 return [
-                    'id' => $area->id,
-                    'name' => $area->name,
+                    'id' => $city->id,
+                    'name' => $city->name,
                 ];
-            }),
+            })->values(),
 
             'shops' => ($this->shops ?? collect())->map(function ($shop) {
                 return [

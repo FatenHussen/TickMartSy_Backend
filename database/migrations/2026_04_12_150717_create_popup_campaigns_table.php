@@ -13,21 +13,19 @@ return new class extends Migration
     {
         Schema::create('popup_campaigns', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->json('title');
             $table->string('slug')->unique();
             $table->enum('type', ['modal', 'slide_in', 'fullscreen'])->default('modal');
             $table->enum('status', ['draft', 'active', 'paused', 'archived'])->default('draft');
             $table->integer('priority')->default(0);
 
-            $table->string('headline');
-            $table->string('subheadline')->nullable();
-            $table->text('description')->nullable();
+            $table->json('headline');
+            $table->json('subheadline')->nullable();
+            $table->json('description')->nullable();
 
-            $table->enum('button_text', ['Claim Offer', 'Shop Now', 'Subscribe', 'Reveal My Deal'])->default('Claim Offer');
+            $table->string('button_text');
+            $table->string('button_url')->nullable();
             $table->string('secondary_button_text')->nullable();
-
-            $table->enum('cta_type', ['url', 'product', 'category', 'form', 'coupon'])->default('url');
-            $table->string('cta_value');
 
             $table->enum('media_type', ['image', 'video', 'gif'])->default('image');
             $table->string('media_path');

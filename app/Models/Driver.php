@@ -143,9 +143,11 @@ class Driver extends Authenticatable
         return round(($canceled / $total) * 100, 1);
     }
 
-    public function areas()
+    protected static array $areaRelationPaths = ['cities.areas'];
+
+    public function cities()
     {
-        return $this->belongsToMany(Area::class, 'area_driver');
+        return $this->belongsToMany(City::class, 'city_driver');
     }
 
     public function shops()

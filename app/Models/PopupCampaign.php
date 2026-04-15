@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
 
 class PopupCampaign extends Model
 {
+    use HasTranslations;
+
     public const TYPE_MODAL = 'modal';
     public const TYPE_SLIDE_IN = 'slide_in';
     public const TYPE_FULLSCREEN = 'fullscreen';
@@ -41,6 +44,7 @@ class PopupCampaign extends Model
         self::BUTTON_REVEAL_MY_DEAL,
     ];
 
+    // Kept for backward compatibility with existing seed data.
     public const CTA_URL = 'url';
     public const CTA_PRODUCT = 'product';
     public const CTA_CATEGORY = 'category';
@@ -93,17 +97,17 @@ class PopupCampaign extends Model
 
     protected $fillable = [
         'title',
+        'headline',
+        'subheadline',
+        'description',
         'slug',
         'type',
         'status',
         'priority',
-        'headline',
-        'subheadline',
-        'description',
+
         'button_text',
+        'button_url',
         'secondary_button_text',
-        'cta_type',
-        'cta_value',
         'media_type',
         'media_path',
         'form_enabled',
@@ -117,6 +121,10 @@ class PopupCampaign extends Model
     ];
 
     protected $casts = [
+        'title' => 'array',
+        'headline' => 'array',
+        'subheadline' => 'array',
+        'description' => 'array',
         'form_fields' => 'array',
         'show_on_pages' => 'array',
         'form_enabled' => 'boolean',
@@ -124,6 +132,13 @@ class PopupCampaign extends Model
         'trigger_value' => 'integer',
         'show_every' => 'integer',
         'max_impressions' => 'integer',
+    ];
+
+    public array $translatable = [
+        'title',
+        'headline',
+        'subheadline',
+        'description',
     ];
 
     public function scopeActive(Builder $query): Builder
