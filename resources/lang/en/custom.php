@@ -964,6 +964,9 @@ return [
         'already_marketer' => 'You are a marketer; you do not need to submit an application.',
         'request_not_submitted' => 'The user has not submitted a marketer request.',
         'cannot_change_number' => 'Cannot change marketer number.',
+        'pending_withdraw_requests' => 'Cannot convert the account to a normal user while there are pending withdrawal requests.',
+        'no_affiliate_number' => 'This user does not have an affiliate number.',
+        'demoted_successfully' => 'Account has been converted to a normal user successfully.',
     ],
 
     // Ratings

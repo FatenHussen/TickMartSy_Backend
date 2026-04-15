@@ -282,6 +282,7 @@ Route::prefix('admin')->group(
                 // Vendor User Management routes (includes shop assignments)
                 Route::apiResource('vendor-users', VendorUserCrudController::class);
                 Route::get('users/markters', [UserCrudController::class, 'markters']);
+                Route::post('users/{id}/demote-affiliate', [UserCrudController::class, 'demoteAffiliate']);
                 Route::apiResource('users', UserCrudController::class);
             }
 

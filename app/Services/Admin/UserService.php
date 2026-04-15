@@ -6,6 +6,7 @@ use App\Exceptions\CustomExceptionWithMessage;
 use App\Helpers\SendFCMNotification;
 use App\Http\Resources\EndUser\AllResource;
 use App\Http\Resources\EndUser\OneResource;
+use App\Models\AffiliateWithdrawRequest;
 use App\Models\Coupon;
 use App\Models\User;
 use App\Models\Vendor;
@@ -88,5 +89,37 @@ class UserService extends BaseService
             });
 
         return $users;
+    }
+
+    public function demoteAffiliate(int $id): User
+    {
+        return DB::transaction(function () use ($id) {
+            $user = $this->model::findOrFail($id);
+
+            if (empty($user->affiliate_id)) {
+                throw new CustomExceptionWithMessage('custom.marketer.no_affiliate_number');
+            }
+
+            Coupon::where('affiliate_id', $user->affiliate_id)
+                ->where('is_active', true)
+                ->update(['is_active' => false]);
+
+            $user->update([
+                'is_affiliate' => false,
+                'affiliate_approved' => false,
+                'affiliate_rate' => null,
+            ]);
+
+            (new NotificationService)->send(
+                $user,
+                'إيقاف حساب التسويق',
+                'تم تحويل حسابك إلى حساب مستخدم عادي من قبل الإدارة.',
+                [
+                    'type' => 'markter'
+                ]
+            );
+
+            return $user->fresh();
+        });
     }
 }

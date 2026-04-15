@@ -982,6 +982,9 @@ return [
         'already_marketer' => 'أنت مسوّق بالفعل ولا تحتاج لتقديم طلب.',
         'request_not_submitted' => 'المستخدم غير مقدّم على طلب مسوّق.',
         'cannot_change_number' => 'لا يمكن تغيير رقم المسوّق.',
+        'pending_withdraw_requests' => 'لا يمكن تحويل الحساب إلى مستخدم عادي قبل معالجة طلبات السحب المعلّقة.',
+        'no_affiliate_number' => 'هذا المستخدم لا يملك رقم مسوّق.',
+        'demoted_successfully' => 'تم تحويل الحساب إلى مستخدم عادي بنجاح.',
     ],
 
     // Ratings

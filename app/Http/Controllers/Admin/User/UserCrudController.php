@@ -26,4 +26,14 @@ class UserCrudController extends BaseCRUDController
         $data = $this->service->markters();
         return $this->sendResponse(data: $data);
     }
+
+    public function demoteAffiliate(int $id)
+    {
+        $data = $this->service->demoteAffiliate($id);
+
+        return $this->sendResponse(
+            data: $data,
+            message: __('custom.marketer.demoted_successfully')
+        );
+    }
 }
