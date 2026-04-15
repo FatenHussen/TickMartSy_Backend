@@ -31,6 +31,20 @@ class OneResource extends JsonResource
                 'affiliate_approved' => (bool) $this->affiliate_approved,
                 'affiliate_id'       => $this->affiliate_approved ? $this->affiliate_id : null,
                 'affiliate_rate'     => $this->affiliate_approved ? $this->affiliate_rate : null,
+                'affiliate_commission_type' => $this->affiliate_approved ? $this->affiliate_commission_type : null,
+                'affiliate_fixed_commission' => $this->affiliate_approved ? $this->affiliate_fixed_commission : null,
+                'affiliate_visit_commission_enabled' => $this->affiliate_approved
+                    ? (bool) $this->affiliate_visit_commission_enabled
+                    : false,
+                'affiliate_visit_commission_threshold' => $this->affiliate_approved
+                    ? $this->affiliate_visit_commission_threshold
+                    : null,
+                'affiliate_visit_commission_amount' => $this->affiliate_approved
+                    ? $this->affiliate_visit_commission_amount
+                    : null,
+                'affiliate_product_ids' => $this->affiliate_approved
+                    ? $this->affiliateProducts()->pluck('products.id')
+                    : [],
             ],
 
             'markter_statistics'   => $markter,

@@ -120,7 +120,7 @@ class AffiliateWithdrawRequestService extends BaseService
     protected function ensureAvailableBalance(string $affiliateId, float $amount): void
     {
         $totalCommission = AffiliateWalletTransaction::where('affiliate_id', $affiliateId)
-            ->where('type', 'commission')
+            ->whereIn('type', ['commission', 'visit_commission'])
             ->sum('amount');
 
         $totalWithdrawn = AffiliateWalletTransaction::where('affiliate_id', $affiliateId)

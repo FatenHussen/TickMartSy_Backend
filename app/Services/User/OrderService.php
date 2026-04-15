@@ -162,6 +162,13 @@ class OrderService extends BaseService
                 $deliveryPrice
             );
 
+            $affiliateData = $this->resolveAffiliateData(
+                $data,
+                $discounts['coupon'] ?? null,
+                $orderItems,
+                $finalTotal
+            );
+
             $this->updateOrderTotals(
                 $order,
                 $discounts,
@@ -170,7 +177,8 @@ class OrderService extends BaseService
                 $totalQuantity,
                 $deliveryPrice,
                 $finalTotal,
-                $data['promotion_id'] ?? null
+                $data['promotion_id'] ?? null,
+                $affiliateData
             );
 
             $this->maybeIncrementRecipeOrdersCount($order, $data);
@@ -208,6 +216,8 @@ class OrderService extends BaseService
             $subtotalBeforeDiscount,
             $deliveryPrice
         );
+
+        unset($discounts['coupon']);
 
         $externalDiscount = $discounts['total_discount'];
         $deliveryPrice = $discounts['delivery_price'];
@@ -342,13 +352,14 @@ class OrderService extends BaseService
 
         $isPreview = !$order;
         $excludedItems = [];
+        $couponModel = null;
 
         /**
          * COUPON
          */
         if (!empty($data['coupon'])) {
 
-            [$code, $couponDiscount, $excludedItems] =
+            [$code, $couponDiscount, $excludedItems, $couponModel] =
                 $this->applyCoupon($order, $orderItems, $data['coupon'], 0);
 
             $totalDiscount += $couponDiscount;
@@ -419,6 +430,7 @@ class OrderService extends BaseService
             'delivery_price' => $deliveryPrice,
             'useSubscriptionFreeDelivery' => $useSubscriptionFreeDelivery,
             'free_delivery_from_points' => $freeDeliveryFromPoints,
+            'coupon' => $couponModel,
 
             'excluded_items' => $excludedItems, // <--- ترجع الآن بالـ preview
         ];
@@ -458,7 +470,8 @@ class OrderService extends BaseService
         int $totalQuantity,
         float $deliveryPrice,
         float $finalTotal,
-        ?int $promotionId = null
+        ?int $promotionId = null,
+        ?array $affiliateData = null
     ): void {
 
         $order->update([
@@ -477,6 +490,12 @@ class OrderService extends BaseService
             'total_quantity' => $totalQuantity,
             'total' => $finalTotal,
             'promotion_id' => $promotionId,
+            'affiliate_id' => $affiliateData['affiliate_id'] ?? null,
+            'affiliate_rate' => $affiliateData['affiliate_rate'] ?? null,
+            'affiliate_source' => $affiliateData['affiliate_source'] ?? null,
+            'affiliate_commission_type' => $affiliateData['affiliate_commission_type'] ?? null,
+            'affiliate_fixed_commission' => $affiliateData['affiliate_fixed_commission'] ?? null,
+            'affiliate_commission_amount' => $affiliateData['affiliate_commission_amount'] ?? 0,
         ]);
     }
 
@@ -787,6 +806,60 @@ class OrderService extends BaseService
             $coupon
         ];
     }
+
+    private function resolveAffiliateData(array $data, ?Coupon $coupon, $orderItems, float $finalTotal): ?array
+    {
+        $affiliateId = $data['affiliate_id'] ?? null;
+        $affiliateSource = $affiliateId ? 'link' : null;
+
+        if (!empty($coupon?->affiliate_id)) {
+            $affiliateId = (string) $coupon->affiliate_id;
+            $affiliateSource = 'coupon';
+        }
+
+        if (empty($affiliateId)) {
+            return null;
+        }
+
+        $affiliate = User::query()
+            ->with('affiliateProducts:id')
+            ->where('affiliate_id', $affiliateId)
+            ->where('is_affiliate', true)
+            ->where('affiliate_approved', true)
+            ->first();
+
+        if (!$affiliate) {
+            return null;
+        }
+
+        $commissionType = $affiliate->affiliate_commission_type ?? 'percentage_order';
+        $rate = $affiliate->affiliate_rate ? (float) $affiliate->affiliate_rate : null;
+        $fixedCommission = $affiliate->affiliate_fixed_commission ? (float) $affiliate->affiliate_fixed_commission : null;
+
+        $commissionAmount = 0.0;
+
+        if ($commissionType === 'fixed_per_order') {
+            $commissionAmount = (float) ($fixedCommission ?? 0);
+        } elseif ($commissionType === 'percentage_selected_products') {
+            $eligibleProductIds = $affiliate->affiliateProducts->pluck('id')->all();
+            $eligibleTotal = collect($orderItems)
+                ->whereIn('product_id', $eligibleProductIds)
+                ->sum(fn($item) => (float) $item['total']);
+
+            $commissionAmount = $rate ? ($eligibleTotal * ($rate / 100)) : 0;
+        } else {
+            $commissionAmount = $rate ? ($finalTotal * ($rate / 100)) : 0;
+        }
+
+        return [
+            'affiliate_id' => $affiliate->affiliate_id,
+            'affiliate_rate' => $rate,
+            'affiliate_source' => $affiliateSource,
+            'affiliate_commission_type' => $commissionType,
+            'affiliate_fixed_commission' => $commissionType === 'fixed_per_order' ? $fixedCommission : null,
+            'affiliate_commission_amount' => round($commissionAmount, 2),
+        ];
+    }
     protected function handlePointExchanges(
         int $userId,
         array $data,
@@ -953,6 +1026,9 @@ class OrderService extends BaseService
                 'affiliate_id' => $originalOrder->affiliate_id,
                 'affiliate_rate' => $originalOrder->affiliate_rate,
                 'affiliate_source' => $originalOrder->affiliate_source,
+                'affiliate_commission_type' => $originalOrder->affiliate_commission_type,
+                'affiliate_fixed_commission' => $originalOrder->affiliate_fixed_commission,
+                'affiliate_commission_amount' => $originalOrder->affiliate_commission_amount,
                 'coupon_id' => $originalOrder->coupon_id,
                 'used_coupon_exchange_id' => $originalOrder->used_coupon_exchange_id,
                 'used_free_delivery_exchange_id' => $originalOrder->used_free_delivery_exchange_id,

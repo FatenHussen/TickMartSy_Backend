@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Concerns\AppliesAreaScope;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -48,6 +49,12 @@ class User extends Authenticatable
         'affiliate_id',
         'coupon_id',
         'affiliate_rate',
+        'affiliate_commission_type',
+        'affiliate_fixed_commission',
+        'affiliate_visit_commission_enabled',
+        'affiliate_visit_commission_threshold',
+        'affiliate_visit_commission_amount',
+        'affiliate_visit_rewarded_steps',
         'affiliate_visits',
         'currency_id',
     ];
@@ -71,6 +78,9 @@ class User extends Authenticatable
     protected $casts = [
         'is_affiliate' => 'boolean',
         'affiliate_approved' => 'boolean',
+        'affiliate_fixed_commission' => 'decimal:2',
+        'affiliate_visit_commission_enabled' => 'boolean',
+        'affiliate_visit_commission_amount' => 'decimal:2',
         'is_active' => 'boolean',
         'email_verified_at' => 'datetime',
         'phone_verified_at' => 'datetime',
@@ -113,6 +123,12 @@ class User extends Authenticatable
         return $this->hasOne(Coupon::class, 'affiliate_id', 'affiliate_id')
             ->where('is_active', true)
             ->latestOfMany();
+    }
+
+    public function affiliateProducts(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'affiliate_user_products')
+            ->withTimestamps();
     }
 
     public function currency()

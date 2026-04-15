@@ -982,9 +982,17 @@ return [
         'already_marketer' => 'أنت مسوّق بالفعل ولا تحتاج لتقديم طلب.',
         'request_not_submitted' => 'المستخدم غير مقدّم على طلب مسوّق.',
         'cannot_change_number' => 'لا يمكن تغيير رقم المسوّق.',
+        'invalid_commission_type' => 'نوع عمولة المسوّق غير صالح.',
+        'rate_required_for_percentage' => 'يجب تحديد نسبة عمولة لنمط العمولة النسبي.',
+        'fixed_amount_required' => 'يجب تحديد قيمة عمولة ثابتة لنمط العمولة الثابتة.',
+        'products_required_for_selected_percentage' => 'يجب تحديد منتجات عند اختيار نمط نسبة على منتجات محددة.',
+        'visit_threshold_required' => 'يجب تحديد عدد الزيارات المطلوب لتفعيل عمولة الزيارات.',
+        'visit_amount_required' => 'يجب تحديد قيمة عمولة الزيارات.',
         'pending_withdraw_requests' => 'لا يمكن تحويل الحساب إلى مستخدم عادي قبل معالجة طلبات السحب المعلّقة.',
         'no_affiliate_number' => 'هذا المستخدم لا يملك رقم مسوّق.',
+        'affiliate_number_taken' => 'رقم المسوّق مستخدم من حساب آخر.',
         'demoted_successfully' => 'تم تحويل الحساب إلى مستخدم عادي بنجاح.',
+        'reactivated_successfully' => 'تمت إعادة تفعيل الحساب كمسوّق بنجاح.',
     ],
 
     // Ratings

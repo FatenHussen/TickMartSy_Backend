@@ -5,7 +5,6 @@ namespace App\Http\Controllers\User;
 use App\Exceptions\CustomExceptionWithMessage;
 use App\Http\Controllers\BaseCRUDController;
 use App\Http\Resources\Order\AllResource;
-use App\Models\User;
 use App\Services\User\MarketService;
 use Illuminate\Http\Request;
 
@@ -229,13 +228,7 @@ class MarketController extends BaseCRUDController
     */
     public function visit(Request $request)
     {
-        $affiliateId = $request->affiliate_id;
-
-        $user = User::where('affiliate_id', $affiliateId)->first();
-
-        if ($user) {
-            $user->increment('affiliate_visits');
-        }
+        $this->marketService->registerVisitAndReward($request->affiliate_id);
 
         return $this->sendResponse();
     }

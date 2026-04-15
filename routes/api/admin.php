@@ -283,6 +283,7 @@ Route::prefix('admin')->group(
                 Route::apiResource('vendor-users', VendorUserCrudController::class);
                 Route::get('users/markters', [UserCrudController::class, 'markters']);
                 Route::post('users/{id}/demote-affiliate', [UserCrudController::class, 'demoteAffiliate']);
+                Route::post('users/{id}/reactivate-affiliate', [UserCrudController::class, 'reactivateAffiliate']);
                 Route::apiResource('users', UserCrudController::class);
             }
 

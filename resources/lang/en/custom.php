@@ -964,9 +964,17 @@ return [
         'already_marketer' => 'You are a marketer; you do not need to submit an application.',
         'request_not_submitted' => 'The user has not submitted a marketer request.',
         'cannot_change_number' => 'Cannot change marketer number.',
+        'invalid_commission_type' => 'Invalid affiliate commission type.',
+        'rate_required_for_percentage' => 'Commission rate is required for percentage commission types.',
+        'fixed_amount_required' => 'Fixed commission amount is required for fixed-per-order type.',
+        'products_required_for_selected_percentage' => 'Products must be selected for percentage on selected products type.',
+        'visit_threshold_required' => 'Visit threshold is required when visit commission is enabled.',
+        'visit_amount_required' => 'Visit commission amount is required when visit commission is enabled.',
         'pending_withdraw_requests' => 'Cannot convert the account to a normal user while there are pending withdrawal requests.',
         'no_affiliate_number' => 'This user does not have an affiliate number.',
+        'affiliate_number_taken' => 'Affiliate number is already used by another account.',
         'demoted_successfully' => 'Account has been converted to a normal user successfully.',
+        'reactivated_successfully' => 'Account has been reactivated as affiliate successfully.',
     ],
 
     // Ratings

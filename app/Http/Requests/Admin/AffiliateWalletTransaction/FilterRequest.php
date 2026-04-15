@@ -14,7 +14,7 @@ class FilterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => ['nullable', 'string', 'in:commission,withdraw'],
+            'type' => ['nullable', 'string', 'in:commission,visit_commission,withdraw'],
             'affiliate_id' => ['nullable', 'string', 'exists:users,affiliate_id'],
             'order_id' => ['nullable', 'integer', 'exists:orders,id'],
             'from' => ['nullable', 'date'],

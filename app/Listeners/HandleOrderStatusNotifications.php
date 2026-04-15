@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Events\OrderStatusChanged;
 use App\Models\Admin;
+use App\Models\AffiliateWalletTransaction;
 use App\Models\Driver;
 use App\Services\Base\NotificationService;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -30,6 +31,14 @@ class HandleOrderStatusNotifications implements ShouldQueue
         $this->notifyUser($order, $event);
         $this->notifyAdmins($order, $event);
         $this->notifyDrivers($order, $event);
+
+        if (
+            $event->to === OrderStatus::DELIVERED->value &&
+            $event->from !== OrderStatus::DELIVERED->value
+        ) {
+            $this->recordAffiliateCommission($order);
+        }
+
         if ($event->from === null && $event->to === OrderStatus::PENDING->value) {
             $this->notifyAffiliate($order);
         }
@@ -312,5 +321,33 @@ class HandleOrderStatusNotifications implements ShouldQueue
                 'type' => 'affiliate_order',
             ]
         );
+    }
+
+    private function recordAffiliateCommission($order): void
+    {
+        if (!$order->affiliate_id) {
+            return;
+        }
+
+        $exists = AffiliateWalletTransaction::where('order_id', $order->id)
+            ->where('type', 'commission')
+            ->exists();
+
+        if ($exists) {
+            return;
+        }
+
+        $amount = (float) ($order->affiliate_commission_amount ?? $order->affiliate_commission ?? 0);
+
+        if ($amount <= 0) {
+            return;
+        }
+
+        AffiliateWalletTransaction::create([
+            'affiliate_id' => $order->affiliate_id,
+            'type' => 'commission',
+            'amount' => round($amount, 2),
+            'order_id' => $order->id,
+        ]);
     }
 }

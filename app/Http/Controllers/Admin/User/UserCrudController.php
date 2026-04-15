@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\User;
 
 use App\Http\Controllers\BaseCRUDController;
 use App\Http\Requests\Admin\User\FilterRequest;
+use App\Http\Requests\Admin\User\ReactivateAffiliateRequest;
 use App\Http\Requests\Admin\User\StoreRequest;
 use App\Http\Requests\Admin\User\UpdateRequest;
 use App\Services\Admin\CouponService;
@@ -34,6 +35,16 @@ class UserCrudController extends BaseCRUDController
         return $this->sendResponse(
             data: $data,
             message: __('custom.marketer.demoted_successfully')
+        );
+    }
+
+    public function reactivateAffiliate(int $id, ReactivateAffiliateRequest $request)
+    {
+        $data = $this->service->reactivateAffiliate($id, $request->validated());
+
+        return $this->sendResponse(
+            data: $data,
+            message: __('custom.marketer.reactivated_successfully')
         );
     }
 }

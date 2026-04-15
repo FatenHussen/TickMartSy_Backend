@@ -64,6 +64,9 @@ class OneResource extends JsonResource
             'affiliate' => [
                 'affiliate_rate' => $this->affiliate_rate,
                 'affiliate_source' => $this->affiliate_source,
+                'affiliate_commission_type' => $this->affiliate_commission_type,
+                'affiliate_fixed_commission' => $this->affiliate_fixed_commission,
+                'affiliate_commission_amount' => $this->affiliate_commission_amount,
                 'affiliate_commission' => $this->affiliate_commission,
             ],
             'timestamps' => [

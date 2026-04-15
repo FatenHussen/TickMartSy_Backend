@@ -72,6 +72,28 @@ class UpdateRequest extends FormRequest
                 'numeric',
                 'between:0,100'
             ],
+
+            'affiliate_commission_type' => [
+                'nullable',
+                Rule::in([
+                    'percentage_order',
+                    'fixed_per_order',
+                    'percentage_selected_products',
+                ]),
+            ],
+
+            'affiliate_fixed_commission' => [
+                'nullable',
+                'numeric',
+                'min:0'
+            ],
+
+            'affiliate_product_ids' => ['nullable', 'array'],
+            'affiliate_product_ids.*' => ['integer', 'exists:products,id'],
+
+            'affiliate_visit_commission_enabled' => ['nullable', 'boolean'],
+            'affiliate_visit_commission_threshold' => ['nullable', 'integer', 'min:1'],
+            'affiliate_visit_commission_amount' => ['nullable', 'numeric', 'min:0'],
         ];
     }
 }

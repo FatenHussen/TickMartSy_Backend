@@ -46,7 +46,13 @@ class Order extends Model
         'start_todelivery',
         'order_code',
         'assigned_by',
-        'rejection_reason'
+        'rejection_reason',
+        'affiliate_id',
+        'affiliate_rate',
+        'affiliate_source',
+        'affiliate_commission_type',
+        'affiliate_fixed_commission',
+        'affiliate_commission_amount',
 
     ];
     protected $casts = [
@@ -54,6 +60,9 @@ class Order extends Model
         'start_todelivery' => 'boolean',
         'subscription_free_delivery' => 'boolean',
         'pause_at' => 'datetime',
+        'affiliate_rate' => 'decimal:2',
+        'affiliate_fixed_commission' => 'decimal:2',
+        'affiliate_commission_amount' => 'decimal:2',
     ];
 
     protected $appends = ['affiliate_commission'];
@@ -62,10 +71,15 @@ class Order extends Model
     protected function affiliateCommission(): Attribute
     {
         return Attribute::make(
-            get: fn() =>
-            $this->affiliate_id && $this->affiliate_rate
-                ? round($this->total * ($this->affiliate_rate / 100), 2)
-                : 0
+            get: function () {
+                if ($this->affiliate_commission_amount !== null) {
+                    return round((float) $this->affiliate_commission_amount, 2);
+                }
+
+                return $this->affiliate_id && $this->affiliate_rate
+                    ? round($this->total * ($this->affiliate_rate / 100), 2)
+                    : 0;
+            }
         );
     }
 

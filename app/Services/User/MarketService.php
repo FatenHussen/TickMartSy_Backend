@@ -14,6 +14,68 @@ use Illuminate\Support\Facades\DB;
 
 class MarketService
 {
+    public function registerVisitAndReward(?string $affiliateId): void
+    {
+        if (empty($affiliateId)) {
+            return;
+        }
+
+        DB::transaction(function () use ($affiliateId) {
+            /** @var User|null $user */
+            $user = User::where('affiliate_id', $affiliateId)
+                ->lockForUpdate()
+                ->first();
+
+            if (!$user) {
+                return;
+            }
+
+            $user->increment('affiliate_visits');
+            $user->refresh();
+
+            if (
+                !$user->is_affiliate ||
+                !$user->affiliate_approved ||
+                !$user->affiliate_visit_commission_enabled
+            ) {
+                return;
+            }
+
+            $threshold = (int) ($user->affiliate_visit_commission_threshold ?? 0);
+            $amountPerStep = (float) ($user->affiliate_visit_commission_amount ?? 0);
+
+            if ($threshold <= 0 || $amountPerStep <= 0) {
+                return;
+            }
+
+            $eligibleSteps = intdiv((int) $user->affiliate_visits, $threshold);
+            $rewardedSteps = (int) ($user->affiliate_visit_rewarded_steps ?? 0);
+
+            if ($eligibleSteps <= $rewardedSteps) {
+                return;
+            }
+
+            $newSteps = $eligibleSteps - $rewardedSteps;
+            $rewardAmount = round($newSteps * $amountPerStep, 2);
+
+            AffiliateWalletTransaction::create([
+                'affiliate_id' => $user->affiliate_id,
+                'type' => 'visit_commission',
+                'amount' => $rewardAmount,
+                'order_id' => null,
+            ]);
+
+            $user->update([
+                'affiliate_visit_rewarded_steps' => $eligibleSteps,
+            ]);
+        });
+    }
+
+    private function commissionExpression(): string
+    {
+        return 'COALESCE(affiliate_commission_amount, total * (affiliate_rate / 100))';
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Statistics
@@ -33,11 +95,15 @@ class MarketService
         $totalSales = (clone $ordersQuery)->sum('total');
 
         $earnedCommission = (clone $deliveredQuery)
-            ->sum(DB::raw('total * (affiliate_rate / 100)'));
+            ->sum(DB::raw($this->commissionExpression()));
 
         $pendingCommission = (clone $ordersQuery)
             ->where('status', '!=', OrderStatus::DELIVERED->value)
-            ->sum(DB::raw('total * (affiliate_rate / 100)'));
+            ->sum(DB::raw($this->commissionExpression()));
+
+        $visitCommission = AffiliateWalletTransaction::where('affiliate_id', $affiliateId)
+            ->where('type', 'visit_commission')
+            ->sum('amount');
 
         $totalWithdrawn = AffiliateWalletTransaction::where('affiliate_id', $affiliateId)
             ->where('type', 'withdraw')
@@ -47,10 +113,11 @@ class MarketService
             'total_orders'      => $totalOrders,
             'delivered_orders'  => $deliveredOrders,
             'total_sales'       => round($totalSales, 2),
-            'earned_commission' => round($earnedCommission, 2),
+            'earned_commission' => round($earnedCommission + $visitCommission, 2),
             'pending_earnings'  => round($pendingCommission, 2),
             'withdrawn'         => round($totalWithdrawn, 2),
-            'available_balance' => round($earnedCommission - $totalWithdrawn, 2),
+            'available_balance' => round(($earnedCommission + $visitCommission) - $totalWithdrawn, 2),
+            'visit_commission' => round($visitCommission, 2),
             'top_products' => $this->getTopProducts($affiliateId, 10)
         ];
     }
@@ -79,7 +146,12 @@ class MarketService
             'affiliate_id'   => $affiliate->affiliate_id,
             'affiliate_link' => url("affiliate/{$affiliate->affiliate_id}"),
             'rate'           => $affiliate->affiliate_rate,
+            'commission_type' => $affiliate->affiliate_commission_type,
+            'fixed_commission' => $affiliate->affiliate_fixed_commission,
             'total_visites'  => $affiliate->affiliate_visits,
+            'visit_commission_enabled' => (bool) $affiliate->affiliate_visit_commission_enabled,
+            'visit_commission_threshold' => $affiliate->affiliate_visit_commission_threshold,
+            'visit_commission_amount' => $affiliate->affiliate_visit_commission_amount,
             'coupon'    => $activeCoupon
                 ? CouponResource::make($activeCoupon)
                 : null,
@@ -125,13 +197,25 @@ class MarketService
                 'delivered_orders'  => $delivered->count(),
                 'total_sales'       => round($collection->sum('total'), 2),
                 'earned_commission' => round(
-                    $delivered->sum(fn($o) => $o->total * ($o->affiliate_rate / 100)),
+                    $delivered->sum(function ($o) {
+                        if ($o->affiliate_commission_amount !== null) {
+                            return (float) $o->affiliate_commission_amount;
+                        }
+
+                        return $o->total * ($o->affiliate_rate / 100);
+                    }),
                     2
                 ),
                 'pending_earnings'  => round(
                     $collection
                         ->where('status', '!=', OrderStatus::DELIVERED->value)
-                        ->sum(fn($o) => $o->total * ($o->affiliate_rate / 100)),
+                        ->sum(function ($o) {
+                            if ($o->affiliate_commission_amount !== null) {
+                                return (float) $o->affiliate_commission_amount;
+                            }
+
+                            return $o->total * ($o->affiliate_rate / 100);
+                        }),
                     2
                 ),
             ],
@@ -172,7 +256,7 @@ class MarketService
         $collection = (clone $query)->get();
 
         $totalCommissions = $collection
-            ->where('type', 'commission')
+            ->whereIn('type', ['commission', 'visit_commission'])
             // ->where('status', 'completed')
             ->sum('amount');
 
@@ -202,7 +286,7 @@ class MarketService
     public function createWithdraw(string $affiliateId, float $amount): ?AffiliateWithdrawRequest
     {
         $totalCommission = AffiliateWalletTransaction::where('affiliate_id', $affiliateId)
-            ->where('type', 'commission')
+            ->whereIn('type', ['commission', 'visit_commission'])
             ->sum('amount');
 
         $totalWithdrawn = AffiliateWalletTransaction::where('affiliate_id', $affiliateId)
@@ -283,7 +367,7 @@ class MarketService
         $results = Order::selectRaw("
                 MONTH(created_at) as month,
                 COUNT(*) as completed_orders,
-                SUM(total * (affiliate_rate / 100)) as earned_commission
+                SUM(" . $this->commissionExpression() . ") as earned_commission
             ")
             ->where('affiliate_id', $affiliateId)
             ->where('status', OrderStatus::DELIVERED->value)
