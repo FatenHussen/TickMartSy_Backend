@@ -374,6 +374,7 @@ class PageSectionSeeder extends Seeder
                         'trend',
                         'top_rated',
                         'offers',
+                        'latest_flash_sale',
                         'recommended',
                         'for_you',
                         'search_based',
@@ -433,6 +434,19 @@ class PageSectionSeeder extends Seeder
             'order' => 8,
             'filters' => [
                 'type' => 'offers',
+            ]
+        ]));
+
+        PageSection::create($fillPageSectionColors([
+            'name' => ['en' => 'Latest Flash Sale Products', 'ar' => 'منتجات أحدث فلاش سيل'],
+            'page_id' => $homePage->id,
+            'section_id' => $productsSection->id,
+            'display_type_id' => $productDisplayType->id,
+            'position' => 'after',
+            'variant' => VariantSection::Horizontal->value,
+            'order' => 9,
+            'filters' => [
+                'type' => 'latest_flash_sale',
             ]
         ]));
 

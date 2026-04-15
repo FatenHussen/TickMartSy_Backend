@@ -148,7 +148,7 @@ class DriverService
 
     public function getProfile()
     {
-        $driver = auth('driver')->user()->load(['areas', 'orders', 'ratings']);
+        $driver = auth('driver')->user()->load(['cities', 'orders', 'ratings']);
         return new DriverProfileResource($driver);
     }
 
@@ -170,7 +170,7 @@ class DriverService
 
         $driver->update($data);
 
-        return new DriverProfileResource($driver->fresh()->load(['areas', 'orders', 'ratings']));
+        return new DriverProfileResource($driver->fresh()->load(['cities', 'orders', 'ratings']));
     }
 
     public function updatePhone($request)

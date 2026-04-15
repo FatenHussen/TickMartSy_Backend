@@ -23,10 +23,10 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('area_driver', function (Blueprint $table) {
-            $table->foreignId('area_id')->constrained()->cascadeOnDelete();
+        Schema::create('city_driver', function (Blueprint $table) {
+            $table->foreignId('city_id')->constrained()->cascadeOnDelete();
             $table->foreignId('driver_id')->constrained()->cascadeOnDelete();
-            $table->primary(['area_id', 'driver_id']);
+            $table->primary(['city_id', 'driver_id']);
         });
     }
 

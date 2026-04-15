@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Driver;
-use App\Models\Area;
+use App\Models\City;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -76,13 +76,13 @@ class DriverSeeder extends Seeder
         foreach ($drivers as $driverData) {
             $driver = Driver::create($driverData);
 
-            // Assign random areas to each driver (1-3 areas)
-            $areas = Area::inRandomOrder()->take(rand(1, 3))->pluck('id');
-            if ($areas->isNotEmpty()) {
-                $driver->areas()->attach($areas);
+            // Assign random cities to each driver (1-3 cities)
+            $cities = City::inRandomOrder()->take(rand(1, 3))->pluck('id');
+            if ($cities->isNotEmpty()) {
+                $driver->cities()->attach($cities);
             }
         }
 
-        $this->command->info('Created ' . count($drivers) . ' drivers with random area assignments.');
+        $this->command->info('Created ' . count($drivers) . ' drivers with random city assignments.');
     }
 }

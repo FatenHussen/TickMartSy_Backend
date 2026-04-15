@@ -2,17 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Http\Resources\Product\AllResource;
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
-use App\Http\Resources\Product\AllResource;
-use App\Models\Favorite;
-use App\Traits\LogsActivity;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Builder;
-use App\Models\FlashSale;
-use App\Models\Category;
 
 class Product extends Model implements Sectionable
 {
@@ -80,6 +76,11 @@ class Product extends Model implements Sectionable
     protected bool $activeFlashSaleResolved = false;
     protected ?FlashSale $activeFlashSaleCache = null;
 
+    /*
+    |--------------------------------------------------------------------------
+    | Model Hooks
+    |--------------------------------------------------------------------------
+    */
     protected static function booted(): void
     {
         static::saving(function (self $product) {
@@ -107,14 +108,26 @@ class Product extends Model implements Sectionable
         });
     }
 
-    public function getEffectiveDeliveryTimeAttribute(): ?string
+    /*
+    |--------------------------------------------------------------------------
+    | Accessors (Pricing & Discounts)
+    |--------------------------------------------------------------------------
+    */
+    public function getFinalDiscountAttribute(): array
     {
-        // Tikmool vendor (id=1) always gets fixed delivery time
-        if ($this->vendor_id === 1) {
-            return '12-48 ساعة';
+        if ($flash = $this->getFlashSaleDiscountDetails()) {
+            return $flash;
         }
 
-        return $this->delivery_time;
+        if ($product = $this->getProductDiscountDetails()) {
+            return $product;
+        }
+
+        return [
+            'source' => 'none',
+            'type' => null,
+            'value' => 0,
+        ];
     }
 
     public function getPriceAfterDiscountAttribute()
@@ -136,23 +149,60 @@ class Product extends Model implements Sectionable
         );
     }
 
-    public function getFinalDiscountAttribute(): array
+    public function getEffectiveDeliveryTimeAttribute(): ?string
     {
-        if ($flash = $this->getFlashSaleDiscountDetails()) {
-            return $flash;
+        // Tikmool vendor (id=1) always gets fixed delivery time
+        if ($this->vendor_id === 1) {
+            return '12-48 ساعة';
         }
 
-        if ($product = $this->getProductDiscountDetails()) {
-            return $product;
-        }
-
-        return [
-            'source' => 'none',
-            'type' => null,
-            'value' => 0,
-        ];
+        return $this->delivery_time;
     }
 
+    public function getAverageRatingAttribute(): float
+    {
+        return round((float) $this->ratings()->avg('rating'), 1);
+    }
+
+    public function getSoldQuantityAttribute()
+    {
+        return $this->completedOrderItems()->sum('order_items.quantity');
+    }
+
+    public function getBoughtWithProductsListAttribute()
+    {
+        if (!$this->bought_with || !is_array($this->bought_with)) {
+            return collect([]);
+        }
+
+        return Product::whereIn('id', $this->bought_with)->get();
+    }
+
+    public function getImageUrlAttribute()
+    {
+        $main = $this->mainMedia();
+        if ($main) {
+            return $main->url;
+        }
+
+        return $this->productMedia()->first()?->url;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Accessors (Ratings)
+    |--------------------------------------------------------------------------
+    */
+    public function averageRating()
+    {
+        return $this->ratings()->avg('rating');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Discount Helpers
+    |--------------------------------------------------------------------------
+    */
     protected function getFlashSaleDiscountDetails(): ?array
     {
         $flashSale = $this->resolveActiveFlashSale();
@@ -221,56 +271,27 @@ class Product extends Model implements Sectionable
 
         return $price;
     }
-    public function ratings()
-    {
-        return $this->morphMany(Rating::class, 'rateable');
-    }
-    public function getAverageRatingAttribute(): float
-    {
-        return round((float) $this->ratings()->avg('rating'), 1);
-    }
-    public function averageRating()
-    {
-        return $this->ratings()->avg('rating');
-    }
 
-    public function getRatingBreakdown(): array
-    {
-        $breakdown = [];
-
-        // Initialize all star ratings with 0 count
-        for ($i = 1; $i <= 5; $i++) {
-            $breakdown[$i] = 0;
-        }
-
-        // Get actual rating counts
-        $ratingCounts = $this->ratings()
-            ->selectRaw('rating, COUNT(*) as count')
-            ->groupBy('rating')
-            ->pluck('count', 'rating')
-            ->toArray();
-
-        // Merge actual counts with initialized array
-        foreach ($ratingCounts as $rating => $count) {
-            $breakdown[(int)$rating] = (int)$count;
-        }
-
-        return $breakdown;
-    }
     /*
     |--------------------------------------------------------------------------
     | Relationships
     |--------------------------------------------------------------------------
     */
+    public function ratings()
+    {
+        return $this->morphMany(Rating::class, 'rateable');
+    }
 
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
+
     public function vendor()
     {
         return $this->belongsTo(Vendor::class);
     }
+
     public function brand()
     {
         return $this->belongsTo(Brand::class);
@@ -290,21 +311,15 @@ class Product extends Model implements Sectionable
     {
         return $this->hasMany(ProductVariant::class);
     }
+
     public function shopVariants()
     {
         return $this->hasMany(ShopProductVariant::class);
     }
+
     public function categoryDetails()
     {
         return $this->hasMany(ProductCategoryDetail::class);
-    }
-
-    public function getBoughtWithProductsListAttribute()
-    {
-        if (!$this->bought_with || !is_array($this->bought_with)) {
-            return collect([]);
-        }
-        return Product::whereIn('id', $this->bought_with)->get();
     }
 
     public function extraDetails()
@@ -339,11 +354,6 @@ class Product extends Model implements Sectionable
         return $this->belongsTo(FlashSale::class);
     }
 
-
-    public function toSectionArray()
-    {
-        return AllResource::make($this);
-    }
     public function orderItems()
     {
         return $this->hasManyThrough(
@@ -355,6 +365,46 @@ class Product extends Model implements Sectionable
             'id'
         );
     }
+
+    public function favorites(): MorphMany
+    {
+        return $this->morphMany(Favorite::class, 'favoriteable');
+    }
+
+    public function icons()
+    {
+        return $this->belongsToMany(Icon::class, 'icon_product');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Business Helpers
+    |--------------------------------------------------------------------------
+    */
+    public function getRatingBreakdown(): array
+    {
+        $breakdown = [];
+
+        // Initialize all star ratings with 0 count
+        for ($i = 1; $i <= 5; $i++) {
+            $breakdown[$i] = 0;
+        }
+
+        // Get actual rating counts
+        $ratingCounts = $this->ratings()
+            ->selectRaw('rating, COUNT(*) as count')
+            ->groupBy('rating')
+            ->pluck('count', 'rating')
+            ->toArray();
+
+        // Merge actual counts with initialized array
+        foreach ($ratingCounts as $rating => $count) {
+            $breakdown[(int) $rating] = (int) $count;
+        }
+
+        return $breakdown;
+    }
+
     public function totalSoldQuantity()
     {
         return $this->completedOrderItems()->sum('quantity');
@@ -366,11 +416,6 @@ class Product extends Model implements Sectionable
             ->whereHas('order', function ($q) {
                 $q->where('status', 'completed');
             });
-    }
-    public function getSoldQuantityAttribute()
-    {
-        return $this->completedOrderItems()
-            ->sum('order_items.quantity');
     }
 
     /**
@@ -386,17 +431,16 @@ class Product extends Model implements Sectionable
             ->get();
     }
 
-    public function favorites(): MorphMany
+    public function toSectionArray()
     {
-        return $this->morphMany(Favorite::class, 'favoriteable');
+        return AllResource::make($this);
     }
 
-    public function icons()
-    {
-        return $this->belongsToMany(Icon::class, 'icon_product');
-    }
-
-
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes
+    |--------------------------------------------------------------------------
+    */
     public function scopeDeepSearch($query, $search)
     {
         $locale = app()->getLocale();
@@ -446,15 +490,5 @@ class Product extends Model implements Sectionable
             }
         });
         // ->where('approval_status', 'approved');
-    }
-
-    public function getImageUrlAttribute()
-    {
-        $main = $this->mainMedia();
-        if ($main) {
-            return $main->url;
-        }
-
-        return $this->productMedia()->first()?->url;
     }
 }

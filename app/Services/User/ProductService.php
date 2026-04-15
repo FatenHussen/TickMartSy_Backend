@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\FlashSale;
 use App\Services\BaseService;
 use App\Http\Resources\Product\OneResource;
 use App\Http\Resources\Product\AllResource;
@@ -53,6 +54,7 @@ class ProductService extends BaseService
             'trend'        => $this->filterTrend($query),
             'top_rated'    => $this->filterTopRated($query),
             'offers'       => $this->filterOffers($query),
+            'latest_flash_sale' => $this->filterLatestFlashSale($query),
             'recommended'  => $this->filterRecommended($query),
             'for_you'      => $this->filterForYou($query),
             'search_based' => $this->filterSearchBased($query, $filters),
@@ -89,6 +91,22 @@ class ProductService extends BaseService
         $query->whereNotNull('discount')
             ->where('discount', '>', 0)
             ->orderByDesc('discount');
+    }
+
+    protected function filterLatestFlashSale($query): void
+    {
+        $latestActiveFlashSaleId = FlashSale::query()
+            ->active()
+            ->latest('id')
+            ->value('id');
+
+        if (!$latestActiveFlashSaleId) {
+            $query->whereRaw('1 = 0');
+            return;
+        }
+
+        $query->where('flash_sale_id', $latestActiveFlashSaleId)
+            ->latest();
     }
     protected function filterRecommended($query)
     {

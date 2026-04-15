@@ -29,4 +29,14 @@ class City extends Model
     {
         return $this->belongsTo(Governorate::class);
     }
+
+    public function areas()
+    {
+        return $this->hasMany(Area::class);
+    }
+
+    public function drivers()
+    {
+        return $this->belongsToMany(Driver::class, 'city_driver');
+    }
 }

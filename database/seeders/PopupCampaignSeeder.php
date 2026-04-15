@@ -339,7 +339,69 @@ class PopupCampaignSeeder extends Seeder
         ];
 
         foreach ($campaigns as $campaign) {
-            PopupCampaign::updateOrCreate(['slug' => $campaign['slug']], $campaign);
+            $normalizedCampaign = $this->normalizeCampaign($campaign);
+            PopupCampaign::updateOrCreate(['slug' => $normalizedCampaign['slug']], $normalizedCampaign);
         }
+    }
+
+    private function normalizeCampaign(array $campaign): array
+    {
+        foreach (['title', 'headline', 'subheadline', 'description'] as $field) {
+            if (array_key_exists($field, $campaign)) {
+                $campaign[$field] = $this->toTranslationPayload($campaign[$field]);
+            }
+        }
+
+        if (! isset($campaign['button_url']) && isset($campaign['cta_value'])) {
+            $campaign['button_url'] = $this->resolveButtonUrl(
+                $campaign['cta_type'] ?? null,
+                $campaign['cta_value']
+            );
+        }
+
+        unset($campaign['cta_type'], $campaign['cta_value']);
+
+        return $campaign;
+    }
+
+    private function toTranslationPayload(mixed $value): ?array
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        if (is_array($value)) {
+            return $value;
+        }
+
+        $text = trim((string) $value);
+
+        if ($text === '') {
+            return null;
+        }
+
+        return [
+            'en' => $text,
+            'ar' => $text,
+        ];
+    }
+
+    private function resolveButtonUrl(?string $ctaType, mixed $ctaValue): ?string
+    {
+        if ($ctaValue === null) {
+            return null;
+        }
+
+        $value = trim((string) $ctaValue);
+        if ($value === '') {
+            return null;
+        }
+
+        return match ($ctaType) {
+            PopupCampaign::CTA_PRODUCT => '/products/' . $value,
+            PopupCampaign::CTA_CATEGORY => '/categories/' . $value,
+            PopupCampaign::CTA_COUPON => '/coupon/' . $value,
+            default => $value,
+        };
     }
 }
