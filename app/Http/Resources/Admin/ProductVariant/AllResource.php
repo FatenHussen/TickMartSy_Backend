@@ -16,6 +16,7 @@ class AllResource extends JsonResource
                 'id' => $this->product->id,
                 'name' => $this->product->name,
                 'description' => $this->product->description,
+                'price' => $this->product->price,
                 'image' => $this->product->media->first()?->url ?? null,
                 'category' => [
                     'id' => $this->product->category->id,
@@ -32,10 +33,10 @@ class AllResource extends JsonResource
             'shop_variants' => $this->shopVariants->map(function ($shopVariant) {
                 return [
                     'id' => $shopVariant->id,
-                    'shop' => [
+                    'shop' => $shopVariant->shop ? [
                         'id' => $shopVariant->shop->id,
                         'name' => $shopVariant->shop->name,
-                    ],
+                    ] : null,
                     'price' => $shopVariant->price,
                     'cost_price' => $shopVariant->cost_price,
                     'quantity' => $shopVariant->quantity,
