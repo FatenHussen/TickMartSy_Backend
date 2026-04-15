@@ -8,25 +8,45 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('vendors', function (Blueprint $table) {
-            $table->enum('commission_type', ['percentage', 'fixed'])
-                ->default('percentage')
-                ->after('commission_rate');
+        if (!Schema::hasColumn('vendors', 'commission_type')) {
+            Schema::table('vendors', function (Blueprint $table) {
+                $table->enum('commission_type', ['percentage', 'fixed'])
+                    ->default('percentage')
+                    ->after('commission_rate');
+            });
+        }
 
-            $table->decimal('fixed_commission', 10, 2)
-                ->default(0)
-                ->after('commission_type');
+        if (!Schema::hasColumn('vendors', 'fixed_commission')) {
+            Schema::table('vendors', function (Blueprint $table) {
+                $table->decimal('fixed_commission', 10, 2)
+                    ->default(0)
+                    ->after('commission_type');
+            });
+        }
 
-            $table->enum('settlement_cycle', ['weekly', 'monthly'])
-                ->default('monthly')
-                ->after('fixed_commission');
-        });
+        if (!Schema::hasColumn('vendors', 'settlement_cycle')) {
+            Schema::table('vendors', function (Blueprint $table) {
+                $table->enum('settlement_cycle', ['weekly', 'monthly'])
+                    ->default('monthly')
+                    ->after('fixed_commission');
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('vendors', function (Blueprint $table) {
-            $table->dropColumn(['commission_type', 'fixed_commission', 'settlement_cycle']);
-        });
+        $columns = [];
+
+        foreach (['commission_type', 'fixed_commission', 'settlement_cycle'] as $column) {
+            if (Schema::hasColumn('vendors', $column)) {
+                $columns[] = $column;
+            }
+        }
+
+        if ($columns !== []) {
+            Schema::table('vendors', function (Blueprint $table) use ($columns) {
+                $table->dropColumn($columns);
+            });
+        }
     }
 };
