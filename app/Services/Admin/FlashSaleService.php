@@ -29,6 +29,8 @@ class FlashSaleService extends BaseService
                 'name' => $data['name'],
                 'end_date' => $data['end_date'],
                 'is_active' => $data['is_active'] ?? false,
+                'discount' => $data['discount'] ?? 0,
+                'discount_type' => $data['discount_type'] ?? 'percent',
             ]);
 
             $this->assignProducts($flashSale, $data);
@@ -46,6 +48,8 @@ class FlashSaleService extends BaseService
                 'name' => $data['name'],
                 'end_date' => $data['end_date'],
                 'is_active' => $data['is_active'] ?? false,
+                'discount' => $data['discount'] ?? $flashSale->discount,
+                'discount_type' => $data['discount_type'] ?? $flashSale->discount_type,
             ]);
 
             $this->assignProducts($flashSale, $data);
