@@ -135,6 +135,7 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Currency::class);
     }
+
     public function addresses()
     {
         return $this->hasMany(UserAddress::class, 'user_id');
