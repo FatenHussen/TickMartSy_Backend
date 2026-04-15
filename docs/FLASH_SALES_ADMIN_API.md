@@ -70,6 +70,8 @@
   "name": "Ramadan Sale",
   "end_date": "2026-04-30 23:59:59",
   "is_active": true,
+  "discount": 15,
+  "discount_type": "percent",
   "product_ids": [11, 12, 13],
   "category_id": 5,
   "vendor_id": 9
@@ -81,6 +83,8 @@
 - `name`: required, string, max 255
 - `end_date`: required, date, after now
 - `is_active`: nullable, boolean
+- `discount`: nullable, numeric, min 0
+- `discount_type`: nullable, `percent|fixed`
 - `product_ids`: sometimes, array
 - `product_ids.*`: integer, exists in `products.id`
 - `category_id`: sometimes|nullable, exists in `categories.id`
@@ -117,6 +121,8 @@
     "name": "Ramadan Sale",
     "end_date": "2026-04-30T23:59:59.000000Z",
     "is_active": true,
+    "discount": 15,
+    "discount_type": "percent",
     "created_at": "2026-04-14T12:40:00.000000Z",
     "updated_at": "2026-04-14T12:40:00.000000Z"
   }

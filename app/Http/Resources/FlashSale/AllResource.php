@@ -14,6 +14,8 @@ class AllResource extends JsonResource
             'name' => $this->name,
             'end_date' => $this->end_date,
             'is_active' => $this->is_active,
+            'discount' => $this->discount,
+            'discount_type' => $this->discount_type,
         ];
     }
 }

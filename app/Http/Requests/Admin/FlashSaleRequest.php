@@ -17,6 +17,8 @@ class FlashSaleRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'end_date' => ['required', 'date', 'after:now'],
             'is_active' => 'nullable|boolean',
+            'discount' => ['nullable', 'numeric', 'min:0'],
+            'discount_type' => ['nullable', 'in:percent,fixed'],
             'product_ids' => 'sometimes|array',
             'product_ids.*' => 'integer|exists:products,id',
             'category_id' => 'sometimes|nullable|exists:categories,id',

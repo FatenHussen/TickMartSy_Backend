@@ -14,11 +14,14 @@ class FlashSale extends Model
         'name',
         'end_date',
         'is_active',
+        'discount',
+        'discount_type',
     ];
 
     protected $casts = [
         'end_date' => 'datetime',
         'is_active' => 'boolean',
+        'discount' => 'float',
     ];
 
     public function products(): HasMany
