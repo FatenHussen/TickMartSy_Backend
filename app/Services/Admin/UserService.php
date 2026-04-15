@@ -53,14 +53,14 @@ class UserService extends BaseService
             $this->normalizeVisitCommissionPayload($data);
         }
 
-        /** @var User $user */
-        $user = parent::create($data);
+        $createResult = parent::create($data);
+        $user = $this->extractUserModelFromServiceResult($createResult);
 
-        if ($hasAffiliateData) {
+        if ($hasAffiliateData && $user) {
             $this->syncAffiliateProducts($user, $data);
         }
 
-        return $user;
+        return $createResult;
     }
 
     public function update($id, array $data)
@@ -109,11 +109,14 @@ class UserService extends BaseService
             }
         }
 
-        /** @var User $updatedUser */
-        $updatedUser = parent::update($id, $data);
-        $this->syncAffiliateProducts($updatedUser, $data);
+        $updateResult = parent::update($id, $data);
+        $updatedUser = $this->extractUserModelFromServiceResult($updateResult);
 
-        return $updatedUser;
+        if ($updatedUser) {
+            $this->syncAffiliateProducts($updatedUser, $data);
+        }
+
+        return $updateResult;
     }
 
     public function markters()
@@ -351,5 +354,18 @@ class UserService extends BaseService
 
         $rate = $data['affiliate_rate'] ?? $user->affiliate_rate;
         return $rate !== null && (float) $rate > 0;
+    }
+
+    private function extractUserModelFromServiceResult(mixed $result): ?User
+    {
+        if ($result instanceof User) {
+            return $result;
+        }
+
+        if (is_object($result) && property_exists($result, 'resource') && $result->resource instanceof User) {
+            return $result->resource;
+        }
+
+        return null;
     }
 }

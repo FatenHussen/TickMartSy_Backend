@@ -16,7 +16,7 @@ trait AppliesAreaScope
     protected static function bootAppliesAreaScope(): void
     {
         static::addGlobalScope('area', function (Builder $builder): void {
-            static::applyAreaScope($builder);
+            // static::applyAreaScope($builder);
         });
     }
 
