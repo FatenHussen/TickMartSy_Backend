@@ -5,6 +5,7 @@ namespace App\Services\Admin;
 use App\Enums\OrderStatus;
 use App\Models\Vendor;
 use App\Models\VendorWithdrawRequest;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +14,17 @@ class VendorAccountingService
 {
     public function getSummary(array $filters = []): array
     {
-        $vendorIds = Vendor::query()->pluck('id')->all();
+        $vendorsQuery = Vendor::query()->select('id', 'commission_rate', 'commission_type', 'fixed_commission', 'settlement_cycle', 'is_active');
+
+        if (array_key_exists('is_active', $filters) && $filters['is_active'] !== null) {
+            $vendorsQuery->where('is_active', (bool) $filters['is_active']);
+        }
+
+        if (!empty($filters['settlement_cycle'])) {
+            $vendorsQuery->where('settlement_cycle', $filters['settlement_cycle']);
+        }
+
+        $vendorIds = (clone $vendorsQuery)->pluck('id')->all();
 
         if (empty($vendorIds)) {
             return [
@@ -31,10 +42,7 @@ class VendorAccountingService
             ];
         }
 
-        $vendors = Vendor::query()
-            ->select('id', 'commission_rate', 'is_active')
-            ->get()
-            ->keyBy('id');
+        $vendors = $vendorsQuery->get()->keyBy('id');
 
         $salesRows = $this->aggregateSalesForVendors($vendorIds, $filters)->keyBy('vendor_id');
         $withdrawRows = $this->aggregateWithdrawalsForVendors($vendorIds, $filters)->keyBy('vendor_id');
@@ -49,7 +57,9 @@ class VendorAccountingService
 
         foreach ($vendors as $vendorId => $vendor) {
             $statement = $this->buildWalletStatement(
+                commissionType: (string) ($vendor->commission_type ?? 'percentage'),
                 commissionRate: (float) ($vendor->commission_rate ?? 0),
+                fixedCommission: (float) ($vendor->fixed_commission ?? 0),
                 salesRow: (array) ($salesRows[$vendorId] ?? []),
                 withdrawRow: (array) ($withdrawRows[$vendorId] ?? [])
             );
@@ -84,7 +94,7 @@ class VendorAccountingService
     public function getVendorsAccounting(array $filters = [], int $perPage = 10): array
     {
         $query = Vendor::query()
-            ->select('id', 'name', 'owner_name', 'commission_rate', 'is_active', 'created_at');
+            ->select('id', 'name', 'owner_name', 'commission_rate', 'commission_type', 'fixed_commission', 'settlement_cycle', 'is_active', 'created_at');
 
         if (!empty($filters['search'])) {
             $search = strtolower(trim($filters['search']));
@@ -99,6 +109,10 @@ class VendorAccountingService
             $query->where('is_active', (bool) $filters['is_active']);
         }
 
+        if (!empty($filters['settlement_cycle'])) {
+            $query->where('settlement_cycle', $filters['settlement_cycle']);
+        }
+
         $vendors = $query->orderByDesc('id')->paginate($perPage);
         $vendorIds = collect($vendors->items())->pluck('id')->all();
 
@@ -107,7 +121,9 @@ class VendorAccountingService
 
         $items = collect($vendors->items())->map(function (Vendor $vendor) use ($salesRows, $withdrawRows) {
             $statement = $this->buildWalletStatement(
+                commissionType: (string) ($vendor->commission_type ?? 'percentage'),
                 commissionRate: (float) ($vendor->commission_rate ?? 0),
+                fixedCommission: (float) ($vendor->fixed_commission ?? 0),
                 salesRow: (array) ($salesRows[$vendor->id] ?? []),
                 withdrawRow: (array) ($withdrawRows[$vendor->id] ?? [])
             );
@@ -137,7 +153,9 @@ class VendorAccountingService
         $withdrawRow = (array) $this->aggregateWithdrawalsForVendors([$vendorId], $filters)->first();
 
         $statement = $this->buildWalletStatement(
+            commissionType: (string) ($vendor->commission_type ?? 'percentage'),
             commissionRate: (float) ($vendor->commission_rate ?? 0),
+            fixedCommission: (float) ($vendor->fixed_commission ?? 0),
             salesRow: $salesRow,
             withdrawRow: $withdrawRow
         );
@@ -279,14 +297,17 @@ class VendorAccountingService
         return $query->get();
     }
 
-    private function buildWalletStatement(float $commissionRate, array $salesRow = [], array $withdrawRow = []): array
+    private function buildWalletStatement(string $commissionType, float $commissionRate, float $fixedCommission, array $salesRow = [], array $withdrawRow = []): array
     {
         $ordersCount = (int) ($salesRow['orders_count'] ?? 0);
         $grossSales = (float) ($salesRow['gross_sales'] ?? 0);
         $discountsShare = (float) ($salesRow['discounts_share'] ?? 0);
         $refunds = 0.0;
 
-        $platformCommission = $grossSales * ($commissionRate / 100);
+        $platformCommission = $commissionType === 'fixed'
+            ? $ordersCount * $fixedCommission
+            : $grossSales * ($commissionRate / 100);
+
         $netDue = $grossSales - $platformCommission - $discountsShare - $refunds;
 
         $paid = (float) ($withdrawRow['paid_amount'] ?? 0);
@@ -296,7 +317,9 @@ class VendorAccountingService
 
         return [
             'orders_count' => $ordersCount,
+            'commission_type' => $commissionType,
             'commission_rate' => $this->money($commissionRate),
+            'fixed_commission' => $this->money($fixedCommission),
             'gross_sales' => $this->money($grossSales),
             'platform_commission' => $this->money($platformCommission),
             'discounts_share' => $this->money($discountsShare),
@@ -311,15 +334,32 @@ class VendorAccountingService
 
     private function serializeVendor(Vendor $vendor): array
     {
+        $settlementCycle = $vendor->settlement_cycle ?: 'monthly';
+
         return [
             'id' => $vendor->id,
             'name' => $vendor->name,
             'name_translations' => $vendor->getTranslations('name'),
             'owner_name' => $vendor->owner_name,
+            'commission_type' => $vendor->commission_type ?: 'percentage',
             'commission_rate' => $this->money((float) ($vendor->commission_rate ?? 0)),
+            'fixed_commission' => $this->money((float) ($vendor->fixed_commission ?? 0)),
+            'settlement_cycle' => $settlementCycle,
+            'next_settlement_at' => $this->nextSettlementAt($settlementCycle),
             'is_active' => (bool) $vendor->is_active,
             'created_at' => $vendor->created_at?->format('Y-m-d H:i:s'),
         ];
+    }
+
+    private function nextSettlementAt(string $cycle): string
+    {
+        $now = Carbon::now();
+
+        if ($cycle === 'weekly') {
+            return $now->copy()->endOfWeek()->format('Y-m-d 23:59:59');
+        }
+
+        return $now->copy()->endOfMonth()->format('Y-m-d 23:59:59');
     }
 
     private function money(float $value): float

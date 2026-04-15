@@ -23,6 +23,9 @@ class Vendor extends Model
         'contract_number',
         'contract_duration_months',
         'commission_rate',
+        'commission_type',
+        'fixed_commission',
+        'settlement_cycle',
         'is_active',
         'ratings_count',
         'ratings_sum',
@@ -32,6 +35,7 @@ class Vendor extends Model
     protected $casts = [
         'contract_date'     => 'date',
         'commission_rate'   => 'decimal:2',
+        'fixed_commission'  => 'decimal:2',
         'is_active'         => 'boolean',
         'ratings_count'     => 'integer',
         'ratings_sum'       => 'integer',

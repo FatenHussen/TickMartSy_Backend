@@ -26,7 +26,10 @@ class AdminOneResource extends JsonResource
             'contract_date'         => $this->contract_date?->format('Y-m-d'),
             'contract_number'       => $this->contract_number,
             'contract_duration_months' => $this->contract_duration_months,
+            'commission_type'       => $this->commission_type ?? 'percentage',
             'commission_rate'       => $this->commission_rate,
+            'fixed_commission'      => (float) ($this->fixed_commission ?? 0),
+            'settlement_cycle'      => $this->settlement_cycle ?? 'monthly',
 
             'logo_url'                => $this->getLogoUrl(),
             // 'cover_images_urls'      => $this->getCoverImagesUrls(),
