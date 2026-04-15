@@ -27,6 +27,7 @@ class AllResource extends JsonResource
                     'name' => $this->product->brand->name,
                 ] : null,
             ],
+            'variant_image' => $this->media->first()?->url ?? null,
             'attributes' => $this->getAttributesWithDetails(),
             'is_trend' => $this->is_trend,
             'is_active' => (bool) $this->is_active,
