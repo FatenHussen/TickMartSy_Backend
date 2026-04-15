@@ -36,11 +36,11 @@ class Shop extends Model implements Sectionable
         'is_default',
         'is_free_delivery',
         'is_service_provider',
-        //add is restaurant & pyement methods (cash, online)
-        // add category_ids for main category (for filtering) and subcategories through pivot tabl
-        //is verify or expencive or normal prices
-        // add coupon code for shop level offers
-        
+        'is_restaurant',
+        'payment_methods',
+        'pricing_tier',
+        'is_recommended',
+
         'logo'
     ];
     public function vendor()
@@ -67,6 +67,9 @@ class Shop extends Model implements Sectionable
         'is_active'         => 'boolean',
         'is_free_delivery'  => 'boolean',
         'is_service_provider' => 'boolean',
+        'is_restaurant'     => 'boolean',
+        'payment_methods'   => 'array',
+        'is_recommended'    => 'boolean',
         'ratings_count'     => 'integer',
         'ratings_sum'       => 'integer',
     ];
@@ -213,6 +216,11 @@ class Shop extends Model implements Sectionable
     public function services()
     {
         return $this->belongsToMany(Service::class, 'shop_service');
+    }
+
+    public function coupons()
+    {
+        return $this->morphToMany(Coupon::class, 'couponable');
     }
 
     public function vendorServices()

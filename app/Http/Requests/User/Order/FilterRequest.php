@@ -17,6 +17,8 @@ class FilterRequest extends FormRequest
     {
         return [
             'status' => ['nullable', Rule::in(OrderStatus::cases())],
+            'is_restaurant' => ['nullable', 'boolean'],
+            'shop_type' => ['nullable', 'in:restaurant,store'],
         ];
     }
 }

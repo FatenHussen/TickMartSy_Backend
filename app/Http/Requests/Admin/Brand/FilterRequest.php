@@ -22,7 +22,8 @@ class FilterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'nullable|string'
+            'name' => 'nullable|string',
+            'origin_country_id' => 'nullable|integer|exists:countries,id',
         ];
     }
 }

@@ -24,6 +24,7 @@ class UpdateRequest extends FormRequest
             'governorate_id' => 'nullable|integer|exists:governorates,id',
             'city_id'        => 'nullable|integer|exists:cities,id',
             'category_id'    => 'nullable|integer|exists:categories,id',
+            'origin_country_id' => 'nullable|integer|exists:countries,id',
         ];
 
         foreach ($locales as $locale) {

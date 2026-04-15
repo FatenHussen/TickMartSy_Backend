@@ -10,6 +10,7 @@ class UpdateRequest extends BaseRequest
     {
         return [
             'price'    => 'sometimes|numeric|min:0',
+            'cost_price' => 'sometimes|numeric|min:0',
             'quantity' => 'sometimes|integer|min:0',
         ];
     }

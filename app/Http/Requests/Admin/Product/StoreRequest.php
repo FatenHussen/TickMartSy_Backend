@@ -92,6 +92,7 @@ class StoreRequest extends FormRequest
             'sku' => null,
             'model' => null,
             'barcode' => null,
+            'brand_id' => null,
             'country' => null,
         ]);
     }
@@ -157,6 +158,7 @@ class StoreRequest extends FormRequest
             'shop_variants.*.shop_id'           => 'required|exists:shops,id',
             'shop_variants.*.variant_index'     => 'required|integer|min:0',
             'shop_variants.*.price'             => 'nullable|integer|min:0',
+            'shop_variants.*.cost_price'        => 'nullable|numeric|min:0',
             'shop_variants.*.quantity'          => 'nullable|integer|min:0',
             'brand_id' => 'nullable|integer|exists:brands,id',
 

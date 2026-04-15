@@ -245,12 +245,33 @@ abstract class BaseService
         unset($filters['search']);
 
         foreach ($filters as $key => $value) {
+            // Ignore malformed filter keys coming from unexpected payload shapes.
+            if (!is_string($key) || $key === '') {
+                continue;
+            }
+
             // Skip null values unless it's a specific case like parent_id
             if ($value === null && $key !== 'parent_id') continue;
 
             // Handle parent_id = 0 or null (for root categories)
             if ($key === 'parent_id' && ($value === 0 || $value === '0' || $value === null)) {
                 $query->whereNull('parent_id');
+                continue;
+            }
+
+            // Handle array filters safely: use whereIn for scalar lists, skip nested objects.
+            if (is_array($value)) {
+                $scalarValues = array_values(array_filter($value, static fn($item) => is_scalar($item) || $item === null));
+
+                if ($scalarValues === []) {
+                    continue;
+                }
+
+                $query->whereIn($key, $scalarValues);
+                continue;
+            }
+
+            if (!is_scalar($value)) {
                 continue;
             }
 

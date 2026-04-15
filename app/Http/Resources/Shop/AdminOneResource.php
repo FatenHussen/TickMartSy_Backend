@@ -29,12 +29,26 @@ class AdminOneResource extends JsonResource
             'working_hours'         => $this->working_hours,
             // 'cover_images_urls'      => $this->getCoverImagesUrls(),
             'is_active'             => $this->is_active,
+            'is_restaurant'         => (bool) $this->is_restaurant,
+            'payment_methods'       => $this->payment_methods ?? [],
+            'pricing_tier'          => $this->pricing_tier,
+            'is_recommended'        => (bool) $this->is_recommended,
             'average_rating'        =>  $this->average_rating ?? 0,
             // 'ratings_count'         => $this->ratings_count,
             'is_open_now'           => $this->isOpenNow(),
             'logo_url'                => $this->logo_url,
             'area'                 =>  AreaOneResource::make($this->area),
             'services'              => $this->whenLoaded('services', fn() => $this->services),
+            'coupons'               => $this->whenLoaded('coupons', fn() => $this->coupons->map(function ($coupon) {
+                return [
+                    'id' => $coupon->id,
+                    'code' => $coupon->code,
+                    'name' => $coupon->name,
+                    'discount_type' => $coupon->discount_type,
+                    'discount_value' => $coupon->discount_value,
+                    'is_active' => (bool) $coupon->is_active,
+                ];
+            })->values()),
             // 'categories'            => $this->whenLoaded('categories', fn() => $this->categories),
             'badges' => BadgeOneResource::collection(
                 $this->badges

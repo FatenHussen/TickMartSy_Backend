@@ -477,6 +477,14 @@ class PageSectionSeeder extends Seeder
             'type' => 'api',
             'api_method' => 'shops',
             'filters' => [
+                'shop_type' => [
+                    'type' => 'select',
+                    'items' => [
+                        'restaurant',
+                        'service_provider',
+                        'store',
+                    ]
+                ],
                 'type' => [
                     'type' => 'select',
                     'items' => [
@@ -503,6 +511,32 @@ class PageSectionSeeder extends Seeder
             'order' => 9,
             'filters' => [
                 'type' => 'nearby',
+            ]
+        ]));
+
+        PageSection::create($fillPageSectionColors([
+            'name' => ['en' => 'Restaurants', 'ar' => 'المطاعم'],
+            'page_id' => $homePage->id,
+            'section_id' => $shopSection->id,
+            'display_type_id' => $shopDisplayType->id,
+            'position' => 'after',
+            'variant' => VariantSection::Horizontal->value,
+            'order' => 10,
+            'filters' => [
+                'shop_type' => 'restaurant',
+            ]
+        ]));
+
+        PageSection::create($fillPageSectionColors([
+            'name' => ['en' => 'Service Providers', 'ar' => 'مزودي الخدمات'],
+            'page_id' => $homePage->id,
+            'section_id' => $shopSection->id,
+            'display_type_id' => $shopDisplayType->id,
+            'position' => 'after',
+            'variant' => VariantSection::Vertical->value,
+            'order' => 11,
+            'filters' => [
+                'shop_type' => 'service_provider',
             ]
         ]));
 

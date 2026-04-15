@@ -22,6 +22,8 @@ class ShopRequest extends FormRequest
             'vendor_id'      => 'sometimes|exists:vendors,id',
             'is_active'      => 'sometimes|boolean',
             'is_service_provider' => 'sometimes|boolean',
+            'is_restaurant'  => 'sometimes|boolean',
+            'shop_type'      => 'sometimes|in:restaurant,service_provider,store',
             'type'           => 'sometimes|in:nearby,offers,top_rated,active',
             'search'         => 'sometimes|string|max:255',
             'lat'            => 'required_if:type,nearby|numeric|between:-90,90',
@@ -38,6 +40,7 @@ class ShopRequest extends FormRequest
             'lat.between'     => 'Latitude must be between -90 and 90',
             'lng.between'     => 'Longitude must be between -180 and 180',
             'type.in'         => 'Type must be one of: nearby, offers, top_rated, active',
+            'shop_type.in'    => 'Shop type must be one of: restaurant, service_provider, store',
         ];
     }
 }

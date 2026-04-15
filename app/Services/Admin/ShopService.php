@@ -20,12 +20,13 @@ class ShopService extends BaseService
         $this->collection = AllResource::class;
         $this->searchableFields = ['name', 'description'];
         $this->sortableFields   = ['id'];
-        $this->relations = ['vendor', 'services', 'area'];
+        $this->relations = ['vendor', 'services', 'area', 'coupons'];
         $this->pagination = true;
 
         $this->syncRelations = [
             'services'   => 'service_ids',
             'badges'   => 'badges',
+            'coupons'  => 'coupon_ids',
         ];
 
         $this->mediaCollections = [
@@ -46,6 +47,19 @@ class ShopService extends BaseService
 
     public function queryBuilder($query, $filters = [], $config = [])
     {
+        if (!empty($filters['shop_type'])) {
+            match ($filters['shop_type']) {
+                'restaurant' => $query->where('is_restaurant', true),
+                'service_provider' => $query->where('is_service_provider', true),
+                'store' => $query
+                    ->where('is_restaurant', false)
+                    ->where('is_service_provider', false),
+                default => null,
+            };
+
+            unset($filters['shop_type']);
+        }
+
         if (!empty($filters['shop_status'])) {
             $shopStatus = $filters['shop_status'];
             unset($filters['shop_status']);

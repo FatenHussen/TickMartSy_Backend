@@ -44,6 +44,7 @@ class StoreRequest extends FormRequest
             'governorate_id' => 'nullable|integer|exists:governorates,id',
             'city_id'        => 'nullable|integer|exists:cities,id',
             'category_id'    => 'nullable|integer|exists:categories,id',
+            'origin_country_id' => 'nullable|integer|exists:countries,id',
         ];
 
         foreach ($this->locales as $locale) {

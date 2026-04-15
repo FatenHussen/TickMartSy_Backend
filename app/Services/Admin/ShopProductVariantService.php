@@ -22,7 +22,7 @@ class ShopProductVariantService extends BaseService
     ];
 
     protected $searchableFields = [];
-    protected $sortableFields = ['id', 'price', 'quantity', 'created_at'];
+    protected $sortableFields = ['id', 'price', 'cost_price', 'quantity', 'created_at'];
 
     public function queryBuilder($query, $filters = [], $config = [])
     {
@@ -53,6 +53,14 @@ class ShopProductVariantService extends BaseService
             $query->whereHas('productVariant.product', function (Builder $q) use ($filters, $locale) {
                 $q->where("name->{$locale}", 'like', '%' . $filters['search'] . '%');
             });
+        }
+
+        if (array_key_exists('cost_price_min', $filters) && $filters['cost_price_min'] !== null) {
+            $query->where('cost_price', '>=', $filters['cost_price_min']);
+        }
+
+        if (array_key_exists('cost_price_max', $filters) && $filters['cost_price_max'] !== null) {
+            $query->where('cost_price', '<=', $filters['cost_price_max']);
         }
 
         return $query;

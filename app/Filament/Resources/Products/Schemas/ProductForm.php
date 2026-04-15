@@ -90,6 +90,8 @@ class ProductForm
                                         ->relationship('brand', 'name')
                                         ->searchable()
                                         ->preload()
+                                        ->visible(fn(callable $get): bool => !static::isRestaurantCategory($get('category_id')))
+                                        ->dehydrated(fn(callable $get): bool => !static::isRestaurantCategory($get('category_id')))
                                         ->columnSpan(1),
 
                                     Forms\Components\TextInput::make('country.ar')

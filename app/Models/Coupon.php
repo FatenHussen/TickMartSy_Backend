@@ -70,6 +70,11 @@ class Coupon extends Model
         return $this->morphedByMany(Vendor::class, 'couponable');
     }
 
+    public function shops()
+    {
+        return $this->morphedByMany(Shop::class, 'couponable');
+    }
+
     public function governorate()
     {
         return $this->belongsTo(Governorate::class);

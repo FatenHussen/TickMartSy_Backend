@@ -20,12 +20,13 @@ class CouponService extends BaseService
         $this->resource   = OneResource::class;
         $this->collection = AllResource::class;
         $this->pagination = true;
-        $this->relations = ['vendors', 'categories', 'products', 'governorate', 'city'];
+        $this->relations = ['vendors', 'categories', 'products', 'shops', 'governorate', 'city'];
         $this->searchableFields = ['id', 'name', 'code'];
         $this->syncRelations = [
             'vendors'   => 'vendors',
             'categories' => 'categories',
-            'products' => 'products'
+            'products' => 'products',
+            'shops' => 'shops',
         ];
     }
 

@@ -63,6 +63,8 @@ class DatabaseSeeder extends Seeder
             // Pages & Services
             PageSectionSeeder::class,
             ServiceSeeder::class,
+            RestaurantAndServiceProviderSeeder::class,
+            VendorServiceCatalogSeeder::class,
             QuickActionSeeder::class,
             VendorServiceSeeder::class,
 

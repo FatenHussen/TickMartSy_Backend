@@ -37,6 +37,7 @@ class AllResource extends JsonResource
                         'name' => $shopVariant->shop->name,
                     ],
                     'price' => $shopVariant->price,
+                    'cost_price' => $shopVariant->cost_price,
                     'quantity' => $shopVariant->quantity,
                 ];
             }),

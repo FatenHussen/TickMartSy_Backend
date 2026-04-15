@@ -84,6 +84,9 @@ class StoreRequest extends FormRequest
 
             'vendors' => ['sometimes', 'array'],
             'vendors.*.id' => ['exists:vendors,id'],
+
+            'shops' => ['sometimes', 'array'],
+            'shops.*.id' => ['exists:shops,id'],
         ];
     }
     public function messages(): array

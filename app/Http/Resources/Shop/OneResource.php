@@ -32,11 +32,25 @@ class OneResource extends JsonResource
             'ratings_count'         => $this->ratings_count,
             'is_open_now'           => $this->isOpenNow(),
             'is_service_provider'   => (bool) $this->is_service_provider,
+            'is_restaurant'         => (bool) $this->is_restaurant,
+            'payment_methods'       => $this->payment_methods ?? [],
+            'pricing_tier'          => $this->pricing_tier?? null ,
+            'is_recommended'        => (bool) $this->is_recommended,
             'is_favorite' => (bool) ($this->is_favorite ?? false),
 
             'area'                 => $this->area->name,
             'categories'           => $this->getShopCategories(),
             'services'              => $this->whenLoaded('services', fn() => $this->services),
+            'coupons'               => $this->whenLoaded('coupons', fn() => $this->coupons->map(function ($coupon) {
+                return [
+                    'id' => $coupon->id,
+                    'code' => $coupon->code,
+                    'name' => $coupon->name,
+                    'discount_type' => $coupon->discount_type,
+                    'discount_value' => $coupon->discount_value,
+                    'is_active' => (bool) $coupon->is_active,
+                ];
+            })->values()),
 
             'created_at'            => $this->created_at?->format('Y-m-d H:i'),
             'updated_at'            => $this->updated_at?->format('Y-m-d H:i')

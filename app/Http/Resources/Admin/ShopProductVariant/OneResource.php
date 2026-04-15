@@ -46,6 +46,7 @@ class OneResource extends JsonResource
                 'mobile' => $this->shop->mobile,
             ],
             'price' => $this->price,
+            'cost_price' => $this->cost_price,
             'quantity' => $this->quantity,
             'sku' => $this->sku,
             'barcode' => $this->barcode,
