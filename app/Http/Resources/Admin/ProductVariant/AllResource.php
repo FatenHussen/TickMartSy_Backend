@@ -33,10 +33,10 @@ class AllResource extends JsonResource
             'shop_variants' => $this->shopVariants->map(function ($shopVariant) {
                 return [
                     'id' => $shopVariant->id,
-                    'shop' => [
+                    'shop' => $shopVariant->shop ? [
                         'id' => $shopVariant->shop->id,
                         'name' => $shopVariant->shop->name,
-                    ],
+                    ] : null,
                     'price' => $shopVariant->price,
                     'cost_price' => $shopVariant->cost_price,
                     'quantity' => $shopVariant->quantity,
