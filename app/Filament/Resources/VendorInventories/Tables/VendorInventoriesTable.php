@@ -11,6 +11,7 @@ use Filament\Notifications\Notification;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\HtmlString;
 
 class VendorInventoriesTable
 {
@@ -19,6 +20,12 @@ class VendorInventoriesTable
         return $table
             ->defaultSort('inventory_total_qty', 'asc')
             ->columns([
+                Tables\Columns\ImageColumn::make('inventory_image')
+                    ->label(__('custom.products.image'))
+                    ->getStateUsing(fn (Product $record): ?string => self::resolveProductImageUrl($record))
+                    ->circular()
+                    ->defaultImageUrl(asset('images/placeholder.png')),
+
                 Tables\Columns\TextColumn::make('name')
                     ->label(__('custom.products.name'))
                     ->searchable(),
@@ -114,7 +121,15 @@ class VendorInventoriesTable
                 ->label(__('custom.inventory.variant_section_title', [
                     'variant' => self::resolvedVariantName($variant->name),
                 ]))
-                ->content('');
+                ->content(function () use ($variant, $record): HtmlString {
+                    $imageUrl = self::resolveVariantImageUrl($variant, $record);
+
+                    if (!$imageUrl) {
+                        return new HtmlString('');
+                    }
+
+                    return new HtmlString('<img src="' . e($imageUrl) . '" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;" />');
+                });
 
             foreach ($fields as $field) {
                 $components[] = $field;
@@ -175,5 +190,27 @@ class VendorInventoriesTable
         }
 
         return '-';
+    }
+
+    private static function resolveProductImageUrl(Product $product): ?string
+    {
+        $media = $product->media->first();
+
+        if ($media && !empty($media->path)) {
+            return asset('storage/' . $media->path);
+        }
+
+        return null;
+    }
+
+    private static function resolveVariantImageUrl(mixed $variant, Product $product): ?string
+    {
+        $variantMedia = $variant->media->first();
+
+        if ($variantMedia && !empty($variantMedia->path)) {
+            return asset('storage/' . $variantMedia->path);
+        }
+
+        return self::resolveProductImageUrl($product);
     }
 }

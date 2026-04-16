@@ -73,7 +73,7 @@ class VendorInventoryResource extends Resource
             ->where('vendor_id', $user->vendor_id)
             ->addSelect(['inventory_total_qty' => $inventorySubQuery])
             ->withCount('variants')
-            ->with(['variants.shopVariants.shop'])
+            ->with(['media', 'variants.media', 'variants.shopVariants.shop'])
             ->orderBy('inventory_total_qty');
     }
 
