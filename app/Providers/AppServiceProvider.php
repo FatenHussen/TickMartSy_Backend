@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Events\OrderStatusChanged;
 use App\Listeners\AwardPointsListener;
+use App\Models\VendorWithdrawRequest;
+use App\Observers\VendorWithdrawRequestObserver;
 use App\Filament\Widgets\ShopSwitcher;
 use BezhanSalleh\LanguageSwitch\LanguageSwitch;
 // use BezhanSalleh\LanguageSwitch\LanguageSwitch;
@@ -43,6 +45,8 @@ class AppServiceProvider extends ServiceProvider
             \App\Events\OrderCreated::class,
             [\App\Listeners\NotifyVendorNewOrder::class, 'handle']
         );
+
+        VendorWithdrawRequest::observe(VendorWithdrawRequestObserver::class);
 
         LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
             $switch->locales(['ar', 'en']);

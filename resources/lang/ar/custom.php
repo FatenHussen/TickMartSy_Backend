@@ -1092,7 +1092,7 @@ return [
         'from_date' => 'من تاريخ',
         'to_date' => 'إلى تاريخ',
         'available_for_withdraw' => 'المتاح للسحب',
-        'available_for_withdraw_hint' => 'الصافي المتاح بعد المدفوع والمعلق',
+        'available_for_withdraw_hint' => 'الصافي المتاح بعد السحوبات المدفوعة',
         'pending_withdrawals_amount' => 'السحب المعلق',
         'paid_withdrawals_amount' => 'السحب المدفوع',
         'pending_requests_label' => 'طلبات معلقة: :count',
@@ -1108,6 +1108,12 @@ return [
         'only_pending_can_be_updated' => 'يمكن تحديث الطلبات المعلقة فقط.',
         'invalid_status' => 'حالة غير صالحة.',
         'amount_exceeds_balance' => 'المبلغ يتجاوز الرصيد المتاح.',
+        'admin_new_request_title' => 'طلب سحب أرباح جديد',
+        'admin_new_request_body' => 'تم إنشاء طلب سحب رقم :id بقيمة :amount للبائع رقم :vendor_id.',
+        'vendor_status_paid_title' => 'تمت الموافقة على طلب السحب',
+        'vendor_status_paid_body' => 'تمت الموافقة على طلب السحب رقم :id بمبلغ :amount.',
+        'vendor_status_rejected_title' => 'تم رفض طلب السحب',
+        'vendor_status_rejected_body' => 'تم رفض طلب السحب رقم :id. السبب: :reason',
     ],
 
     // Gifts

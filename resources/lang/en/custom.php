@@ -1074,7 +1074,7 @@ return [
         'from_date' => 'From Date',
         'to_date' => 'To Date',
         'available_for_withdraw' => 'Available for Withdraw',
-        'available_for_withdraw_hint' => 'Net available after paid and pending withdrawals',
+        'available_for_withdraw_hint' => 'Net available after paid withdrawals',
         'pending_withdrawals_amount' => 'Pending Withdrawals',
         'paid_withdrawals_amount' => 'Paid Withdrawals',
         'pending_requests_label' => 'Pending requests: :count',
@@ -1090,6 +1090,12 @@ return [
         'only_pending_can_be_updated' => 'Only pending requests can be updated.',
         'invalid_status' => 'Invalid status.',
         'amount_exceeds_balance' => 'Amount exceeds available balance.',
+        'admin_new_request_title' => 'New Profit Withdraw Request',
+        'admin_new_request_body' => 'A new withdraw request #:id with amount :amount was created for vendor #:vendor_id.',
+        'vendor_status_paid_title' => 'Withdraw Request Approved',
+        'vendor_status_paid_body' => 'Your withdraw request #:id has been approved with amount :amount.',
+        'vendor_status_rejected_title' => 'Withdraw Request Rejected',
+        'vendor_status_rejected_body' => 'Your withdraw request #:id has been rejected. Reason: :reason',
     ],
 
     // Gifts
