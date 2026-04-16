@@ -20,6 +20,13 @@ class OrderItem extends Model
         'subtotal',
         'extras_total',
         'total',
+        'commission_snapshot_type',
+        'commission_snapshot_rate',
+        'commission_snapshot_fixed',
+        'commission_snapshot_amount',
+        'commission_snapshot_source',
+        'commission_snapshot_package_id',
+        'commission_snapshot_package_name',
         'item_status',
         'pending_at',
         'preparing_at',
@@ -55,6 +62,9 @@ class OrderItem extends Model
         'subtotal' => 'float',
         'extras_total' => 'float',
         'total' => 'float',
+        'commission_snapshot_rate' => 'float',
+        'commission_snapshot_fixed' => 'float',
+        'commission_snapshot_amount' => 'float',
     ];
 
     protected static function booted()
