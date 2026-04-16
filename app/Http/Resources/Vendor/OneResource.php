@@ -26,7 +26,6 @@ class OneResource extends JsonResource
             'contract_date'         => $this->contract_date?->format('Y-m-d'),
             'contract_number'       => $this->contract_number,
             'contract_duration_months' => $this->contract_duration_months,
-            'commission_rate'       => $this->commission_rate,
 
             'logo_url'                => $this->getLogoUrl(),
             'cover_images_urls'      => $this->getCoverImagesUrls(),

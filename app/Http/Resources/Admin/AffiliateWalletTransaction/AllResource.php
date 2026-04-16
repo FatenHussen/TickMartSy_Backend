@@ -17,6 +17,7 @@ class AllResource extends JsonResource
                 'name' => $this->affiliate?->name,
                 'email' => $this->affiliate?->email,
                 'phone' => $this->affiliate?->phone,
+                'image_url' => $this->affiliate?->image_url,
             ],
             'type' => $this->type,
             'amount' => (float) $this->amount,
