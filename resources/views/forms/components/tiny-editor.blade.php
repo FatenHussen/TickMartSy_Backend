@@ -21,7 +21,7 @@
 
                 window.__tinyMceLoadingPromise = new Promise((resolve, reject) => {
                     const script = document.createElement('script');
-                    script.src = 'https://cdn.tiny.cloud/1/no-api-key/tinymce/7/tinymce.min.js';
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/7.6.1/tinymce.min.js';
                     script.referrerPolicy = 'origin';
                     script.onload = resolve;
                     script.onerror = reject;
@@ -50,6 +50,9 @@
 
                     tinymce.init({
                         target: this.$refs.editor,
+                        base_url: 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/7.6.1',
+                        suffix: '.min',
+                        license_key: 'gpl',
                         menubar: 'file edit view insert format tools table',
                         toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link table | align numlist bullist outdent indent | removeformat',
                         plugins: 'lists link table code wordcount autoresize charmap preview searchreplace visualblocks fullscreen help',
