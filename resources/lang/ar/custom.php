@@ -262,6 +262,7 @@ return [
             'model_number' => 'رقم الموديل',
             'product_code' => 'رقم المنتج',
             'category_label' => 'الصنف',
+            'category_level_label' => 'الصنف - المستوى :level',
             'barcode_label' => 'الباركود',
             'brand_label' => 'العلامة التجارية',
             'country_ar' => 'بلد المنتج (عربي)',

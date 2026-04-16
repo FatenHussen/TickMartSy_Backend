@@ -248,6 +248,7 @@ return [
             'model_number' => 'Model Number',
             'product_code' => 'Product Code',
             'category_label' => 'Category',
+            'category_level_label' => 'Category - Level :level',
             'barcode_label' => 'Barcode',
             'brand_label' => 'Brand',
             'country_ar' => 'Country (Arabic)',
