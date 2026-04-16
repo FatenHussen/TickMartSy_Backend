@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products\Schemas;
 
+use App\Forms\Components\TinyEditor;
 use App\Models\VendorUser;
 use Filament\Forms;
 use Filament\Schemas\Components\Grid;
@@ -133,20 +134,16 @@ class ProductForm
                                         ->maxLength(500)
                                         ->columnSpanFull(),
 
-                                    Forms\Components\RichEditor::make('full_description.ar')
+                                    TinyEditor::make('full_description.ar')
                                         ->label(__('custom.products.form.full_description_ar'))
-                                        ->toolbarButtons(static::richEditorToolbarButtons())
-                                        ->fileAttachmentsDisk('public')
-                                        ->fileAttachmentsDirectory('product/rich-editor')
-                                        ->extraAttributes(['style' => 'min-height: 380px'])
+                                        ->rtl(true)
+                                        ->minHeight(420)
                                         ->columnSpanFull(),
 
-                                    Forms\Components\RichEditor::make('full_description.en')
+                                    TinyEditor::make('full_description.en')
                                         ->label(__('custom.products.form.full_description_en'))
-                                        ->toolbarButtons(static::richEditorToolbarButtons())
-                                        ->fileAttachmentsDisk('public')
-                                        ->fileAttachmentsDirectory('product/rich-editor')
-                                        ->extraAttributes(['style' => 'min-height: 380px'])
+                                        ->rtl(false)
+                                        ->minHeight(420)
                                         ->columnSpanFull(),
                                 ])
                                 ->collapsible(),
@@ -823,23 +820,4 @@ class ProductForm
         return $query?->id;
     }
 
-    private static function richEditorToolbarButtons(): array
-    {
-        return [
-            'attachFiles',
-            'blockquote',
-            'bold',
-            'bulletList',
-            'codeBlock',
-            'h2',
-            'h3',
-            'italic',
-            'link',
-            'orderedList',
-            'redo',
-            'strike',
-            'underline',
-            'undo',
-        ];
-    }
 }
