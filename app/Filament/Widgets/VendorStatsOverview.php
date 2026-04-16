@@ -32,7 +32,7 @@ class VendorStatsOverview extends BaseWidget
         $latestPaidTransfer = $withdrawItems->firstWhere('status', 'paid');
 
         $commissionType = (string) ($wallet['commission_type'] ?? 'percentage');
-        $commissionSource = (string) ($wallet['commission_source'] ?? 'vendor');
+        $commissionSource = (string) ($wallet['commission_source'] ?? 'package');
         $commissionSourcePackageName = (string) ($wallet['commission_source_package_name'] ?? '');
 
         $commissionValue = $commissionType === 'fixed'

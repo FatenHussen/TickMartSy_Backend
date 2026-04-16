@@ -443,7 +443,7 @@ class VendorAccountingService
                 : 0.0,
             'source' => 'package',
             'source_package_id' => $package->id,
-            'source_package_name' => $package->name,
+            'source_package_name' => $this->resolvePackageDisplayName($package),
         ];
     }
 
@@ -459,12 +459,46 @@ class VendorAccountingService
             ->with('package')
             ->whereIn('vendor_id', $vendorIds)
             ->where('status', 'active')
-            ->whereDate('starts_at', '<=', $today)
-            ->whereDate('ends_at', '>=', $today)
+            ->where(function ($query) use ($today) {
+                $query->whereNull('starts_at')
+                    ->orWhereDate('starts_at', '<=', $today);
+            })
+            ->where(function ($query) use ($today) {
+                $query->whereNull('ends_at')
+                    ->orWhereDate('ends_at', '>=', $today);
+            })
             ->orderByDesc('ends_at')
             ->get()
             ->groupBy('vendor_id')
             ->map(fn (Collection $subscriptions) => $subscriptions->first());
+    }
+
+    private function resolvePackageDisplayName(object $package): ?string
+    {
+        if (method_exists($package, 'getTranslation')) {
+            $currentLocaleName = $package->getTranslation('name', app()->getLocale(), false);
+            if (is_string($currentLocaleName) && trim($currentLocaleName) !== '') {
+                return $currentLocaleName;
+            }
+
+            $fallbackLocaleName = $package->getTranslation('name', config('app.fallback_locale', 'en'), false);
+            if (is_string($fallbackLocaleName) && trim($fallbackLocaleName) !== '') {
+                return $fallbackLocaleName;
+            }
+
+            $translations = $package->getTranslations('name');
+            if (is_array($translations)) {
+                foreach ($translations as $translation) {
+                    if (is_string($translation) && trim($translation) !== '') {
+                        return $translation;
+                    }
+                }
+            }
+        }
+
+        $name = $package->name ?? null;
+
+        return is_string($name) && trim($name) !== '' ? $name : null;
     }
 
     private function getActiveSubscriptionForVendor(int $vendorId): ?VendorSubscription
