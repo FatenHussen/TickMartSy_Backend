@@ -334,7 +334,7 @@ class VendorAccountingService
             return collect();
         }
 
-        $query = VendorWithdrawRequest::query()
+        $query = DB::table('vendor_withdraw_requests')
             ->selectRaw('vendor_id')
             ->selectRaw("SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) as paid_amount")
             ->selectRaw("SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) as pending_amount")
