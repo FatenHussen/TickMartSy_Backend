@@ -24,7 +24,11 @@ class FilterRequest extends FormRequest
         return [
             'shop_id'        => 'nullable|integer',
             'category_id'    => 'nullable|integer|exists:categories,id',
+            'brand_id'       => 'nullable|integer|exists:brands,id',
             'vendor_id'      => 'nullable|integer|exists:vendors,id',
+            'category_attribute_id' => 'nullable|integer|exists:category_attributes,id',
+            'category_attribute_ids' => 'nullable|array',
+            'category_attribute_ids.*' => 'integer|exists:category_attributes,id',
             'stock_sort'     => 'nullable|in:asc,desc',
         ];
     }

@@ -24,6 +24,8 @@ class FilterRequest extends FormRequest
         return [
             'name' => 'nullable|string',
             'category_id' => 'nullable|exists:categories,id',
+            'type' => 'nullable|string',
+            'is_active' => 'nullable|boolean',
 
         ];
     }

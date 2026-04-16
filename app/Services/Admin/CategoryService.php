@@ -20,4 +20,28 @@ class CategoryService extends BaseService
         $this->searchableFields = ['name'];
         $this->sortableFields = ['id', 'created_at', 'order'];
     }
+
+    public function queryBuilder($query, $filters = [], $config = [])
+    {
+        if (!empty($filters['name'])) {
+            $search = strtolower(trim((string) $filters['name']));
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.ar'))) LIKE ?", ["%{$search}%"])
+                    ->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.en'))) LIKE ?", ["%{$search}%"]);
+            });
+            unset($filters['name']);
+        }
+
+        if (array_key_exists('is_active', $filters) && $filters['is_active'] !== null) {
+            $query->where('is_active', (bool) $filters['is_active']);
+            unset($filters['is_active']);
+        }
+
+        if (array_key_exists('is_restaurant', $filters) && $filters['is_restaurant'] !== null) {
+            $query->where('is_restaurant', (bool) $filters['is_restaurant']);
+            unset($filters['is_restaurant']);
+        }
+
+        return parent::queryBuilder($query, $filters, $config);
+    }
 }

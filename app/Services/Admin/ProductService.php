@@ -2,6 +2,7 @@
 
 namespace App\Services\Admin;
 
+use App\Models\AttributeValue;
 use App\Models\Product;
 use App\Services\BaseService;
 use App\Http\Resources\Admin\Product\OneResource;
@@ -117,6 +118,42 @@ class ProductService extends BaseService
         if (!empty($filters['vendor_id'])) {
             $query->where('vendor_id', $filters['vendor_id']);
             unset($filters['vendor_id']);
+        }
+
+        // Filter by one or more category attributes through variant attribute values
+        $categoryAttributeIds = [];
+        if (!empty($filters['category_attribute_id'])) {
+            $categoryAttributeIds[] = (int) $filters['category_attribute_id'];
+            unset($filters['category_attribute_id']);
+        }
+
+        if (!empty($filters['category_attribute_ids']) && is_array($filters['category_attribute_ids'])) {
+            $categoryAttributeIds = array_merge($categoryAttributeIds, array_map('intval', $filters['category_attribute_ids']));
+            unset($filters['category_attribute_ids']);
+        }
+
+        $categoryAttributeIds = array_values(array_unique(array_filter($categoryAttributeIds)));
+
+        if (!empty($categoryAttributeIds)) {
+            $attributeValueIds = AttributeValue::query()
+                ->whereIn('category_attribute_id', $categoryAttributeIds)
+                ->pluck('id')
+                ->map(fn ($id) => (int) $id)
+                ->values()
+                ->all();
+
+            if (!empty($attributeValueIds)) {
+                $query->whereHas('variants', function ($variantsQuery) use ($attributeValueIds) {
+                    $variantsQuery->where(function ($jsonQuery) use ($attributeValueIds) {
+                        foreach ($attributeValueIds as $attributeValueId) {
+                            $jsonQuery->orWhereJsonContains('attributes_values_ids', $attributeValueId);
+                        }
+                    });
+                });
+            } else {
+                // If selected attribute has no values, return no products
+                $query->whereRaw('1 = 0');
+            }
         }
 
         // Sort by stock
