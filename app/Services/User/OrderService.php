@@ -19,12 +19,15 @@ use App\Models\ShopProductVariant;
 use App\Models\User;
 use App\Models\Coupon;
 use App\Models\PointExchange;
+use App\Models\Vendor;
+use App\Models\VendorSubscription;
 use App\Services\BaseService;
 use App\Services\PointExchangeService;
 use App\Services\User\CalculateDeliveryPriceService;
 use App\Services\User\PromotionService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use App\Services\InventoryService;
 use App\Traits\HasCurrencyConversion;
 
@@ -673,6 +676,14 @@ class OrderService extends BaseService
 
             $subtotal = $finalPrice * $quantity;
             $total = $subtotal + $extrasTotal;
+            $commissionProfile = $this->resolveVendorCommissionProfile((int) $product->vendor_id);
+            $commissionAmount = $this->resolveCommissionAmount(
+                lineTotal: $total,
+                quantity: (int) $quantity,
+                commissionType: (string) ($commissionProfile['type'] ?? 'percentage'),
+                commissionRate: (float) ($commissionProfile['rate'] ?? 0),
+                fixedCommission: (float) ($commissionProfile['fixed'] ?? 0)
+            );
 
             if ($order) {
                 $orderItem = $order->items()->create([
@@ -687,6 +698,13 @@ class OrderService extends BaseService
                     'subtotal' => $subtotal,
                     'extras_total' => $extrasTotal,
                     'total' => $total,
+                    'commission_snapshot_type' => (string) ($commissionProfile['type'] ?? 'percentage'),
+                    'commission_snapshot_rate' => (float) ($commissionProfile['rate'] ?? 0),
+                    'commission_snapshot_fixed' => (float) ($commissionProfile['fixed'] ?? 0),
+                    'commission_snapshot_amount' => $commissionAmount,
+                    'commission_snapshot_source' => (string) ($commissionProfile['source'] ?? 'vendor'),
+                    'commission_snapshot_package_id' => $commissionProfile['package_id'] ?? null,
+                    'commission_snapshot_package_name' => $commissionProfile['package_name'] ?? null,
                 ]);
 
                 // حفظ الـ extras
@@ -1061,6 +1079,13 @@ class OrderService extends BaseService
                     'subtotal' => $item->subtotal,
                     'extras_total' => $item->extras_total,
                     'total' => $item->total,
+                    'commission_snapshot_type' => $item->commission_snapshot_type ?? 'percentage',
+                    'commission_snapshot_rate' => (float) ($item->commission_snapshot_rate ?? 0),
+                    'commission_snapshot_fixed' => (float) ($item->commission_snapshot_fixed ?? 0),
+                    'commission_snapshot_amount' => (float) ($item->commission_snapshot_amount ?? 0),
+                    'commission_snapshot_source' => $item->commission_snapshot_source ?? 'vendor',
+                    'commission_snapshot_package_id' => $item->commission_snapshot_package_id,
+                    'commission_snapshot_package_name' => $item->commission_snapshot_package_name,
                     'pending_at' => now(),
                     'preparing_at' => null,
                     'out_delivery_at' => null,
@@ -1073,5 +1098,67 @@ class OrderService extends BaseService
 
             return new OneResource($newOrder->load('items'));
         });
+    }
+
+    private function resolveVendorCommissionProfile(int $vendorId): array
+    {
+        if (!Schema::hasTable('vendor_subscriptions')) {
+            return [
+                'type' => 'percentage',
+                'rate' => 0.0,
+                'fixed' => 0.0,
+                'source' => 'package',
+                'package_id' => null,
+                'package_name' => null,
+            ];
+        }
+
+        $today = now()->toDateString();
+        $subscription = VendorSubscription::query()
+            ->with('package:id,name,commission_rate,commission_per_order')
+            ->where('vendor_id', $vendorId)
+            ->where('status', 'active')
+            ->whereDate('starts_at', '<=', $today)
+            ->whereDate('ends_at', '>=', $today)
+            ->orderByDesc('ends_at')
+            ->first();
+
+        if ($subscription && $subscription->package) {
+            $package = $subscription->package;
+            $fixed = (float) ($package->commission_per_order ?? 0);
+            $type = $fixed > 0 ? 'fixed' : 'percentage';
+
+            return [
+                'type' => $type,
+                'rate' => $type === 'percentage' ? (float) ($package->commission_rate ?? 0) : 0.0,
+                'fixed' => $type === 'fixed' ? $fixed : 0.0,
+                'source' => 'package',
+                'package_id' => $package->id,
+                'package_name' => $package->name,
+            ];
+        }
+
+        return [
+            'type' => 'percentage',
+            'rate' => 0.0,
+            'fixed' => 0.0,
+            'source' => 'package',
+            'package_id' => null,
+            'package_name' => null,
+        ];
+    }
+
+    private function resolveCommissionAmount(
+        float $lineTotal,
+        int $quantity,
+        string $commissionType,
+        float $commissionRate,
+        float $fixedCommission
+    ): float {
+        $amount = $commissionType === 'fixed'
+            ? ($fixedCommission * $quantity)
+            : ($lineTotal * ($commissionRate / 100));
+
+        return round($amount, 2);
     }
 }

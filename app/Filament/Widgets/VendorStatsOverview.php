@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\VendorUser;
+use App\Services\Admin\VendorAccountingService;
 use App\Services\Vendor\VendorSubscriptionQuotaService;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -24,6 +25,28 @@ class VendorStatsOverview extends BaseWidget
         }
 
         $vendorId = $user->vendor_id;
+        $statement = app(VendorAccountingService::class)->getVendorStatement($vendorId, [], 5);
+        $wallet = (array) data_get($statement, 'wallet', []);
+        $vendor = (array) data_get($statement, 'vendor', []);
+        $withdrawItems = collect(data_get($statement, 'withdraw_requests.items', []));
+        $latestPaidTransfer = $withdrawItems->firstWhere('status', 'paid');
+
+        $commissionType = (string) ($wallet['commission_type'] ?? 'percentage');
+        $commissionSource = (string) ($wallet['commission_source'] ?? 'vendor');
+        $commissionSourcePackageName = (string) ($wallet['commission_source_package_name'] ?? '');
+
+        $commissionValue = $commissionType === 'fixed'
+            ? $this->formatMoney((float) ($wallet['fixed_commission'] ?? 0))
+            : ((float) ($wallet['commission_rate'] ?? 0)) . '%';
+
+        $commissionDescription = $commissionSource === 'package'
+            ? __('custom.stats.commission_from_package', ['package' => $commissionSourcePackageName !== '' ? $commissionSourcePackageName : '-', 'value' => $commissionValue])
+            : __('custom.stats.commission_from_package', ['package' => '-', 'value' => $commissionValue]);
+
+        $settlementCycle = (string) ($vendor['settlement_cycle'] ?? 'monthly');
+        $settlementCycleLabel = $settlementCycle === 'weekly'
+            ? __('custom.stats.settlement_weekly')
+            : __('custom.stats.settlement_monthly');
 
         // إجمالي المبيعات
         $totalRevenue = OrderItem::whereHas('shopProductVariant.productVariant.product', function ($q) use ($vendorId) {
@@ -78,13 +101,52 @@ class VendorStatsOverview extends BaseWidget
             : 0;
 
         $stats = [
-            Stat::make(__('custom.stats.total_revenue'), '$' . number_format($totalRevenue, 2))
+            Stat::make(__('custom.stats.current_balance'), $this->formatMoney((float) ($wallet['available_for_withdraw'] ?? 0)))
+                ->description(__('custom.stats.net_due_label', ['value' => $this->formatMoney((float) ($wallet['net_due'] ?? 0))]))
+                ->descriptionIcon('heroicon-m-wallet')
+                ->color('success'),
+
+            Stat::make(__('custom.stats.total_revenue'), $this->formatMoney((float) ($wallet['gross_sales'] ?? $totalRevenue)))
                 ->description($revenueChange >= 0
                     ? '+' . number_format($revenueChange, 1) . '% ' . __('custom.stats.from_last_month')
                     : number_format($revenueChange, 1) . '% ' . __('custom.stats.from_last_month'))
                 ->descriptionIcon($revenueChange >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($revenueChange >= 0 ? 'success' : 'danger')
                 ->chart([7, 3, 4, 5, 6, 3, 5, 3]),
+
+            Stat::make(__('custom.stats.platform_commission'), $this->formatMoney((float) ($wallet['platform_commission'] ?? 0)))
+                ->description($commissionDescription)
+                ->descriptionIcon('heroicon-m-scale')
+                ->color('danger'),
+
+            Stat::make(__('custom.stats.remaining_after_paid'), $this->formatMoney((float) ($wallet['remaining_after_paid'] ?? 0)))
+                ->description(__('custom.stats.paid_out_label', ['value' => $this->formatMoney((float) ($wallet['paid'] ?? 0))]))
+                ->descriptionIcon('heroicon-m-banknotes')
+                ->color('info'),
+
+            Stat::make(__('custom.stats.pending_withdrawals'), $this->formatMoney((float) ($wallet['pending_withdrawals'] ?? 0)))
+                ->description(__('custom.stats.pending_requests_label', ['count' => (int) ($wallet['pending_requests_count'] ?? 0)]))
+                ->descriptionIcon('heroicon-m-clock')
+                ->color('warning'),
+
+            Stat::make(__('custom.stats.paid_withdrawals'), $this->formatMoney((float) ($wallet['paid'] ?? 0)))
+                ->description(
+                    $latestPaidTransfer
+                        ? __('custom.stats.last_transfer_reference', ['ref' => (string) ($latestPaidTransfer['transfer_reference'] ?: '-')])
+                        : __('custom.stats.no_transfer_yet')
+                )
+                ->descriptionIcon('heroicon-m-check-badge')
+                ->color('success'),
+
+            Stat::make(__('custom.stats.pending_orders_revenue'), $this->formatMoney((float) ($wallet['pending_orders_gross_sales'] ?? 0)))
+                ->description(__('custom.stats.pending_orders_count_label', ['count' => (int) ($wallet['pending_orders_count'] ?? $pendingOrders)]))
+                ->descriptionIcon('heroicon-m-truck')
+                ->color('warning'),
+
+            Stat::make(__('custom.stats.settlement_cycle'), $settlementCycleLabel)
+                ->description(__('custom.stats.next_settlement_at', ['date' => (string) ($vendor['next_settlement_at'] ?? '-')]))
+                ->descriptionIcon('heroicon-m-calendar-days')
+                ->color('primary'),
 
             Stat::make(__('custom.stats.completed_orders'), $completedOrders)
                 ->description(__('custom.stats.total_completed'))
@@ -134,5 +196,10 @@ class VendorStatsOverview extends BaseWidget
         }
 
         return $stats;
+    }
+
+    private function formatMoney(float $value): string
+    {
+        return '$' . number_format($value, 2);
     }
 }
