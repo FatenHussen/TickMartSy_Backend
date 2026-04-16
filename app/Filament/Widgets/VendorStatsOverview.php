@@ -119,10 +119,10 @@ class VendorStatsOverview extends BaseWidget
             //     ->descriptionIcon('heroicon-m-scale')
             //     ->color('danger'),
 
-            Stat::make(__('custom.stats.remaining_after_paid'), $this->formatMoney((float) ($wallet['remaining_after_paid'] ?? 0)))
-                ->description(__('custom.stats.paid_out_label', ['value' => $this->formatMoney((float) ($wallet['paid'] ?? 0))]))
-                ->descriptionIcon('heroicon-m-banknotes')
-                ->color('info'),
+            // Stat::make(__('custom.stats.remaining_after_paid'), $this->formatMoney((float) ($wallet['remaining_after_paid'] ?? 0)))
+            //     ->description(__('custom.stats.paid_out_label', ['value' => $this->formatMoney((float) ($wallet['paid'] ?? 0))]))
+            //     ->descriptionIcon('heroicon-m-banknotes')
+            //     ->color('info'),
 
             Stat::make(__('custom.stats.pending_withdrawals'), $this->formatMoney((float) ($wallet['pending_withdrawals'] ?? 0)))
                 ->description(__('custom.stats.pending_requests_label', ['count' => (int) ($wallet['pending_requests_count'] ?? 0)]))
