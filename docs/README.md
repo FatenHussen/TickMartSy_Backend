@@ -47,6 +47,11 @@ Complete API documentation for Tikmool e-commerce platform.
 - Request validation rules
 - Request/response examples
 
+### 8. Admin Driver Coverage APIs (`ADMIN_DRIVER_COVERAGE_API.md`)
+- Endpoint لتصفية طلبات pending/preparing حسب تغطية السائق (coverage)
+- شكل الرد المخصص للـ dropdown (id/value)
+- كيف تربطيه بالـ frontend (toggle/driver select)
+
 
 ## Quick Start
 

@@ -483,6 +483,7 @@ return [
         'assigned_to_driver_successfully' => 'تم إسناد الطلب للسائق بنجاح.',
         'item_status_updated_successfully' => 'تم تحديث حالة العنصر بنجاح.',
         'no_items_for_shop' => 'لا يوجد عناصر لهذا المتجر ضمن الطلب.',
+        'not_in_driver_coverage' => 'هذا الطلب خارج نطاق التوصيل أو الاستلام المسموح لك.',
     ],
 
     // Dashboard

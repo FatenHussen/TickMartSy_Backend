@@ -295,6 +295,7 @@ Route::prefix('admin')->group(
 
             Route::get('/', [OrderController::class, 'index']);
             Route::get('{id}/get_one', [OrderController::class, 'get_one']);
+            Route::get('/to-assign', [OrderController::class, 'ordersToAssign']);
 
             Route::patch('{orderId}/change-status', [OrderController::class, 'changeStatus']);
 

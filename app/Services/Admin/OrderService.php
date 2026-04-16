@@ -11,6 +11,8 @@ use App\Events\OrderStatusChanged;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Services\Shared\DriverCoverageService;
+use Illuminate\Database\Eloquent\Builder;
 use App\Services\Base\NotificationService;
 use App\Services\BaseService;
 use Illuminate\Support\Facades\DB;
@@ -18,8 +20,10 @@ use Illuminate\Support\Facades\DB;
 
 class OrderService extends BaseService
 {
-    public function __construct(Order $model)
-    {
+    public function __construct(
+        Order $model,
+        private readonly DriverCoverageService $driverCoverageService
+    ) {
         $this->model      = $model;
         $this->resource   = OneResource::class;
         $this->collection = AllResource::class;
@@ -228,5 +232,44 @@ class OrderService extends BaseService
             );
             return $order;
         });
+    }
+
+    /**
+     * Orders waiting for assignment (pending/preparing).
+     * Optionally filter by a driver's coverage when requested by admin.
+     */
+    public function ordersToAssignByDriver(
+        ?int $driverId = null,
+        ?string $status = null,
+        bool $isInstantDelivery = true,
+        bool $filterByDriverCoverage = false
+    )
+    {
+        $query = Order::query()
+            ->whereNull('driver_id')
+            ->where('is_instant_delivery', $isInstantDelivery)
+            ->where(function (Builder $q) use ($status): void {
+                if ($status) {
+                    $q->where('status', $status);
+                    return;
+                }
+
+                $q->whereIn('status', [
+                    OrderStatus::PENDING->value,
+                    OrderStatus::PREPARING->value,
+                ]);
+            });
+
+        if ($filterByDriverCoverage) {
+            $driver = $this->driverCoverageService->loadDriverWithCoverage($driverId);
+            $this->driverCoverageService->applyInstantOrderCoverage($query, $driver);
+        }
+
+        return $query
+            ->with([
+                'user',
+            ])
+            ->latest()
+            ->get();
     }
 }

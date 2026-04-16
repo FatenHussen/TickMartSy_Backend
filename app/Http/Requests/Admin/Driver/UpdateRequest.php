@@ -35,6 +35,8 @@ class UpdateRequest extends FormRequest
             'city_ids.*.id' => 'required|integer|exists:cities,id',
             'shop_ids' => 'nullable|array',
             'shop_ids.*.id' => 'required|integer|exists:shops,id',
+            'vendor_ids' => 'nullable|array',
+            'vendor_ids.*.id' => 'required|integer|exists:vendors,id',
             'rate_per_order' => 'nullable',
             'vehicle_type' => 'nullable|string|max:100',
             'vehicle_name' => 'nullable|string|max:255',

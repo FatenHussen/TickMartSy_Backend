@@ -441,6 +441,7 @@ return [
         'assigned_to_driver_successfully' => 'Order assigned to driver successfully.',
         'item_status_updated_successfully' => 'Item status updated successfully.',
         'no_items_for_shop' => 'No items found for this shop in the order.',
+        'not_in_driver_coverage' => 'This order is outside your delivery or pickup coverage.',
     ],
 
 

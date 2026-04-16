@@ -25,6 +25,8 @@ class StoreRequest extends FormRequest
             'city_ids.*.id' => 'required|integer|exists:cities,id',
             'shop_ids' => 'nullable|array',
             'shop_ids.*.id' => 'required|integer|exists:shops,id',
+            'vendor_ids' => 'nullable|array',
+            'vendor_ids.*.id' => 'required|integer|exists:vendors,id',
             'rate_per_order' => 'required',
             'vehicle_type' => 'required|string|max:100',
             'vehicle_name' => 'required|string|max:255',

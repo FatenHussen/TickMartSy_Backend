@@ -155,6 +155,11 @@ class Driver extends Authenticatable
         return $this->belongsToMany(Shop::class, 'driver_shop');
     }
 
+    public function vendors()
+    {
+        return $this->belongsToMany(Vendor::class, 'driver_vendor');
+    }
+
     private function earningsMultiplier(): float
     {
         $rate = (float) $this->rate_per_order;
