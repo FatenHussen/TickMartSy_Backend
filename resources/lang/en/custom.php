@@ -457,8 +457,23 @@ return [
     'navigation' => [
         'shops' => 'Shops',
         'products' => 'Products',
+        'inventory' => 'Inventory',
         'orders' => 'Orders',
         'dashboard' => 'Dashboard',
+    ],
+
+    'inventory' => [
+        'title' => 'Product Inventory',
+        'singular' => 'Inventory',
+        'total_quantity' => 'Total Quantity',
+        'variants_count' => 'Variants Count',
+        'update_quantities' => 'Update Quantities',
+        'update_modal_title' => 'Update Variant Quantities Across Shops',
+        'variant_section_title' => 'Variant: :variant',
+        'shop_variant_quantity_label' => 'Shop: :shop | Variant: :variant',
+        'no_variant_stock_title' => 'No variant stock found for this product',
+        'no_variant_stock_body' => 'Please add product variants and link them to shops first.',
+        'updated_successfully' => 'Inventory updated successfully.',
     ],
 
     // Stats

@@ -498,8 +498,23 @@ return [
     'navigation' => [
         'shops' => 'الفروع',
         'products' => 'المنتجات',
+        'inventory' => 'المخزون',
         'orders' => 'الطلبات',
         'dashboard' => 'الرئيسية',
+    ],
+
+    'inventory' => [
+        'title' => 'مخزون المنتجات',
+        'singular' => 'مخزون',
+        'total_quantity' => 'إجمالي الكمية',
+        'variants_count' => 'عدد المتغيرات',
+        'update_quantities' => 'تعديل الكميات',
+        'update_modal_title' => 'تعديل كميات المتغيرات في الشوبات',
+        'variant_section_title' => 'المتغير: :variant',
+        'shop_variant_quantity_label' => 'الشوب: :shop | المتغير: :variant',
+        'no_variant_stock_title' => 'لا توجد كميات متغيرات لهذا المنتج',
+        'no_variant_stock_body' => 'أضف متغيرات المنتج وربطها بالشوبات أولاً.',
+        'updated_successfully' => 'تم تحديث المخزون بنجاح.',
     ],
 
     // Stats
