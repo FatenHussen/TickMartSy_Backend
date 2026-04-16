@@ -135,24 +135,18 @@ class ProductForm
 
                                     Forms\Components\RichEditor::make('full_description.ar')
                                         ->label(__('custom.products.form.full_description_ar'))
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'underline',
-                                            'bulletList',
-                                            'orderedList',
-                                        ])
+                                        ->toolbarButtons(static::richEditorToolbarButtons())
+                                        ->fileAttachmentsDisk('public')
+                                        ->fileAttachmentsDirectory('product/rich-editor')
+                                        ->extraAttributes(['style' => 'min-height: 380px'])
                                         ->columnSpanFull(),
 
                                     Forms\Components\RichEditor::make('full_description.en')
                                         ->label(__('custom.products.form.full_description_en'))
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'underline',
-                                            'bulletList',
-                                            'orderedList',
-                                        ])
+                                        ->toolbarButtons(static::richEditorToolbarButtons())
+                                        ->fileAttachmentsDisk('public')
+                                        ->fileAttachmentsDirectory('product/rich-editor')
+                                        ->extraAttributes(['style' => 'min-height: 380px'])
                                         ->columnSpanFull(),
                                 ])
                                 ->collapsible(),
@@ -827,5 +821,25 @@ class ProductForm
             ->first();
 
         return $query?->id;
+    }
+
+    private static function richEditorToolbarButtons(): array
+    {
+        return [
+            'attachFiles',
+            'blockquote',
+            'bold',
+            'bulletList',
+            'codeBlock',
+            'h2',
+            'h3',
+            'italic',
+            'link',
+            'orderedList',
+            'redo',
+            'strike',
+            'underline',
+            'undo',
+        ];
     }
 }
