@@ -6,13 +6,47 @@
 
     <div
         x-data="{
-            state: $wire.$entangle('{{ $statePath }}').live,
+            state: $wire.entangle('{{ $statePath }}'),
             editor: null,
+            editorId: '{{ $editorId }}',
+
+            loadTinyMceScript() {
+                if (typeof tinymce !== 'undefined') {
+                    return Promise.resolve();
+                }
+
+                if (window.__tinyMceLoadingPromise) {
+                    return window.__tinyMceLoadingPromise;
+                }
+
+                window.__tinyMceLoadingPromise = new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdn.tiny.cloud/1/no-api-key/tinymce/7/tinymce.min.js';
+                    script.referrerPolicy = 'origin';
+                    script.onload = resolve;
+                    script.onerror = reject;
+                    document.head.appendChild(script);
+                });
+
+                return window.__tinyMceLoadingPromise;
+            },
+
+            destroyEditor() {
+                if (!this.editor) {
+                    return;
+                }
+
+                this.editor.destroy();
+                this.editor = null;
+            },
+
             initEditor() {
-                const setupEditor = () => {
+                this.loadTinyMceScript().then(() => {
                     if (this.editor) {
                         return;
                     }
+
+                    this.destroyEditor();
 
                     tinymce.init({
                         target: this.$refs.editor,
@@ -38,22 +72,13 @@
                             });
                         },
                     });
-                };
-
-                if (typeof tinymce === 'undefined') {
-                    const script = document.createElement('script');
-                    script.src = 'https://cdn.tiny.cloud/1/no-api-key/tinymce/7/tinymce.min.js';
-                    script.referrerPolicy = 'origin';
-                    script.onload = () => setupEditor();
-                    document.head.appendChild(script);
-                    return;
-                }
-
-                setupEditor();
+                }).catch(() => {
+                    // Keep textarea fallback if script fails to load.
+                });
             }
         }"
-        x-init="initEditor()"
-        x-on:destroy.window="if (editor) { editor.destroy(); editor = null; }"
+        x-init="$nextTick(() => initEditor())"
+        x-on:livewire:navigating.window="destroyEditor()"
     >
         <textarea
             id="{{ $editorId }}"
