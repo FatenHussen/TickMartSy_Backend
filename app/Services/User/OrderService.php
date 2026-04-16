@@ -116,6 +116,7 @@ class OrderService extends BaseService
 
             [$basketDiscountPercent, $deliveryPrice] =
                 $this->resolveBasketAndDelivery($order, $data);
+            $originalDeliveryPrice = $deliveryPrice;
 
             [
                 $subtotalBeforeDiscount,
@@ -179,6 +180,7 @@ class OrderService extends BaseService
                 $subtotalBeforeDiscount,
                 $totalQuantity,
                 $deliveryPrice,
+                $originalDeliveryPrice,
                 $finalTotal,
                 $data['promotion_id'] ?? null,
                 $affiliateData
@@ -472,6 +474,7 @@ class OrderService extends BaseService
         float $subtotal,
         int $totalQuantity,
         float $deliveryPrice,
+        float $originalDeliveryPrice,
         float $finalTotal,
         ?int $promotionId = null,
         ?array $affiliateData = null
@@ -490,6 +493,7 @@ class OrderService extends BaseService
             'promotion_discount' =>
             round($discounts['promotion_discount'], 2),
             'delivery_price' => $deliveryPrice,
+            'original_delivery_price' => round($originalDeliveryPrice, 2),
             'total_quantity' => $totalQuantity,
             'total' => $finalTotal,
             'promotion_id' => $promotionId,
@@ -1036,6 +1040,7 @@ class OrderService extends BaseService
                 'status' => OrderStatus::PENDING->value,
                 'cart_type' => $originalOrder->cart_type,
                 'delivery_price' => $originalOrder->delivery_price,
+                'original_delivery_price' => $originalOrder->original_delivery_price ?? $originalOrder->delivery_price,
                 'total_quantity' => $originalOrder->total_quantity,
                 'total' => $originalOrder->total,
                 'subtotal' => $originalOrder->subtotal,

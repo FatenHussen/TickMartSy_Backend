@@ -52,6 +52,11 @@ Complete API documentation for Tikmool e-commerce platform.
 - شكل الرد المخصص للـ dropdown (id/value)
 - كيف تربطيه بالـ frontend (toggle/driver select)
 
+### 9. Admin Driver Wallet Transactions API (`ADMIN_DRIVER_WALLET_TRANSACTIONS_API.md`)
+- List/Show لمعاملات محفظة السائق من لوحة الإدارة
+- الفلاتر (type, driver_id, order_id, range dates, range amount)
+- أمثلة Request/Response جاهزة للربط مع الفرونت
+
 
 ## Quick Start
 

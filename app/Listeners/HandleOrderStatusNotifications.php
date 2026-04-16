@@ -6,6 +6,7 @@ use App\Events\OrderStatusChanged;
 use App\Models\Admin;
 use App\Models\AffiliateWalletTransaction;
 use App\Models\Driver;
+use App\Models\DriverWalletTransaction;
 use App\Services\Base\NotificationService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
@@ -36,6 +37,7 @@ class HandleOrderStatusNotifications implements ShouldQueue
             $event->to === OrderStatus::DELIVERED->value &&
             $event->from !== OrderStatus::DELIVERED->value
         ) {
+            $this->recordDriverDeliveryIncome($order);
             $this->recordAffiliateCommission($order);
         }
 
@@ -347,6 +349,54 @@ class HandleOrderStatusNotifications implements ShouldQueue
             'affiliate_id' => $order->affiliate_id,
             'type' => 'commission',
             'amount' => round($amount, 2),
+            'order_id' => $order->id,
+        ]);
+    }
+
+    private function recordDriverDeliveryIncome($order): void
+    {
+        if (! $order->driver_id) {
+            return;
+        }
+
+        $exists = DriverWalletTransaction::where('order_id', $order->id)
+            ->where('driver_id', $order->driver_id)
+            ->exists();
+
+        if ($exists) {
+            return;
+        }
+
+        $driver = $order->driver ?? Driver::find($order->driver_id);
+        if (! $driver) {
+            return;
+        }
+
+        $deliveryFee = (float) ($order->original_delivery_price ?? 0);
+        if ($deliveryFee <= 0) {
+            $deliveryFee = (float) $order->delivery_price;
+        }
+
+        if ($deliveryFee <= 0) {
+            return;
+        }
+
+        $ratePercent = (float) ($driver->rate_per_order ?? 0);
+        if ($ratePercent <= 0) {
+            return;
+        }
+
+        $amount = round($deliveryFee * ($ratePercent / 100), 2);
+        if ($amount <= 0) {
+            return;
+        }
+
+        DriverWalletTransaction::create([
+            'driver_id' => $driver->id,
+            'type' => (float) $order->delivery_price > 0 ? 'paid_by_user' : 'paid_by_system',
+            'amount' => $amount,
+            'delivery_fee' => round($deliveryFee, 2),
+            'rate_percent' => round($ratePercent, 2),
             'order_id' => $order->id,
         ]);
     }

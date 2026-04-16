@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\Basket\BasketController;
 use App\Http\Controllers\Admin\Basket\ScheduledBasketController;
 use App\Http\Controllers\Admin\AffiliateWithdrawRequest\AffiliateWithdrawRequestController;
 use App\Http\Controllers\Admin\AffiliateWalletTransaction\AffiliateWalletTransactionController;
+use App\Http\Controllers\Admin\DriverWalletTransaction\DriverWalletTransactionController;
 use App\Http\Controllers\Admin\Role_Permission\PermissionIndexController;
 use App\Http\Controllers\Admin\Role_Permission\RoleCrudController;
 use App\Http\Controllers\Admin\Brand\BrandController;
@@ -261,6 +262,7 @@ Route::prefix('admin')->group(
                 Route::apiResource('flash-sales', FlashSaleController::class)->only(['index','store', 'update']);
                 Route::apiResource('affiliate-withdraw-requests', AffiliateWithdrawRequestController::class)->only(['index', 'show', 'update']);
                 Route::apiResource('affiliate-wallet-transactions', AffiliateWalletTransactionController::class)->only(['index', 'show']);
+                Route::apiResource('driver-wallet-transactions', DriverWalletTransactionController::class)->only(['index', 'show']);
                 Route::apiResource('vendor-withdraw-requests', VendorWithdrawRequestController::class)->only(['index', 'show', 'update']);
 
                 Route::prefix('vendor-accounting')->group(function () {

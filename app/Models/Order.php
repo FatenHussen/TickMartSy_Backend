@@ -28,6 +28,7 @@ class Order extends Model
         'status',
         'cart_type',
         'delivery_price',
+        'original_delivery_price',
         'total_quantity',
         'total',
         'subtotal',
@@ -112,6 +113,11 @@ class Order extends Model
     public function paymentMethod()
     {
         return $this->belongsTo(PaymentMethod::class);
+    }
+
+    public function driverWalletTransactions()
+    {
+        return $this->hasMany(DriverWalletTransaction::class);
     }
 
     public function basket()

@@ -106,6 +106,7 @@ class DatabaseSeeder extends Seeder
             OrderWithItemsSeeder::class,
             ServiceOrderSeeder::class,
             UserBasketsAndOrdersSeeder::class,
+            DriverWalletTransactionSeeder::class,
 
             // Ratings & Reviews
             RatingSeeder::class,

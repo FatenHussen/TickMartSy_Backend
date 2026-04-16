@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Http\Resources\Admin\DriverWalletTransaction;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class OneResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'driver_id' => $this->driver_id,
+            'driver' => [
+                'id' => $this->driver?->id,
+                'name' => $this->driver?->name,
+                'email' => $this->driver?->email,
+                'phone' => $this->driver?->phone,
+                'image_url' => $this->driver?->image_url,
+            ],
+            'type' => $this->type,
+            'amount' => (float) $this->amount,
+            'delivery_fee' => (float) $this->delivery_fee,
+            'rate_percent' => (float) $this->rate_percent,
+            'order_id' => $this->order_id,
+            'order' => $this->order ? [
+                'id' => $this->order->id,
+                'status' => $this->order->status ?? null,
+            ] : null,
+            'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
+        ];
+    }
+}

@@ -81,7 +81,8 @@ class AdminRolePermissionSeeder extends Seeder
         $customPermissions = [
             'statistics.view',  // View all statistics endpoints
             'reports.view',
-            'affiliatewallettransaction.view',   // View and export all reports
+            'affiliatewallettransaction.view',
+            'driverwallettransaction.view',  // View and export all reports
         ];
 
         $permissions = array_merge($permissions, $customPermissions);
