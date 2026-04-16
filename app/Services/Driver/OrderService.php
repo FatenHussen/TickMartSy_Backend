@@ -7,12 +7,19 @@ use App\Events\DriverAcceptedOrder;
 use App\Events\OrderItemStatusChanged;
 use App\Events\OrderStatusChanged;
 use App\Exceptions\CustomExceptionWithMessage;
+use App\Models\Driver;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Services\Shared\DriverCoverageService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 class OrderService
 {
+    public function __construct(
+        private readonly DriverCoverageService $driverCoverageService
+    ) {}
+
     /* =======================
        📦 GET ORDERS
     ======================= */
@@ -43,13 +50,28 @@ class OrderService
 
     public function ordersToAssigned(array $data)
     {
+        /** @var Driver $driver */
+        $driver = $this->driverCoverageService->loadDriverWithCoverage(auth('driver')->id());
 
-        return $query = Order::query()
+        $query = Order::query()
+            ->whereIn('status', [OrderStatus::PENDING->value, OrderStatus::PREPARING->value])
+            ->where('is_instant_delivery', true)
+            ->whereNull('driver_id');
+
+        $this->driverCoverageService->applyInstantOrderCoverage($query, $driver);
+
+        return $query->latest()->get();
+    }
+
+    private function instantOrderMatchesDriverCoverage(Order $order, Driver $driver): bool
+    {
+        return Order::query()
+            ->whereKey($order->getKey())
             ->whereIn('status', [OrderStatus::PENDING->value, OrderStatus::PREPARING->value])
             ->where('is_instant_delivery', true)
             ->whereNull('driver_id')
-            ->latest()
-            ->get();
+            ->tap(fn (Builder $q) => $this->driverCoverageService->applyInstantOrderCoverage($q, $driver))
+            ->exists();
     }
 
     /* =======================
@@ -63,12 +85,19 @@ class OrderService
 
             $order = Order::lockForUpdate()->findOrFail($orderId);
 
+            /** @var Driver $driver */
+            $driver = $this->driverCoverageService->loadDriverWithCoverage($driverId);
+
             if ($order->driver_id !== null) {
                 throw new CustomExceptionWithMessage('custom.orders.already_assigned');
             }
 
             if (! $order->is_instant_delivery) {
                 throw new CustomExceptionWithMessage('custom.orders.not_instant_delivery');
+            }
+
+            if (! $this->instantOrderMatchesDriverCoverage($order, $driver)) {
+                throw new CustomExceptionWithMessage('custom.orders.not_in_driver_coverage');
             }
 
             $hasActiveInstantOrder = Order::where('driver_id', $driverId)

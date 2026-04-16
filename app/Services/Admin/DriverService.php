@@ -20,8 +20,9 @@ class DriverService extends BaseService
         $this->syncRelations = [
             'cities'  => 'city_ids',
             'shops'   => 'shop_ids',
+            'vendors' => 'vendor_ids',
         ];
-        $this->relations = ['cities', 'shops'];
+        $this->relations = ['cities', 'shops', 'vendors'];
 
         $this->singleImages = ['image', 'vehicle_image'];
     }

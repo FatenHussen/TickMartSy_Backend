@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\Order\FilterRequest;
 use App\Http\Resources\Order\AllResource;
 use App\Services\Admin\OrderService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class OrderController extends BaseIndexController
 {
@@ -55,6 +56,38 @@ class OrderController extends BaseIndexController
 
         return $this->sendResponse(
             message: __('custom.orders.assigned_to_driver_successfully')
+        );
+    }
+
+    /* =======================
+       🧩 GET ORDERS TO ASSIGN
+       FILTERED BY DRIVER COVERAGE
+    ======================= */
+    public function ordersToAssign(Request $request)
+    {
+        $data = $request->validate([
+            'filter_by_driver_coverage' => ['nullable', 'boolean'],
+            'driver_id' => ['nullable', 'required_if:filter_by_driver_coverage,1,true', 'exists:drivers,id'],
+            'status' => ['nullable', Rule::in(['pending', 'preparing'])],
+            'is_instant_delivery' => ['nullable', 'boolean'],
+        ]);
+
+        $filterByDriverCoverage = (bool) ($data['filter_by_driver_coverage'] ?? false);
+
+        $orders = $this->service->ordersToAssignByDriver(
+            driverId: isset($data['driver_id']) ? (int) $data['driver_id'] : null,
+            status: $data['status'] ?? null,
+            isInstantDelivery: $data['is_instant_delivery'] ?? true,
+            filterByDriverCoverage: $filterByDriverCoverage,
+        );
+
+        return $this->sendResponse(
+            data: $orders->map(function ($order) {
+                return [
+                    'id' => $order->id,
+                    'value' => ($order->order_code ?? $order->id) . ' . ' . ($order->user->name ?? '-'),
+                ];
+            })->values(),
         );
     }
 

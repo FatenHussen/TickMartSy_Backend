@@ -49,6 +49,11 @@ class Vendor extends Model
     {
         return $this->hasMany(Shop::class);
     }
+
+    public function drivers()
+    {
+        return $this->belongsToMany(Driver::class, 'driver_vendor');
+    }
     public function brands()
     {
         return $this->belongsToMany(Brand::class);
