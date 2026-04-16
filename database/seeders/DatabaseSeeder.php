@@ -106,7 +106,6 @@ class DatabaseSeeder extends Seeder
             OrderWithItemsSeeder::class,
             ServiceOrderSeeder::class,
             UserBasketsAndOrdersSeeder::class,
-            DriverWalletTransactionSeeder::class,
 
             // Ratings & Reviews
             RatingSeeder::class,
@@ -122,7 +121,9 @@ class DatabaseSeeder extends Seeder
 
             PromotionSeeder::class,
             FlashSaleSeeder::class,
-            PopupCampaignSeeder::class
+            PopupCampaignSeeder::class,
+            DriverWalletTransactionSeeder::class,
+
 
         ]);
 
