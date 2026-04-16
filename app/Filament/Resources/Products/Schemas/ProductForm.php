@@ -334,43 +334,35 @@ class ProductForm
                                         ->helperText(__('custom.products.form.icons_help'))
                                         ->columnSpanFull(),
 
-                                    Forms\Components\Repeater::make('badges')
-                                        ->label(__('custom.products.form.badges'))
+                                    Section::make(__('custom.products.form.badge_top'))
                                         ->schema([
-                                            Forms\Components\Select::make('id')
-                                                ->label(__('custom.products.form.badge'))
-                                                ->options(\App\Models\Badge::pluck('name', 'id'))
-                                                ->required()
+                                            Forms\Components\Select::make('top_badge_id')
+                                                ->label(__('custom.products.form.badge_top'))
+                                                ->options(static::badgeOptions())
                                                 ->searchable()
-                                                ->distinct()
-                                                ->columnSpan(1),
-
-                                            Forms\Components\Select::make('position')
-                                                ->label(__('custom.products.form.badge_position'))
-                                                ->options([
-                                                    'top' => __('custom.products.form.badge_top'),
-                                                    'bottom' => __('custom.products.form.badge_bottom'),
-                                                ])
-                                                ->required()
+                                                ->preload()
                                                 ->native(false)
-                                                ->columnSpan(1),
+                                                ->placeholder(__('custom.products.form.no_discount'))
+                                                ->helperText(__('custom.products.form.top_badge_helper'))
+                                                ->columnSpanFull(),
                                         ])
-                                        ->columns(2)
-                                        ->defaultItems(0)
-                                        ->addActionLabel(__('custom.products.form.add_badge'))
                                         ->collapsible()
-                                        ->columnSpanFull()
-                                        ->afterStateHydrated(function ($component, $state, $record) {
-                                            if ($record && $record->badges) {
-                                                $badges = $record->badges->map(function ($badge) {
-                                                    return [
-                                                        'id' => $badge->id,
-                                                        'position' => $badge->pivot->position,
-                                                    ];
-                                                })->toArray();
-                                                $component->state($badges);
-                                            }
-                                        }),
+                                        ->columnSpanFull(),
+
+                                    Section::make(__('custom.products.form.badge_bottom'))
+                                        ->schema([
+                                            Forms\Components\Select::make('bottom_badge_ids')
+                                                ->label(__('custom.products.form.badge_bottom'))
+                                                ->options(static::badgeOptions())
+                                                ->multiple()
+                                                ->searchable()
+                                                ->preload()
+                                                ->native(false)
+                                                ->helperText(__('custom.products.form.bottom_badges_helper'))
+                                                ->columnSpanFull(),
+                                        ])
+                                        ->collapsible()
+                                        ->columnSpanFull(),
                                 ])
                                 ->collapsible(),
 
@@ -959,6 +951,24 @@ class ProductForm
             ->first();
 
         return $query?->id;
+    }
+
+    private static function badgeOptions(): array
+    {
+        return \App\Models\Badge::query()
+            ->get()
+            ->mapWithKeys(function ($badge) {
+                $name = $badge->name;
+
+                if (is_array($name)) {
+                    $label = (string) ($name[app()->getLocale()] ?? $name['ar'] ?? $name['en'] ?? $badge->id);
+                } else {
+                    $label = (string) ($name ?: $badge->id);
+                }
+
+                return [$badge->id => $label];
+            })
+            ->toArray();
     }
 
 }
