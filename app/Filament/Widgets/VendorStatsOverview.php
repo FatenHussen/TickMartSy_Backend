@@ -39,9 +39,9 @@ class VendorStatsOverview extends BaseWidget
             ? $this->formatMoney((float) ($wallet['fixed_commission'] ?? 0))
             : ((float) ($wallet['commission_rate'] ?? 0)) . '%';
 
-        $commissionDescription = $commissionSource === 'package' && $commissionSourcePackageName !== ''
-            ? __('custom.stats.commission_from_package', ['package' => $commissionSourcePackageName, 'value' => $commissionValue])
-            : __('custom.stats.commission_from_vendor', ['value' => $commissionValue]);
+        $commissionDescription = $commissionSource === 'package'
+            ? __('custom.stats.commission_from_package', ['package' => $commissionSourcePackageName !== '' ? $commissionSourcePackageName : '-', 'value' => $commissionValue])
+            : __('custom.stats.commission_from_package', ['package' => '-', 'value' => $commissionValue]);
 
         $settlementCycle = (string) ($vendor['settlement_cycle'] ?? 'monthly');
         $settlementCycleLabel = $settlementCycle === 'weekly'

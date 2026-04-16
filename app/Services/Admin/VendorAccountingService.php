@@ -15,7 +15,7 @@ class VendorAccountingService
 {
     public function getSummary(array $filters = []): array
     {
-        $vendorsQuery = Vendor::query()->select('id', 'commission_rate', 'commission_type', 'fixed_commission', 'settlement_cycle', 'is_active');
+        $vendorsQuery = Vendor::query()->select('id', 'settlement_cycle', 'is_active');
 
         if (array_key_exists('is_active', $filters) && $filters['is_active'] !== null) {
             $vendorsQuery->where('is_active', (bool) $filters['is_active']);
@@ -64,10 +64,10 @@ class VendorAccountingService
 
         foreach ($vendors as $vendorId => $vendor) {
             $commissionProfile = $commissionProfiles->get($vendorId, [
-                'commission_type' => (string) ($vendor->commission_type ?? 'percentage'),
-                'commission_rate' => (float) ($vendor->commission_rate ?? 0),
-                'fixed_commission' => (float) ($vendor->fixed_commission ?? 0),
-                'source' => 'vendor',
+                'commission_type' => 'percentage',
+                'commission_rate' => 0.0,
+                'fixed_commission' => 0.0,
+                'source' => 'package',
                 'source_package_id' => null,
                 'source_package_name' => null,
             ]);
@@ -124,7 +124,7 @@ class VendorAccountingService
     public function getVendorsAccounting(array $filters = [], int $perPage = 10): array
     {
         $query = Vendor::query()
-            ->select('id', 'name', 'owner_name', 'commission_rate', 'commission_type', 'fixed_commission', 'settlement_cycle', 'is_active', 'created_at');
+            ->select('id', 'name', 'owner_name', 'settlement_cycle', 'is_active', 'created_at');
 
         if (!empty($filters['search'])) {
             $search = strtolower(trim($filters['search']));
@@ -153,10 +153,10 @@ class VendorAccountingService
 
         $items = collect($vendors->items())->map(function (Vendor $vendor) use ($salesRows, $withdrawRows, $pendingSalesRows, $commissionProfiles) {
             $commissionProfile = $commissionProfiles->get($vendor->id, [
-                'commission_type' => (string) ($vendor->commission_type ?? 'percentage'),
-                'commission_rate' => (float) ($vendor->commission_rate ?? 0),
-                'fixed_commission' => (float) ($vendor->fixed_commission ?? 0),
-                'source' => 'vendor',
+                'commission_type' => 'percentage',
+                'commission_rate' => 0.0,
+                'fixed_commission' => 0.0,
+                'source' => 'package',
                 'source_package_id' => null,
                 'source_package_name' => null,
             ]);
@@ -416,10 +416,10 @@ class VendorAccountingService
     private function resolveCommissionProfile(Vendor $vendor, ?VendorSubscription $subscription = null): array
     {
         $defaultProfile = [
-            'commission_type' => (string) ($vendor->commission_type ?? 'percentage'),
-            'commission_rate' => (float) ($vendor->commission_rate ?? 0),
-            'fixed_commission' => (float) ($vendor->fixed_commission ?? 0),
-            'source' => 'vendor',
+            'commission_type' => 'percentage',
+            'commission_rate' => 0.0,
+            'fixed_commission' => 0.0,
+            'source' => 'package',
             'source_package_id' => null,
             'source_package_name' => null,
         ];
@@ -493,11 +493,6 @@ class VendorAccountingService
             ? $ordersCount * $fixedCommission
             : $grossSales * ($commissionRate / 100);
 
-        $snapshotPlatformCommission = (float) ($salesRow['snapshot_platform_commission'] ?? 0);
-        if ($snapshotPlatformCommission > 0) {
-            $platformCommission = $snapshotPlatformCommission;
-        }
-
         $netDue = $grossSales - $platformCommission - $discountsShare - $refunds;
 
         $paid = (float) ($withdrawRow['paid_amount'] ?? 0);
@@ -514,7 +509,7 @@ class VendorAccountingService
             'commission_type' => $commissionType,
             'commission_rate' => $this->money($commissionRate),
             'fixed_commission' => $this->money($fixedCommission),
-            'commission_source' => (string) ($commissionMeta['source'] ?? 'vendor'),
+            'commission_source' => (string) ($commissionMeta['source'] ?? 'package'),
             'commission_source_package_id' => $commissionMeta['source_package_id'] ?? null,
             'commission_source_package_name' => $commissionMeta['source_package_name'] ?? null,
             'gross_sales' => $this->money($grossSales),
@@ -542,9 +537,9 @@ class VendorAccountingService
             'name' => $vendor->name,
             'name_translations' => $vendor->getTranslations('name'),
             'owner_name' => $vendor->owner_name,
-            'commission_type' => $vendor->commission_type ?: 'percentage',
-            'commission_rate' => $this->money((float) ($vendor->commission_rate ?? 0)),
-            'fixed_commission' => $this->money((float) ($vendor->fixed_commission ?? 0)),
+            'commission_type' => 'percentage',
+            'commission_rate' => $this->money(0.0),
+            'fixed_commission' => $this->money(0.0),
             'settlement_cycle' => $settlementCycle,
             'next_settlement_at' => $this->nextSettlementAt($settlementCycle),
             'is_active' => (bool) $vendor->is_active,

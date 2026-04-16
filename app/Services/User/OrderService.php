@@ -1102,27 +1102,12 @@ class OrderService extends BaseService
 
     private function resolveVendorCommissionProfile(int $vendorId): array
     {
-        $vendor = Vendor::query()
-            ->select('id', 'commission_type', 'commission_rate', 'fixed_commission')
-            ->find($vendorId);
-
-        if (!$vendor) {
+        if (!Schema::hasTable('vendor_subscriptions')) {
             return [
                 'type' => 'percentage',
                 'rate' => 0.0,
                 'fixed' => 0.0,
-                'source' => 'vendor',
-                'package_id' => null,
-                'package_name' => null,
-            ];
-        }
-
-        if (!Schema::hasTable('vendor_subscriptions')) {
-            return [
-                'type' => (string) ($vendor->commission_type ?? 'percentage'),
-                'rate' => (float) ($vendor->commission_rate ?? 0),
-                'fixed' => (float) ($vendor->fixed_commission ?? 0),
-                'source' => 'vendor',
+                'source' => 'package',
                 'package_id' => null,
                 'package_name' => null,
             ];
@@ -1154,10 +1139,10 @@ class OrderService extends BaseService
         }
 
         return [
-            'type' => (string) ($vendor->commission_type ?? 'percentage'),
-            'rate' => (float) ($vendor->commission_rate ?? 0),
-            'fixed' => (float) ($vendor->fixed_commission ?? 0),
-            'source' => 'vendor',
+            'type' => 'percentage',
+            'rate' => 0.0,
+            'fixed' => 0.0,
+            'source' => 'package',
             'package_id' => null,
             'package_name' => null,
         ];
