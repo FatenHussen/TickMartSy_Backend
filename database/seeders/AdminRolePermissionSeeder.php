@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Admin;
+use App\Models\AffiliateWalletTransaction;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -65,6 +66,7 @@ class AdminRolePermissionSeeder extends Seeder
             'FlashSale'
         ];
 
+
         $actions = ['view', 'create', 'update', 'delete'];
 
         $permissions = [];
@@ -78,7 +80,8 @@ class AdminRolePermissionSeeder extends Seeder
         // Add custom permissions for Statistics and Reports (not model-based)
         $customPermissions = [
             'statistics.view',  // View all statistics endpoints
-            'reports.view',     // View and export all reports
+            'reports.view',
+            'affiliatewallettransaction.view',   // View and export all reports
         ];
 
         $permissions = array_merge($permissions, $customPermissions);
