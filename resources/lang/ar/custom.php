@@ -498,8 +498,23 @@ return [
     'navigation' => [
         'shops' => 'الفروع',
         'products' => 'المنتجات',
+        'inventory' => 'المخزون',
         'orders' => 'الطلبات',
         'dashboard' => 'الرئيسية',
+    ],
+
+    'inventory' => [
+        'title' => 'مخزون المنتجات',
+        'singular' => 'مخزون',
+        'total_quantity' => 'إجمالي الكمية',
+        'variants_count' => 'عدد المتغيرات',
+        'update_quantities' => 'تعديل الكميات',
+        'update_modal_title' => 'تعديل كميات المتغيرات في الشوبات',
+        'variant_section_title' => 'المتغير: :variant',
+        'shop_variant_quantity_label' => 'الشوب: :shop | المتغير: :variant',
+        'no_variant_stock_title' => 'لا توجد كميات متغيرات لهذا المنتج',
+        'no_variant_stock_body' => 'أضف متغيرات المنتج وربطها بالشوبات أولاً.',
+        'updated_successfully' => 'تم تحديث المخزون بنجاح.',
     ],
 
     // Stats
@@ -1093,7 +1108,7 @@ return [
         'from_date' => 'من تاريخ',
         'to_date' => 'إلى تاريخ',
         'available_for_withdraw' => 'المتاح للسحب',
-        'available_for_withdraw_hint' => 'الصافي المتاح بعد المدفوع والمعلق',
+        'available_for_withdraw_hint' => 'الصافي المتاح بعد السحوبات المدفوعة',
         'pending_withdrawals_amount' => 'السحب المعلق',
         'paid_withdrawals_amount' => 'السحب المدفوع',
         'pending_requests_label' => 'طلبات معلقة: :count',
@@ -1109,6 +1124,12 @@ return [
         'only_pending_can_be_updated' => 'يمكن تحديث الطلبات المعلقة فقط.',
         'invalid_status' => 'حالة غير صالحة.',
         'amount_exceeds_balance' => 'المبلغ يتجاوز الرصيد المتاح.',
+        'admin_new_request_title' => 'طلب سحب أرباح جديد',
+        'admin_new_request_body' => 'تم إنشاء طلب سحب رقم :id بقيمة :amount للبائع رقم :vendor_id.',
+        'vendor_status_paid_title' => 'تمت الموافقة على طلب السحب',
+        'vendor_status_paid_body' => 'تمت الموافقة على طلب السحب رقم :id بمبلغ :amount.',
+        'vendor_status_rejected_title' => 'تم رفض طلب السحب',
+        'vendor_status_rejected_body' => 'تم رفض طلب السحب رقم :id. السبب: :reason',
     ],
 
     // Gifts

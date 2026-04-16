@@ -100,7 +100,8 @@ class VendorAccountingService
         }
 
         $remainingAfterPaid = $netDue - $paid;
-        $availableForWithdraw = $remainingAfterPaid - $pendingWithdrawals;
+        // Available balance should decrease when payout is actually paid.
+        $availableForWithdraw = $remainingAfterPaid;
 
         return [
             'vendors_count' => $vendors->count(),
@@ -333,7 +334,7 @@ class VendorAccountingService
             return collect();
         }
 
-        $query = VendorWithdrawRequest::query()
+        $query = DB::table('vendor_withdraw_requests')
             ->selectRaw('vendor_id')
             ->selectRaw("SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) as paid_amount")
             ->selectRaw("SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) as pending_amount")
@@ -535,7 +536,8 @@ class VendorAccountingService
         $pendingRequestsCount = (int) ($withdrawRow['pending_requests_count'] ?? 0);
         $rejectedRequestsCount = (int) ($withdrawRow['rejected_requests_count'] ?? 0);
         $remainingAfterPaid = $netDue - $paid;
-        $availableForWithdraw = $remainingAfterPaid - $pendingWithdrawals;
+        // Keep pending visible as a separate metric and deduct from available only after payment.
+        $availableForWithdraw = $remainingAfterPaid;
 
         return [
             'orders_count' => $ordersCount,
