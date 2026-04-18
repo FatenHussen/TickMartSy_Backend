@@ -11,6 +11,13 @@ class StoreRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('commercial_register') && $this->input('commercial_register') === '') {
+            $this->merge(['commercial_register' => null]);
+        }
+    }
+
     public function rules(): array
     {
         return [
