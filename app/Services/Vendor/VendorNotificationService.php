@@ -4,8 +4,10 @@ namespace App\Services\Vendor;
 
 use App\Jobs\SendFcmNotificationJob;
 use App\Jobs\SendVendorFcmNotificationJob;
+use App\Models\Order;
 use App\Models\VendorUser;
 use App\Services\Base\NotificationService;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
 class VendorNotificationService
@@ -82,8 +84,8 @@ class VendorNotificationService
         string $fromStatus,
         string $toStatus
     ): void {
-        $vendor = $order->shop?->vendor;
-        if (!$vendor) {
+        $vendorIds = $this->extractOrderVendorIds($order);
+        if ($vendorIds->isEmpty()) {
             return;
         }
 
@@ -97,18 +99,20 @@ class VendorNotificationService
 
         $toLabel = $statusLabels[$toStatus] ?? $toStatus;
 
-        $this->notifyVendor(
-            $vendor->id,
-            'تحديث حالة الطلب',
-            "تم تحديث حالة الطلب #{$order->order_code} إلى: {$toLabel}",
-            'order_status_changed',
-            [
-                'order_id' => $order->id,
-                'order_code' => $order->order_code,
-                'from_status' => $fromStatus,
-                'to_status' => $toStatus,
-            ]
-        );
+        foreach ($vendorIds as $vendorId) {
+            $this->notifyVendor(
+                $vendorId,
+                'تحديث حالة الطلب',
+                "تم تحديث حالة الطلب #{$order->order_code} إلى: {$toLabel}",
+                'order_status_changed',
+                [
+                    'order_id' => $order->id,
+                    'order_code' => $order->order_code,
+                    'from_status' => $fromStatus,
+                    'to_status' => $toStatus,
+                ]
+            );
+        }
     }
 
     /**
@@ -116,22 +120,42 @@ class VendorNotificationService
      */
     public function notifyNewOrder($order): void
     {
-        $vendor = $order->shop?->vendor;
-        if (!$vendor) {
+        $vendorIds = $this->extractOrderVendorIds($order);
+        if ($vendorIds->isEmpty()) {
             return;
         }
 
-        $this->notifyVendor(
-            $vendor->id,
-            'طلب جديد',
-            "تم استقبال طلب جديد #{$order->order_code} بقيمة {$order->total}",
-            'new_order',
-            [
-                'order_id' => $order->id,
-                'order_code' => $order->order_code,
-                'total' => $order->total,
-            ]
-        );
+        foreach ($vendorIds as $vendorId) {
+            $this->notifyVendor(
+                $vendorId,
+                'طلب جديد',
+                "تم استقبال طلب جديد #{$order->order_code} بقيمة {$order->total}",
+                'new_order',
+                [
+                    'order_id' => $order->id,
+                    'order_code' => $order->order_code,
+                    'total' => $order->total,
+                ]
+            );
+        }
+    }
+
+    /**
+     * Resolve unique vendor IDs from order items (supports multi-shop orders).
+     */
+    private function extractOrderVendorIds($order): Collection
+    {
+        if (!($order instanceof Order)) {
+            return collect();
+        }
+
+        $order->loadMissing('items.shopProductVariant.shop.vendor');
+
+        return $order->items
+            ->pluck('shopProductVariant.shop.vendor_id')
+            ->filter()
+            ->unique()
+            ->values();
     }
 
     /**
