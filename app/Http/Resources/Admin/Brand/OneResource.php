@@ -20,6 +20,7 @@ class OneResource extends JsonResource
             'id'         => $this->id,
             'name'       => $this->getTranslations('name'),
             'image'      => $this->image_url,
+            'order'      => $this->order,
             'is_active'  => $this->is_active,
             'governorate' => $this->governorate ? ['id' => $this->governorate->id, 'name' => $this->governorate->name] : null,
             'city'        => $this->city ? ['id' => $this->city->id, 'name' => $this->city->name] : null,

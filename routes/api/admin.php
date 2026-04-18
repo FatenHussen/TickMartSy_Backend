@@ -204,6 +204,9 @@ Route::prefix('admin')->group(
 
                 // Route::get('page-sections/display-types/{manual_model}', [PageSectionCrudController::class, 'displayTypes']);
 
+                Route::post('categories/sort', [CategoryController::class, 'sort']);
+                Route::post('brands/sort', [BrandController::class, 'sort']);
+
                 Route::resources([
                     'stores'         => StoreCrudController::class,
                     // 'shops'          => ShopCrudController::class,

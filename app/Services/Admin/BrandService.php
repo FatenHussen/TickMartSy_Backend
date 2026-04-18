@@ -6,6 +6,7 @@ use App\Http\Resources\Admin\Brand\AllResource;
 use App\Http\Resources\Admin\Brand\OneResource;
 use App\Services\BaseService;
 use App\Models\Brand;
+use Illuminate\Support\Facades\DB;
 
 class BrandService extends BaseService
 {
@@ -18,7 +19,7 @@ class BrandService extends BaseService
         $this->pagination   = true;
         $this->relations    = ['governorate', 'city', 'category', 'originCountry'];
         $this->searchableFields = ['name'];
-        $this->sortableFields = ['id', 'created_at'];
+        $this->sortableFields = ['id', 'created_at', 'is_active', 'category_id', 'origin_country_id', 'order'];
     }
 
     public function queryBuilder($query, $filters = [], $config = [])
@@ -48,5 +49,25 @@ class BrandService extends BaseService
         }
 
         return parent::queryBuilder($query, $filters, $config);
+    }
+
+    public function reorder(array $orderedIds): int
+    {
+        return DB::transaction(function () use ($orderedIds) {
+            $existingIds = Brand::query()->whereIn('id', $orderedIds)->pluck('id')->all();
+
+            if (count($existingIds) !== count($orderedIds)) {
+                abort(422, 'Some brands are invalid.');
+            }
+
+            $updated = 0;
+            foreach ($orderedIds as $index => $id) {
+                $updated += Brand::query()
+                    ->where('id', $id)
+                    ->update(['order' => $index + 1]);
+            }
+
+            return $updated;
+        });
     }
 }

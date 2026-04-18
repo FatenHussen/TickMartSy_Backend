@@ -19,6 +19,7 @@ class AllResource extends JsonResource
             'name' => $this->getTranslation('name', $locale),
             'icon' => $this->image_url,
             'parent_id' => $this->parent_id,
+            'order' => $this->order,
             'is_active' => $this->is_active,
             'is_restaurant' => (bool) $this->is_restaurant,
 

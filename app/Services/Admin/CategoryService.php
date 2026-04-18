@@ -6,6 +6,7 @@ use App\Http\Resources\Admin\Category\OneResource;
 use App\Models\Category;
 use App\Services\BaseService;
 use App\Http\Resources\Admin\Category\AllResource;
+use Illuminate\Support\Facades\DB;
 
 class CategoryService extends BaseService
 {
@@ -43,5 +44,31 @@ class CategoryService extends BaseService
         }
 
         return parent::queryBuilder($query, $filters, $config);
+    }
+
+    public function reorder(array $orderedIds, ?int $parentId = null): int
+    {
+        return DB::transaction(function () use ($orderedIds, $parentId) {
+            $query = Category::query()->whereIn('id', $orderedIds);
+
+            if ($parentId !== null) {
+                $query->where('parent_id', $parentId);
+            }
+
+            $existingIds = $query->pluck('id')->all();
+
+            if (count($existingIds) !== count($orderedIds)) {
+                abort(422, 'Some categories do not match the requested parent scope.');
+            }
+
+            $updated = 0;
+            foreach ($orderedIds as $index => $id) {
+                $updated += Category::query()
+                    ->where('id', $id)
+                    ->update(['order' => $index + 1]);
+            }
+
+            return $updated;
+        });
     }
 }
