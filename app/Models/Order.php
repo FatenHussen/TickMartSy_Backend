@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Enums\CartType;
 use App\Enums\OrderStatus;
-use App\Models\Concerns\AppliesAreaScope;
 use App\Traits\LogsActivity;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -15,8 +14,7 @@ use Illuminate\Support\Facades\Log;
 
 class Order extends Model
 {
-    use LogsActivity, SoftDeletes, AppliesAreaScope;
-    protected static array $areaRelationPaths = ['address'];
+    use LogsActivity, SoftDeletes;
     protected $fillable = [
         'user_id',
         'driver_id',

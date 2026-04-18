@@ -39,4 +39,9 @@ class City extends Model
     {
         return $this->belongsToMany(Driver::class, 'city_driver');
     }
+
+    public function admins()
+    {
+        return $this->belongsToMany(Admin::class, 'admin_city');
+    }
 }

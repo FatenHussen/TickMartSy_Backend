@@ -2,11 +2,20 @@
 
 namespace App\Http\Requests\Admin\Shop;
 
+use App\Http\Requests\Concerns\ValidatesShopAreaCityScope;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Validator;
 
 class UpdateRequest extends FormRequest
 {
+    use ValidatesShopAreaCityScope;
+
+    public function withValidator(Validator $validator): void
+    {
+        $this->withValidatorForShopAreaCityScope($validator);
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      */

@@ -2,13 +2,22 @@
 
 namespace App\Http\Requests\Admin\Driver;
 
+use App\Http\Requests\Concerns\ValidatesDriverCityScope;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class StoreRequest extends FormRequest
 {
+    use ValidatesDriverCityScope;
+
     public function authorize(): bool
     {
         return true;
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $this->withValidatorForDriverCityScope($validator);
     }
 
     public function rules(): array

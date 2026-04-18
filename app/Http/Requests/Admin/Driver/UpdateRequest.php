@@ -2,11 +2,20 @@
 
 namespace App\Http\Requests\Admin\Driver;
 
+use App\Http\Requests\Concerns\ValidatesDriverCityScope;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Validator;
 
 class UpdateRequest extends FormRequest
 {
+    use ValidatesDriverCityScope;
+
+    public function withValidator(Validator $validator): void
+    {
+        $this->withValidatorForDriverCityScope($validator);
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      */

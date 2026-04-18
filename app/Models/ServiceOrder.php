@@ -3,15 +3,11 @@
 namespace App\Models;
 
 use App\Enums\ServiceOrderStatus;
-use App\Models\Concerns\AppliesAreaScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ServiceOrder extends Model
 {
-    use AppliesAreaScope;
-    protected static array $areaRelationPaths = ['user'];
-
     protected $fillable = [
         'user_id',
         'shop_id',

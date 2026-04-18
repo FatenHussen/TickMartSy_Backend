@@ -669,6 +669,7 @@ return [
         'is_active' => 'Active',
         'min_order_amount' => 'Minimum Order Amount',
         'affiliate_active_coupon' => 'This affiliate already has an active coupon.',
+        'cannot_use_own_coupon' => 'You cannot use your own coupon.',
         'discount_types' => [
             'percent' => 'Percentage',
             'fixed' => 'Fixed Amount',

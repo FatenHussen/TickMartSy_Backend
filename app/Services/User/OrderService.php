@@ -789,6 +789,15 @@ class OrderService extends BaseService
             throw new CustomExceptionWithMessage('custom.invalid_coupon');
         }
 
+        // ❌ Marketer cannot use own affiliate coupon
+        $buyerUserId = $orderOrNull?->user_id ?? auth('user')->id();
+        if (!empty($coupon->affiliate_id) && $buyerUserId) {
+            $buyer = User::query()->select(['id', 'affiliate_id'])->find($buyerUserId);
+            if ($buyer?->affiliate_id && (string) $buyer->affiliate_id === (string) $coupon->affiliate_id) {
+                throw new CustomExceptionWithMessage('custom.coupons.cannot_use_own_coupon');
+            }
+        }
+
         $excludedItems = [];
 
         foreach ($basketItemsCollection as $item) {

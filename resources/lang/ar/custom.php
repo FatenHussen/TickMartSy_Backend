@@ -39,6 +39,10 @@ return [
     'driver_account_deleted' => 'هذا الحساب غير صالح.',
     'account_deleted_successfully' => 'تم حذف الحساب بنجاح.',
 
+    'coupons' => [
+        'cannot_use_own_coupon' => 'لا يمكنك استخدام كوبونك الخاص.',
+    ],
+
     'account_not_registered' => 'الحساب غير مسجل.',
 
     'wrong_password' => 'كلمة المرور الحالية غير صحيحة.',

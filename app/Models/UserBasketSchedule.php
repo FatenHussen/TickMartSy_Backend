@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\AppliesAreaScope;
 use App\Traits\LogsActivity;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,8 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class UserBasketSchedule extends Model implements Sectionable
 {
-    use HasFactory, LogsActivity, AppliesAreaScope;
-    protected static array $areaRelationPaths = ['user'];
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'user_id',

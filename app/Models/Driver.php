@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\AppliesAreaScope;
+use App\Authorization\CityAccess;
 use App\Enums\OrderStatus;
 use App\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 
 class Driver extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens, LogsActivity, SoftDeletes, AppliesAreaScope;
+    use HasFactory, Notifiable, HasApiTokens, LogsActivity, SoftDeletes;
     protected $appends = [
         'average_rating',
         'total_earnings',
@@ -143,11 +144,14 @@ class Driver extends Authenticatable
         return round(($canceled / $total) * 100, 1);
     }
 
-    protected static array $areaRelationPaths = ['cities.areas'];
-
     public function cities()
     {
         return $this->belongsToMany(City::class, 'city_driver');
+    }
+
+    public function scopeVisibleToCityAccess(Builder $query, CityAccess $access): Builder
+    {
+        return $access->constrainDrivers($query);
     }
 
     public function shops()
