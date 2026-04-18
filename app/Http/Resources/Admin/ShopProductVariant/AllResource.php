@@ -63,6 +63,9 @@ class AllResource extends JsonResource
         return [
             'id' => $this->id,
             'label' => $label,
+            'shop_id' => $this->shop_id,
+            'is_restaurant' => (bool) ($this->shop?->is_restaurant ?? false),
+            'city_id' => $this->shop?->city_id ?? $this->shop?->area?->city_id,
         ];
     }
 }

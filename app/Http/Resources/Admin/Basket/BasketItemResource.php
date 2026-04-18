@@ -30,6 +30,8 @@ class BasketItemResource extends JsonResource
                 'id' => $this->shopProductVariant->id,
                 'shop_id' => $this->shopProductVariant->shop_id,
                 'shop_name' => $this->shopProductVariant->shop?->name,
+                'is_restaurant' => (bool) ($this->shopProductVariant->shop?->is_restaurant ?? false),
+                'city_id' => $this->shopProductVariant->shop?->city_id ?? $this->shopProductVariant->shop?->area?->city_id,
                 'price' => $this->shopProductVariant->price,
                 'price_currencies' => $this->dualCurrency($this->shopProductVariant->price),
                 'quantity' => $this->shopProductVariant->quantity,

@@ -13,6 +13,8 @@ class OneResource extends JsonResource
             'id' => $this->id,
             'product_variant_id' => $this->product_variant_id,
             'shop_id' => $this->shop_id,
+            'is_restaurant' => (bool) ($this->shop?->is_restaurant ?? false),
+            'city_id' => $this->shop?->city_id ?? $this->shop?->area?->city_id,
             'product' => [
                 'id' => $this->productVariant->product->id,
                 'name' => $this->productVariant->product->name,
@@ -44,6 +46,8 @@ class OneResource extends JsonResource
                 'address' => $this->shop->address,
                 'email' => $this->shop->email,
                 'mobile' => $this->shop->mobile,
+                'is_restaurant' => (bool) ($this->shop->is_restaurant ?? false),
+                'city_id' => $this->shop->city_id ?? $this->shop?->area?->city_id,
             ] : null,
             'price' => $this->price,
             'cost_price' => $this->cost_price,

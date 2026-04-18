@@ -57,6 +57,7 @@ class ScheduledBasketItemResource extends JsonResource
         $variants = \App\Models\ShopProductVariant::query()
             ->whereIn('id', $this->shop_product_variant_ids)
             ->with([
+                'shop.area',
                 'productVariant.product.brand',
                 'productVariant.product.media'
             ])
@@ -69,6 +70,9 @@ class ScheduledBasketItemResource extends JsonResource
             return [
                 'product_id' => $product->id ?? null,
                 'shop_product_variant_id' => $variant->id,
+                'shop_id' => $variant->shop_id,
+                'is_restaurant' => (bool) ($variant->shop?->is_restaurant ?? false),
+                'city_id' => $variant->shop?->city_id ?? $variant->shop?->area?->city_id,
                 'name' => trim(($product->name ?? '') . ' ' . ($brand->name ?? '')),
                 'image_url' => optional($product->media->first())->url,
                 'price' => (float) $variant->price,
@@ -101,7 +105,7 @@ class ScheduledBasketItemResource extends JsonResource
 
         $variants = \App\Models\ShopProductVariant::query()
             ->whereIn('id', $variantIds)
-            ->with(['shop', 'productVariant.product'])
+            ->with(['shop.area', 'productVariant.product'])
             ->get();
 
         return $variants->map(function ($variant) {
@@ -109,6 +113,8 @@ class ScheduledBasketItemResource extends JsonResource
                 'id' => $variant->id,
                 'shop_id' => $variant->shop_id,
                 'shop_name' => $variant->shop?->name,
+                'is_restaurant' => (bool) ($variant->shop?->is_restaurant ?? false),
+                'city_id' => $variant->shop?->city_id ?? $variant->shop?->area?->city_id,
                 'product_name' => $variant->productVariant?->product?->name,
                 'price' => $variant->price,
                 'quantity' => $variant->quantity,

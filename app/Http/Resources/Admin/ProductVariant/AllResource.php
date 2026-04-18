@@ -37,6 +37,8 @@ class AllResource extends JsonResource
                     'shop' => $shopVariant->shop ? [
                         'id' => $shopVariant->shop->id,
                         'name' => $shopVariant->shop->name,
+                        'is_restaurant' => (bool) ($shopVariant->shop->is_restaurant ?? false),
+                        'city_id' => $shopVariant->shop->city_id ?? $shopVariant->shop?->area?->city_id,
                     ] : null,
                     'price' => $shopVariant->price,
                     'cost_price' => $shopVariant->cost_price,

@@ -105,6 +105,8 @@ class OneResource extends JsonResource
                             'id' => $sv->id,
                             'shop_id' => $sv->shop_id,
                             'shop_name' => $sv->shop?->name,
+                            'is_restaurant' => (bool) ($sv->shop?->is_restaurant ?? false),
+                            'city_id' => $sv->shop?->city_id ?? $sv->shop?->area?->city_id,
                             'price' => $sv->price,
                             'price_currencies' => $this->dualCurrency($sv->price),
                             'cost_price' => $sv->cost_price,

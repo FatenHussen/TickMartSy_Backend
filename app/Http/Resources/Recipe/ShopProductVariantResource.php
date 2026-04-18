@@ -17,6 +17,9 @@ class ShopProductVariantResource extends JsonResource
         return [
             'product_id' => $this->productVariant->product->id,
             'shop_product_variant_id' => $this->id,
+            'shop_id' => $this->shop_id,
+            'is_restaurant' => (bool) ($this->shop?->is_restaurant ?? false),
+            'city_id' => $this->shop?->city_id ?? $this->shop?->area?->city_id,
             'name' => $this->productVariant->product->name,
             'image_url' => $this->productVariant->product->image_url,
             ...$this->withCurrency($this->price, 'price'),
