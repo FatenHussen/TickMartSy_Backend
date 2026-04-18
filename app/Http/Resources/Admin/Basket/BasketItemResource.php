@@ -4,10 +4,13 @@ namespace App\Http\Resources\Admin\Basket;
 
 use App\Http\Resources\Basket\BasketItemProductResource;
 use App\Http\Resources\Basket\BasketItemVariantResource;
+use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class BasketItemResource extends JsonResource
 {
+    use HasCurrencyConversion;
+
     public function toArray($request)
     {
         return [
@@ -28,13 +31,14 @@ class BasketItemResource extends JsonResource
                 'shop_id' => $this->shopProductVariant->shop_id,
                 'shop_name' => $this->shopProductVariant->shop?->name,
                 'price' => $this->shopProductVariant->price,
+                'price_currencies' => $this->dualCurrency($this->shopProductVariant->price),
                 'quantity' => $this->shopProductVariant->quantity,
             ] : null,
 
             // Quantities and pricing
             'quantity' => (int) $this->quantity,
-            'unit_price' => round($this->price, 2),
-            'subtotal' => $this->subtotal,
+            ...$this->withCurrency($this->price, 'unit_price'),
+            ...$this->withCurrency($this->subtotal, 'subtotal'),
             'is_active' => $this->is_active,
 
             // Timestamps

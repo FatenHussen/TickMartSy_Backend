@@ -2,11 +2,14 @@
 
 namespace App\Http\Resources\Order;
 
+use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class OrderItemResource extends JsonResource
 {
+    use HasCurrencyConversion;
+
     public function toArray(Request $request): array
     {
         return [
@@ -14,11 +17,11 @@ class OrderItemResource extends JsonResource
             'product_name' => $this->product_name,
             'product_image' => $this->product_image,
             'quantity' => $this->quantity,
-            'unit_price' => $this->unit_price,
-            'final_price' => $this->final_price,
-            'subtotal' => $this->subtotal,
-            'extras_total' => $this->extras_total,
-            'total' => $this->total,
+            ...$this->withCurrency($this->unit_price, 'unit_price'),
+            ...$this->withCurrency($this->final_price, 'final_price'),
+            ...$this->withCurrency($this->subtotal, 'subtotal'),
+            ...$this->withCurrency($this->extras_total, 'extras_total'),
+            ...$this->withCurrency($this->total, 'total'),
             'status' => $this->item_status,
             'variant_attributes' => $this->variant_attributes,
             'delivery_time' => $this->getDeliveryTime(),
@@ -28,6 +31,7 @@ class OrderItemResource extends JsonResource
                     'detail_key' => $extra->extraDetail->detail_key,
                     'detail_value' => $extra->extraDetail->detail_value,
                     'price' => $extra->price,
+                    'price_currencies' => $this->dualCurrency($extra->price),
                 ] ?? [];
             }),
         ];

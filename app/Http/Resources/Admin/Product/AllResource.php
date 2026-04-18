@@ -2,10 +2,13 @@
 
 namespace App\Http\Resources\Admin\Product;
 
+use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class AllResource extends JsonResource
 {
+    use HasCurrencyConversion;
+
     public function toArray($request)
     {
         return [
@@ -20,9 +23,9 @@ class AllResource extends JsonResource
 
             'sku'                   => $this->sku,
             'model'                 => $this->model,
-            'price'                 => $this->price,
-            'cost_price'            => $this->cost_price,
-            'price_after_discount'  => $this->price_after_discount,
+            ...$this->withCurrency($this->price, 'price'),
+            ...$this->withCurrency($this->cost_price, 'cost_price'),
+            ...$this->withCurrency($this->price_after_discount, 'price_after_discount'),
             'discount'              => $this->discount,
             'discount_type'         => $this->discount_type,
             'quantity'              => $this->quantity,

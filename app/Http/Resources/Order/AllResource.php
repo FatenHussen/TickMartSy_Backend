@@ -3,12 +3,15 @@
 namespace App\Http\Resources\Order;
 
 use App\Http\Resources\EndUser\AllResource as EndUserAllResource;
+use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\Address\AllResource as AddressOneResource;
 
 class AllResource extends JsonResource
 {
+    use HasCurrencyConversion;
+
     /**
      * Transform the resource into an array.
      *
@@ -38,13 +41,13 @@ class AllResource extends JsonResource
             'rejection_reason' => $this->rejection_reason,
             'cart_type' => $this->cart_type,
             'is_instant_delivery' => $this->is_instant_delivery,
-            'delivery_price' => $this->delivery_price,
-            'total' => $this->total,
-            'subtotal' => $this->subtotal,
+            ...$this->withCurrency($this->delivery_price, 'delivery_price'),
+            ...$this->withCurrency($this->total, 'total'),
+            ...$this->withCurrency($this->subtotal, 'subtotal'),
             // 'total_with_delivery' =>  $this->total + $this->delivery_price,
             'total_quantity' => $this->total_quantity,
-            'basket_discount' => $this->basket_discount,
-            'coupon_discount' => $this->coupon_discount,
+            ...$this->withCurrency($this->basket_discount, 'basket_discount'),
+            ...$this->withCurrency($this->coupon_discount, 'coupon_discount'),
             'coupon' => $this->when(
                 !empty($this->coupon_id) || !empty($this->coupon_code),
                 fn() => [

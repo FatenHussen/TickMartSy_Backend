@@ -8,11 +8,14 @@ use App\Http\Resources\BasketSchedule\AllResource as BasketScheduleAllResource;
 use App\Http\Resources\Driver\AllResource as DriverAllResource;
 use App\Http\Resources\EndUser\AllResource;
 use App\Http\Resources\SectionItem\AllResource as SectionItemAllResource;
+use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class OneResource extends JsonResource
 {
+    use HasCurrencyConversion;
+
     /**
      * Transform the resource into an array.
      *
@@ -28,12 +31,12 @@ class OneResource extends JsonResource
             'rejection_reason' => $this->rejection_reason,
             'cart_type' => $this->cart_type,
             'is_instant_delivery' => $this->is_instant_delivery,
-            'delivery_price' => $this->delivery_price,
-            'subtotal' => $this->subtotal,
-            'total' => $this->total,
+            ...$this->withCurrency($this->delivery_price, 'delivery_price'),
+            ...$this->withCurrency($this->subtotal, 'subtotal'),
+            ...$this->withCurrency($this->total, 'total'),
             'total_quantity' => $this->total_quantity,
-            'basket_discount' => $this->basket_discount,
-            'coupon_discount' => $this->coupon_discount,
+            ...$this->withCurrency($this->basket_discount, 'basket_discount'),
+            ...$this->withCurrency($this->coupon_discount, 'coupon_discount'),
             'coupon' => $this->when(
                 !empty($this->coupon_id) || !empty($this->coupon_code),
                 fn() => [
@@ -44,9 +47,9 @@ class OneResource extends JsonResource
                     'discount_value' => $this->coupon?->discount_value,
                 ]
             ),
-            'promotion_discount' => $this->promotion_discount,
-            'subscription_discount' => $this->subscription_discount ?? 0,
-            'coupon_discount_from_points' => $this->coupon_discount_from_points ?? 0,
+            ...$this->withCurrency($this->promotion_discount, 'promotion_discount'),
+            ...$this->withCurrency($this->subscription_discount ?? 0, 'subscription_discount'),
+            ...$this->withCurrency($this->coupon_discount_from_points ?? 0, 'coupon_discount_from_points'),
 
             'assigned_by' => $this->assigned_by,
 

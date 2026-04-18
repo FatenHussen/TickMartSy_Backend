@@ -4,17 +4,20 @@ namespace App\Http\Resources\User\MyBasket;
 
 use App\Http\Resources\Basket\BasketItemProductResource;
 use App\Http\Resources\Basket\BasketItemVariantResource;
+use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserBasketItemResource extends JsonResource
 {
+    use HasCurrencyConversion;
+
     public function toArray($request)
     {
         return [
             'id' => $this->id,
             'quantity' => (int) $this->quantity,
-            'unit_price' => round($this->price, 2),
-            'subtotal' => round($this->price * $this->quantity, 2),
+            ...$this->withCurrency($this->price, 'unit_price'),
+            ...$this->withCurrency($this->price * $this->quantity, 'subtotal'),
             'is_required' => true,
             'is_extra' => false,
             'min_quantity' => 1,

@@ -85,6 +85,73 @@ trait HasCurrencyConversion
             'currency'            => $converted['currency'],
             'currency_symbol'     => $converted['symbol'],
             $key . '_formatted'   => $converted['formatted'],
+            $key . '_currencies'  => $this->dualCurrency($priceInBase),
         ];
+    }
+
+    /**
+     * إرجاع السعر بعملتين ثابتتين (USD و SYP)
+     */
+    protected function dualCurrency($priceInBase): array
+    {
+        if ($priceInBase === null) {
+            return [
+                'USD' => [
+                    'amount' => null,
+                    'currency' => 'USD',
+                    'symbol' => '$',
+                    'formatted' => null,
+                ],
+                'SYP' => [
+                    'amount' => null,
+                    'currency' => 'SYP',
+                    'symbol' => 'SYP',
+                    'formatted' => null,
+                ],
+            ];
+        }
+
+        $priceInBase = (float) $priceInBase;
+
+        return [
+            'USD' => $this->convertPriceByCode($priceInBase, 'USD', '$'),
+            'SYP' => $this->convertPriceByCode($priceInBase, 'SYP', 'SYP'),
+        ];
+    }
+
+    protected function convertPriceByCode(float $priceInBase, string $code, string $fallbackSymbol): array
+    {
+        $currency = $this->getCurrencyByCode($code);
+
+        if (!$currency) {
+            return [
+                'amount' => round($priceInBase, 2),
+                'currency' => $code,
+                'symbol' => $fallbackSymbol,
+                'formatted' => $fallbackSymbol . ' ' . number_format($priceInBase, 2),
+            ];
+        }
+
+        $amount = $currency->is_default
+            ? round($priceInBase, 2)
+            : $currency->convertFromBase($priceInBase);
+
+        return [
+            'amount' => $amount,
+            'currency' => $currency->code,
+            'symbol' => $currency->symbol,
+            'formatted' => $currency->symbol . ' ' . number_format($amount, 2),
+        ];
+    }
+
+    protected function getCurrencyByCode(string $code): ?Currency
+    {
+        static $cache = [];
+
+        if (!array_key_exists($code, $cache)) {
+            $cache[$code] = Currency::where('code', $code)->first();
+        }
+
+        return $cache[$code];
     }
 }

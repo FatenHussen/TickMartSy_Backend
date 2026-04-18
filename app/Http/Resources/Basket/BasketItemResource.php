@@ -73,6 +73,7 @@ class BasketItemResource extends JsonResource
                 'price_formatted' => $priceData['formatted'],
                 'currency' => $priceData['currency'],
                 'currency_symbol' => $priceData['symbol'],
+                'price_currencies' => $this->dualCurrency($variant->price),
             ];
         })->values();
     }

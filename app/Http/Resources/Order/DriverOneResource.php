@@ -8,11 +8,14 @@ use App\Http\Resources\BasketSchedule\AllResource as BasketScheduleAllResource;
 use App\Http\Resources\Driver\AllResource as DriverAllResource;
 use App\Http\Resources\EndUser\AllResource;
 use App\Http\Resources\SectionItem\AllResource as SectionItemAllResource;
+use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class DriverOneResource extends JsonResource
 {
+    use HasCurrencyConversion;
+
     /**
      * Transform the resource into an array.
      *
@@ -42,9 +45,9 @@ class DriverOneResource extends JsonResource
             'status' => $this->status,
             'cart_type' => $this->cart_type,
             'is_instant_delivery' => $this->is_instant_delivery,
-            'delivery_price' => $this->delivery_price,
-            'subtotal' => $this->subtotal,
-            'total' => $this->total,
+            ...$this->withCurrency($this->delivery_price, 'delivery_price'),
+            ...$this->withCurrency($this->subtotal, 'subtotal'),
+            ...$this->withCurrency($this->total, 'total'),
             'total_quantity' => $this->total_quantity,
 
             'assigned_by' => $this->assigned_by,

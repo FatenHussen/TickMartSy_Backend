@@ -3,11 +3,14 @@
 
 namespace App\Http\Resources\Admin\Product;
 
+use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Collection;
 
 class OneResource extends JsonResource
 {
+    use HasCurrencyConversion;
+
     public function toArray($request)
     {
         return [
@@ -17,9 +20,9 @@ class OneResource extends JsonResource
             'description' => $this->getTranslations('description'),
             'full_description' => $this->getTranslations('full_description'),
 
-            'price' => $this->price,
-            'cost_price' => $this->cost_price,
-            'price_after_discount' => $this->price_after_discount,
+            ...$this->withCurrency($this->price, 'price'),
+            ...$this->withCurrency($this->cost_price, 'cost_price'),
+            ...$this->withCurrency($this->price_after_discount, 'price_after_discount'),
             'discount' => $this->discount,
             'discount_type' => $this->discount_type,
             'quantity' => $this->quantity,
@@ -103,7 +106,9 @@ class OneResource extends JsonResource
                             'shop_id' => $sv->shop_id,
                             'shop_name' => $sv->shop?->name,
                             'price' => $sv->price,
+                            'price_currencies' => $this->dualCurrency($sv->price),
                             'cost_price' => $sv->cost_price,
+                            'cost_price_currencies' => $this->dualCurrency($sv->cost_price),
                             'quantity' => $sv->quantity,
                         ];
                     })->values(),
@@ -133,6 +138,7 @@ class OneResource extends JsonResource
                     'key' => $detail->getTranslations('detail_key') ?? [],
                     'value' => $detail->getTranslations('detail_value') ?? [],
                     'price' => (float) $detail->price,
+                    'price_currencies' => $this->dualCurrency($detail->price),
                 ];
             })->values(),
 
