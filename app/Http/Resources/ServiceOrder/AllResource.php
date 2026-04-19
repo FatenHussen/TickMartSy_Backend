@@ -25,6 +25,8 @@ class AllResource extends JsonResource
                 'name' => $this->vendorService->name,
             ] : null,
             'created_at' => $this->created_at?->toDateTimeString(),
+            'date' => $this->date?->format('Y-m-d'),
+            'time' => $this->resource->formattedOrderTime(),
             'notes' => $this->notes,
             'user' => $this->user ? [
                 'id' => $this->user->id,

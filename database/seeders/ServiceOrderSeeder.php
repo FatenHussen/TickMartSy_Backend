@@ -46,6 +46,8 @@ class ServiceOrderSeeder extends Seeder
                     'price' => $shopVendorService->price ?? 5000,
                     'price_unit' => $shopVendorService->price_unit ?? 'per visit',
                     'notes' => "Automatically seeded order ({$status->labelEn()}).",
+                    'date' => now()->addDays($index + 1)->toDateString(),
+                    'time' => sprintf('%02d:00:00', 9 + $index),
                 ]
             );
         }
