@@ -98,17 +98,26 @@ class PointExchangeService
         // Gifts exchange
         if ($settings['gifts_enabled']) {
             $availableGifts = Gift::available()
+                ->with(['shopProductVariant.productVariant.product.media'])
                 ->orderBy('points_required')
                 ->get();
 
             $options['gifts'] = [
                 'enabled' => $availableGifts->count() > 0,
                 'available_gifts' => $availableGifts->map(function ($gift) use ($userWallet) {
+                    $image = null;
+                    if ($gift->image) {
+                        $image = asset('storage/' . $gift->image);
+                    } elseif ($gift->shopProductVariant?->productVariant?->product) {
+                        $media = $gift->shopProductVariant->productVariant->product->media()->first();
+                        $image = $media ? asset('storage/' . $media->path) : null;
+                    }
+
                     return [
                         'id' => $gift->id,
                         'name' => $gift->name,
                         'description' => $gift->description,
-                        'image' => $gift->image ? asset('storage/' . $gift->image) : null,
+                        'image' => $image,
                         'points_required' => $gift->points_required,
                         'stock_quantity' => $gift->stock_quantity,
                         'category' => $gift->category,
