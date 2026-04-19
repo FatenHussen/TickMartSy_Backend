@@ -375,6 +375,7 @@ return [
         'basket_discount' => 'Basket Discount',
         'coupon_discount' => 'Coupon Discount',
         'delivery_price' => 'Delivery Price',
+        'automatic_promotions_snapshot' => 'Automatic promotions applied',
         'total_quantity' => 'Total Products',
         'driver' => 'Driver',
         'driver_name' => 'Driver Name',

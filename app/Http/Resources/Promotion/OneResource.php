@@ -23,11 +23,9 @@ class OneResource extends JsonResource
             'starts_at' => $this->starts_at,
             'ends_at' => $this->ends_at,
             'min_spend' => $this->min_spend,
-            'buy_quantity' => $this->buy_quantity,
-            'get_quantity' => $this->get_quantity,
             'discount_value' => $this->discount_value,
             'discount_type' => $this->discount_type,
-            'gift_product_ids' => $this->gift_product_ids,
+            'gift_description' => $this->getTranslations('gift_description'),
             'reward_points' => $this->reward_points,
         ];
     }

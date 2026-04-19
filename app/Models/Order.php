@@ -41,6 +41,7 @@ class Order extends Model
         'subscription_points_bonus',
         'promotion_id',
         'promotion_discount',
+        'automatic_promotions_snapshot',
         'pause_at',
         'start_todelivery',
         'order_code',
@@ -55,6 +56,7 @@ class Order extends Model
 
     ];
     protected $casts = [
+        'automatic_promotions_snapshot' => 'array',
         'is_instant_delivery' => 'boolean',
         'start_todelivery' => 'boolean',
         'subscription_free_delivery' => 'boolean',

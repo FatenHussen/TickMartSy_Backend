@@ -24,7 +24,6 @@ class StoreRequest extends FormRequest
             'type' => ['required', Rule::in([
                 'simple_discount',
                 'spend_x_discount',
-                'buy_x_get_y',
                 'spend_x_get_gift',
                 'spend_x_get_points',
                 'free_shipping',
@@ -36,18 +35,28 @@ class StoreRequest extends FormRequest
                 'nullable',
                 'numeric',
                 'min:0',
-                'required_if:type,spend_x_discount,spend_x_get_gift,spend_x_get_points,free_shipping',
+                'required_if:type,spend_x_discount,spend_x_get_gift,spend_x_get_points',
             ],
-            'buy_quantity' => 'nullable|integer|min:1',
-            'get_quantity' => 'nullable|integer|min:1',
             'discount_value' => 'nullable|numeric|min:0',
             'discount_type' => 'nullable|in:percentage,fixed',
-            'gift_product_ids' => [
-                'nullable',
-                'array',
+            'gift_description' => [
                 Rule::requiredIf(fn () => $this->input('type') === 'spend_x_get_gift'),
+                'array',
             ],
-            'gift_product_ids.*' => 'exists:shop_product_variants,id',
+            'gift_description.en' => [
+                Rule::requiredIf(fn () => $this->input('type') === 'spend_x_get_gift'),
+                'string',
+            ],
+            'gift_description.ar' => [
+                Rule::requiredIf(fn () => $this->input('type') === 'spend_x_get_gift'),
+                'string',
+            ],
+            'reward_points' => [
+                'nullable',
+                'integer',
+                'min:1',
+                Rule::requiredIf(fn () => $this->input('type') === 'spend_x_get_points'),
+            ],
         ];
     }
 }

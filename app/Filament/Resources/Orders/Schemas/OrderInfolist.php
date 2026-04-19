@@ -135,6 +135,16 @@ class OrderInfolist
                                             ->money('USD')
                                             ->size('lg')
                                             ->weight('bold'),
+
+                                        Infolists\Components\TextEntry::make('automatic_promotions_snapshot')
+                                            ->label(__('custom.orders.automatic_promotions_snapshot'))
+                                            ->columnSpanFull()
+                                            ->visible(fn ($record) => ! empty($record->automatic_promotions_snapshot))
+                                            ->formatStateUsing(
+                                                fn ($state) => $state
+                                                    ? json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+                                                    : ''
+                                            ),
                                     ])
                                     ->columns(5),
                             ]),

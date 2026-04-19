@@ -421,6 +421,7 @@ return [
         'basket_discount' => 'خصم السلة',
         'coupon_discount' => 'خصم الكوبون',
         'delivery_price' => 'سعر التوصيل',
+        'automatic_promotions_snapshot' => 'العروض التلقائية المطبَّقة',
         'total_quantity' => 'عدد المنتجات',
         'driver' => 'السائق',
         'driver_name' => 'اسم السائق',

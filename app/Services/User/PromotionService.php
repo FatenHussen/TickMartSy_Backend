@@ -3,15 +3,24 @@
 namespace App\Services\User;
 
 use App\Models\Promotion;
-use App\Models\ShopProductVariant;
 use App\Services\PointService;
 use Illuminate\Support\Collection;
 
 class PromotionService
 {
+    /** أنواع يختارها المستخدم عبر promotion_id فقط */
+    public const USER_SELECTABLE_TYPES = ['simple_discount', 'spend_x_discount'];
+
+    /** تُطبَّق تلقائياً عند استيفاء الشروط (بدون promotion_id) */
+    public const AUTOMATIC_TYPES = ['spend_x_get_gift', 'spend_x_get_points', 'free_shipping'];
+
+    /**
+     * عروض يمكن للمستخدم اختيار واحد منها مع الطلب (خصم فقط).
+     */
     public function getAvailablePromotions(float $subtotal, Collection $items): Collection
     {
         return Promotion::query()
+            ->whereIn('type', self::USER_SELECTABLE_TYPES)
             ->where('is_active', true)
             ->where(function ($q) {
                 $q->whereNull('starts_at')
@@ -23,41 +32,39 @@ class PromotionService
             })
             ->get()
             ->filter(function ($promotion) use ($subtotal) {
-                switch ($promotion->type) {
-                    case 'simple_discount':
-                        return true;
-                    case 'spend_x_discount':
-                    case 'spend_x_get_gift':
-                    case 'spend_x_get_points':
-                    case 'free_shipping':
-                        return $subtotal >= ($promotion->min_spend ?? 0);
-                    default:
-                        return false;
+                if ($promotion->type === 'simple_discount') {
+                    return true;
                 }
+                if ($promotion->type === 'spend_x_discount') {
+                    return $subtotal >= ($promotion->min_spend ?? 0);
+                }
+
+                return false;
             })
-            ->select('id', 'name', 'description');
+            ->values()
+            ->map(fn (Promotion $promotion) => [
+                'id' => $promotion->id,
+                'name' => $promotion->getTranslations('name'),
+                'description' => $promotion->getTranslations('description'),
+            ]);
     }
 
+    /**
+     * خصم من عرض يختاره المستخدم (simple_discount أو spend_x_discount فقط).
+     */
     public function applyDiscountPromotion($orderOrNull, int $promotionId, float $subtotal): float
     {
         $promotion = Promotion::find($promotionId);
 
-        if (!$promotion || !$promotion->is_active) {
+        if (
+            !$promotion
+            || !$this->isPromotionActive($promotion)
+            || !in_array($promotion->type, self::USER_SELECTABLE_TYPES, true)
+        ) {
             return 0;
         }
 
-        $needsMinSpend = in_array(
-            $promotion->type,
-            ['spend_x_discount', 'spend_x_get_gift', 'spend_x_get_points', 'free_shipping'],
-            true
-        );
-
-        if ($promotion->type === 'spend_x_get_points') {
-            $this->awardSpendXGetPoints($orderOrNull, $promotion);
-            return 0;
-        }
-
-        if ($needsMinSpend && $subtotal < ($promotion->min_spend ?? 0)) {
+        if ($promotion->type === 'spend_x_discount' && $subtotal < ($promotion->min_spend ?? 0)) {
             return 0;
         }
 
@@ -71,230 +78,221 @@ class PromotionService
         }
     }
 
-    public function applyNonDiscountPromotions(
-        $orderOrNull,
-        Collection $orderItems,
-        ?int $promotionId = null,
-        float $subtotal = 0,
-        ?int $userId = null,
-        bool $isPreview = true
-    ): array {
-        $promotion = null;
-
-        if ($promotionId) {
-            $promotion = Promotion::find($promotionId);
-
-            if (
-                !$promotion ||
-                !$this->isPromotionActive($promotion) ||
-                ($promotion->min_spend !== null && $subtotal < $promotion->min_spend)
-            ) {
-                $promotion = null;
-            }
+    /**
+     * توصيل مجاني تلقائياً إذا وُجد عرض free_shipping نشط ضمن التواريخ (دون اختيار المستخدم).
+     */
+    public function resolveAutomaticFreeShippingDeliveryPrice(float $deliveryPrice): float
+    {
+        if ($deliveryPrice <= 0) {
+            return $deliveryPrice;
         }
 
-        if ($promotion) {
-            return $this->applyPromotionByType(
-                $orderOrNull,
-                $orderItems,
-                $promotion,
-                $subtotal,
-                $userId,
-                $isPreview
-            );
+        if (! $this->hasActiveAutomaticFreeShipping()) {
+            return $deliveryPrice;
         }
 
-        return $this->applyBuyXGetY($orderOrNull, $orderItems, $isPreview);
+        return 0.0;
     }
 
-    protected function applyPromotionByType(
-        $orderOrNull,
-        Collection $orderItems,
-        Promotion $promotion,
-        float $subtotal,
-        ?int $userId,
-        bool $isPreview
-    ): array {
-        switch ($promotion->type) {
-            case 'buy_x_get_y':
-                return $this->applyBuyXGetY($orderOrNull, $orderItems, $isPreview, $promotion);
-            case 'spend_x_get_gift':
-                return array_merge(
-                    $this->buildPromotionMeta($promotion),
-                    $this->handleSpendXGetGift($orderOrNull, $promotion, $isPreview)
-                );
-            case 'spend_x_get_points':
-                return array_merge(
-                    $this->buildPromotionMeta($promotion),
-                    $this->handleSpendXGetPoints($orderOrNull, $promotion, $userId, $isPreview)
-                );
-            case 'free_shipping':
-                return array_merge(
-                    $this->buildPromotionMeta($promotion),
-                    ['free_shipping' => true]
-                );
-            default:
-                return [];
-        }
+    /**
+     * هل يوجد حالياً عرض توصيل مجاني تلقائي مفعّل (للمعاينة).
+     */
+    public function hasActiveAutomaticFreeShipping(): bool
+    {
+        return Promotion::query()
+            ->where('type', 'free_shipping')
+            ->where('is_active', true)
+            ->where(function ($q) {
+                $q->whereNull('starts_at')
+                    ->orWhere('starts_at', '<=', now());
+            })
+            ->where(function ($q) {
+                $q->whereNull('ends_at')
+                    ->orWhere('ends_at', '>=', now());
+            })
+            ->exists();
     }
 
-    protected function applyBuyXGetY(
-        $orderOrNull,
-        Collection $orderItems,
-        bool $isPreview,
-        ?Promotion $specificPromotion = null
-    ): array {
-        $promotion = $specificPromotion;
-
-        if (!$promotion) {
-            $promotion = Promotion::query()
-                ->where('type', 'buy_x_get_y')
-                ->where('is_active', true)
-                ->where(function ($q) {
-                    $q->whereNull('starts_at')
-                        ->orWhere('starts_at', '<=', now());
-                })
-                ->where(function ($q) {
-                    $q->whereNull('ends_at')
-                        ->orWhere('ends_at', '>=', now());
-                })
-                ->latest('id')
-                ->first();
-        }
-
-        if (!$promotion) {
-            return [];
-        }
-
-        $appliedGifts = $this->calculateBuyXGetY($orderItems, $promotion);
-
-        if ($orderOrNull && !$isPreview && !empty($appliedGifts['free_items'])) {
-            $this->attachGiftItems($orderOrNull, $appliedGifts['free_items']);
-        }
-
-        return array_merge($this->buildPromotionMeta($promotion), [
-            'free_items' => $appliedGifts['free_items'] ?? [],
-        ]);
+    /**
+     * العروض النشطة من نوع free_shipping (للقطة JSON على الطلب).
+     *
+     * @return array<int, array{promotion_id: int, name: array, description: array}>
+     */
+    public function freeShippingPromotionsSnapshot(): array
+    {
+        return Promotion::query()
+            ->where('type', 'free_shipping')
+            ->where('is_active', true)
+            ->where(function ($q) {
+                $q->whereNull('starts_at')
+                    ->orWhere('starts_at', '<=', now());
+            })
+            ->where(function ($q) {
+                $q->whereNull('ends_at')
+                    ->orWhere('ends_at', '>=', now());
+            })
+            ->orderBy('id')
+            ->get()
+            ->map(fn (Promotion $p) => [
+                'promotion_id' => $p->id,
+                'name' => $p->getTranslations('name'),
+                'description' => $p->getTranslations('description'),
+            ])
+            ->values()
+            ->all();
     }
 
-    protected function handleSpendXGetGift(
-        $orderOrNull,
-        Promotion $promotion,
-        bool $isPreview
-    ): array {
-        $giftIds = collect($promotion->gift_product_ids ?? [])->filter()->values();
-        $freeItems = [];
-
-        foreach ($giftIds as $variantId) {
-            $freeItems[] = [
-                'shop_product_variant_id' => $variantId,
-                'free_quantity' => 1,
+    /**
+     * لقطة للعروض التلقائية المطبّقة على الطلب (تُخزَّن في orders.automatic_promotions_snapshot).
+     */
+    public function compileAutomaticPromotionsSnapshot(
+        float $deliveryBeforeAutomaticFreeShipping,
+        float $deliveryAfterAutomaticFreeShipping,
+        array $automaticOrderPromotionsResult
+    ): ?array {
+        $freeShipping = null;
+        if (
+            $deliveryBeforeAutomaticFreeShipping > 0
+            && $deliveryAfterAutomaticFreeShipping <= 0
+            && $this->hasActiveAutomaticFreeShipping()
+        ) {
+            $freeShipping = [
+                'waived_delivery_amount' => round($deliveryBeforeAutomaticFreeShipping, 2),
+                'promotions' => $this->freeShippingPromotionsSnapshot(),
             ];
         }
 
-        if ($orderOrNull && !$isPreview && !empty($freeItems)) {
-            $this->attachGiftItems($orderOrNull, $freeItems);
+        $gifts = $automaticOrderPromotionsResult['gifts'] ?? [];
+        $pointsAwards = $automaticOrderPromotionsResult['points_awards'] ?? [];
+        $pointsAwarded = (int) ($automaticOrderPromotionsResult['points_awarded'] ?? 0);
+
+        $pointsBlock = [
+            'total_awarded' => $pointsAwarded,
+            'awards' => $pointsAwards,
+        ];
+
+        if ($freeShipping === null && $gifts === [] && $pointsAwarded === 0 && $pointsAwards === []) {
+            return null;
         }
 
-        return ['free_items' => $freeItems];
+        return [
+            'captured_at' => now()->toIso8601String(),
+            'free_shipping' => $freeShipping,
+            'gifts' => $gifts,
+            'points' => $pointsBlock,
+        ];
     }
 
-    protected function handleSpendXGetPoints(
+    /**
+     * تطبيق عروض الهدايا والنقاط التلقائية (معاينة أو بعد إنشاء الطلب).
+     *
+     * @return array{gifts: array<int, array>, points_expected: int, points_awarded: int, points_awards: array<int, array>}
+     */
+    public function applyAutomaticOrderPromotions(
         $orderOrNull,
-        Promotion $promotion,
         ?int $userId,
+        float $subtotal,
         bool $isPreview
     ): array {
+        $gifts = [];
+        $pointsExpected = 0;
+        $pointsAwarded = 0;
+        $pointsAwards = [];
+
+        $promotions = Promotion::query()
+            ->whereIn('type', ['spend_x_get_gift', 'spend_x_get_points'])
+            ->where('is_active', true)
+            ->where(function ($q) {
+                $q->whereNull('starts_at')
+                    ->orWhere('starts_at', '<=', now());
+            })
+            ->where(function ($q) {
+                $q->whereNull('ends_at')
+                    ->orWhere('ends_at', '>=', now());
+            })
+            ->orderBy('id')
+            ->get();
+
+        foreach ($promotions as $promotion) {
+            if (! $this->isPromotionActive($promotion)) {
+                continue;
+            }
+
+            if ($subtotal < ($promotion->min_spend ?? 0)) {
+                continue;
+            }
+
+            if ($promotion->type === 'spend_x_get_gift') {
+                $gifts[] = [
+                    'promotion_id' => $promotion->id,
+                    'promotion_title' => $promotion->name,
+                    'promotion_name' => $promotion->getTranslations('name'),
+                    'gift_description' => $promotion->getTranslations('gift_description'),
+                ];
+            }
+
+            if ($promotion->type === 'spend_x_get_points') {
+                $pts = (int) ($promotion->reward_points ?? 0);
+                if ($pts <= 0) {
+                    continue;
+                }
+
+                if ($isPreview) {
+                    $pointsExpected += $pts;
+                    continue;
+                }
+
+                if ($orderOrNull && $userId) {
+                    $awarded = $this->awardSpendXGetPointsOnce($orderOrNull, $promotion);
+                    $pointsAwarded += $awarded;
+                    if ($awarded > 0) {
+                        $pointsAwards[] = [
+                            'promotion_id' => $promotion->id,
+                            'points' => $awarded,
+                            'name' => $promotion->getTranslations('name'),
+                        ];
+                    }
+                }
+            }
+        }
+
+        return [
+            'gifts' => $gifts,
+            'points_expected' => $pointsExpected,
+            'points_awarded' => $pointsAwarded,
+            'points_awards' => $pointsAwards,
+        ];
+    }
+
+    protected function awardSpendXGetPointsOnce($order, Promotion $promotion): int
+    {
         $points = (int) ($promotion->reward_points ?? 0);
 
-        if ($points <= 0) {
-            return [];
-        }
-
-        if ($isPreview) {
-            return ['points_expected' => $points];
-        }
-
-        if (!$userId) {
-            return [];
+        if ($points <= 0 || ! $order->user_id) {
+            return 0;
         }
 
         $pointService = app(PointService::class);
 
         $transaction = $pointService->addPointsToWallet(
-            $userId,
+            $order->user_id,
             $points,
             null,
             'promotion',
             'earned',
             'order',
-            $orderOrNull?->id,
+            $order->id,
             null,
             null,
             "Spend X Get Points promotion #{$promotion->id}"
         );
 
-        if ($transaction) {
-            return ['points_awarded' => abs($transaction->points)];
-        }
-
-        return [];
-    }
-
-    protected function attachGiftItems($order, array $freeItems): void
-    {
-        foreach ($freeItems as $gift) {
-            $shopVariant = ShopProductVariant::with('productVariant.product')
-                ->find($gift['shop_product_variant_id']);
-
-            if (!$shopVariant) {
-                continue;
-            }
-
-            $order->items()->create([
-                'shop_product_variant_id' => $shopVariant->id,
-                'product_name' => $shopVariant->productVariant->product->name . ' Gift',
-                'variant_attributes' => $shopVariant->productVariant->getAttributesValuesAttribute(),
-                'quantity' => $gift['free_quantity'],
-                'price' => 0,
-                'unit_price' => 0,
-                'final_price' => 0,
-                'subtotal' => 0,
-                'extras_total' => 0,
-                'total' => 0,
-            ]);
-        }
-    }
-
-    protected function buildPromotionMeta(Promotion $promotion): array
-    {
-        return [
-            'promotion_id' => $promotion->id,
-            'promotion_title' => $promotion->name,
-            'promotion_type' => $promotion->type,
-        ];
-    }
-
-    protected function calculateBuyXGetY(Collection $items, $promotion): array
-    {
-        $freeItems = [];
-
-        foreach ($items as $item) {
-            if ($item['quantity'] >= $promotion->buy_quantity) {
-                $sets = intdiv($item['quantity'], $promotion->buy_quantity);
-                $freeItems[] = [
-                    'shop_product_variant_id' => $item['shop_product_variant_id'],
-                    'free_quantity' => $sets * $promotion->get_quantity,
-                ];
-            }
-        }
-
-        return ['free_items' => $freeItems];
+        return $transaction ? abs($transaction->points) : 0;
     }
 
     protected function isPromotionActive(Promotion $promotion): bool
     {
-        if (!$promotion->is_active) {
+        if (! $promotion->is_active) {
             return false;
         }
 
@@ -307,29 +305,5 @@ class PromotionService
         }
 
         return true;
-    }
-
-    protected function awardSpendXGetPoints($orderOrNull, Promotion $promotion): void
-    {
-        $points = (int) ($promotion->reward_points ?? 0);
-
-        if (!$orderOrNull || $points <= 0 || !$orderOrNull->user_id) {
-            return;
-        }
-
-        $pointService = app(PointService::class);
-
-        $pointService->addPointsToWallet(
-            $orderOrNull->user_id,
-            $points,
-            null,
-            'promotion',
-            'earned',
-            'order',
-            $orderOrNull->id,
-            null,
-            null,
-            "Spend X Get Points promotion #{$promotion->id}"
-        );
     }
 }

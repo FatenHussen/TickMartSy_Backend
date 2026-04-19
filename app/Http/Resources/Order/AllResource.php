@@ -56,6 +56,11 @@ class AllResource extends JsonResource
                 ]
             ),
 
+            'automatic_promotions_snapshot' => $this->when(
+                ! empty($this->automatic_promotions_snapshot),
+                $this->automatic_promotions_snapshot
+            ),
+
             // Subscription benefits used
             'subscription_discount' => $this->subscription_discount ?? 0,
             'subscription_free_delivery' => $this->subscription_free_delivery ?? false,
