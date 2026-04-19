@@ -18,6 +18,7 @@ class AllResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'is_active' => (bool) $this->is_active,
             'city' => CityOneResource::make($this->city),
         ];
     }
