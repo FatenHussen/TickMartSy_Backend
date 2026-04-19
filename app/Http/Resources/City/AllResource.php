@@ -18,6 +18,7 @@ class AllResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'is_active' => (bool) $this->is_active,
             'governorate' => GovernorateOneResource::make($this->governorate),
             'created_at' => $this->created_at?->format('Y-m-d H:i'),
         ];

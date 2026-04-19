@@ -18,6 +18,7 @@ class OneResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->getTranslations('name'),
+            'is_active' => (bool) $this->is_active,
             'city' => CityOneResource::make($this->city),
             'base_fee' => $this->base_fee,
             'lat' => $this->lat,

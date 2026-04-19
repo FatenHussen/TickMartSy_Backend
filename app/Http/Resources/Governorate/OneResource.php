@@ -17,6 +17,7 @@ class OneResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->getTranslations('name'),
+            'is_active' => (bool) $this->is_active,
             'created_at' => $this->created_at?->format('Y-m-d H:i'),
 
         ];
