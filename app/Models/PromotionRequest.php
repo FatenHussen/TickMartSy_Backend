@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\AppliesAreaScope;
 use App\Enums\PromotionStatus;
 use App\Enums\PromotionType;
 use App\Traits\LogsActivity;
@@ -11,8 +10,7 @@ use Spatie\Translatable\HasTranslations;
 
 class PromotionRequest extends Model
 {
-    use HasTranslations, LogsActivity, AppliesAreaScope;
-    protected static array $areaRelationPaths = ['shop'];
+    use HasTranslations, LogsActivity;
 
     public $translatable = ['title', 'description'];
 

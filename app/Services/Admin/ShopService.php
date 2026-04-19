@@ -2,10 +2,13 @@
 
 namespace App\Services\Admin;
 
+use App\Authorization\CityAccess;
+use App\Models\Admin;
 use App\Models\Shop;
 use App\Models\Store;
 use App\Services\Base\MediaService;
 use App\Services\BaseService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\Shop\AllResource;
 use App\Http\Resources\Shop\AdminOneResource;
@@ -100,5 +103,15 @@ class ShopService extends BaseService
         }
 
         return parent::queryBuilder($query, $filters, $config);
+    }
+
+    protected function applyAdminCityRestriction(Builder $query): Builder
+    {
+        $admin = auth('admin')->user();
+        if (! $admin instanceof Admin) {
+            return $query;
+        }
+
+        return CityAccess::for($admin)->constrainShops($query);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Services\User;
 
 use App\Enums\OrderStatus;
 use App\Http\Resources\Coupon\OneResource as CouponResource;
+use App\Models\AffiliateUserVisit;
 use App\Models\AffiliateWalletTransaction;
 use App\Models\AffiliateWithdrawRequest;
 use App\Models\Coupon;
@@ -16,17 +17,28 @@ class MarketService
 {
     public function registerVisitAndReward(?string $affiliateId): void
     {
-        if (empty($affiliateId)) {
+        $visitorId = auth('user')->id();
+
+        if (empty($affiliateId) || !$visitorId) {
             return;
         }
 
-        DB::transaction(function () use ($affiliateId) {
+        DB::transaction(function () use ($affiliateId, $visitorId) {
             /** @var User|null $user */
             $user = User::where('affiliate_id', $affiliateId)
                 ->lockForUpdate()
                 ->first();
 
-            if (!$user) {
+            if (!$user || $user->id === $visitorId) {
+                return;
+            }
+
+            $visit = AffiliateUserVisit::firstOrCreate([
+                'affiliate_id' => $affiliateId,
+                'user_id' => $visitorId,
+            ]);
+
+            if (! $visit->wasRecentlyCreated) {
                 return;
             }
 

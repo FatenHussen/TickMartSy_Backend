@@ -30,9 +30,6 @@ class PromotionSeeder extends Seeder
             'discount_value' => 10,
             'discount_type' => 'percentage',
             'min_spend' => 0,
-            'buy_quantity' => null,
-            'get_quantity' => null,
-            'gift_product_ids' => [],
         ]);
 
         // Example: spend X grant gift
@@ -50,7 +47,10 @@ class PromotionSeeder extends Seeder
             'starts_at' => Carbon::now()->subDays(1),
             'ends_at' => Carbon::now()->addDays(30),
             'min_spend' => 200,
-            'gift_product_ids' => [1],
+            'gift_description' => [
+                'en' => 'A surprise gift from the store (not tied to a catalog product).',
+                'ar' => 'هدية مفاجئة من المتجر (غير مرتبطة بمنتج محدد).',
+            ],
             'reward_points' => null,
             'discount_value' => null,
             'discount_type' => null,
@@ -72,27 +72,25 @@ class PromotionSeeder extends Seeder
             'ends_at' => Carbon::now()->addDays(30),
             'min_spend' => 150,
             'reward_points' => 50,
-            'gift_product_ids' => [],
             'discount_value' => null,
             'discount_type' => null,
         ]);
 
-        // Example: free shipping after spend threshold
+        // Example: unconditional free shipping
         Promotion::create([
             'name' => [
-                'en' => 'Free Shipping Over 300',
-                'ar' => 'توصيل مجاني عند الإنفاق أكثر من 300'
+                'en' => 'Free Shipping',
+                'ar' => 'توصيل مجاني'
             ],
             'description' => [
-                'en' => 'Enjoy free delivery whenever you spend at least 300.',
-                'ar' => 'استمتع بتوصيل مجاني عند الإنفاق 300 أو أكثر.'
+                'en' => 'Free delivery on your order — no minimum spend.',
+                'ar' => 'توصيل مجاني على طلبك دون حد أدنى للشراء.'
             ],
             'type' => 'free_shipping',
             'is_active' => true,
             'starts_at' => Carbon::now()->subDays(1),
             'ends_at' => Carbon::now()->addDays(30),
-            'min_spend' => 300,
-            'gift_product_ids' => [],
+            'min_spend' => null,
             'reward_points' => null,
             'discount_value' => null,
             'discount_type' => null,
@@ -115,9 +113,6 @@ class PromotionSeeder extends Seeder
             'discount_value' => 20,
             'discount_type' => 'fixed',
             'min_spend' => 100,
-            'buy_quantity' => null,
-            'get_quantity' => null,
-            'gift_product_ids' => [],
         ]);
     }
 }

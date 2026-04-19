@@ -390,6 +390,7 @@ return [
         'basket_discount' => 'Basket Discount',
         'coupon_discount' => 'Coupon Discount',
         'delivery_price' => 'Delivery Price',
+        'automatic_promotions_snapshot' => 'Automatic promotions applied',
         'total_quantity' => 'Total Products',
         'driver' => 'Driver',
         'driver_name' => 'Driver Name',
@@ -684,6 +685,7 @@ return [
         'is_active' => 'Active',
         'min_order_amount' => 'Minimum Order Amount',
         'affiliate_active_coupon' => 'This affiliate already has an active coupon.',
+        'cannot_use_own_coupon' => 'You cannot use your own coupon.',
         'discount_types' => [
             'percent' => 'Percentage',
             'fixed' => 'Fixed Amount',

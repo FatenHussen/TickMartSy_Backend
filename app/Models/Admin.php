@@ -4,7 +4,9 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Authorization\CityAccess;
 use App\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -78,16 +80,21 @@ class Admin extends Authenticatable
         return $this->morphMany(UserToken::class, 'tokenable');
     }
 
-    public function areas(): BelongsToMany
+    public function cities(): BelongsToMany
     {
-        return $this->belongsToMany(Area::class, 'admin_area');
+        return $this->belongsToMany(City::class, 'admin_city');
     }
 
-    public function areaIds(): Collection
+    public function cityIds(): Collection
     {
-        return $this->areas()
-            ->pluck('areas.id')
+        return $this->cities()
+            ->pluck('cities.id')
             ->unique()
             ->values();
+    }
+
+    public function scopeVisibleToCityAccess(Builder $query, CityAccess $access): Builder
+    {
+        return $access->constrainAdmins($query);
     }
 }

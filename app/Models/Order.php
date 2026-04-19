@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Enums\CartType;
 use App\Enums\OrderStatus;
-use App\Models\Concerns\AppliesAreaScope;
 use App\Traits\LogsActivity;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -15,8 +14,7 @@ use Illuminate\Support\Facades\Log;
 
 class Order extends Model
 {
-    use LogsActivity, SoftDeletes, AppliesAreaScope;
-    protected static array $areaRelationPaths = ['address'];
+    use LogsActivity, SoftDeletes;
     protected $fillable = [
         'user_id',
         'driver_id',
@@ -43,6 +41,7 @@ class Order extends Model
         'subscription_points_bonus',
         'promotion_id',
         'promotion_discount',
+        'automatic_promotions_snapshot',
         'pause_at',
         'start_todelivery',
         'order_code',
@@ -57,6 +56,7 @@ class Order extends Model
 
     ];
     protected $casts = [
+        'automatic_promotions_snapshot' => 'array',
         'is_instant_delivery' => 'boolean',
         'start_todelivery' => 'boolean',
         'subscription_free_delivery' => 'boolean',

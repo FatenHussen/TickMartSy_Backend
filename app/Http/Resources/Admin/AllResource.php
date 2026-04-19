@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Admin;
 
+use App\Http\Resources\User\City\CityResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -21,6 +22,7 @@ class AllResource extends JsonResource
             'email' => $this->email,
             'is_active' => (bool) $this->is_active,
             'roles' => $this->roles->pluck(['name']),
+            'cities' => CityResource::collection($this->whenLoaded('cities')),
             'created_at' => $this->created_at?->format('Y-m-d H:i'),
 
         ];

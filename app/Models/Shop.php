@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\AppliesAreaScope;
+use App\Authorization\CityAccess;
 use App\Http\Resources\Shop\AllResource;
 use App\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -14,7 +15,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Shop extends Model implements Sectionable
 {
-    use HasTranslations, LogsActivity, SoftDeletes, AppliesAreaScope;
+    use HasTranslations, LogsActivity, SoftDeletes;
 
     public array $translatable = ['name', 'description', 'address'];
 
@@ -143,6 +144,11 @@ class Shop extends Model implements Sectionable
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    public function scopeVisibleToCityAccess(Builder $query, CityAccess $access): Builder
+    {
+        return $access->constrainShops($query);
     }
 
 

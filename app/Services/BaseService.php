@@ -32,6 +32,7 @@ abstract class BaseService
     public function getAll($filters = [], $config = [])
     {
         $query = $this->model::query()->with($this->relations);
+        $query = $this->applyAdminCityRestriction($query);
         $query = $this->queryBuilder($query, $filters, $config);
 
         if ($this->pagination) {
@@ -62,6 +63,7 @@ abstract class BaseService
     {
 
         $query = $this->model::query()->with($this->relations);
+        $query = $this->applyAdminCityRestriction($query);
         $query = $this->queryBuilder($query);
 
         $object = $query->find($id);
@@ -208,7 +210,7 @@ abstract class BaseService
     {
         DB::beginTransaction();
 
-        $object = $this->model::findOrFail($id);
+        $object = $this->applyAdminCityRestriction($this->model::query())->findOrFail($id);
         if (property_exists($object, 'translatable')) {
             foreach ($object->translatable as $field) {
                 if (isset($data[$field])) {
@@ -230,7 +232,7 @@ abstract class BaseService
     }
     public function delete($id): bool
     {
-        $object = $this->model::findOrFail($id);
+        $object = $this->applyAdminCityRestriction($this->model::query())->findOrFail($id);
         $this->deleteSingleImages($object);
 
         $object->delete();
@@ -304,6 +306,15 @@ abstract class BaseService
             ]);
         }
 
+        return $query;
+    }
+
+    /**
+     * When the request is authenticated as an admin, optionally narrow the query by city scope.
+     * Override in services that represent city-scoped resources.
+     */
+    protected function applyAdminCityRestriction(Builder $query): Builder
+    {
         return $query;
     }
 

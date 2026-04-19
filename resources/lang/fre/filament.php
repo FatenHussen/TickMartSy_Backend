@@ -120,7 +120,6 @@ return [
     'EndsAt' => 'Ends At',
     'Type' => 'Type',
 
-    'buy_x_get_y' => 'Buy X Tire , Get Y',
     'spend_x_discount' => 'Spend X Discount',
     'spend_x_gift' => 'Spend X Gift',
     'simple_discount' => 'Simple Discount',

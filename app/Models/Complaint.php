@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\AppliesAreaScope;
 use App\Enums\ComplaintStatus;
 use App\Enums\ComplaintType;
 use App\Traits\LogsActivity;
@@ -11,8 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 // App/Models/Complaint.php
 class Complaint extends Model
 {
-    use LogsActivity, AppliesAreaScope;
-    protected static array $areaRelationPaths = ['order.address'];
+    use LogsActivity;
     protected $fillable = [
         'user_id',
         'order_id',

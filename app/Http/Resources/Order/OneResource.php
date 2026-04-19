@@ -47,6 +47,13 @@ class OneResource extends JsonResource
                     'discount_value' => $this->coupon?->discount_value,
                 ]
             ),
+            'promotion_discount' => $this->promotion_discount,
+            'automatic_promotions_snapshot' => $this->when(
+                ! empty($this->automatic_promotions_snapshot),
+                $this->automatic_promotions_snapshot
+            ),
+            'subscription_discount' => $this->subscription_discount ?? 0,
+            'coupon_discount_from_points' => $this->coupon_discount_from_points ?? 0,
             ...$this->withCurrency($this->promotion_discount, 'promotion_discount'),
             ...$this->withCurrency($this->subscription_discount ?? 0, 'subscription_discount'),
             ...$this->withCurrency($this->coupon_discount_from_points ?? 0, 'coupon_discount_from_points'),

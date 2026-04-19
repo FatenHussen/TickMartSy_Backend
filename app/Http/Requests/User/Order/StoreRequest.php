@@ -2,11 +2,22 @@
 
 namespace App\Http\Requests\User\Order;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Enums\CartType;
 use App\Models\Promotion;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
+    /**
+     * أنواع العروض التي يمرّرها المستخدم عبر promotion_id (خصم فقط).
+     * العروض التلقائية (هدية، نقاط، توصيل مجاني) لا تُحسب هنا.
+     */
+    private const PROMOTION_TYPES_DISCOUNT_CONFLICT = [
+        'simple_discount',
+        'spend_x_discount',
+    ];
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -25,7 +36,11 @@ class StoreRequest extends FormRequest
         return [
             'address_id' => ['required', 'exists:user_addresses,id'],
             'payment_method_id' => ['nullable', 'exists:payment_methods,id'],
-            'cart_type' => ['nullable', 'string', 'in:default,recipe,admin_cart,schedule_admin_cart'],
+            'cart_type' => [
+                'nullable',
+                'string',
+                Rule::in(array_map(fn (CartType $case) => $case->value, CartType::cases())),
+            ],
             'is_instant_delivery' => ['required', 'boolean'],
 
             'items' => ['required', 'array', 'min:1'],
@@ -52,7 +67,7 @@ class StoreRequest extends FormRequest
             'use_subscription_free_delivery' => 'nullable|boolean',
             //add schedule
 
-            'promotion_id' => 'nullable|exists:promotions,id',
+            'promotion_id' => ['nullable', 'integer', 'exists:promotions,id'],
         ];
     }
 
@@ -65,6 +80,20 @@ class StoreRequest extends FormRequest
         $validator->after(function ($validator) {
 
             $data = $this->all();
+
+            /** promotion_id: خصم يختاره المستخدم فقط (simple_discount / spend_x_discount) */
+            if (! empty($data['promotion_id'])) {
+                $promotion = Promotion::find($data['promotion_id']);
+                if (
+                    $promotion
+                    && ! in_array($promotion->type, ['simple_discount', 'spend_x_discount'], true)
+                ) {
+                    $validator->errors()->add(
+                        'promotion_id',
+                        'يمكن تمرير عرض خصم فقط (simple_discount أو spend_x_discount).'
+                    );
+                }
+            }
 
             /** ---------------------------------
              * 1️⃣ التحقق من تضارب مصادر الخصم
@@ -87,10 +116,7 @@ class StoreRequest extends FormRequest
 
                 $promotion = Promotion::find($data['promotion_id']);
 
-                if ($promotion && in_array($promotion->type, [
-                    'spend_x_discount',
-                    'simple_discount'
-                ])) {
+                if ($promotion && in_array($promotion->type, self::PROMOTION_TYPES_DISCOUNT_CONFLICT, true)) {
                     $discountSources++;
                 }
             }

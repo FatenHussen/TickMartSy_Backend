@@ -40,21 +40,11 @@ class PromotionService extends BaseService
                 'starts_at',
                 'ends_at'
             ],
-            'buy_x_get_y' => [
-                'name',
-                'description',
-                'buy_quantity',
-                'get_quantity',
-                'gift_product_ids',
-                'is_active',
-                'starts_at',
-                'ends_at'
-            ],
             'spend_x_get_gift' => [
                 'name',
                 'description',
                 'min_spend',
-                'gift_product_ids',
+                'gift_description',
                 'is_active',
                 'starts_at',
                 'ends_at'
@@ -71,7 +61,6 @@ class PromotionService extends BaseService
             'free_shipping' => [
                 'name',
                 'description',
-                'min_spend',
                 'is_active',
                 'starts_at',
                 'ends_at'

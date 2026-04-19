@@ -119,7 +119,6 @@ return [
     'Type' => 'النوع',
 
     // Types
-    'buy_x_get_y' => 'اشتري  Xاطار واحصل على Y',
     'spend_x_discount' => 'خصم عند الإنفاق',
     'spend_x_gift' => 'هدية عند الإنفاق',
     'simple_discount' => 'خصم مباشر',

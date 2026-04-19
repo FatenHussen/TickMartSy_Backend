@@ -2,10 +2,13 @@
 
 namespace App\Services\Admin;
 
+use App\Authorization\CityAccess;
 use App\Http\Resources\Admin\DriverWalletTransaction\AllResource;
 use App\Http\Resources\Admin\DriverWalletTransaction\OneResource;
+use App\Models\Admin;
 use App\Models\DriverWalletTransaction;
 use App\Services\BaseService;
+use Illuminate\Database\Eloquent\Builder;
 
 class DriverWalletTransactionService extends BaseService
 {
@@ -55,5 +58,15 @@ class DriverWalletTransactionService extends BaseService
         }
 
         return parent::queryBuilder($query, $filters, $config);
+    }
+
+    protected function applyAdminCityRestriction(Builder $query): Builder
+    {
+        $admin = auth('admin')->user();
+        if (! $admin instanceof Admin) {
+            return $query;
+        }
+
+        return CityAccess::for($admin)->constrainViaDriverRelation($query, 'driver');
     }
 }

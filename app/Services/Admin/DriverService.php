@@ -2,11 +2,14 @@
 
 namespace App\Services\Admin;
 
+use App\Authorization\CityAccess;
 use App\Http\Resources\Driver\AllResource;
 use App\Http\Resources\Driver\OneResource;
 
+use App\Models\Admin;
 use App\Models\Driver;
 use App\Services\BaseService;
+use Illuminate\Database\Eloquent\Builder;
 
 class DriverService extends BaseService
 {
@@ -25,5 +28,15 @@ class DriverService extends BaseService
         $this->relations = ['cities', 'shops', 'vendors'];
 
         $this->singleImages = ['image', 'vehicle_image'];
+    }
+
+    protected function applyAdminCityRestriction(Builder $query): Builder
+    {
+        $admin = auth('admin')->user();
+        if (! $admin instanceof Admin) {
+            return $query;
+        }
+
+        return CityAccess::for($admin)->constrainDrivers($query);
     }
 }

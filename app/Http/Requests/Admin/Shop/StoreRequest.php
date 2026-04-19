@@ -2,13 +2,22 @@
 
 namespace App\Http\Requests\Admin\Shop;
 
+use App\Http\Requests\Concerns\ValidatesShopAreaCityScope;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class StoreRequest extends FormRequest
 {
+    use ValidatesShopAreaCityScope;
+
     public function authorize(): bool
     {
         return true;
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $this->withValidatorForShopAreaCityScope($validator);
     }
 
     public function rules(): array

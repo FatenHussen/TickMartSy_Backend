@@ -125,8 +125,6 @@ class OrderService extends BaseService
                 $orderItems
             ] = $this->addItemsToOrder($order, $data);
 
-            $promotionService = app(PromotionService::class);
-
             $discounts = $this->applyExternalDiscounts(
                 $order,
                 $user,
@@ -139,19 +137,12 @@ class OrderService extends BaseService
             $externalDiscount = $discounts['total_discount'];
             $deliveryPrice = $discounts['delivery_price'];
 
-            $nonDiscountPromotion = $promotionService->applyNonDiscountPromotions(
-                $order,
-                collect($orderItems),
-                $data['promotion_id'] ?? null,
-                $subtotalBeforeDiscount,
-                $user->id,
-                false
+            $promotionService = app(PromotionService::class);
+            $deliveryBeforeAutomaticFreeShipping = $deliveryPrice;
+            $deliveryPrice = $promotionService->resolveAutomaticFreeShippingDeliveryPrice(
+                $deliveryPrice
             );
-
-            if (!empty($nonDiscountPromotion['free_shipping'])) {
-                $deliveryPrice = 0;
-                $discounts['delivery_price'] = 0;
-            }
+            $discounts['delivery_price'] = $deliveryPrice;
 
             $basketDiscount = $this->calculateBasketDiscount(
                 $basketDiscountPercent,
@@ -185,6 +176,22 @@ class OrderService extends BaseService
                 $data['promotion_id'] ?? null,
                 $affiliateData
             );
+
+            $automaticPromotionsResult = $promotionService->applyAutomaticOrderPromotions(
+                $order,
+                $user->id,
+                $subtotalBeforeDiscount,
+                false
+            );
+
+            $automaticSnapshot = $promotionService->compileAutomaticPromotionsSnapshot(
+                $deliveryBeforeAutomaticFreeShipping,
+                $deliveryPrice,
+                $automaticPromotionsResult
+            );
+            if ($automaticSnapshot !== null) {
+                $order->update(['automatic_promotions_snapshot' => $automaticSnapshot]);
+            }
 
             $this->maybeIncrementRecipeOrdersCount($order, $data);
 
@@ -227,19 +234,10 @@ class OrderService extends BaseService
         $externalDiscount = $discounts['total_discount'];
         $deliveryPrice = $discounts['delivery_price'];
 
-        $nonDiscountPromotion = $promotionService->applyNonDiscountPromotions(
-            null,
-            collect($orderItems),
-            $data['promotion_id'] ?? null,
-            $subtotalBeforeDiscount,
-            $user->id,
-            true
+        $deliveryPrice = $promotionService->resolveAutomaticFreeShippingDeliveryPrice(
+            $deliveryPrice
         );
-
-        if (!empty($nonDiscountPromotion['free_shipping'])) {
-            $deliveryPrice = 0;
-            $discounts['delivery_price'] = 0;
-        }
+        $discounts['delivery_price'] = $deliveryPrice;
 
         $basketDiscount = $this->calculateBasketDiscount(
             $basketDiscountPercent,
@@ -247,10 +245,21 @@ class OrderService extends BaseService
             $externalDiscount
         );
 
-        $finalTotal =
-            $subtotalAfterProductDiscount - $basketDiscount - $externalDiscount + $deliveryPrice;
+        $finalTotal = $this->calculateFinalTotal(
+            $subtotalAfterProductDiscount,
+            $basketDiscount,
+            $externalDiscount,
+            $deliveryPrice
+        );
         $availablePromotions = $promotionService
             ->getAvailablePromotions($subtotalBeforeDiscount, collect($orderItems));
+
+        $automaticPromotions = $promotionService->applyAutomaticOrderPromotions(
+            null,
+            $user->id,
+            $subtotalBeforeDiscount,
+            true
+        );
 
         $discounts['basketDiscount'] = $basketDiscount;
 
@@ -283,7 +292,9 @@ class OrderService extends BaseService
             'total_quantity' => $totalQuantity,
             'total' => $this->convertFormattedPrice($finalTotal),
             'available_promotions' => $availablePromotions,
-            'non_discount_promotions' => $nonDiscountPromotion,
+            'automatic_promotions' => array_merge($automaticPromotions, [
+                'free_shipping_applies' => $promotionService->hasActiveAutomaticFreeShipping(),
+            ]),
             'excluded_items' => $discounts['excluded_items'] ?? [],
             'orderItems' => $formattedItems
         ];
@@ -731,6 +742,7 @@ class OrderService extends BaseService
 
             $orderItems->push([
                 'shop_product_variant_id' => $shopVariant->id,
+                'shop_id' => $shopVariant->shop_id,
                 'product_name' => $product->name,
                 'product_image' => $product->image_url,
                 'quantity' => $quantity,
@@ -787,6 +799,15 @@ class OrderService extends BaseService
 
         if (!$coupon) {
             throw new CustomExceptionWithMessage('custom.invalid_coupon');
+        }
+
+        // ❌ Marketer cannot use own affiliate coupon
+        $buyerUserId = $orderOrNull?->user_id ?? auth('user')->id();
+        if (!empty($coupon->affiliate_id) && $buyerUserId) {
+            $buyer = User::query()->select(['id', 'affiliate_id'])->find($buyerUserId);
+            if ($buyer?->affiliate_id && (string) $buyer->affiliate_id === (string) $coupon->affiliate_id) {
+                throw new CustomExceptionWithMessage('custom.coupons.cannot_use_own_coupon');
+            }
         }
 
         $excludedItems = [];

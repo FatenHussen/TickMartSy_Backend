@@ -57,6 +57,11 @@ Complete API documentation for Tikmool e-commerce platform.
 - الفلاتر (type, driver_id, order_id, range dates, range amount)
 - أمثلة Request/Response جاهزة للربط مع الفرونت
 
+### 10. Admin Notifications API (`ADMIN_NOTIFICATIONS_API.md`)
+- إدارة إشعارات الأدمن: list, show, create
+- شرح الحقول `type`, `channels`, `target_page`, `emoji`, `media`
+- أمثلة جاهزة للربط مع الواجهة الأمامية
+
 
 ## Quick Start
 

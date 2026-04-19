@@ -18,21 +18,18 @@ class Promotion extends Model
         'starts_at',
         'ends_at',
         'min_spend',
-        'buy_quantity',
-        'get_quantity',
         'discount_value',
         'discount_type',
-        'gift_product_ids',
+        'gift_description',
         'reward_points',
     ];
 
-    public $translatable = ['name', 'description'];
+    public $translatable = ['name', 'description', 'gift_description'];
 
     protected $casts = [
         'is_active' => 'boolean',
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
-        'gift_product_ids' => 'array',
         // 'name' => 'array',
         // 'description' => 'array',
         'min_spend' => 'decimal:2',

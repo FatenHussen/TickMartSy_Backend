@@ -8,12 +8,10 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use App\Models\Concerns\AppliesAreaScope;
 use Spatie\Translatable\HasTranslations;
 class Store extends Authenticatable
 {
-    use HasFactory, HasTranslations, AppliesAreaScope;
-    protected static array $areaRelationPaths = ['areas'];
+    use HasFactory, HasTranslations;
 
     public array $translatable = ['name', 'description', 'address'];
 

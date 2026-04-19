@@ -3,13 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Admin;
-use App\Models\AffiliateWalletTransaction;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\PermissionRegistrar;
-
-use function PHPSTORM_META\map;
+use Spatie\Permission\Models\Role;
 
 class AdminRolePermissionSeeder extends Seeder
 {
@@ -63,9 +59,15 @@ class AdminRolePermissionSeeder extends Seeder
             'Color',
             'QuickAction',
             'PopupCampaign',
-            'FlashSale'
+            'FlashSale',
+            'Store',
+            'ProductVariant',
+            'ShopProductVariant',
+            'UserGift',
+            'VendorWithdrawRequest',
+            'SystemSetting',
+            'VendorAccounting',
         ];
-
 
         $actions = ['view', 'create', 'update', 'delete'];
 
@@ -73,7 +75,7 @@ class AdminRolePermissionSeeder extends Seeder
 
         foreach ($models as $model) {
             foreach ($actions as $action) {
-                $permissions[] = strtolower($model) . '.' . $action;
+                $permissions[] = strtolower($model).'.'.$action;
             }
         }
 
@@ -98,17 +100,16 @@ class AdminRolePermissionSeeder extends Seeder
             'guard_name' => 'admin',
         ]);
 
-        $employee   = Role::firstOrCreate([
+        $employee = Role::firstOrCreate([
             'name' => 'employee',
             'guard_name' => 'admin',
         ]);
 
-        //assign permissions to super-admin role
+        // assign permissions to super-admin role
         $superAdminPermissions = Permission::all();
         $superAdmin->syncPermissions($superAdminPermissions);
 
-
-        //assign permissions to employee role
+        // assign permissions to employee role
         $employeePermissions = Permission::whereNotIn('name', [
             'admin.view',
             'admin.create',
@@ -121,8 +122,7 @@ class AdminRolePermissionSeeder extends Seeder
         ])->get();
         $employee->syncPermissions($employeePermissions);
 
-
-        //create Admins
+        // create Admins
         $Em1 = Admin::firstOrCreate(
             ['email' => 'superadmin@admin.com'],
             [
@@ -131,7 +131,6 @@ class AdminRolePermissionSeeder extends Seeder
             ]
         );
         $Em1->assignRole($superAdmin);
-
 
         $Em2 = Admin::firstOrCreate(
             ['email' => 'employee@admin.com'],
