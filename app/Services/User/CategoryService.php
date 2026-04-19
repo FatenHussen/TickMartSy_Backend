@@ -78,16 +78,14 @@ class CategoryService extends BaseService
             });
         }
 
-        // Type filters
-        if (!empty($filters['type'])) {
-            $this->applyTypeFilters($query, $filters['type']);
-        }
-
+        // Prioritize explicit sort/type over inherited default sort from BaseService.
         if (!empty($filters['sort_by'])) {
             $this->applySortBy($query, $filters['sort_by']);
+        } elseif (!empty($filters['type'])) {
+            $query->reorder();
+            $this->applyTypeFilters($query, $filters['type']);
         } else {
-            // Default ordering by 'order' field
-            $query->orderBy('order', 'asc');
+            $query->reorder()->orderBy('order', 'asc')->orderBy('id', 'asc');
         }
 
         return $query;

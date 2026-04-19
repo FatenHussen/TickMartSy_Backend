@@ -33,10 +33,7 @@ class StoreRequest extends FormRequest
             'contract_date'        => 'required|date',
             'contract_number'      => 'required|string|unique:vendors,contract_number',
             'contract_duration_months' => 'required|integer|min:1',
-            'commission_type'      => 'required|string|in:percentage,fixed',
-            'commission_rate'      => 'required_if:commission_type,percentage|nullable|numeric|min:0|max:100',
-            'fixed_commission'     => 'required_if:commission_type,fixed|nullable|numeric|min:0',
-            'settlement_cycle'     => 'nullable|string|in:weekly,monthly',
+            'commission_rate'      => 'nullable|numeric|min:0|max:100',
 
             'logo'                 => 'nullable|image|mimes:jpeg,png,jpg,gif,webp',
             'cover_images'         => 'nullable|array',

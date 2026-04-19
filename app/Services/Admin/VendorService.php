@@ -6,10 +6,15 @@ use App\Http\Resources\Vendor\AllResource;
 use App\Http\Resources\Vendor\AdminOneResource;
 use App\Models\Vendor;
 use App\Services\BaseService;
-use Illuminate\Support\Facades\DB;
 
 class VendorService extends BaseService
 {
+    private array $unsupportedColumns = [
+        'commission_type',
+        'fixed_commission',
+        'settlement_cycle',
+    ];
+
     public function __construct(Vendor $model)
     {
         $this->model      = $model;
@@ -20,5 +25,24 @@ class VendorService extends BaseService
         $this->singleImages = [
             'logo'  => 'logo',
         ];
+    }
+
+    public function create($data)
+    {
+        return parent::create($this->sanitizeUnsupportedColumns($data));
+    }
+
+    public function update($id, array $data)
+    {
+        return parent::update($id, $this->sanitizeUnsupportedColumns($data));
+    }
+
+    private function sanitizeUnsupportedColumns(array $data): array
+    {
+        foreach ($this->unsupportedColumns as $column) {
+            unset($data[$column]);
+        }
+
+        return $data;
     }
 }

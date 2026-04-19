@@ -16,7 +16,7 @@ class BrandService extends BaseService
         $this->collection = AllResource::class;
         $this->resource = OneResource::class;
         $this->searchableFields = ['name'];
-        $this->sortableFields = ['id', 'created_at'];
+        $this->sortableFields = ['id', 'created_at', 'order'];
         $this->relations = ['favorites'];
     }
 
@@ -63,12 +63,13 @@ class BrandService extends BaseService
             });
         }
 
-        // Type filter
-        if (!empty($filters['type'])) {
-            $this->applyTypeFilters($query, $filters['type']);
-        }
         if (!empty($filters['sort_by'])) {
             $this->applySortBy($query, $filters['sort_by']);
+        } elseif (!empty($filters['type'])) {
+            $query->reorder();
+            $this->applyTypeFilters($query, $filters['type']);
+        } else {
+            $query->orderBy('order', 'asc')->orderBy('id', 'asc');
         }
         /* ================= FAVORITES ================= */
         if (
@@ -90,12 +91,6 @@ class BrandService extends BaseService
     {
         $query = Brand::query();
         $query = $this->queryBuilder($query, $filters);
-
-        // Default ordering if no type filter
-        if (empty($filters['type'])) {
-            $query->latest();
-        }
-
 
         return $query->where('is_active', true);
     }
