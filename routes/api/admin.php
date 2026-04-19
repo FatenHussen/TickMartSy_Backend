@@ -294,7 +294,7 @@ Route::prefix('admin')->group(function () {
         Route::apiResource('badges', BadgeController::class)->middleware('crud.permission:badge');
         Route::apiResource('promotions', PromotionController::class)->middleware('crud.permission:promotion');
         Route::apiResource('flash-sales', FlashSaleController::class)
-            ->only(['index', 'store', 'update'])
+            ->only(['index', 'store', 'show', 'update'])
             ->middleware('crud.permission:flashsale');
         Route::apiResource('affiliate-withdraw-requests', AffiliateWithdrawRequestController::class)
             ->only(['index', 'show', 'update'])

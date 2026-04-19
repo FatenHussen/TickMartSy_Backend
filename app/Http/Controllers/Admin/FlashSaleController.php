@@ -30,6 +30,11 @@ class FlashSaleController extends Controller
         return $this->sendResponse(data: $flashSale);
     }
 
+    public function show(FlashSale $flashSale)
+    {
+        return $this->sendResponse(data: $this->service->getOne($flashSale->id));
+    }
+
     public function update(FlashSaleRequest $request, FlashSale $flashSale)
     {
         $updated = $this->service->updateFlashSale($flashSale, $request->validated());

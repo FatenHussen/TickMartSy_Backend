@@ -43,7 +43,7 @@ class AllResource extends JsonResource
             // Timestamps
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
-             'top_badges' => BadgeOneResource::collection(
+            'top_badges' => BadgeOneResource::collection(
                 ($this->badges ?? collect())->where('position', 'top')->values()
             ),
 

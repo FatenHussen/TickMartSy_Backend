@@ -26,5 +26,3 @@ class AllResource extends JsonResource
         ];
     }
 }
-
-

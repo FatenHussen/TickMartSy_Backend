@@ -36,7 +36,7 @@ class AllResource extends JsonResource
             'is_active'             => (bool) $this->is_active,
             'barcode'               => $this->barcode,
             'time_prepare'          => $this->time_prepare,
-            'bought_with'           => $this->bought_with_products_list->map(function($product) {
+            'bought_with'           => $this->bought_with_products_list->map(function ($product) {
                 return [
                     'id' => $product->id,
                     'name' => $product->name,
@@ -55,7 +55,7 @@ class AllResource extends JsonResource
             'sale_country' => $this->saleCountry?->name,
 
             'approval_status' => $this->approval_status?->value,
-            'approval_status_label' => match($this->approval_status?->value) {
+            'approval_status_label' => match ($this->approval_status?->value) {
                 'pending' => 'قيد الانتظار',
                 'approved' => 'مقبول',
                 'rejected' => 'مرفوض',

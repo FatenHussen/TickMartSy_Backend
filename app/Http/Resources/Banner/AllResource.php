@@ -25,6 +25,7 @@ class AllResource extends JsonResource
             'expires_at' =>           $this->expires_at?->format('Y-m-d H:i'),
             // 'is_active'             => $this->is_active,
             // 'order'             => $this->order,
+            'is_active'             => $this->is_active,
             'created_at'            => $this->created_at?->format('Y-m-d H:i'),
         ];
     }
