@@ -11,9 +11,7 @@ use Illuminate\Http\Request;
 
 class PopupCampaignController extends Controller
 {
-    public function __construct(private PopupCampaignSelector $selector)
-    {
-    }
+    public function __construct(private PopupCampaignSelector $selector) {}
 
     public function active(Request $request)
     {

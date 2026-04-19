@@ -20,12 +20,13 @@ class ServiceOrderService extends BaseService
         $this->relations = ['shop', 'vendorService', 'shopVendorService', 'user'];
         $this->pagination = true;
         $this->searchableFields = ['id', 'notes'];
-        $this->sortableFields = ['id', 'created_at'];
+        $this->sortableFields = ['id', 'created_at', 'date'];
     }
 
     public function getAll($filters = [], $config = [])
     {
         $filters['user_id'] = auth('user')->id();
+
         return parent::getAll($filters, $config);
     }
 
@@ -33,7 +34,7 @@ class ServiceOrderService extends BaseService
     {
         $query = parent::queryBuilder($query, $filters, $config);
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
@@ -47,7 +48,7 @@ class ServiceOrderService extends BaseService
             ->where('is_active', true)
             ->first();
 
-        if (!$shopVendorService) {
+        if (! $shopVendorService) {
             throw new CustomExceptionWithMessage('custom.service_orders.service_not_available', 404);
         }
 
@@ -59,6 +60,8 @@ class ServiceOrderService extends BaseService
             'price' => $shopVendorService->price ?? 0,
             'price_unit' => $shopVendorService->price_unit,
             'notes' => $data['notes'] ?? null,
+            'date' => $data['date'],
+            'time' => $data['time'],
             'status' => ServiceOrderStatus::PENDING->value,
         ]);
 

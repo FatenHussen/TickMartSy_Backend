@@ -18,26 +18,26 @@ class ServiceOrderService extends BaseService
         $this->relations = ['shop', 'vendorService', 'shopVendorService', 'user'];
         $this->pagination = true;
         $this->searchableFields = ['id', 'status'];
-        $this->sortableFields = ['id', 'price', 'created_at'];
+        $this->sortableFields = ['id', 'price', 'created_at', 'date'];
     }
 
     public function queryBuilder($query, $filters = [], $config = [])
     {
         $query = parent::queryBuilder($query, $filters, $config);
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
-        if (!empty($filters['shop_id'])) {
+        if (! empty($filters['shop_id'])) {
             $query->where('shop_id', $filters['shop_id']);
         }
 
-        if (!empty($filters['vendor_service_id'])) {
+        if (! empty($filters['vendor_service_id'])) {
             $query->where('vendor_service_id', $filters['vendor_service_id']);
         }
 
-        if (!empty($filters['user_id'])) {
+        if (! empty($filters['user_id'])) {
             $query->where('user_id', $filters['user_id']);
         }
 

@@ -15,6 +15,8 @@ class OneResource extends JsonResource
             'price' => $this->price,
             'price_unit' => $this->price_unit,
             'notes' => $this->notes,
+            'date' => $this->date?->format('Y-m-d'),
+            'time' => $this->resource->formattedOrderTime(),
             'created_at' => $this->created_at?->toDateTimeString(),
             'shop' => $this->shop ? [
                 'id' => $this->shop->id,

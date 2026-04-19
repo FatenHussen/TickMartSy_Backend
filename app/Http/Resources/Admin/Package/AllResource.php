@@ -15,7 +15,7 @@ class AllResource extends JsonResource
             'duration_days' => (int) $this->duration_days,
             'monthly_orders_limit' => $this->monthly_orders_limit,
             'free_delivery_count' => (int) $this->free_delivery_count,
-         'discount_percentage' => (float) $this->discount_percentage,
+            'discount_percentage' => (float) $this->discount_percentage,
             'points_bonus' => (int) $this->points_bonus,
             'is_active' => (bool) $this->is_active,
             'subscriptions_count' => $this->subscriptions()->count(),

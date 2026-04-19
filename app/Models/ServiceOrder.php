@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ServiceOrderStatus;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -17,10 +18,13 @@ class ServiceOrder extends Model
         'price_unit',
         'status',
         'notes',
+        'date',
+        'time',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
+        'date' => 'date',
     ];
 
     protected $attributes = [
@@ -45,5 +49,18 @@ class ServiceOrder extends Model
     public function shopVendorService(): BelongsTo
     {
         return $this->belongsTo(ShopVendorService::class);
+    }
+
+    public function formattedOrderTime(): ?string
+    {
+        if ($this->time === null) {
+            return null;
+        }
+        if ($this->time instanceof DateTimeInterface) {
+            return $this->time->format('H:i');
+        }
+        $s = (string) $this->time;
+
+        return strlen($s) >= 5 ? substr($s, 0, 5) : $s;
     }
 }
