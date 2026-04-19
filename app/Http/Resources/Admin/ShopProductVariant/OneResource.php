@@ -9,12 +9,22 @@ class OneResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $variantImage = $this->productVariant?->media
+            ?->where('collection', 'variant')
+            ?->sortBy('order')
+            ?->first()?->url;
+
+        $productFallbackImage = $this->productVariant?->product?->media
+            ?->sortBy('order')
+            ?->first()?->url;
+
         return [
             'id' => $this->id,
             'product_variant_id' => $this->product_variant_id,
             'shop_id' => $this->shop_id,
             'is_restaurant' => (bool) ($this->shop?->is_restaurant ?? false),
             'city_id' => $this->shop?->city_id ?? $this->shop?->area?->city_id,
+            'variant_image' => $variantImage ?? $productFallbackImage,
             'product' => [
                 'id' => $this->productVariant->product->id,
                 'name' => $this->productVariant->product->name,
@@ -22,7 +32,7 @@ class OneResource extends JsonResource
                 'price' => $this->productVariant->product->price,
                 'discount' => $this->productVariant->product->discount,
                 'country' => $this->productVariant->product->country,
-                'image' => $this->productVariant->product->media->first()?->url ?? null,
+                'image' => $variantImage ?? $productFallbackImage,
                 'images' => $this->productVariant->product->media->map(function ($media) {
                     return $media->url;
                 }),

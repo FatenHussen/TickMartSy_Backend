@@ -16,6 +16,8 @@ class ShopProductVariantService extends BaseService
     protected $collection = AllResource::class;
 
     protected $relations = [
+        'productVariant.media',
+        'productVariant.product.media',
         'productVariant.product.category',
         'productVariant.product.brand',
         'shop'
