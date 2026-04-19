@@ -3,10 +3,13 @@
 namespace App\Http\Resources\Admin\Basket;
 
 use App\Http\Resources\Badge\OneResource as BadgeOneResource;
+use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class OneResource extends JsonResource
 {
+    use HasCurrencyConversion;
+
     public function toArray($request)
     {
         return [
@@ -22,11 +25,11 @@ class OneResource extends JsonResource
             'is_active' => $this->is_active,
 
             // Pricing
-            'original_price' => round($this->calculated_price, 2),
+            ...$this->withCurrency($this->calculated_price, 'original_price'),
             'discount' => $this->discount,
             'discount_type' => $this->discount_type,
-            'discount_amount' => round($this->discount_amount, 2),
-            'final_price' => round($this->final_price, 2),
+            ...$this->withCurrency($this->discount_amount, 'discount_amount'),
+            ...$this->withCurrency($this->final_price, 'final_price'),
 
             // Stats
             'rating' => (float) $this->rating,
@@ -35,7 +38,7 @@ class OneResource extends JsonResource
             'is_on_offer' => $this->offer_ends_at && $this->offer_ends_at->isFuture(),
 
             // Delivery
-            'delivery_price' => (float) $this->delivery_price,
+            ...$this->withCurrency($this->delivery_price, 'delivery_price'),
             'is_schedule' => (bool) $this->is_schedule,
 
             // Items

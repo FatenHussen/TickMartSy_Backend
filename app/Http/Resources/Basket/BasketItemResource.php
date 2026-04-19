@@ -42,6 +42,7 @@ class BasketItemResource extends JsonResource
         $variants = \App\Models\ShopProductVariant::query()
             ->whereIn('id', $this->shop_product_variant_ids)
             ->with([
+                'shop.area',
                 'productVariant.product.brand',
                 'productVariant.product.media'
             ])
@@ -62,6 +63,9 @@ class BasketItemResource extends JsonResource
             return [
                 'product_id' => $product->id ?? null,
                 'shop_product_variant_id' => $variant->id,
+                'shop_id' => $variant->shop_id,
+                'is_restaurant' => (bool) ($variant->shop?->is_restaurant ?? false),
+                'city_id' => $variant->shop?->city_id ?? $variant->shop?->area?->city_id,
 
                 'name' => trim(
                     ($product->name ?? '') . ' ' . ($brand->name ?? '')
@@ -73,6 +77,7 @@ class BasketItemResource extends JsonResource
                 'price_formatted' => $priceData['formatted'],
                 'currency' => $priceData['currency'],
                 'currency_symbol' => $priceData['symbol'],
+                'price_currencies' => $this->dualCurrency($variant->price),
             ];
         })->values();
     }

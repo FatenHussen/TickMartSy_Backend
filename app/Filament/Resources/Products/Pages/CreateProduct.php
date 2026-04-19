@@ -17,6 +17,8 @@ class CreateProduct extends CreateRecord
     protected $variantMediaByIndex = [];
     protected $productMediaPaths = [];
     protected $mainImagePath = null;
+    protected ?int $topBadgeId = null;
+    protected array $bottomBadgeIds = [];
 
     public function mount(): void
     {
@@ -58,6 +60,16 @@ class CreateProduct extends CreateRecord
         if ($user && empty($data['vendor_id'])) {
             $data['vendor_id'] = $user->vendor_id ?? $user->shops()->first()?->vendor_id;
         }
+
+        $this->topBadgeId = !empty($data['top_badge_id']) ? (int) $data['top_badge_id'] : null;
+        $this->bottomBadgeIds = collect($data['bottom_badge_ids'] ?? [])
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        unset($data['top_badge_id'], $data['bottom_badge_ids']);
 
         Log::info('=== mutateFormDataBeforeCreate ===');
         Log::info('main_image in data:', ['main_image' => $data['main_image'] ?? 'NOT SET']);
@@ -185,6 +197,8 @@ class CreateProduct extends CreateRecord
             }
         }
 
+        $this->syncBadges($product);
+
         $this->notifyRemainingQuota();
         $this->notifyProductCreated();
 
@@ -302,6 +316,26 @@ class CreateProduct extends CreateRecord
             ->danger()
             ->persistent()
             ->send();
+    }
+
+    private function syncBadges($product): void
+    {
+        $sync = [];
+
+        if ($this->topBadgeId) {
+            $sync[$this->topBadgeId] = ['position' => 'top'];
+        }
+
+        foreach ($this->bottomBadgeIds as $badgeId) {
+            // If same badge selected in top and bottom, keep top only.
+            if ($this->topBadgeId && $badgeId === $this->topBadgeId) {
+                continue;
+            }
+
+            $sync[$badgeId] = ['position' => 'bottom'];
+        }
+
+        $product->badges()->sync($sync);
     }
 
     private function notifyProductCreated(): void

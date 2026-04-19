@@ -221,6 +221,24 @@ Route::prefix('admin')->group(function () {
         });
 
         // Route::get('page-sections/display-types/{manual_model}', [PageSectionCrudController::class, 'displayTypes']);
+        Route::post('categories/sort', [CategoryController::class, 'sort']);
+        Route::post('brands/sort', [BrandController::class, 'sort']);
+
+        Route::resources([
+            'stores'         => StoreCrudController::class,
+            // 'shops'          => ShopCrudController::class,
+            // 'vendors'        => VendorCrudController::class,
+            'languages'      => LanguageController::class,
+            'categories' => CategoryController::class,
+            'brands' => BrandController::class,
+            'colors' => ColorController::class,
+            'category-attributes' => CategoryAttributeController::class,
+            'category-details' => CategoryDetailController::class,
+            'products' => ProductController::class,
+            'product-variants' => ProductVariantController::class,
+            'shop-product-variants' => ShopProductVariantController::class,
+            'sale-countries' => \App\Http\Controllers\Admin\SaleCountry\SaleCountryCrudController::class,
+        ]);
 
         // --- Bulk `Route::resources` (catalog & related) ---
         Route::resource('languages', LanguageController::class)->middleware('crud.permission:language');

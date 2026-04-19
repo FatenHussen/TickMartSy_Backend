@@ -6,6 +6,7 @@ use App\Http\Resources\Admin\Category\OneResource;
 use App\Models\Category;
 use App\Services\BaseService;
 use App\Http\Resources\Admin\Category\AllResource;
+use Illuminate\Support\Facades\DB;
 
 class CategoryService extends BaseService
 {
@@ -19,5 +20,55 @@ class CategoryService extends BaseService
         $this->pagination = true;
         $this->searchableFields = ['name'];
         $this->sortableFields = ['id', 'created_at', 'order'];
+    }
+
+    public function queryBuilder($query, $filters = [], $config = [])
+    {
+        if (!empty($filters['name'])) {
+            $search = strtolower(trim((string) $filters['name']));
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.ar'))) LIKE ?", ["%{$search}%"])
+                    ->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.en'))) LIKE ?", ["%{$search}%"]);
+            });
+            unset($filters['name']);
+        }
+
+        if (array_key_exists('is_active', $filters) && $filters['is_active'] !== null) {
+            $query->where('is_active', (bool) $filters['is_active']);
+            unset($filters['is_active']);
+        }
+
+        if (array_key_exists('is_restaurant', $filters) && $filters['is_restaurant'] !== null) {
+            $query->where('is_restaurant', (bool) $filters['is_restaurant']);
+            unset($filters['is_restaurant']);
+        }
+
+        return parent::queryBuilder($query, $filters, $config);
+    }
+
+    public function reorder(array $orderedIds, ?int $parentId = null): int
+    {
+        return DB::transaction(function () use ($orderedIds, $parentId) {
+            $query = Category::query()->whereIn('id', $orderedIds);
+
+            if ($parentId !== null) {
+                $query->where('parent_id', $parentId);
+            }
+
+            $existingIds = $query->pluck('id')->all();
+
+            if (count($existingIds) !== count($orderedIds)) {
+                abort(422, 'Some categories do not match the requested parent scope.');
+            }
+
+            $updated = 0;
+            foreach ($orderedIds as $index => $id) {
+                $updated += Category::query()
+                    ->where('id', $id)
+                    ->update(['order' => $index + 1]);
+            }
+
+            return $updated;
+        });
     }
 }

@@ -22,6 +22,8 @@ class FilterRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'name' => ['nullable', 'string'],
+            'is_active' => ['nullable', 'boolean'],
             'is_restaurant' => ['nullable', 'boolean'],
             'parent_id' => [
                 'nullable',

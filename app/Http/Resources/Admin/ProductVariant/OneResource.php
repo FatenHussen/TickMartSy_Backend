@@ -47,6 +47,8 @@ class OneResource extends JsonResource
                         'name' => $shopVariant->shop->name,
                         'logo' => $shopVariant->shop->logo,
                         'address' => $shopVariant->shop->address,
+                        'is_restaurant' => (bool) ($shopVariant->shop->is_restaurant ?? false),
+                        'city_id' => $shopVariant->shop->city_id ?? $shopVariant->shop?->area?->city_id,
                     ],
                     'price' => $shopVariant->price,
                     'cost_price' => $shopVariant->cost_price,

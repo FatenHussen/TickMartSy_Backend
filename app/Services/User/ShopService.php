@@ -36,6 +36,7 @@ class ShopService extends BaseService
 
         $this->applyGeographicalFilters($query, $filters);
         $this->applyShopClassificationFilters($query, $filters);
+        $this->applyRestaurantFilters($query, $filters);
         $this->applyTypeFilters($query, $filters);
         if (!empty($filters['sort_by'])) {
             $this->applySortBy($query, $filters['sort_by']);
@@ -54,6 +55,17 @@ class ShopService extends BaseService
         }
 
         return $query->where('is_active', true);
+    }
+
+    protected function applyRestaurantFilters(Builder $query, array $filters): void
+    {
+        if (!empty($filters['pricing_tier'])) {
+            $query->where('pricing_tier', $filters['pricing_tier']);
+        }
+
+        if (array_key_exists('is_open_now', $filters) && $filters['is_open_now'] !== null) {
+            $this->filterByOpenStatus($query, (bool) $filters['is_open_now']);
+        }
     }
 
     protected function applyShopClassificationFilters(Builder $query, array $filters): void
@@ -132,11 +144,15 @@ class ShopService extends BaseService
         }
 
         match ($filters['type']) {
-            'nearby'    => $this->filterNearby($query, $filters),
+            'nearby', 'near_me' => $this->filterNearby($query, $filters),
             'offers'    => $this->filterOffers($query),
-            'top_rated' => $this->filterTopRated($query),
+            'top_rated', 'most_rated' => $this->filterTopRated($query),
             'active'    => $this->filterActive($query),
             'free_delivery' => $this->filterFreeDelivery($query),
+            'open' => $this->filterByOpenStatus($query, true),
+            'close' => $this->filterByOpenStatus($query, false),
+            'newest' => $query->orderBy('created_at', 'desc'),
+            'zone' => $this->filterZone($query, $filters),
             default     => null,
         };
     }
@@ -198,8 +214,38 @@ class ShopService extends BaseService
         match ($sortBy) {
             'newest' => $query->orderBy('created_at', 'desc'),
             'oldest' => $query->orderBy('created_at', 'asc'),
+            'most_rated', 'rating_desc' => $query->withAvg('ratings', 'rating')->orderByDesc('ratings_avg_rating'),
+            'rating_asc' => $query->withAvg('ratings', 'rating')->orderBy('ratings_avg_rating'),
+            'near_me' => $this->filterNearby($query, request()->all()),
             default => null,
         };
+    }
+
+    protected function filterZone(Builder $query, array $filters): void
+    {
+        if (!empty($filters['area_id'])) {
+            $query->where('area_id', $filters['area_id']);
+        }
+    }
+
+    protected function filterByOpenStatus(Builder $query, bool $isOpen): void
+    {
+        $day = strtolower(now()->englishDayOfWeek);
+        $now = now()->format('H:i');
+
+        if ($isOpen) {
+            $query
+                ->whereRaw("COALESCE(JSON_UNQUOTE(JSON_EXTRACT(working_hours, '$.{$day}.closed')), 'false') != 'true'")
+                ->whereRaw("TIME(JSON_UNQUOTE(JSON_EXTRACT(working_hours, '$.{$day}.open'))) <= ?", [$now])
+                ->whereRaw("TIME(JSON_UNQUOTE(JSON_EXTRACT(working_hours, '$.{$day}.close'))) >= ?", [$now]);
+            return;
+        }
+
+        $query->where(function (Builder $q) use ($day, $now) {
+            $q->whereRaw("COALESCE(JSON_UNQUOTE(JSON_EXTRACT(working_hours, '$.{$day}.closed')), 'false') = 'true'")
+                ->orWhereRaw("TIME(JSON_UNQUOTE(JSON_EXTRACT(working_hours, '$.{$day}.open'))) > ?", [$now])
+                ->orWhereRaw("TIME(JSON_UNQUOTE(JSON_EXTRACT(working_hours, '$.{$day}.close'))) < ?", [$now]);
+        });
     }
 
     public function query(array $filters = [])

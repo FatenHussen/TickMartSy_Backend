@@ -46,6 +46,8 @@ class ShopVariantResource extends JsonResource
             ...$this->withCurrency($shopVariant->price, 'price'),
             'quantity' => $shopVariant->quantity,
             'shop_id'  => $shopVariant->shop_id,
+            'is_restaurant' => (bool) ($shopVariant->shop?->is_restaurant ?? false),
+            'city_id' => $shopVariant->shop?->city_id ?? $shopVariant->shop?->area?->city_id,
             'images'   => MediaResource::collection(
                 $this->media
             ),

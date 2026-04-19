@@ -15,6 +15,13 @@ class UpdateRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('commercial_register') && $this->input('commercial_register') === '') {
+            $this->merge(['commercial_register' => null]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *

@@ -2,12 +2,18 @@
 
 namespace App\Filament\Resources\Products\Tables;
 
+use App\Models\Product;
+use App\Models\ShopProductVariant;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\HtmlString;
 
 class ProductsTable
 {
@@ -100,7 +106,162 @@ class ProductsTable
             ])
             ->actions([
                 ViewAction::make(),
-            EditAction::make()
+                Action::make('updatePrices')
+                    ->label(__('custom.products.actions.update_prices'))
+                    ->icon('heroicon-m-currency-dollar')
+                    ->modalHeading(__('custom.products.actions.update_prices_modal_title'))
+                    ->modalSubmitActionLabel(__('custom.save'))
+                    ->fillForm(fn (Product $record): array => self::buildPriceFormData($record))
+                    ->form(fn (Product $record): array => self::buildPriceFormSchema($record))
+                    ->action(function (Product $record, array $data): void {
+                        DB::transaction(function () use ($record, $data): void {
+                            $basePrice = isset($data['product_price']) ? (float) $data['product_price'] : (float) $record->price;
+                            $record->update(['price' => round($basePrice, 2)]);
+
+                            foreach ($data as $key => $value) {
+                                if (!str_starts_with((string) $key, 'price_')) {
+                                    continue;
+                                }
+
+                                $shopVariantId = (int) str_replace('price_', '', (string) $key);
+                                $price = max(0, (float) $value);
+
+                                $shopVariant = ShopProductVariant::query()
+                                    ->where('id', $shopVariantId)
+                                    ->whereHas('productVariant', fn ($q) => $q->where('product_id', $record->id))
+                                    ->first();
+
+                                if (!$shopVariant) {
+                                    continue;
+                                }
+
+                                $shopVariant->update(['price' => round($price, 2)]);
+                            }
+                        });
+
+                        Notification::make()
+                            ->title(__('custom.products.actions.prices_updated'))
+                            ->success()
+                            ->send();
+                    }),
+                EditAction::make(),
             ]);
+    }
+
+    private static function buildPriceFormSchema(Product $record): array
+    {
+        $record->loadMissing(['media', 'variants.media', 'variants.shopVariants.shop']);
+
+        $components = [
+            TextInput::make('product_price')
+                ->label(__('custom.products.actions.base_price'))
+                ->numeric()
+                ->minValue(0)
+                ->required(),
+        ];
+
+        foreach ($record->variants as $variant) {
+            if ($variant->shopVariants->isEmpty()) {
+                continue;
+            }
+
+            $components[] = Placeholder::make('price_variant_label_' . $variant->id)
+                ->label(__('custom.products.actions.variant_prices_section', [
+                    'variant' => self::resolvedVariantName($variant->name),
+                ]))
+                ->content(function () use ($variant, $record): HtmlString {
+                    $imageUrl = self::resolveVariantImageUrl($variant, $record);
+
+                    if (!$imageUrl) {
+                        return new HtmlString('');
+                    }
+
+                    return new HtmlString('<img src="' . e($imageUrl) . '" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;" />');
+                });
+
+            foreach ($variant->shopVariants as $shopVariant) {
+                $components[] = TextInput::make('price_' . $shopVariant->id)
+                    ->label(__('custom.products.actions.shop_variant_price_label', [
+                        'shop' => self::resolvedShopName($shopVariant->shop),
+                        'variant' => self::resolvedVariantName($variant->name),
+                    ]))
+                    ->numeric()
+                    ->minValue(0)
+                    ->required();
+            }
+        }
+
+        return $components;
+    }
+
+    private static function buildPriceFormData(Product $record): array
+    {
+        $record->loadMissing(['variants.shopVariants']);
+
+        $data = [
+            'product_price' => (float) $record->price,
+        ];
+
+        foreach ($record->variants as $variant) {
+            foreach ($variant->shopVariants as $shopVariant) {
+                $data['price_' . $shopVariant->id] = (float) $shopVariant->price;
+            }
+        }
+
+        return $data;
+    }
+
+    private static function resolvedVariantName(mixed $name): string
+    {
+        if (is_array($name)) {
+            return (string) ($name[app()->getLocale()] ?? $name['ar'] ?? $name['en'] ?? '-');
+        }
+
+        if (is_string($name) && $name !== '') {
+            return $name;
+        }
+
+        return '-';
+    }
+
+    private static function resolvedShopName(mixed $shop): string
+    {
+        if (!$shop) {
+            return '-';
+        }
+
+        $name = $shop->name ?? null;
+
+        if (is_array($name)) {
+            return (string) ($name[app()->getLocale()] ?? $name['ar'] ?? $name['en'] ?? '-');
+        }
+
+        if (is_string($name) && $name !== '') {
+            return $name;
+        }
+
+        return '-';
+    }
+
+    private static function resolveProductImageUrl(Product $product): ?string
+    {
+        $media = $product->media->first();
+
+        if ($media && !empty($media->path)) {
+            return asset('storage/' . $media->path);
+        }
+
+        return null;
+    }
+
+    private static function resolveVariantImageUrl(mixed $variant, Product $product): ?string
+    {
+        $variantMedia = $variant->media->first();
+
+        if ($variantMedia && !empty($variantMedia->path)) {
+            return asset('storage/' . $variantMedia->path);
+        }
+
+        return self::resolveProductImageUrl($product);
     }
 }

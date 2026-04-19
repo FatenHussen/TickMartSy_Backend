@@ -23,6 +23,8 @@ class FilterRequest extends FormRequest
     {
         return [
             'name' => 'nullable|string',
+            'is_active' => 'nullable|boolean',
+            'category_id' => 'nullable|integer|exists:categories,id',
             'origin_country_id' => 'nullable|integer|exists:countries,id',
         ];
     }

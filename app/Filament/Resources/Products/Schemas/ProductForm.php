@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources\Products\Schemas;
 
+use App\Forms\Components\TinyEditor;
+use App\Models\Category;
+use App\Models\Product;
 use App\Models\VendorUser;
 use Filament\Forms;
 use Filament\Schemas\Components\Grid;
@@ -56,27 +59,10 @@ class ProductForm
                                         ->dehydrated(fn(callable $get): bool => !static::isRestaurantCategory($get('category_id')))
                                         ->columnSpan(1),
 
-                                    Forms\Components\Select::make('category_id')
-                                        ->label(__('custom.products.form.category_label'))
-                                        ->relationship('category', 'name')
-                                        ->required()
-                                        ->searchable()
-                                        ->preload()
-                                        ->live(onBlur: true)
-                                        ->afterStateUpdated(function ($state, callable $set): void {
-                                            if (!static::isRestaurantCategory($state)) {
-                                                return;
-                                            }
+                                    ...static::categoryHierarchySelects(),
 
-                                            $set('model', null);
-                                            $set('sku', null);
-                                            $set('barcode', null);
-                                            $set('country.ar', null);
-                                            $set('country.en', null);
-                                            $set('country_id', null);
-                                            $set('sale_country_id', null);
-                                        })
-                                        ->columnSpan(1),
+                                    Forms\Components\Hidden::make('category_id')
+                                        ->required(),
 
                                     Forms\Components\TextInput::make('barcode')
                                         ->label(__('custom.products.form.barcode_label'))
@@ -133,26 +119,16 @@ class ProductForm
                                         ->maxLength(500)
                                         ->columnSpanFull(),
 
-                                    Forms\Components\RichEditor::make('full_description.ar')
+                                    TinyEditor::make('full_description.ar')
                                         ->label(__('custom.products.form.full_description_ar'))
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'underline',
-                                            'bulletList',
-                                            'orderedList',
-                                        ])
+                                        ->rtl(true)
+                                        ->minHeight(420)
                                         ->columnSpanFull(),
 
-                                    Forms\Components\RichEditor::make('full_description.en')
+                                    TinyEditor::make('full_description.en')
                                         ->label(__('custom.products.form.full_description_en'))
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'underline',
-                                            'bulletList',
-                                            'orderedList',
-                                        ])
+                                        ->rtl(false)
+                                        ->minHeight(420)
                                         ->columnSpanFull(),
                                 ])
                                 ->collapsible(),
@@ -236,12 +212,22 @@ class ProductForm
                                         ->label(__('custom.products.form.select_products'))
                                         ->multiple()
                                         ->searchable()
-                                        ->options(function () use ($vendorId) {
-                                            if (!$vendorId) {
-                                                return \App\Models\Product::pluck('name', 'id');
+                                        ->options(function (callable $get, ?Product $record) use ($vendorId) {
+                                            $query = Product::query();
+
+                                            if ($vendorId) {
+                                                $query->where('vendor_id', $vendorId);
                                             }
-                                            return \App\Models\Product::where('vendor_id', $vendorId)
-                                                ->pluck('name', 'id');
+
+                                            if (!empty($get('category_id'))) {
+                                                $query->where('category_id', (int) $get('category_id'));
+                                            }
+
+                                            if ($record?->id) {
+                                                $query->where('id', '!=', $record->id);
+                                            }
+
+                                            return $query->pluck('name', 'id');
                                         })
                                         ->helperText(__('custom.products.form.bought_with_help'))
                                         ->columnSpanFull(),
@@ -348,43 +334,35 @@ class ProductForm
                                         ->helperText(__('custom.products.form.icons_help'))
                                         ->columnSpanFull(),
 
-                                    Forms\Components\Repeater::make('badges')
-                                        ->label(__('custom.products.form.badges'))
+                                    Section::make(__('custom.products.form.badge_top'))
                                         ->schema([
-                                            Forms\Components\Select::make('id')
-                                                ->label(__('custom.products.form.badge'))
-                                                ->options(\App\Models\Badge::pluck('name', 'id'))
-                                                ->required()
+                                            Forms\Components\Select::make('top_badge_id')
+                                                ->label(__('custom.products.form.badge_top'))
+                                                ->options(static::badgeOptions())
                                                 ->searchable()
-                                                ->distinct()
-                                                ->columnSpan(1),
-
-                                            Forms\Components\Select::make('position')
-                                                ->label(__('custom.products.form.badge_position'))
-                                                ->options([
-                                                    'top' => __('custom.products.form.badge_top'),
-                                                    'bottom' => __('custom.products.form.badge_bottom'),
-                                                ])
-                                                ->required()
+                                                ->preload()
                                                 ->native(false)
-                                                ->columnSpan(1),
+                                                ->placeholder(__('custom.products.form.no_discount'))
+                                                ->helperText(__('custom.products.form.top_badge_helper'))
+                                                ->columnSpanFull(),
                                         ])
-                                        ->columns(2)
-                                        ->defaultItems(0)
-                                        ->addActionLabel(__('custom.products.form.add_badge'))
                                         ->collapsible()
-                                        ->columnSpanFull()
-                                        ->afterStateHydrated(function ($component, $state, $record) {
-                                            if ($record && $record->badges) {
-                                                $badges = $record->badges->map(function ($badge) {
-                                                    return [
-                                                        'id' => $badge->id,
-                                                        'position' => $badge->pivot->position,
-                                                    ];
-                                                })->toArray();
-                                                $component->state($badges);
-                                            }
-                                        }),
+                                        ->columnSpanFull(),
+
+                                    Section::make(__('custom.products.form.badge_bottom'))
+                                        ->schema([
+                                            Forms\Components\Select::make('bottom_badge_ids')
+                                                ->label(__('custom.products.form.badge_bottom'))
+                                                ->options(static::badgeOptions())
+                                                ->multiple()
+                                                ->searchable()
+                                                ->preload()
+                                                ->native(false)
+                                                ->helperText(__('custom.products.form.bottom_badges_helper'))
+                                                ->columnSpanFull(),
+                                        ])
+                                        ->collapsible()
+                                        ->columnSpanFull(),
                                 ])
                                 ->collapsible(),
 
@@ -764,6 +742,152 @@ class ProductForm
             ->value('is_restaurant');
     }
 
+    private static function categoryHierarchySelects(): array
+    {
+        $components = [];
+
+        foreach (range(1, 6) as $level) {
+            $field = 'category_level_' . $level;
+
+            $components[] = Forms\Components\Select::make($field)
+                ->label(__('custom.products.form.category_level_label', ['level' => $level]))
+                ->options(fn (callable $get): array => static::categoryOptionsForLevel($get, $level))
+                ->searchable()
+                ->preload()
+                ->live(onBlur: true)
+                ->dehydrated(false)
+                ->visible(fn (callable $get): bool => static::isCategoryLevelVisible($get, $level))
+                ->afterStateHydrated(function ($state, callable $get, callable $set) use ($level): void {
+                    if ($level !== 1) {
+                        return;
+                    }
+
+                    static::hydrateCategoryLevelsFromCategoryId($set, $get('category_id'));
+                })
+                ->afterStateUpdated(function ($state, callable $get, callable $set) use ($level): void {
+                    static::resetCategoryLevelsAfter($set, $level);
+                    static::syncLeafCategorySelection($get, $set);
+                    static::applyRestaurantFieldReset($get, $set);
+                })
+                ->columnSpan(1);
+        }
+
+        return $components;
+    }
+
+    private static function categoryOptionsForLevel(callable $get, int $level): array
+    {
+        $parentId = $level === 1
+            ? null
+            : $get('category_level_' . ($level - 1));
+
+        if ($level > 1 && !$parentId) {
+            return [];
+        }
+
+        return Category::query()
+            ->where('parent_id', $parentId)
+            ->orderBy('order')
+            ->get()
+            ->mapWithKeys(fn (Category $category) => [
+                $category->id => (string) ($category->getTranslation('name', app()->getLocale(), false)
+                    ?: $category->getTranslation('name', config('app.fallback_locale', 'en'), false)
+                    ?: $category->id),
+            ])
+            ->toArray();
+    }
+
+    private static function isCategoryLevelVisible(callable $get, int $level): bool
+    {
+        if ($level === 1) {
+            return true;
+        }
+
+        $parentId = $get('category_level_' . ($level - 1));
+
+        if (!$parentId) {
+            return false;
+        }
+
+        return static::hasChildCategories((int) $parentId);
+    }
+
+    private static function hasChildCategories(int $parentId): bool
+    {
+        return Category::query()->where('parent_id', $parentId)->exists();
+    }
+
+    private static function resetCategoryLevelsAfter(callable $set, int $level): void
+    {
+        foreach (range($level + 1, 6) as $nextLevel) {
+            $set('category_level_' . $nextLevel, null);
+        }
+    }
+
+    private static function syncLeafCategorySelection(callable $get, callable $set): void
+    {
+        $selectedCategoryId = null;
+
+        foreach (range(1, 6) as $level) {
+            $value = $get('category_level_' . $level);
+            if ($value) {
+                $selectedCategoryId = (int) $value;
+            }
+        }
+
+        $set('category_id', $selectedCategoryId);
+    }
+
+    private static function hydrateCategoryLevelsFromCategoryId(callable $set, mixed $categoryId): void
+    {
+        foreach (range(1, 6) as $level) {
+            $set('category_level_' . $level, null);
+        }
+
+        if (!$categoryId) {
+            return;
+        }
+
+        $chain = static::getCategoryChainIds((int) $categoryId);
+
+        foreach ($chain as $index => $id) {
+            $set('category_level_' . ($index + 1), $id);
+        }
+    }
+
+    private static function getCategoryChainIds(int $categoryId): array
+    {
+        $chain = [];
+        $current = Category::query()->select('id', 'parent_id')->find($categoryId);
+
+        while ($current) {
+            array_unshift($chain, $current->id);
+
+            if (!$current->parent_id) {
+                break;
+            }
+
+            $current = Category::query()->select('id', 'parent_id')->find($current->parent_id);
+        }
+
+        return array_slice($chain, 0, 6);
+    }
+
+    private static function applyRestaurantFieldReset(callable $get, callable $set): void
+    {
+        if (!static::isRestaurantCategory($get('category_id'))) {
+            return;
+        }
+
+        $set('model', null);
+        $set('sku', null);
+        $set('barcode', null);
+        $set('country.ar', null);
+        $set('country.en', null);
+        $set('country_id', null);
+        $set('sale_country_id', null);
+    }
+
     private static function isColorAttribute($attributeId): bool
     {
         if (!$attributeId || $attributeId === '_placeholder') {
@@ -828,4 +952,23 @@ class ProductForm
 
         return $query?->id;
     }
+
+    private static function badgeOptions(): array
+    {
+        return \App\Models\Badge::query()
+            ->get()
+            ->mapWithKeys(function ($badge) {
+                $name = $badge->name;
+
+                if (is_array($name)) {
+                    $label = (string) ($name[app()->getLocale()] ?? $name['ar'] ?? $name['en'] ?? $badge->id);
+                } else {
+                    $label = (string) ($name ?: $badge->id);
+                }
+
+                return [$badge->id => $label];
+            })
+            ->toArray();
+    }
+
 }

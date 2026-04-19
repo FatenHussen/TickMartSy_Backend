@@ -54,12 +54,38 @@ class EditProduct extends EditRecord
             }
         }
 
+        if ($this->record && $this->record->relationLoaded('badges') === false) {
+            $this->record->load('badges');
+        }
+
+        $topBadge = $this->record->badges
+            ->first(fn ($badge) => ($badge->pivot->position ?? null) === 'top');
+
+        $bottomBadgeIds = $this->record->badges
+            ->filter(fn ($badge) => ($badge->pivot->position ?? null) === 'bottom')
+            ->pluck('id')
+            ->values()
+            ->all();
+
+        $data['top_badge_id'] = $topBadge?->id;
+        $data['bottom_badge_ids'] = $bottomBadgeIds;
+
         return $data;
     }
 
     protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $data): \Illuminate\Database\Eloquent\Model
     {
         $mediaService = new MediaService();
+
+        $topBadgeId = !empty($data['top_badge_id']) ? (int) $data['top_badge_id'] : null;
+        $bottomBadgeIds = collect($data['bottom_badge_ids'] ?? [])
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        unset($data['top_badge_id'], $data['bottom_badge_ids']);
 
         // Store main image
         $mainImageFile = null;
@@ -133,7 +159,28 @@ class EditProduct extends EditRecord
             }
         }
 
+        $this->syncBadges($product, $topBadgeId, $bottomBadgeIds);
+
         return $product;
+    }
+
+    private function syncBadges(Model $product, ?int $topBadgeId, array $bottomBadgeIds): void
+    {
+        $sync = [];
+
+        if ($topBadgeId) {
+            $sync[$topBadgeId] = ['position' => 'top'];
+        }
+
+        foreach ($bottomBadgeIds as $badgeId) {
+            if ($topBadgeId && $badgeId === $topBadgeId) {
+                continue;
+            }
+
+            $sync[$badgeId] = ['position' => 'bottom'];
+        }
+
+        $product->badges()->sync($sync);
     }
 
     private function syncMediaCollection(
