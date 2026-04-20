@@ -13,6 +13,8 @@ class UpdateRequest extends BaseRequest
             'name.ar'                 => 'nullable|string|max:255',
             'name.en'                 => 'nullable|string|max:255',
             'sku'                     => 'sometimes|nullable|string|unique:product_variants,sku,' . $this->route('product_variant'),
+            'model'                   => 'sometimes|nullable|string|max:255',
+            'barcode'                 => 'sometimes|nullable|string|max:255',
             'attributes_values_ids'   => 'sometimes|array',
             'attributes_values_ids.*' => 'integer|exists:attribute_values,id',
             'is_trend'                => 'sometimes|boolean',

@@ -25,6 +25,9 @@ class BasketItemResource extends JsonResource
             'max_quantity' => (int) $this->max_quantity,
             'can_adjust' => $this->canAdjustQuantity(),
             'shop_product_variant_id' => $this->shop_product_variant_id,
+            'variant_sku' => $this->variant?->sku,
+            'variant_model' => $this->variant?->model,
+            'variant_barcode' => $this->variant?->barcode,
             'product' =>new BasketItemProductResource($this->whenLoaded('product')) ?? null,
 
             'variant' => new BasketItemVariantResource($this->whenLoaded('variant')) ?? null,
@@ -78,6 +81,13 @@ class BasketItemResource extends JsonResource
                 'currency' => $priceData['currency'],
                 'currency_symbol' => $priceData['symbol'],
                 'price_currencies' => $this->dualCurrency($variant->price),
+                'discount' => $variant->discount,
+                'discount_currencies' => $this->dualCurrency($variant->discount),
+                'price_after_discount' => $variant->price_after_discount,
+                'price_after_discount_currencies' => $this->dualCurrency($variant->price_after_discount),
+                'sku' => $variant->productVariant?->sku,
+                'model' => $variant->productVariant?->model,
+                'barcode' => $variant->productVariant?->barcode,
             ];
         })->values();
     }

@@ -65,6 +65,9 @@ class AllResource extends JsonResource
             'label' => $label,
             'variant_image' => $this->resolveVariantImage(),
             'shop_id' => $this->shop_id,
+            'price' => $this->price,
+            'discount' => $this->discount,
+            'price_after_discount' => $this->price_after_discount,
             'is_restaurant' => (bool) ($this->shop?->is_restaurant ?? false),
             'city_id' => $this->shop?->city_id ?? $this->shop?->area?->city_id,
         ];

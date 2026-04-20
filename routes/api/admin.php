@@ -34,6 +34,7 @@ use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\Order\OrderController;
 use App\Http\Controllers\Admin\Package\PackageController;
 use App\Http\Controllers\Admin\PageSection\PageSectionCrudController;
+use App\Http\Controllers\Admin\PointController;
 use App\Http\Controllers\Admin\PointExchange\PointExchangeController;
 use App\Http\Controllers\Admin\PointRuleController;
 use App\Http\Controllers\Admin\PopupCampaignController;
@@ -373,19 +374,20 @@ Route::prefix('admin')->group(function () {
         Route::patch('{orderId}/change-status', [ServiceOrderController::class, 'changeStatus'])
             ->middleware('admin.permission:serviceorder.update');
     });
+    Route::middleware('auth:admin')->group(function () {
+    Route::prefix('points')->group(function () {
+        Route::post('add', [PointController::class, 'addPoints']);
+        Route::post('deduct', [PointController::class, 'deductPoints']);
+        Route::get('user-summary', [PointController::class, 'getUserSummary']);
+        Route::get('user-transactions', [PointController::class, 'getUserTransactions']);
+    });
+});
 });
 
 // Protected routes
 // Basket management routes
 
 // // Points management routes
-// Route::middleware('auth:admin')->group(function () {
-//     Route::prefix('points')->group(function () {
-//         Route::post('add', [PointController::class, 'addPoints']);
-//         Route::post('deduct', [PointController::class, 'deductPoints']);
-//         Route::get('user-summary', [PointController::class, 'getUserSummary']);
-//         Route::get('user-transactions', [PointController::class, 'getUserTransactions']);
-//     });
 
 //     Route::apiResource('point-rules', PointRuleController::class);
 // });

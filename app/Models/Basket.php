@@ -49,6 +49,11 @@ class Basket extends Model implements Sectionable
         return $this->belongsTo(Category::class);
     }
 
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'basket_category');
+    }
+
     public function items()
     {
         return $this->hasMany(BasketItem::class, 'basket_id', 'id');
@@ -127,6 +132,8 @@ class Basket extends Model implements Sectionable
         }
         $itemsCount = $this->items?->count() ?? 0;
 
+        $categoryNames = $this->categories->pluck('name')->filter()->implode(' - ');
+
         return [
             'id' => $this->id,
 
@@ -138,7 +145,7 @@ class Basket extends Model implements Sectionable
             'image' => $this->image_url,
 
             // category
-            'category' => $this->category?->name,
+            'category' => $categoryNames !== '' ? $categoryNames : $this->category?->name,
 
             // pricing
             'original_price' => round($this->calculated_price, 2),

@@ -18,6 +18,7 @@ class ScheduledBasketService extends BaseService
 
     protected $relations = [
         'category',
+        'categories',
         'items.product',
         'items.variant',
         'items.shopProductVariant',
@@ -51,10 +52,23 @@ class ScheduledBasketService extends BaseService
      */
     public function queryBuilder($query, $filters = [], $config = [])
     {
+        $categoryId = $filters['category_id'] ?? null;
+        unset($filters['category_id']);
+
         // Filter only scheduled baskets (is_schedule = 1)
         $query->where('is_schedule', true);
 
-        return parent::queryBuilder($query, $filters, $config);
+        $query = parent::queryBuilder($query, $filters, $config);
+
+        if ($categoryId) {
+            $query->where(function ($q) use ($categoryId) {
+                $q->whereHas('categories', function ($categoryQuery) use ($categoryId) {
+                    $categoryQuery->where('categories.id', $categoryId);
+                })->orWhere('category_id', $categoryId);
+            });
+        }
+
+        return $query;
     }
 
     /**
@@ -64,6 +78,8 @@ class ScheduledBasketService extends BaseService
     {
         DB::beginTransaction();
         try {
+            $categoryIds = $this->resolveCategoryIds($data);
+
             // Store items, schedules, and badges temporarily
             $items = $data['items'] ?? [];
             $schedulesData = $data['schedules'] ?? [];
@@ -73,6 +89,10 @@ class ScheduledBasketService extends BaseService
             unset($data['items'], $data['schedules'], $data['badges']);
 
             // Set defaults
+            if (!empty($categoryIds)) {
+                $data['category_id'] = $categoryIds[0];
+            }
+
             $data['num_varieties'] = 0;
             $data['rating'] = 0;
             $data['num_sold'] = 0;
@@ -83,6 +103,10 @@ class ScheduledBasketService extends BaseService
 
             // Handle single images (for basket image)
             $this->handleSingleImages($basket, $data);
+
+            if (!empty($categoryIds)) {
+                $basket->categories()->sync($categoryIds);
+            }
 
             // Sync items if they exist
             if (!empty($items)) {
@@ -139,6 +163,8 @@ class ScheduledBasketService extends BaseService
     {
         DB::beginTransaction();
         try {
+            $categoryIds = $this->resolveCategoryIds($data);
+
             Log::info('ScheduledBasketService::update called', [
                 'id' => $id,
                 'data_keys' => array_keys($data),
@@ -157,6 +183,10 @@ class ScheduledBasketService extends BaseService
             // Find basket
             $basket = $this->model::findOrFail($id);
 
+            if (!empty($categoryIds)) {
+                $data['category_id'] = $categoryIds[0];
+            }
+
             // Handle translations if exists
             if (property_exists($basket, 'translatable')) {
                 foreach ($basket->translatable as $field) {
@@ -172,6 +202,10 @@ class ScheduledBasketService extends BaseService
 
             // Handle single images (for basket image)
             $this->handleSingleImages($basket, $data);
+
+            if (!empty($categoryIds)) {
+                $basket->categories()->sync($categoryIds);
+            }
 
             // Sync items if they exist
             if (!empty($items)) {
@@ -222,6 +256,20 @@ class ScheduledBasketService extends BaseService
             ]);
             throw $e;
         }
+    }
+
+    protected function resolveCategoryIds(array &$data): array
+    {
+        $categoryIds = [];
+
+        if (isset($data['category_ids']) && is_array($data['category_ids'])) {
+            $categoryIds = array_values(array_unique(array_map('intval', $data['category_ids'])));
+            unset($data['category_ids']);
+        } elseif (!empty($data['category_id'])) {
+            $categoryIds = [(int) $data['category_id']];
+        }
+
+        return array_values(array_filter($categoryIds));
     }
 
 

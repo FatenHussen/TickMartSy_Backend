@@ -14,6 +14,8 @@ class BasketService extends BaseService
     protected $collection = AllResource::class;
 
     protected $relations = [
+        'category',
+        'categories',
         'items',
         'items.product',
         'items.variant',
@@ -78,7 +80,11 @@ class BasketService extends BaseService
 
         // Category filter
         if ($categoryId) {
-            $query->where('category_id', $categoryId);
+            $query->where(function ($q) use ($categoryId) {
+                $q->whereHas('categories', function ($categoryQuery) use ($categoryId) {
+                    $categoryQuery->where('categories.id', $categoryId);
+                })->orWhere('category_id', $categoryId);
+            });
         }
 
         // Price range filter - use having for aggregated column

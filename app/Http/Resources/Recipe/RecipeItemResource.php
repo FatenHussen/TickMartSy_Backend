@@ -69,12 +69,18 @@ class RecipeItemResource extends JsonResource
             'main_item' => array_merge(
                 [
                     'product_id' => $this->shopProductVariant->productVariant->product->id,
+                    'product_variant_id' => $this->shopProductVariant->productVariant->id,
                     'shop_product_variant_id' => $this->shop_product_variant_id,
                     'image_url' => $this->shopProductVariant->productVariant->product->image_url,
                     'name' => $this->shopProductVariant->productVariant->product->name,
+                    'sku' => $this->shopProductVariant->productVariant->sku,
+                    'model' => $this->shopProductVariant->productVariant->model,
+                    'barcode' => $this->shopProductVariant->productVariant->barcode,
                     'variant' =>  $this->shopProductVariant->productVariant->attributes_values->pluck('name')->toArray(),
                 ],
-                $this->withCurrency($this->shopProductVariant->price, 'price')
+                $this->withCurrency($this->shopProductVariant->price, 'price') +
+                $this->withCurrency($this->shopProductVariant->discount, 'discount') +
+                $this->withCurrency($this->shopProductVariant->price_after_discount, 'price_after_discount')
             ),
             'alternatives' => $same_shop,
             'other_shops' => $other_shops

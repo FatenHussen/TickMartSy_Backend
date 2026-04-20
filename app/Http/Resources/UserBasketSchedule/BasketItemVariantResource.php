@@ -8,8 +8,13 @@ class BasketItemVariantResource extends JsonResource
 {
     public function toArray($request): array
     {
+        $productVariant = $this->productVariant;
+
         return [
-            'name' => $this->productVariant->attributes_values->pluck('name')->toArray(),
+            'name' => $productVariant?->attributes_values->pluck('name')->toArray() ?? [],
+            'sku' => $productVariant?->sku,
+            'model' => $productVariant?->model,
+            'barcode' => $productVariant?->barcode,
         ];
     }
 }

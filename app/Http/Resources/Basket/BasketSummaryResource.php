@@ -14,16 +14,15 @@ class BasketSummaryResource extends JsonResource
 
     public function toArray(Request $request): array
     {
+        $categoryNames = ($this->categories ?? collect())->pluck('name')->filter()->implode(' - ');
+
         return [
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
             'image' => $this->imageUrl,
             'basket_type' => $this->basket_type ?? ($this->is_schedule ? 'subscription' : 'custom'),
-            'category' => $this->whenLoaded('category', fn() => [
-                'id' => $this->category?->id,
-                'name' => $this->category?->name,
-            ]),
+            'category' => $categoryNames !== '' ? $categoryNames : $this->category?->name,
             'num_varieties' => (int) $this->num_varieties,
             'offer_ends_at' => $this->offer_ends_at?->format('Y-m-d') ?? null,
             'created_at' => $this->created_at?->format('Y-m-d'),

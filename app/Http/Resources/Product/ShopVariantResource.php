@@ -40,10 +40,15 @@ class ShopVariantResource extends JsonResource
             'id' => $shopVariant->id,
             // 'variant_id' => $this->id,
             'variant_id' =>$shopVariant->id,
+            'sku' => $this->sku,
+            'model' => $this->model,
+            'barcode' => $this->barcode,
             'attributes' => VariantAttributeResource::collection(
                 $this->attributesValues
             ),
             ...$this->withCurrency($shopVariant->price, 'price'),
+            ...$this->withCurrency($shopVariant->discount, 'discount'),
+            ...$this->withCurrency($shopVariant->price_after_discount, 'price_after_discount'),
             'quantity' => $shopVariant->quantity,
             'shop_id'  => $shopVariant->shop_id,
             'is_restaurant' => (bool) ($shopVariant->shop?->is_restaurant ?? false),

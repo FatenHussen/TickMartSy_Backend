@@ -57,7 +57,6 @@ class PointController extends BaseCRUDController
 
         if (!$transaction) {
             return $this->sendResponse(
-                success: false,
                 message: __('custom.points.insufficient_balance')
             );
         }
@@ -74,10 +73,9 @@ class PointController extends BaseCRUDController
     public function getUserSummary(Request $request)
     {
         $userId = $request->get('user_id');
-        
+
         if (!$userId) {
             return $this->sendResponse(
-                success: false,
                 message: __('custom.points.user_id_required')
             );
         }
@@ -103,26 +101,18 @@ class PointController extends BaseCRUDController
     public function getUserTransactions(Request $request)
     {
         $userId = $request->get('user_id');
-        
+        $status = $request->get('status');
+
         if (!$userId) {
             return $this->sendResponse(
-                success: false,
                 message: __('custom.points.user_id_required')
             );
         }
 
-        $transactions = $this->pointService->getUserTransactions($userId, 20);
+        $transactions = $this->pointService->getUserTransactions($userId, 20, $status);
 
         return $this->sendResponse(
-            data: [
-                'transactions' => $transactions->items(),
-                'pagination' => [
-                    'current_page' => $transactions->currentPage(),
-                    'last_page' => $transactions->lastPage(),
-                    'per_page' => $transactions->perPage(),
-                    'total' => $transactions->total(),
-                ]
-            ]
+            data: $transactions
         );
     }
 }

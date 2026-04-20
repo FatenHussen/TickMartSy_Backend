@@ -196,11 +196,26 @@ class UpdateRequest extends FormRequest
             'media.*' => 'image',
 
             // Shop Product Variants (اختياري)
-            // 'shop_variants'                 => 'nullable|array',
-            // 'shop_variants.*.shop_id'           => 'required|exists:shops,id',
-            // 'shop_variants.*.variant_index'     => 'required|integer|min:0',
-            // 'shop_variants.*.price'             => 'nullable|integer|min:0',
-            // 'shop_variants.*.quantity'          => 'nullable|integer|min:0',
+            'variants' => 'nullable|array',
+            'variants.*.id' => 'nullable|exists:product_variants,id',
+            'variants.*.name' => 'nullable|array',
+            'variants.*.name.ar' => 'nullable|string|max:255',
+            'variants.*.name.en' => 'nullable|string|max:255',
+            'variants.*.sku' => 'nullable|string|max:255',
+            'variants.*.model' => 'nullable|string|max:255',
+            'variants.*.barcode' => 'nullable|string|max:255',
+            'variants.*.is_trend' => 'nullable|boolean',
+            'variants.*.is_active' => 'nullable|boolean',
+            'variants.*.attributes_values_ids' => 'nullable|array',
+            'variants.*.attributes_values_ids.*' => 'required|integer|exists:attribute_values,id',
+
+            'shop_variants' => 'nullable|array',
+            'shop_variants.*.shop_id' => 'required|exists:shops,id',
+            'shop_variants.*.variant_index' => 'required|integer|min:0',
+            'shop_variants.*.price' => 'nullable|numeric|min:0',
+            'shop_variants.*.cost_price' => 'nullable|numeric|min:0',
+            'shop_variants.*.discount' => 'nullable|numeric|min:0',
+            'shop_variants.*.quantity' => 'nullable|integer|min:0',
 
 
             'badges'          => 'nullable|array',

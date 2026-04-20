@@ -15,6 +15,8 @@ class ScheduleBasketService extends BaseService
     protected $collection = AllResource::class;
 
     protected $relations = [
+        'category',
+        'categories',
         'items',
         'items.product',
         'items.variant',
@@ -50,7 +52,12 @@ class ScheduleBasketService extends BaseService
 
         // Category filter
         if (!empty($filters['category_id'])) {
-            $query->where('category_id', $filters['category_id']);
+            $categoryId = (int) $filters['category_id'];
+            $query->where(function ($q) use ($categoryId) {
+                $q->whereHas('categories', function ($categoryQuery) use ($categoryId) {
+                    $categoryQuery->where('categories.id', $categoryId);
+                })->orWhere('category_id', $categoryId);
+            });
         }
 
         // Price range filter - تحويل من عملة اليوزر للدولار

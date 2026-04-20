@@ -15,6 +15,9 @@ class ScheduledBasketItemResource extends JsonResource
             'product_id' => $this->product_id,
             'variant_id' => $this->variant_id,
             'shop_product_variant_id' => $this->shop_product_variant_id,
+            'variant_sku' => $this->variant?->sku,
+            'variant_model' => $this->variant?->model,
+            'variant_barcode' => $this->variant?->barcode,
 
             // Alternatives (simplified list for user selection)
 
@@ -76,6 +79,11 @@ class ScheduledBasketItemResource extends JsonResource
                 'name' => trim(($product->name ?? '') . ' ' . ($brand->name ?? '')),
                 'image_url' => optional($product->media->first())->url,
                 'price' => (float) $variant->price,
+                'discount' => (float) $variant->discount,
+                'price_after_discount' => (float) $variant->price_after_discount,
+                'sku' => $variant->productVariant?->sku,
+                'model' => $variant->productVariant?->model,
+                'barcode' => $variant->productVariant?->barcode,
             ];
         })->values();
     }
@@ -117,6 +125,11 @@ class ScheduledBasketItemResource extends JsonResource
                 'city_id' => $variant->shop?->city_id ?? $variant->shop?->area?->city_id,
                 'product_name' => $variant->productVariant?->product?->name,
                 'price' => $variant->price,
+                'discount' => $variant->discount,
+                'price_after_discount' => $variant->price_after_discount,
+                'sku' => $variant->productVariant?->sku,
+                'model' => $variant->productVariant?->model,
+                'barcode' => $variant->productVariant?->barcode,
                 'quantity' => $variant->quantity,
             ];
         })->values();
