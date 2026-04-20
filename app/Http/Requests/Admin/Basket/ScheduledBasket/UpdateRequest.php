@@ -11,12 +11,29 @@ class UpdateRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if (!$this->has('category_ids') && $this->filled('category_id')) {
+            $this->merge([
+                'category_ids' => [(int) $this->input('category_id')],
+            ]);
+        }
+
+        if (!$this->filled('category_id') && is_array($this->input('category_ids')) && !empty($this->input('category_ids'))) {
+            $this->merge([
+                'category_id' => (int) $this->input('category_ids')[0],
+            ]);
+        }
+    }
+
 
 
     public function rules(): array
     {
         return [
             'category_id' => 'sometimes|required|integer|exists:categories,id',
+            'category_ids' => 'sometimes|required|array|min:1',
+            'category_ids.*' => 'required|integer|exists:categories,id',
             'name' => 'sometimes|required|array',
             'name.*' => 'required|string|max:255',
             'description' => 'nullable|array',

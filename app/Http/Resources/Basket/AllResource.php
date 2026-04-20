@@ -47,11 +47,13 @@ class AllResource extends JsonResource
             $discountValue = $this->defaultSchedule->discount_value;
         }
 
+        $categoryNames = ($this->categories ?? collect())->pluck('name')->filter()->implode(' - ');
+
         return [
             'id'              => $this->id,
             'name'            => $this->name,
             'description'     => $this->description,
-            'category'        =>  $this->category?->name,
+            'category'        =>  $categoryNames !== '' ? $categoryNames : $this->category?->name,
             'image'          => $this->imageUrl ?? null,
             'num_varieties'   => $this->num_varieties,
             'offer_ends_at'   => $this->offer_ends_at?->format('Y-m-d') ?? null,

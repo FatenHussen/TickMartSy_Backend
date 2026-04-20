@@ -11,6 +11,13 @@ class OneResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'category_ids' => ($this->categories ?? collect())->pluck('id')->values(),
+            'categories' => ($this->categories ?? collect())->map(function ($category) {
+                return [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                ];
+            })->values(),
             'category' => [
                 'id' => $this->category?->id,
                 'name' => $this->category?->name,

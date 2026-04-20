@@ -15,6 +15,13 @@ class AllResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
+            'category_ids' => ($this->categories ?? collect())->pluck('id')->values(),
+            'categories' => ($this->categories ?? collect())->map(function ($category) {
+                return [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                ];
+            })->values(),
             'category' => [
                 'id' => $this->category?->id,
                 'name' => $this->category?->name,

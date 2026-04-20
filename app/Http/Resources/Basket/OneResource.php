@@ -59,15 +59,14 @@ class OneResource extends JsonResource
             $discountValue = $this->defaultSchedule->discount_value;
         }
 
+        $categoryNames = ($this->categories ?? collect())->pluck('name')->filter()->implode(' - ');
+
         return [
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
             'image' => $this->imageUrl,
-            'category' => $this->whenLoaded('category', fn() => [
-                'id'   => $this->category?->id,
-                'name' => $this->category?->name,
-            ]),
+            'category' => $categoryNames !== '' ? $categoryNames : $this->category?->name,
             'num_varieties'   => (int) $this->num_varieties,
             'offer_ends_at'   => $this->offer_ends_at?->format('Y-m-d') ?? null,
             ...$this->withCurrency($this->calculated_price, 'original_price'),
