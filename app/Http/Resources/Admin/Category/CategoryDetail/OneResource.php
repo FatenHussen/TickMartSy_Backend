@@ -17,6 +17,7 @@ class OneResource extends JsonResource
         return [
             'id'       => $this->id,
             'name'     => $this->getTranslations('name'),
+            'value_options' => $this->value_options ?? [],
             'category' => [
                 'id'   => $this->category->id,
                 'name' => $this->category->getTranslations('name'),

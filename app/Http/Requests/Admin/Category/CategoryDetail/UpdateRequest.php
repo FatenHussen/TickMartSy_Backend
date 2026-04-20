@@ -26,8 +26,40 @@ class UpdateRequest extends FormRequest
             }
         }
 
+        $valueOptions = [];
+        if (isset($data['value_options']) && is_array($data['value_options'])) {
+            foreach ($data['value_options'] as $option) {
+                if (!is_array($option)) {
+                    continue;
+                }
+
+                $preparedOption = [];
+                $hasAnyValue = false;
+
+                foreach ($this->locales as $locale) {
+                    $value = $option[$locale] ?? null;
+
+                    if (is_string($value)) {
+                        $value = trim($value);
+                        $value = $value === '' ? null : $value;
+                    }
+
+                    if ($value !== null) {
+                        $hasAnyValue = true;
+                    }
+
+                    $preparedOption[$locale] = $value;
+                }
+
+                if ($hasAnyValue) {
+                    $valueOptions[] = $preparedOption;
+                }
+            }
+        }
+
         $this->merge([
             'name' => $name,
+            'value_options' => $valueOptions,
         ]);
     }
 
@@ -35,10 +67,13 @@ class UpdateRequest extends FormRequest
     {
         $rules = [
             'category_id' => 'required|exists:categories,id',
+            'value_options' => 'nullable|array',
+            'value_options.*' => 'nullable|array',
         ];
 
         foreach ($this->locales as $locale) {
             $rules["name.$locale"] = 'required|string|max:255';
+            $rules["value_options.*.$locale"] = 'nullable|string|max:255';
         }
 
         return $rules;

@@ -38,6 +38,8 @@ class UpdateRequest extends FormRequest
             'category_id' => 'sometimes|required|integer|exists:categories,id',
             'name' => 'sometimes|required|array',
             'name.*' => 'required|string|max:255',
+            'description' => 'nullable|array',
+            'description.*' => 'nullable|string|max:2000',
             'offer_ends_at' => 'nullable|date|after:today',
             'discount' => 'nullable|numeric|min:0',
             'discount_type' => 'sometimes|required|in:fixed,percentage',

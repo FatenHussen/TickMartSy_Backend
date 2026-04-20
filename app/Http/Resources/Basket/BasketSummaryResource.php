@@ -17,6 +17,7 @@ class BasketSummaryResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'description' => $this->description,
             'image' => $this->imageUrl,
             'basket_type' => $this->basket_type ?? ($this->is_schedule ? 'subscription' : 'custom'),
             'category' => $this->whenLoaded('category', fn() => [

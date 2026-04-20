@@ -15,9 +15,11 @@ class AllResource extends JsonResource
     public function toArray(Request $request): array
     {
         $locale = app()->getLocale();
+
         return [
             'id'       => $this->id,
             'name'     => $this->getTranslation('name', $locale),
+            'value_options' => $this->value_options ?? [],
             'is_active' => $this->is_active,
             'category' => $this->category->getTranslation('name', $locale)
         ];

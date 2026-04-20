@@ -14,10 +14,12 @@ class CategoryDetail extends Model
     protected $fillable = [
         'category_id',
         'name',
+        'value_options',
         'is_active',
     ];
 
     protected $casts = [
+        'value_options' => 'array',
         'is_active' => 'boolean',
     ];
 

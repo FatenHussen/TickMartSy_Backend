@@ -30,6 +30,8 @@ class StoreRequest extends FormRequest
             'category_id' => 'required|integer|exists:categories,id',
             'name' => 'required|array',
             'name.*' => 'required|string|max:255',
+            'description' => 'nullable|array',
+            'description.*' => 'nullable|string|max:2000',
             'offer_ends_at' => 'nullable|date|after:today',
             'discount' => 'nullable|numeric|min:0',
             'discount_type' => 'required|in:fixed,percentage',
