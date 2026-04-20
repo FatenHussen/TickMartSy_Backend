@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\Coupon\CouponCrudController;
 use App\Http\Controllers\Admin\Currency\CurrencyController;
 use App\Http\Controllers\Admin\Driver\DriverCrudController;
 use App\Http\Controllers\Admin\DriverWalletTransaction\DriverWalletTransactionController;
+use App\Http\Controllers\Admin\DeliveryDistanceRange\DeliveryDistanceRangeCrudController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\FlashSaleController;
 use App\Http\Controllers\Admin\Gift\GiftController;
@@ -139,6 +140,7 @@ Route::prefix('admin')->group(function () {
 
         // --- Point rules ---
         Route::apiResource('point-rules', PointRuleController::class)->middleware('crud.permission:pointrule');
+        Route::apiResource('delivery-distance-ranges', DeliveryDistanceRangeCrudController::class);
 
         // --- Icons & quick actions ---
         Route::apiResource('icons', IconController::class)->middleware('crud.permission:icon');

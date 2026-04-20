@@ -2,7 +2,9 @@
 
 namespace App\Services\Base;
 
+use App\Exceptions\CustomExceptionWithMessage;
 use App\Models\Area;
+use App\Models\DeliveryDistanceRange;
 use Illuminate\Support\Facades\Log;
 
 class DeliveryPricingService
@@ -64,16 +66,7 @@ class DeliveryPricingService
         | Determine multiplier
         |--------------------------------------------------------------------------
         */
-        if ($maxDistance <= 5) {
-            $multiplier = Area::MULTIPLIER_0_5;
-            $range = '0-5 km';
-        } elseif ($maxDistance <= 8) {
-            $multiplier = Area::MULTIPLIER_5_8;
-            $range = '5-8 km';
-        } else {
-            $multiplier = Area::MULTIPLIER_8_PLUS;
-            $range = '8+ km';
-        }
+        [$multiplier, $range] = self::resolveMultiplierByDistance($maxDistance);
 
         $finalFee = round($customerArea->base_fee * $multiplier, 2);
 
@@ -85,6 +78,45 @@ class DeliveryPricingService
         ]);
 
         return $finalFee;
+    }
+
+    /**
+     * Resolve multiplier dynamically from DB ranges.
+     *
+     * Matching rule:
+     * distance >= min AND (distance < max OR max IS NULL)
+     */
+    private static function resolveMultiplierByDistance(float $distanceKm): array
+    {
+        $ranges = DeliveryDistanceRange::query()
+            ->sorted()
+            ->get();
+
+        if ($ranges->isEmpty()) {
+            throw new CustomExceptionWithMessage('لم يتم تعريف نطاقات المسافة للتوصيل', 422);
+        }
+
+        $matched = $ranges->first(function (DeliveryDistanceRange $range) use ($distanceKm) {
+            $max = $range->max_distance;
+
+            return $distanceKm >= $range->min_distance
+                && ($max === null || $distanceKm < $max);
+        });
+
+        if (!$matched) {
+            Log::warning('Distance did not match any configured range', [
+                'distance_km' => $distanceKm,
+            ]);
+            throw new CustomExceptionWithMessage('المسافة لا تقع ضمن أي نطاق توصيل معرف', 422);
+        }
+
+        $maxLabel = $matched->max_distance === null
+            ? 'INF'
+            : rtrim(rtrim((string)$matched->max_distance, '0'), '.');
+
+        $minLabel = rtrim(rtrim((string)$matched->min_distance, '0'), '.');
+
+        return [(float)$matched->multiplier, "{$minLabel}-{$maxLabel} km"];
     }
 
     /**
