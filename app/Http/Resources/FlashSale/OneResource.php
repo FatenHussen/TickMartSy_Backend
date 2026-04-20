@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\FlashSale;
 
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -16,7 +17,7 @@ class OneResource extends JsonResource
             'is_active' => $this->is_active,
             'discount' => $this->discount,
             'discount_type' => $this->discount_type,
-            'product_count' => $this->products()->count(),
+            'products' => Product::where('flash_sale_id', $this->id)->get()->pluck('id'),
             'created_at' => $this->created_at,
         ];
     }
