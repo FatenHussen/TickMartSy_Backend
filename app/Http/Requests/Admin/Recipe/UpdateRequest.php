@@ -25,6 +25,10 @@ class UpdateRequest extends FormRequest
             'description.*' => ['required', 'string'],
 
             'image' => ['nullable', 'image'],
+            'images' => ['nullable', 'array', 'min:1'],
+            'images.*' => ['required', 'image'],
+            'existing_media_ids' => ['nullable', 'array'],
+            'existing_media_ids.*' => ['integer', 'exists:media,id'],
             'video_url' => ['nullable', 'url'],
             'video_title' => ['nullable', 'array'],
             'video_title.*' => ['required', 'string', 'max:255'],

@@ -28,6 +28,7 @@ class AdminOneResource extends JsonResource
             'description' => $this->getTranslations('description'),
 
             'image' => $this->image_url,
+            'images' => $this->image_urls,
             'video_url' => $this->video_url,
             'video_title' => $this->getTranslations('video_title'),
             'video_desc' => $this->getTranslations('video_desc'),

@@ -26,6 +26,7 @@ class AllResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'image' => $this->image_url,
+            'images' => $this->image_urls,
             'video_title' => $this->video_title,
             'video_desc' => $this->video_desc,
             'rating' => $this->average_rating ?? 0,

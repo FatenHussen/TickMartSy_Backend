@@ -8,6 +8,7 @@ use Spatie\Translatable\HasTranslations;
 use App\Models\Favorite;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use App\Models\Media;
 
 class Recipe extends Model implements Sectionable
 {
@@ -43,6 +44,12 @@ class Recipe extends Model implements Sectionable
     public function favorites(): MorphMany
     {
         return $this->morphMany(Favorite::class, 'favoriteable');
+    }
+    public function media()
+    {
+        return $this->morphMany(Media::class, 'mediable')
+            ->where('collection', 'recipe')
+            ->orderBy('order');
     }
     public function items()
     {
@@ -83,6 +90,26 @@ class Recipe extends Model implements Sectionable
     public function  getImageUrlAttribute()
     {
         return asset('storage/' . $this->image);
+    }
+    public function getImageUrlsAttribute(): array
+    {
+        $mediaItems = $this->relationLoaded('media')
+            ? $this->media
+            : $this->media()->get();
+
+        $urls = $mediaItems
+            ->pluck('url')
+            ->filter()
+            ->values()
+            ->all();
+
+        if (!empty($urls)) {
+            return $urls;
+        }
+
+        return !empty($this->image)
+            ? [asset('storage/' . $this->image)]
+            : [];
     }
 
     public function badges()

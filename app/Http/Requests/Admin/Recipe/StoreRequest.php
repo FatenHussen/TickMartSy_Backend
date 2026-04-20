@@ -24,7 +24,9 @@ class StoreRequest extends FormRequest
             'description' => ['required', 'array'],
             'description.*' => ['required', 'string'],
 
-            'image' => ['required', 'image'],
+            'image' => ['nullable', 'image', 'required_without:images'],
+            'images' => ['nullable', 'array', 'min:1', 'required_without:image'],
+            'images.*' => ['required', 'image'],
             'video_url' => ['required', 'url'],
             'video_title' => ['nullable', 'array'],
             'video_title.*' => ['required', 'string', 'max:255'],
