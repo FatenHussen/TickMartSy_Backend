@@ -1,29 +1,37 @@
-## PopupCampaign User API
+## Popup Campaign User API
 
-### Endpoints
+توثيق APIs الخاصة بالـ user في الكنترولر:
+`app/Http/Controllers/User/PopupCampaignController.php`
+
+## Base URL
+
+`/api`
+
+## Endpoints
+
 - `GET /api/popups/active`
 - `POST /api/popups/{popupCampaign}/track-view`
 - `POST /api/popups/{popupCampaign}/track-click`
 
-> هذه endpoints متاحة للمستخدم النهائي لتحديد الحملة المناسبة وتسجيل الـ analytics events.
+## 1) Get Active Popup
 
----
+### Endpoint
 
-### 1) Get Active Popup
-- `GET /api/popups/active`
+`GET /api/popups/active`
 
-**Query Params (اختيارية):**
-- `page_type` مثل: `home`, `product`, `cart`
-- `current_url` رابط الصفحة الحالي
+### Description
 
-**Response عند عدم وجود حملة مطابقة:**
-```json
-{
-  "data": null
-}
-```
+يرجع أول حملة Popup فعالة ومطابقة للسياق الحالي (نوع الزائر + الصفحة الحالية + أولوية الحملة).
 
-**Response عند وجود حملة مطابقة:**
+### Query Params (اختيارية)
+
+- `page_type` (string): مثال `home`, `product`, `cart`. لو مش موجود، القيمة الافتراضية `home`.
+- `current_url` (string): رابط الصفحة الحالية. لو مش موجود، يتم استخدام رابط الطلب الحالي تلقائيا.
+
+### Success Response (عند وجود حملة مطابقة)
+
+Status: `200 OK`
+
 ```json
 {
   "data": {
@@ -61,10 +69,16 @@
     },
     "form": {
       "enabled": false,
-      "fields": ["name", "email"]
+      "fields": [
+        "name",
+        "email"
+      ]
     },
     "display": {
-      "pages": ["home", "category"],
+      "pages": [
+        "home",
+        "category"
+      ],
       "audience_type": "all_visitors"
     },
     "trigger": {
@@ -79,12 +93,28 @@
 }
 ```
 
----
+### Success Response (عند عدم وجود حملة مطابقة)
 
-### 2) Track Popup View
-- `POST /api/popups/{popupCampaign}/track-view`
+Status: `200 OK`
 
-**Body (اختياري):**
+```json
+{
+  "data": null
+}
+```
+
+## 2) Track Popup View
+
+### Endpoint
+
+`POST /api/popups/{popupCampaign}/track-view`
+
+### Path Param
+
+- `popupCampaign` (integer): ID الحملة.
+
+### Request Body (اختياري)
+
 ```json
 {
   "page_type": "home",
@@ -93,15 +123,24 @@
 }
 ```
 
-**Response:**
-- `204 No Content`
+### Success Response
 
----
+Status: `204 No Content`
 
-### 3) Track Popup Click
-- `POST /api/popups/{popupCampaign}/track-click`
+Body: فارغ.
 
-**Body (اختياري):**
+## 3) Track Popup Click
+
+### Endpoint
+
+`POST /api/popups/{popupCampaign}/track-click`
+
+### Path Param
+
+- `popupCampaign` (integer): ID الحملة.
+
+### Request Body (اختياري)
+
 ```json
 {
   "page_type": "home",
@@ -110,12 +149,17 @@
 }
 ```
 
-**Response:**
-- `204 No Content`
+### Success Response
 
----
+Status: `204 No Content`
 
-### Notes
-- لا يوجد validation صارم لهذه endpoints على body، ويتم حفظ القيم المتاحة داخل `payload`.
-- تم إلغاء الحقول القديمة `cta_type` و`cta_value`.
-- رابط الإجراء في الـ response هو `buttons.url`.
+Body: فارغ.
+
+## Notes
+
+- endpoints دي حاليا بدون middleware auth في `routes/api.php`، فممكن استخدامها للزائر غير المسجل.
+- في `track-view` و `track-click` يتم حفظ فقط الحقول التالية في `payload`: `page_type`, `current_url`, `referrer`.
+- قيم event type المحفوظة في قاعدة البيانات:
+  - `view` عند `track-view`
+  - `click` عند `track-click`
+- لو `popupCampaign` غير موجود، Laravel route model binding بيرجع `404 Not Found`.
