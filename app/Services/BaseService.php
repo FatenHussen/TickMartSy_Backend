@@ -214,7 +214,13 @@ abstract class BaseService
         if (property_exists($object, 'translatable')) {
             foreach ($object->translatable as $field) {
                 if (isset($data[$field])) {
-                    $object->setTranslations($field, $data[$field]);
+                    $incomingTranslations = is_array($data[$field]) ? $data[$field] : [];
+                    $existingTranslations = method_exists($object, 'getTranslations')
+                        ? $object->getTranslations($field)
+                        : [];
+
+                    // Keep old locales that were not sent by the dashboard update payload.
+                    $object->setTranslations($field, array_merge($existingTranslations, $incomingTranslations));
                     unset($data[$field]);
                 }
             }
