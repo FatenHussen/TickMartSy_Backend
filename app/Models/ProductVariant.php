@@ -18,6 +18,8 @@ class ProductVariant extends Model
         'product_id',
         'name',
         'sku',
+        'model',
+        'barcode',
         'attributes_values_ids',
         'is_trend',
         'is_active',

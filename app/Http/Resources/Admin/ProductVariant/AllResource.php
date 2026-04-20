@@ -12,6 +12,10 @@ class AllResource extends JsonResource
         return [
             'id' => $this->id,
             'product_id' => $this->product_id,
+            'name' => $this->getTranslations('name'),
+            'sku' => $this->sku,
+            'model' => $this->model,
+            'barcode' => $this->barcode,
             'product' => [
                 'id' => $this->product->id,
                 'name' => $this->product->name,
@@ -41,6 +45,8 @@ class AllResource extends JsonResource
                         'city_id' => $shopVariant->shop->city_id ?? $shopVariant->shop?->area?->city_id,
                     ] : null,
                     'price' => $shopVariant->price,
+                    'discount' => $shopVariant->discount,
+                    'price_after_discount' => $shopVariant->price_after_discount,
                     'cost_price' => $shopVariant->cost_price,
                     'quantity' => $shopVariant->quantity,
                 ];

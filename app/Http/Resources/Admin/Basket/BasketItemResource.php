@@ -18,6 +18,9 @@ class BasketItemResource extends JsonResource
             'product_id' => $this->product_id,
             'variant_id' => $this->variant_id,
             'shop_product_variant_id' => $this->shop_product_variant_id,
+            'variant_sku' => $this->variant?->sku,
+            'variant_model' => $this->variant?->model,
+            'variant_barcode' => $this->variant?->barcode,
 
             // Product details
             'product' => $this->product ? new BasketItemProductResource($this->product) : null,
@@ -34,6 +37,10 @@ class BasketItemResource extends JsonResource
                 'city_id' => $this->shopProductVariant->shop?->city_id ?? $this->shopProductVariant->shop?->area?->city_id,
                 'price' => $this->shopProductVariant->price,
                 'price_currencies' => $this->dualCurrency($this->shopProductVariant->price),
+                'discount' => $this->shopProductVariant->discount,
+                'discount_currencies' => $this->dualCurrency($this->shopProductVariant->discount),
+                'price_after_discount' => $this->shopProductVariant->price_after_discount,
+                'price_after_discount_currencies' => $this->dualCurrency($this->shopProductVariant->price_after_discount),
                 'quantity' => $this->shopProductVariant->quantity,
             ] : null,
 

@@ -99,4 +99,14 @@ class ShopProductVariant extends Model
 
         return (float) round(max(0, $price), 2);
     }
+
+    public function getDiscountAttribute(): float
+    {
+        return (float) round(max(0, ((float) $this->price) - $this->final_price), 2);
+    }
+
+    public function getPriceAfterDiscountAttribute(): float
+    {
+        return $this->final_price;
+    }
 }

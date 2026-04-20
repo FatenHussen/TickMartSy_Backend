@@ -377,13 +377,13 @@ Route::prefix('admin')->group(function () {
 // Basket management routes
 
 // // Points management routes
-// Route::middleware('auth:admin')->group(function () {
-//     Route::prefix('points')->group(function () {
-//         Route::post('add', [PointController::class, 'addPoints']);
-//         Route::post('deduct', [PointController::class, 'deductPoints']);
-//         Route::get('user-summary', [PointController::class, 'getUserSummary']);
-//         Route::get('user-transactions', [PointController::class, 'getUserTransactions']);
-//     });
+Route::middleware('auth:admin')->group(function () {
+    Route::prefix('points')->group(function () {
+        Route::post('add', [PointController::class, 'addPoints']);
+        Route::post('deduct', [PointController::class, 'deductPoints']);
+        Route::get('user-summary', [PointController::class, 'getUserSummary']);
+        Route::get('user-transactions', [PointController::class, 'getUserTransactions']);
+    });
 
 //     Route::apiResource('point-rules', PointRuleController::class);
 // });
