@@ -33,6 +33,7 @@ use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\Order\OrderController;
 use App\Http\Controllers\Admin\Package\PackageController;
 use App\Http\Controllers\Admin\PageSection\PageSectionCrudController;
+use App\Http\Controllers\Admin\PointController;
 use App\Http\Controllers\Admin\PointExchange\PointExchangeController;
 use App\Http\Controllers\Admin\PointRuleController;
 use App\Http\Controllers\Admin\PopupCampaignController;
@@ -384,7 +385,7 @@ Route::middleware('auth:admin')->group(function () {
         Route::get('user-summary', [PointController::class, 'getUserSummary']);
         Route::get('user-transactions', [PointController::class, 'getUserTransactions']);
     });
-
+});
 //     Route::apiResource('point-rules', PointRuleController::class);
 // });
 
