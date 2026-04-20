@@ -44,7 +44,8 @@ class RolePermissionSeeder extends Seeder
             'ServiceOrder',
             'VendorService',
             'VendorServiceType',
-            'ShopVendorService'
+            'ShopVendorService',
+            'DeliveryDistanceRange'
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];
