@@ -55,7 +55,7 @@ class UpdateRequest extends FormRequest
         $rules = [
             'category_id' => 'nullable|exists:categories,id',
             'type' => 'required|in:square,circle,color',
-            'values'      => 'nullable|array|min:1',
+            'values'      => 'nullable|array',
             'values.*.name' => 'nullable|array',
         ];
 
