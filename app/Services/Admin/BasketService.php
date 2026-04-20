@@ -24,6 +24,7 @@ class BasketService extends BaseService
 
     protected $searchableFields = [
         'name',
+        'description',
         'category_id',
         'price',
         'discount',

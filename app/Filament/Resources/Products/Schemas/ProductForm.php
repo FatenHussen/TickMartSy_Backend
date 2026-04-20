@@ -150,16 +150,104 @@ class ProductForm
                                                         ->pluck('name', 'id');
                                                 })
                                                 ->required()
+                                                ->live()
+                                                ->afterStateUpdated(function ($state, callable $set) {
+                                                    $set('value_option_key', null);
+                                                    $set('detail_value.ar', null);
+                                                    $set('detail_value.en', null);
+                                                })
                                                 ->searchable()
                                                 ->native(false),
 
-                                            Forms\Components\TextInput::make('detail_value.ar')
-                                                ->label(__('custom.products.form.value_ar'))
-                                                ->maxLength(255),
+                                            Forms\Components\Select::make('value_option_key')
+                                                ->label(__('custom.products.detail_value'))
+                                                ->options(function (callable $get) {
+                                                    $categoryDetailId = $get('category_detail_id');
+                                                    if (!$categoryDetailId) {
+                                                        return [];
+                                                    }
 
-                                            Forms\Components\TextInput::make('detail_value.en')
-                                                ->label(__('custom.products.form.value_en'))
-                                                ->maxLength(255),
+                                                    $detail = \App\Models\CategoryDetail::query()->find($categoryDetailId);
+                                                    if (!$detail || !is_array($detail->value_options)) {
+                                                        return [];
+                                                    }
+
+                                                    $locale = app()->getLocale();
+                                                    $options = [];
+
+                                                    foreach ($detail->value_options as $item) {
+                                                        if (!is_array($item)) {
+                                                            continue;
+                                                        }
+
+                                                        $arValue = isset($item['ar']) ? trim((string) $item['ar']) : '';
+                                                        $enValue = isset($item['en']) ? trim((string) $item['en']) : '';
+
+                                                        if ($arValue === '' && $enValue === '') {
+                                                            continue;
+                                                        }
+
+                                                        $key = json_encode([
+                                                            'ar' => $arValue ?: null,
+                                                            'en' => $enValue ?: null,
+                                                        ], JSON_UNESCAPED_UNICODE);
+
+                                                        $options[$key] = $locale === 'ar'
+                                                            ? ($arValue ?: $enValue)
+                                                            : ($enValue ?: $arValue);
+                                                    }
+
+                                                    return $options;
+                                                })
+                                                ->required()
+                                                ->searchable()
+                                                ->native(false)
+                                                ->dehydrated(false)
+                                                ->live()
+                                                ->afterStateHydrated(function ($state, callable $get, callable $set) {
+                                                    if (!blank($state)) {
+                                                        return;
+                                                    }
+
+                                                    $detailValue = $get('detail_value');
+                                                    if (!is_array($detailValue)) {
+                                                        return;
+                                                    }
+
+                                                    $arValue = isset($detailValue['ar']) ? trim((string) $detailValue['ar']) : '';
+                                                    $enValue = isset($detailValue['en']) ? trim((string) $detailValue['en']) : '';
+
+                                                    if ($arValue === '' && $enValue === '') {
+                                                        return;
+                                                    }
+
+                                                    $set('value_option_key', json_encode([
+                                                        'ar' => $arValue ?: null,
+                                                        'en' => $enValue ?: null,
+                                                    ], JSON_UNESCAPED_UNICODE));
+                                                })
+                                                ->afterStateUpdated(function ($state, callable $set) {
+                                                    if (blank($state)) {
+                                                        $set('detail_value.ar', null);
+                                                        $set('detail_value.en', null);
+                                                        return;
+                                                    }
+
+                                                    $decoded = json_decode((string) $state, true);
+
+                                                    if (!is_array($decoded)) {
+                                                        $set('detail_value.ar', null);
+                                                        $set('detail_value.en', null);
+                                                        return;
+                                                    }
+
+                                                    $set('detail_value.ar', $decoded['ar'] ?? null);
+                                                    $set('detail_value.en', $decoded['en'] ?? null);
+                                                }),
+
+                                            Forms\Components\Hidden::make('detail_value.ar'),
+
+                                            Forms\Components\Hidden::make('detail_value.en'),
                                         ])
                                         ->columns(3)
                                         ->defaultItems(0)

@@ -63,9 +63,28 @@ class AllResource extends JsonResource
         return [
             'id' => $this->id,
             'label' => $label,
+            'variant_image' => $this->resolveVariantImage(),
             'shop_id' => $this->shop_id,
             'is_restaurant' => (bool) ($this->shop?->is_restaurant ?? false),
             'city_id' => $this->shop?->city_id ?? $this->shop?->area?->city_id,
         ];
+    }
+
+    private function resolveVariantImage(): ?string
+    {
+        $variantImage = $this->productVariant?->media
+            ?->where('collection', 'variant')
+            ?->sortBy('order')
+            ?->first();
+
+        if ($variantImage) {
+            return $variantImage->url;
+        }
+
+        $productImage = $this->productVariant?->product?->media
+            ?->sortBy('order')
+            ?->first();
+
+        return $productImage?->url;
     }
 }

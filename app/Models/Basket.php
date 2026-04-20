@@ -18,6 +18,7 @@ class Basket extends Model implements Sectionable
     protected $fillable = [
         'category_id',
         'name',
+        'description',
         'num_varieties',
         'offer_ends_at',
         'price',
@@ -35,7 +36,7 @@ class Basket extends Model implements Sectionable
     {
         return $this->morphMany(Favorite::class, 'favoriteable');
     }
-    public $translatable = ['name'];
+    public $translatable = ['name', 'description'];
 
     protected $casts = [
         'offer_ends_at' => 'date',
@@ -131,7 +132,7 @@ class Basket extends Model implements Sectionable
 
             // naming for section
             'title' => $this->name,
-            'desc'  => null,
+            'desc'  => $this->description,
 
             // media
             'image' => $this->image_url,

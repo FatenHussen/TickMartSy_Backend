@@ -62,6 +62,7 @@ class OneResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'description' => $this->description,
             'image' => $this->imageUrl,
             'category' => $this->whenLoaded('category', fn() => [
                 'id'   => $this->category?->id,

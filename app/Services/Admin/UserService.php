@@ -27,7 +27,7 @@ class UserService extends BaseService
         $this->collection = AllResource::class;
         $this->pagination = true;
         $this->relations = ['area', 'addresses.area', 'marketerCoupon'];
-        $this->searchableFields = ['id', 'name', 'code'];
+        $this->searchableFields = ['id', 'name', 'affiliate_id'];
     }
 
     public function create($data)

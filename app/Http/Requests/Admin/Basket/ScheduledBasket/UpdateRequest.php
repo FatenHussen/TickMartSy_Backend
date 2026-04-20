@@ -19,6 +19,8 @@ class UpdateRequest extends FormRequest
             'category_id' => 'sometimes|required|integer|exists:categories,id',
             'name' => 'sometimes|required|array',
             'name.*' => 'required|string|max:255',
+            'description' => 'nullable|array',
+            'description.*' => 'nullable|string|max:2000',
             'discount' => 'nullable|numeric|min:0',
             'discount_type' => 'sometimes|required|in:fixed,percentage',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif',
