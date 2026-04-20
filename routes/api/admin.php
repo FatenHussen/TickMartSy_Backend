@@ -372,13 +372,7 @@ Route::prefix('admin')->group(function () {
         Route::patch('{orderId}/change-status', [ServiceOrderController::class, 'changeStatus'])
             ->middleware('admin.permission:serviceorder.update');
     });
-});
-
-// Protected routes
-// Basket management routes
-
-// // Points management routes
-Route::middleware('auth:admin')->group(function () {
+    Route::middleware('auth:admin')->group(function () {
     Route::prefix('points')->group(function () {
         Route::post('add', [PointController::class, 'addPoints']);
         Route::post('deduct', [PointController::class, 'deductPoints']);
@@ -386,6 +380,13 @@ Route::middleware('auth:admin')->group(function () {
         Route::get('user-transactions', [PointController::class, 'getUserTransactions']);
     });
 });
+});
+
+// Protected routes
+// Basket management routes
+
+// // Points management routes
+
 //     Route::apiResource('point-rules', PointRuleController::class);
 // });
 
