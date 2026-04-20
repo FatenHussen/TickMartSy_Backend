@@ -19,7 +19,8 @@ class RecipeService extends BaseService
             'items.shopProductVariant.productVariant.product.category',
             'items.shopProductVariant.shop',
             'steps',
-            'favorites'
+            'favorites',
+            'media'
         ];
         $this->searchableFields = ['name', 'description'];
         $this->sortableFields = ['id', 'discount', 'rating', 'orders_count', 'created_at'];
