@@ -24,10 +24,6 @@ class FlashSale extends Model
         'discount' => 'float',
     ];
 
-    public function products(): HasMany
-    {
-        return $this->hasMany(Product::class);
-    }
 
     public function scopeActive($query)
     {
@@ -39,5 +35,10 @@ class FlashSale extends Model
     {
         return $query->where('is_active', true)
             ->where('end_date', '<=', now());
+    }
+
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class);
     }
 }

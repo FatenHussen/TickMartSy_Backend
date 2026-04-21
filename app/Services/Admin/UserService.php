@@ -81,9 +81,7 @@ class UserService extends BaseService
             $hasAffiliatePayload;
 
         if ($hasAffiliateData) {
-            if (!$object->is_affiliate) {
-                throw new CustomExceptionWithMessage('custom.marketer.request_not_submitted');
-            }
+
 
             if (
                 array_key_exists('affiliate_id', $data) &&
@@ -98,10 +96,12 @@ class UserService extends BaseService
 
             if ($this->hasEffectiveCommissionConfig($data, $object)) {
                 $data['affiliate_approved'] = true;
+                $data['is_affiliate'] = true;
+
                 (new NotificationService)->send(
                     $object,
-                    'قبول طلبك ك مسوّق',
-                    'تم قبول طلبك ك مسوق من قبل الادمن ',
+                    'ترقية حسابك الى مسوق',
+                    'تم ترقية حسابك الى مسوق من قبل الادمن',
                     [
                         'type' => 'markter'
                     ]

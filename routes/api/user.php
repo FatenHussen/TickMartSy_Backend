@@ -21,6 +21,7 @@ use App\Http\Controllers\User\CityController;
 use App\Http\Controllers\User\ComplaintController;
 use App\Http\Controllers\User\CountryController;
 use App\Http\Controllers\User\FavoriteController;
+use App\Http\Controllers\User\FlashSaleController;
 use App\Http\Controllers\User\GovernorateController;
 use App\Http\Controllers\User\HelpCenterController;
 use App\Http\Controllers\User\LegalDocumentController;
@@ -35,6 +36,7 @@ use App\Http\Controllers\User\SellerRegistrationController;
 use App\Http\Controllers\User\Currency\CurrencyController;
 use App\Http\Controllers\User\SearchController;
 use App\Http\Controllers\User\QuickActionController;
+use App\Http\Controllers\User\PromotionController;
 use App\Http\Controllers\User\ServiceOrder\ServiceOrderController;
 
 Route::prefix('user')->group(
@@ -112,6 +114,14 @@ Route::prefix('user')->group(
             // Public routes
             Route::get('/', [ProductController::class, 'index']);
             Route::get('/{id}', [ProductController::class, 'get_one']);
+        });
+
+        Route::prefix('promotions')->group(function () {
+            Route::get('/', [PromotionController::class, 'index']);
+        });
+
+        Route::prefix('flash-sales')->group(function () {
+            Route::get('/active', [FlashSaleController::class, 'active']);
         });
 
         // Shop routes
