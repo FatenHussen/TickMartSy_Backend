@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->boolean('is_active')->default(1);
             $table->string('password');
+            // $table->rememberToken();
             $table->foreignId('vendor_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
