@@ -45,7 +45,7 @@ class StoreRequest extends FormRequest
     {
         $rules = [
             'icon' => 'nullable|file',
-            'parent_id' => 'nullable|integer|exists:categories,id',
+            'parent_id' => 'nullable|exists:categories,id',
             'order' => 'nullable|integer|min:0',
             'is_active' => 'nullable|boolean',
             'is_restaurant' => 'nullable|boolean',

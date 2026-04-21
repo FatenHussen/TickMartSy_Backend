@@ -27,7 +27,7 @@ class FilterRequest extends FormRequest
             'is_restaurant' => ['nullable', 'boolean'],
             'parent_id' => [
                 'nullable',
-                'integer',
+                // 'integer',
                 function ($attribute, $value, $fail) {
                     // إذا القيمة 0 أو null، نسمح فيها (للفئات الأب)
                     if ($value === 0 || $value === '0' || $value === null) {
