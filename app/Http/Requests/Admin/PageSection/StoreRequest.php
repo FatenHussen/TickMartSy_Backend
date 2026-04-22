@@ -3,21 +3,11 @@
 namespace App\Http\Requests\Admin\PageSection;
 
 use App\Enums\VariantSection;
-use App\Models\DisplayType;
-use App\Models\Page;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Validator;
 
 class StoreRequest extends FormRequest
 {
-    public function withValidator(Validator $validator): void
-    {
-        $validator->after(function (Validator $validator): void {
-            $this->validateDisplayTypeAllowedPage($validator);
-        });
-    }
-
     public function authorize(): bool
     {
         return true;
@@ -34,7 +24,7 @@ class StoreRequest extends FormRequest
 
             'page_id' => ['required', 'integer', 'exists:pages,id'],
 
-            'display_type_id' => ['required', 'integer', 'exists:display_types,id'],
+            'display_type_id' => ['prohibited'],
 
             'position' => ['required', 'in:before,after'],
             'order' => ['required', 'integer', 'min:1'],
@@ -51,31 +41,5 @@ class StoreRequest extends FormRequest
             // 'filters.price_max' => ['nullable', 'integer', 'min:1'],
             'filters.type' => ['nullable', 'string'],
         ];
-    }
-
-    private function validateDisplayTypeAllowedPage(Validator $validator): void
-    {
-        $displayTypeId = $this->integer('display_type_id');
-        $pageId = $this->integer('page_id');
-
-        if (!$displayTypeId || !$pageId) {
-            return;
-        }
-
-        $displayType = DisplayType::query()->find($displayTypeId);
-        $page = Page::query()->find($pageId);
-
-        if (!$displayType || !$page) {
-            return;
-        }
-
-        $allowedPageSlugs = $displayType->allowed_page_slugs ?? [];
-
-        if (!empty($allowedPageSlugs) && !in_array($page->slug, $allowedPageSlugs, true)) {
-            $validator->errors()->add(
-                'display_type_id',
-                __('The selected display type is not allowed for this page.')
-            );
-        }
     }
 }
