@@ -32,7 +32,7 @@ class UpdateRequest extends FormRequest
             'icon' => 'nullable|file',
             'parent_id' => [
                 'nullable',
-                'integer',
+                //'integer',
                 'exists:categories,id',
                 Rule::notIn([$categoryId]),
             ],

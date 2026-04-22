@@ -15,6 +15,22 @@ class FilterRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if (!$this->has('parent_id')) {
+            return;
+        }
+
+        $parentId = $this->input('parent_id');
+
+        if ($parentId === '' || $parentId === null || strtolower((string) $parentId) === 'null') {
+            $this->merge(['parent_id' => null]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
@@ -27,7 +43,7 @@ class FilterRequest extends FormRequest
             'is_restaurant' => ['nullable', 'boolean'],
             'parent_id' => [
                 'nullable',
-                'integer',
+                // 'integer',
                 function ($attribute, $value, $fail) {
                     // إذا القيمة 0 أو null، نسمح فيها (للفئات الأب)
                     if ($value === 0 || $value === '0' || $value === null) {

@@ -20,6 +20,10 @@ class VendorUser extends Authenticatable
         'is_active',
         'vendor_id'
     ];
+   protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
     public function vendor()
     {
