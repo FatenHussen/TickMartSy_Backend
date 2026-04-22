@@ -16,5 +16,6 @@ class PopupCampaignService extends BaseService
         $this->collection = PopupCampaignCollection::class;
         $this->sortableFields = ['priority', 'created_at', 'updated_at', 'status'];
         $this->searchableFields = ['title', 'headline', 'description'];
+        $this->singleImages = ['media_path'];
     }
 }

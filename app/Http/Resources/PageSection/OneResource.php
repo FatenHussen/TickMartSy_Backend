@@ -5,6 +5,7 @@ namespace App\Http\Resources\PageSection;
 use App\Enums\VariantSection;
 use App\Http\Resources\SectionItem\OneResource as SectionItemOneResource;
 use App\Http\Resources\Section\SectionApiItemResource;
+use App\Models\FlashSale;
 use App\Models\SectionItem;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -28,6 +29,7 @@ class OneResource extends JsonResource
             'variant' => $this->variant ?? VariantSection::Horizontal->value,
             'background_color' => $this->background_color,
             'background_card_color' => $this->background_card_color,
+            'end_date' => $this->resolveFlashSaleEndDate(),
             'see_more' => $this->section->see_more
                 ? [
                     'page_slug' => $this->section->see_more_slug,
@@ -56,7 +58,7 @@ class OneResource extends JsonResource
     private function visibleSectionItems()
     {
         return collect($this->section->sectionItems ?? collect())
-            ->filter(fn (SectionItem $sectionItem) => $this->isSectionItemActive($sectionItem));
+            ->filter(fn(SectionItem $sectionItem) => $this->isSectionItemActive($sectionItem));
     }
 
     private function isSectionItemActive(SectionItem $sectionItem): bool
@@ -74,5 +76,25 @@ class OneResource extends JsonResource
         }
 
         return true;
+    }
+
+    private function resolveFlashSaleEndDate(): ?string
+    {
+        if (($this->filters['type'] ?? null) !== 'latest_flash_sale') {
+            return null;
+        }
+
+        static $latestActiveFlashSaleEndDate = null;
+        static $loaded = false;
+
+        if (!$loaded) {
+            $latestActiveFlashSaleEndDate = FlashSale::query()
+                ->active()
+                ->latest('id')
+                ->value('end_date');
+            $loaded = true;
+        }
+
+        return $latestActiveFlashSaleEndDate;
     }
 }

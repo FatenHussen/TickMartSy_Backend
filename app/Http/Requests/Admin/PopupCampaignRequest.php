@@ -5,6 +5,7 @@ namespace App\Http\Requests\Admin;
 use App\Models\PopupCampaign;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
+use Illuminate\Validation\Rule;
 
 class PopupCampaignRequest extends FormRequest
 {
@@ -15,8 +16,8 @@ class PopupCampaignRequest extends FormRequest
 
     public function rules(): array
     {
-        $campaignId = $this->route('popup_campaign');
-        // $campaignId = $campaign?->id;
+        $campaign = $this->route('popup_campaign');
+        $campaignId = $campaign instanceof PopupCampaign ? $campaign->id : $campaign;
 
         $slugRule = 'unique:popup_campaigns,slug' . ($campaignId ? ',' . $campaignId : '');
 
@@ -41,7 +42,12 @@ class PopupCampaignRequest extends FormRequest
             'button_url' => ['nullable', 'url', 'max:2048'],
             'secondary_button_text' => ['nullable', 'string', 'max:255'],
             'media_type' => ['required', 'in:' . implode(',', PopupCampaign::MEDIA_TYPES)],
-            'media_path' => ['required', 'string'],
+            'media_path' => [
+                Rule::requiredIf(empty($campaignId)),
+                'nullable',
+                'file',
+                'mimes:jpg,jpeg,png,gif,webp,mp4,mov,avi,webm,mkv',
+            ],
             'form_enabled' => ['sometimes', 'boolean'],
             'form_fields' => ['nullable', 'array'],
             'form_fields.*' => ['string', 'max:255'],

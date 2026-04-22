@@ -141,6 +141,19 @@ class PopupCampaign extends Model
         'description',
     ];
 
+    public function getMediaPathAttribute(?string $value): ?string
+    {
+        if (!$value) {
+            return null;
+        }
+
+        if (preg_match('/^https?:\/\//i', $value)) {
+            return $value;
+        }
+
+        return asset($value);
+    }
+
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('status', self::STATUS_ACTIVE);

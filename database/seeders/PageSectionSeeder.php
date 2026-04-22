@@ -38,6 +38,11 @@ class PageSectionSeeder extends Seeder
             'image' => 'images/display/shop.png',
         ]);
 
+        $SbasketsDisplayType = DisplayType::create([
+            'manual_model' => 'suggested-basket',
+            'image' => 'images/display/basket.png',
+        ]);
+
         $basketsDisplayType = DisplayType::create([
             'manual_model' => 'basket',
             'image' => 'images/display/basket.png',
@@ -433,7 +438,7 @@ class PageSectionSeeder extends Seeder
         ]));
 
         PageSection::create($fillPageSectionColors([
-            'name' => ['en' => 'Latest Flash Sale Products', 'ar' => 'منتجات أحدث فلاش سيل'],
+            'name' => ['en' => 'Summer Offers', 'ar' => 'عروض الصيف'],
             'page_id' => $homePage->id,
             'section_id' => $productsSection->id,
             'display_type_id' => $productDisplayType->id,
