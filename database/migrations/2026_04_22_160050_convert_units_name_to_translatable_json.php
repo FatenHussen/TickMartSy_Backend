@@ -4,7 +4,6 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Throwable;
 
 return new class extends Migration
 {
@@ -43,7 +42,7 @@ return new class extends Migration
 
         try {
             DB::statement('ALTER TABLE units DROP INDEX units_name_unique');
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             // Ignore when index does not exist.
         }
 
@@ -91,7 +90,7 @@ return new class extends Migration
 
         try {
             DB::statement('ALTER TABLE units ADD UNIQUE units_name_unique (name)');
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             // Ignore when duplicate legacy names exist.
         }
     }
