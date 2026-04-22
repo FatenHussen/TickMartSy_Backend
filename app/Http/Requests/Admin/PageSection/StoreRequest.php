@@ -24,7 +24,7 @@ class StoreRequest extends FormRequest
 
             'page_id' => ['required', 'integer', 'exists:pages,id'],
 
-            'display_type_id' => ['required', 'integer', 'exists:display_types,id'],
+            'display_type_id' => ['prohibited'],
 
             'position' => ['required', 'in:before,after'],
             'order' => ['required', 'integer', 'min:1'],

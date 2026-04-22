@@ -24,7 +24,7 @@ class UpdateRequest extends FormRequest
 
             'page_id' => ['nullable', 'integer', 'exists:pages,id'],
 
-            'display_type_id' => ['nullable', 'integer', 'exists:display_types,id'],
+            'display_type_id' => ['prohibited'],
 
             'position' => ['nullable', 'in:before,after'],
             'order' => ['nullable', 'integer'],
@@ -50,8 +50,6 @@ class UpdateRequest extends FormRequest
             'section_id.exists' => 'Section not found.',
             'page_ids.required' => 'Pages are required.',
             'page_ids.*.item_id.exists' => 'Page item not found.',
-            'display_type_id.required' => 'Display type is required.',
-            'display_type_id.exists' => 'Display type not found.',
         ];
     }
 }

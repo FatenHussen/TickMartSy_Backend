@@ -1,6 +1,6 @@
 # Admin Notifications API
 
-هذا الملف يشرح واجهات الـ API الخاصة بإدارة الإشعارات من لوحة الإدارة عبر `NotificationController`.
+هذا الملف يشرح واجهات الـ API الخاصة بـ `NotificationController` في لوحة الإدارة.
 
 ## Base URL
 
@@ -45,12 +45,12 @@ GET /api/admin/notifications?type=driver&page=1&per_page=10
     "items": [
       {
         "id": 4,
-        "title": "تنبيه للسائقين",
-        "body": "يوجد طلبات جديدة بانتظار التوصيل",
-        "type": "driver",
+        "title": "تنبيه للفئات المحددة",
+        "body": "يوجد تحديث جديد",
+        "type": "driver,user",
         "target_page": "orders",
         "channels": ["fcm"],
-        "created_at": "2026-04-16 14:30",
+        "created_at": "2026-04-22 14:30",
         "emoji": "🚚",
         "media": {
           "type": "image",
@@ -88,17 +88,14 @@ GET /api/admin/notifications/4
   "message": "Success",
   "data": {
     "id": 4,
-    "title": "تنبيه للسائقين",
-    "body": "يوجد طلبات جديدة بانتظار التوصيل",
-    "type": "driver",
+    "title": "تنبيه للفئات المحددة",
+    "body": "يوجد تحديث جديد",
+    "type": "driver,user",
     "target_page": "orders",
-    "channels": ["fcm"],
-    "created_at": "2026-04-16 14:30",
+    "channels": ["fcm", "email"],
+    "created_at": "2026-04-22 14:30",
     "emoji": "🚚",
-    "media": {
-      "type": "image",
-      "url": "https://example.com/storage/notifications/abc.jpg"
-    }
+    "media": null
   }
 }
 ```
@@ -118,7 +115,6 @@ GET /api/admin/notifications/4
 
 - `title` (required)
 - `body` (required)
-- `type` (required): `all` | `driver` | `user` | `vendor`
 - `channels` (required array, min 1)
 - `channels[]` values:
   - `fcm`
@@ -128,27 +124,28 @@ GET /api/admin/notifications/4
 - `emoji` (optional): نص قصير حتى 10 أحرف
 - `media` (optional file): `jpeg`, `jpg`, `png`, `gif`, `webp`
 
-### Example Multipart Request
+### Targeting Fields
 
-```http
-POST /api/admin/notifications
-Content-Type: multipart/form-data
-```
+يمكنك تحديد المستلمين بإحدى الطريقتين:
 
-Fields:
+1. **طريقة قديمة (Type مفرد):**
+   - `type` (required إذا لم يتم إرسال `types`)
+   - القيم: `all` | `driver` | `user` | `vendor`
 
-```text
-title=عرض جديد
-body=تم إطلاق عرض جديد اليوم
-type=user
-channels[0]=fcm
-channels[1]=email
-target_page=offers
-emoji=🎉
-media=(image file)
-```
+2. **طريقة جديدة (Types متعددة):**
+   - `types` (required إذا لم يتم إرسال `type`)
+   - مصفوفة من: `all` | `driver` | `user` | `vendor`
+   - مثال: `["driver", "user"]`
 
-### Example JSON Request
+### Optional IDs (استهداف جزئي)
+
+- `driver_ids` (optional array): إذا أرسلتِها مع وجود `driver` ضمن الأنواع، يتم الإرسال فقط لهؤلاء السائقين
+- `user_ids` (optional array): إذا أرسلتِها مع وجود `user` ضمن الأنواع، يتم الإرسال فقط لهؤلاء المستخدمين
+- `vendor_ids` (optional array): إذا أرسلتِها مع وجود `vendor` ضمن الأنواع، يتم الإرسال فقط لهؤلاء البائعين (`vendor_users.id`)
+
+> إذا لم يتم إرسال `*_ids` لنوع معيّن، يتم الإرسال إلى **كل** ذلك النوع.
+
+### Example 1: Type مفرد (التوافق الخلفي)
 
 ```json
 {
@@ -161,6 +158,33 @@ media=(image file)
 }
 ```
 
+### Example 2: Types متعددة + IDs مخصصة
+
+```json
+{
+  "title": "تنبيه مخصص",
+  "body": "رسالة موجهة لفئات محددة",
+  "types": ["driver", "user", "vendor"],
+  "driver_ids": [1, 5, 9],
+  "user_ids": [10, 11],
+  "vendor_ids": [3, 7],
+  "channels": ["fcm", "email"],
+  "target_page": "offers",
+  "emoji": "🎉"
+}
+```
+
+### Example 3: Types متعددة بدون IDs (إرسال جماعي)
+
+```json
+{
+  "title": "إشعار عام",
+  "body": "رسالة لكل المستخدمين والسائقين",
+  "types": ["user", "driver"],
+  "channels": ["fcm"]
+}
+```
+
 ### Example Response
 
 ```json
@@ -169,17 +193,29 @@ media=(image file)
   "message": "Item created successfully.",
   "data": {
     "id": 5,
-    "title": "تنبيه للسائقين",
-    "body": "يوجد طلبات جديدة بانتظار التوصيل",
-    "type": "driver",
-    "target_page": "orders",
-    "channels": ["fcm"],
-    "created_at": "2026-04-16 15:10",
-    "emoji": "🚚",
+    "title": "تنبيه مخصص",
+    "body": "رسالة موجهة لفئات محددة",
+    "type": "driver,user,vendor",
+    "target_page": "offers",
+    "channels": ["fcm", "email"],
+    "created_at": "2026-04-22 15:10",
+    "emoji": "🎉",
     "media": null
   }
 }
 ```
+
+---
+
+## Validation Rules (مختصر)
+
+- يجب إرسال واحد فقط على الأقل من:
+  - `type`
+  - `types`
+- `types` يجب أن تكون array غير فارغة
+- `driver_ids.*` يجب أن تكون موجودة في `drivers.id`
+- `user_ids.*` يجب أن تكون موجودة في `users.id`
+- `vendor_ids.*` يجب أن تكون موجودة في `vendor_users.id`
 
 ---
 
@@ -192,19 +228,8 @@ media=(image file)
    - `storage/app/public/notifications`
 3. يتم dispatch لـ:
    - `SendBulkNotificationJob`
-
-والـ job يستقبل:
-
-- `title`
-- `body`
-- `type`
-- `channels`
-- بيانات إضافية:
-  - `type = admin`
-  - `target_page`
-  - `emoji`
-  - `media_type`
-  - `media_url`
+4. الجوب يحدد المستلمين بناءً على `type`/`types`
+5. إذا كانت `*_ids` موجودة لنوع معيّن، يتم حصر الإرسال على هذه المعرفات
 
 ---
 
@@ -213,6 +238,7 @@ media=(image file)
 - عند وجود ملف، أرسلي الطلب كـ `multipart/form-data`
 - `channels` يجب أن تكون array حقيقية
 - `target_page` ليس نصًا حرًا بالكامل؛ يجب أن يكون `slug` موجودًا في جدول `pages`
+- حقل `type` في الاستجابة قد يكون قيمة مفردة (`driver`) أو قيم مجمعة مفصولة بفاصلة (`driver,user`)
 - `media` في الرد تأتي بهذا الشكل:
 
 ```json
