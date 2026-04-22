@@ -15,8 +15,8 @@ class PopupCampaignRequest extends FormRequest
 
     public function rules(): array
     {
-        $campaign = $this->route('popup_campaign');
-        $campaignId = $campaign?->id;
+        $campaignId = $this->route('popup_campaign');
+        // $campaignId = $campaign?->id;
 
         $slugRule = 'unique:popup_campaigns,slug' . ($campaignId ? ',' . $campaignId : '');
 

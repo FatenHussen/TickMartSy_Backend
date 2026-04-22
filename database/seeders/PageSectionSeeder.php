@@ -119,12 +119,11 @@ class PageSectionSeeder extends Seeder
         | Pages
         |--------------------------------------------------------------------------
         */
-        $homePage = Page::firstOrCreate(
-            ['slug' => 'home'],
-            ['title' => 'Home']
-        );
+
 
         $pages = [
+            ['title' => 'Home', 'slug' => 'home'],
+
             ['title' => 'Recipes', 'slug' => 'recipes'],
             ['title' => 'recipe details', 'slug' => 'recipe_details'],
             ['title' => 'brands', 'slug' => 'brands'],
@@ -193,12 +192,19 @@ class PageSectionSeeder extends Seeder
             ]));
         }
 
-        $page = Page::firstOrCreate(
+        $homePage = Page::firstOrCreate(
+            ['slug' => 'home'],
+            ['title' => 'Home']
+        );
+
+
+
+        $welcomePage = Page::firstOrCreate(
             ['slug' => 'welcome'],
             ['title' => 'Welcome']
         );
         PageSection::firstOrCreate([
-            'page_id' => $page->id,
+            'page_id' => $welcomePage->id,
             'section_id' => $bannerSection->id,
         ], $fillPageSectionColors([
             'display_type_id' => $bannerDisplayType2->id,

@@ -64,4 +64,40 @@ class CouponService extends BaseService
 
         return $object;
     }
+
+    public function update($id, array $data)
+    {
+        if (!isset($data['affiliate_id']) || empty($data['affiliate_id'])) {
+            return parent::update($id, $data);
+        }
+
+        $affiliateId = $data['affiliate_id'];
+
+        $hasActiveCoupon = Coupon::where('affiliate_id', $affiliateId)
+            ->where('id', '!=', $id)
+            ->where('is_active', true)
+            ->get()
+            ->contains(function ($coupon) {
+                return $coupon->isValid();
+            });
+
+        if ($hasActiveCoupon) {
+            throw new CustomExceptionWithMessage('custom.coupons.affiliate_active_coupon');
+        }
+
+        $object = parent::update($id, $data);
+
+        $notificationService = app(\App\Services\Base\NotificationService::class);
+
+        $notificationService->send(
+            recipient: $object->markter,
+            title: 'تحديث كوبون',
+            body: "تم تحديث الكوبون الخاص بك من قبل الادمن",
+            data: [
+                'type' => 'coupon',
+            ]
+        );
+
+        return $object;
+    }
 }
