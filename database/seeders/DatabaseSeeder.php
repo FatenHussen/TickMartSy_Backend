@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
             SettingSeeder::class,
             SystemSettingSeeder::class,
             CurrencySeeder::class,
+            UnitSeeder::class,
 
             // Categories & Brands
             CategorySeeder::class,
