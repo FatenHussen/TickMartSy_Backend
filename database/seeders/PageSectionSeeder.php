@@ -38,7 +38,7 @@ class PageSectionSeeder extends Seeder
             'image' => 'images/display/shop.png',
         ]);
 
-        $shopDisplayType = DisplayType::create([
+        $SbasketsDisplayType = DisplayType::create([
             'manual_model' => 'suggested-basket',
             'image' => 'images/display/basket.png',
         ]);
