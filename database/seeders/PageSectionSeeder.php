@@ -26,49 +26,42 @@ class PageSectionSeeder extends Seeder
         $bannerDisplayType = DisplayType::create([
             'manual_model' => 'banner',
             'image' => 'images/display/banner.png',
-            'fields' => ['image', 'title', 'price']
         ]);
 
         $productDisplayType = DisplayType::create([
             'manual_model' => 'product',
             'image' => 'images/display/product.png',
-            'fields' => ['image', 'title', 'price', 'brand']
         ]);
 
         $shopDisplayType = DisplayType::create([
             'manual_model' => 'shop',
             'image' => 'images/display/shop.png',
-            'fields' => ['image', 'title', 'price', 'brand']
         ]);
 
         $basketsDisplayType = DisplayType::create([
             'manual_model' => 'basket',
             'image' => 'images/display/basket.png',
-            'fields' => ['image', 'title', 'price', 'brand']
         ]);
 
         $suggestedBasketsDisplayType = DisplayType::create([
             'manual_model' => 'suggested-basket',
             'image' => 'images/display/basket.png',
-            'fields' => ['image', 'title', 'price', 'brand']
         ]);
 
         $brandsDisplayType = DisplayType::create([
             'manual_model' => 'brand',
             'image' => 'images/display/brand.png',
-            'fields' => ['image', 'title', 'price', 'brand']
         ]);
 
         $recipeDisplayType = DisplayType::create([
             'manual_model' => 'recipe',
             'image' => 'images/display/recipe.png',
-            'fields' => ['image', 'title', 'decription', 'price', 'brand']
         ]);
 
         $bannerDisplayType2 = DisplayType::create([
             'manual_model' => 'banner',
             'image' => 'images/display/banner.png',
-            'fields' => ['image', 'title', 'price']
+            'allowed_page_slugs' => ['welcome'],
         ]);
 
         $defaultVariant = VariantSection::Horizontal->value;
