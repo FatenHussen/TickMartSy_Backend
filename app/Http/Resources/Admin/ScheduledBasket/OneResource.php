@@ -25,6 +25,7 @@ class OneResource extends JsonResource
             'name' =>  $this->getTranslations('name'),
             'description' => $this->getTranslations('description'),
             'image' => $this->image_url ?? null,
+            'images' => $this->image_urls ?? [],
             'num_varieties' => (int) $this->num_varieties,
             'offer_ends_at' => $this->offer_ends_at?->format('Y-m-d'),
 

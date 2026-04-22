@@ -27,6 +27,7 @@ class AllResource extends JsonResource
                 'name' => $this->category?->name,
             ],
             'image' => $this->image_url ?? null,
+            'images' => $this->image_urls ?? [],
             'num_varieties' => (int) $this->num_varieties,
             'offer_ends_at' => $this->offer_ends_at?->format('Y-m-d'),
             ...$this->withCurrency($this->calculated_price, 'original_price'),

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\Basket;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 
 class UpdateRequest extends FormRequest
@@ -37,6 +38,12 @@ class UpdateRequest extends FormRequest
             }
         }
 
+        if ($this->file('images') instanceof UploadedFile) {
+            $this->merge([
+                'images' => [$this->file('images')],
+            ]);
+        }
+
         Log::info('UpdateRequest::prepareForValidation - AFTER', [
             'all_data' => $this->all(),
             'has_items' => $this->has('items'),
@@ -58,6 +65,10 @@ class UpdateRequest extends FormRequest
             'discount' => 'nullable|numeric|min:0',
             'discount_type' => 'sometimes|required|in:fixed,percentage',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif',
+            'deleted_image_ids' => 'nullable|array',
+            'deleted_image_ids.*' => 'integer',
             'delivery_price' => 'nullable|numeric|min:0',
             'is_active' => 'sometimes|boolean',
 

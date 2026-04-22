@@ -121,6 +121,16 @@ class ProductService extends BaseService
 
     public function queryBuilder($query, $filters = [], $config = [])
     {
+        $categoryIds = array_values(array_unique(array_filter(array_merge(
+            $this->normalizeIdInput($filters['category_id'] ?? null),
+            $this->normalizeIdInput($filters['category_ids'] ?? null)
+        ))));
+        unset($filters['category_id'], $filters['category_ids']);
+
+        if (!empty($categoryIds)) {
+            $query->whereIn('category_id', $categoryIds);
+        }
+
         // Filter by shop_id if provided
         if (!empty($filters['shop_id'])) {
             $query->whereHas('variants.shopVariants', function ($q) use ($filters) {
@@ -136,18 +146,11 @@ class ProductService extends BaseService
         }
 
         // Filter by one or more category attributes through variant attribute values
-        $categoryAttributeIds = [];
-        if (!empty($filters['category_attribute_id'])) {
-            $categoryAttributeIds[] = (int) $filters['category_attribute_id'];
-            unset($filters['category_attribute_id']);
-        }
-
-        if (!empty($filters['category_attribute_ids']) && is_array($filters['category_attribute_ids'])) {
-            $categoryAttributeIds = array_merge($categoryAttributeIds, array_map('intval', $filters['category_attribute_ids']));
-            unset($filters['category_attribute_ids']);
-        }
-
-        $categoryAttributeIds = array_values(array_unique(array_filter($categoryAttributeIds)));
+        $categoryAttributeIds = array_values(array_unique(array_filter(array_merge(
+            $this->normalizeIdInput($filters['category_attribute_id'] ?? null),
+            $this->normalizeIdInput($filters['category_attribute_ids'] ?? null)
+        ))));
+        unset($filters['category_attribute_id'], $filters['category_attribute_ids']);
 
         if (!empty($categoryAttributeIds)) {
             $attributeValueIds = AttributeValue::query()
@@ -186,8 +189,12 @@ class ProductService extends BaseService
 
         // Search functionality
         if (!empty($config['search'])) {
-            $search = $config['search'];
+            $search = trim((string) $config['search']);
             $query->where(function ($q) use ($search) {
+                if (ctype_digit($search)) {
+                    $q->orWhere('id', (int) $search);
+                }
+
                 foreach ($this->searchableFields as $field) {
                     $q->orWhere($field, 'LIKE', "%$search%");
                 }
@@ -201,6 +208,41 @@ class ProductService extends BaseService
         }
 
         return $query;
+    }
+
+    private function normalizeIdInput(mixed $value): array
+    {
+        if ($value === null || $value === '') {
+            return [];
+        }
+
+        if (is_array($value)) {
+            return collect($value)
+                ->flatMap(fn($item) => $this->normalizeIdInput($item))
+                ->values()
+                ->all();
+        }
+
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return $this->normalizeIdInput($decoded);
+            }
+
+            if (str_contains($value, ',')) {
+                return collect(explode(',', $value))
+                    ->map(fn($item) => trim($item))
+                    ->flatMap(fn($item) => $this->normalizeIdInput($item))
+                    ->values()
+                    ->all();
+            }
+        }
+
+        if (is_numeric($value)) {
+            return [(int) $value];
+        }
+
+        return [];
     }
 
     protected function handleRelations($object, array &$data)

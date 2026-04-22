@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use App\Models\ProductMedia;
 use Spatie\Translatable\HasTranslations;
 use App\Models\Favorite;
 use App\Traits\LogsActivity;
@@ -101,10 +102,45 @@ class Basket extends Model implements Sectionable
     }
     public function  getImageUrlAttribute()
     {
-        if (!$this->image) {
-            return null;
+        if ($this->image) {
+            return asset('storage/' . $this->image);
         }
-        return asset('storage/' . $this->image);
+
+        $firstMedia = $this->relationLoaded('basketImages')
+            ? $this->basketImages->first()
+            : $this->basketImages()->first();
+
+        return $firstMedia?->url;
+    }
+
+    public function getImageUrlsAttribute(): array
+    {
+        $urls = [];
+
+        if ($this->image) {
+            $urls[] = asset('storage/' . $this->image);
+        }
+
+        $mediaUrls = ($this->relationLoaded('basketImages')
+            ? $this->basketImages
+            : $this->basketImages()->get())
+            ->map(fn($media) => $media->url)
+            ->values()
+            ->all();
+
+        return array_values(array_unique(array_merge($urls, $mediaUrls)));
+    }
+
+    public function media(): MorphMany
+    {
+        return $this->morphMany(ProductMedia::class, 'mediable');
+    }
+
+    public function basketImages(): MorphMany
+    {
+        return $this->media()
+            ->where('collection', 'basket')
+            ->orderBy('order');
     }
     public function schedules()
     {
@@ -143,6 +179,7 @@ class Basket extends Model implements Sectionable
 
             // media
             'image' => $this->image_url,
+            'images' => $this->image_urls,
 
             // category
             'category' => $categoryNames !== '' ? $categoryNames : $this->category?->name,

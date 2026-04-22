@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\Basket\ScheduledBasket;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\UploadedFile;
 
 class StoreRequest extends FormRequest
 {
@@ -24,6 +25,12 @@ class StoreRequest extends FormRequest
                 'category_id' => (int) $this->input('category_ids')[0],
             ]);
         }
+
+        if ($this->file('images') instanceof UploadedFile) {
+            $this->merge([
+                'images' => [$this->file('images')],
+            ]);
+        }
     }
 
 
@@ -40,6 +47,10 @@ class StoreRequest extends FormRequest
             'discount' => 'nullable|numeric|min:0',
             'discount_type' => 'required|in:fixed,percentage',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif',
+            'deleted_image_ids' => 'nullable|array',
+            'deleted_image_ids.*' => 'integer',
             'delivery_price' => 'nullable|numeric|min:0',
             'is_active' => 'sometimes|boolean',
 
