@@ -18,7 +18,10 @@ class BasketService extends BaseService
         'categories',
         'items',
         'items.product',
+        'items.product.brand',
+        'items.product.media',
         'items.variant',
+        'basketImages',
         'schedules',
         'favorites'
     ];

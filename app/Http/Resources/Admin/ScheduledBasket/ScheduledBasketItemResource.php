@@ -18,6 +18,11 @@ class ScheduledBasketItemResource extends JsonResource
             'variant_sku' => $this->variant?->sku,
             'variant_model' => $this->variant?->model,
             'variant_barcode' => $this->variant?->barcode,
+            'brand' => $this->product?->brand ? [
+                'id' => $this->product->brand->id,
+                'name' => $this->product->brand->name,
+                'image' => $this->product->brand->image_url ?? null,
+            ] : null,
 
             // Alternatives (simplified list for user selection)
 
@@ -77,6 +82,11 @@ class ScheduledBasketItemResource extends JsonResource
                 'is_restaurant' => (bool) ($variant->shop?->is_restaurant ?? false),
                 'city_id' => $variant->shop?->city_id ?? $variant->shop?->area?->city_id,
                 'name' => trim(($product->name ?? '') . ' ' . ($brand->name ?? '')),
+                'brand' => $brand ? [
+                    'id' => $brand->id,
+                    'name' => $brand->name,
+                    'image' => $brand->image_url ?? null,
+                ] : null,
                 'image_url' => optional($product->media->first())->url,
                 'price' => (float) $variant->price,
                 'discount' => (float) $variant->discount,

@@ -25,6 +25,7 @@ class AllResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'image' => $this->image_url ?? null,
+            'images' => $this->image_urls ?? [],
             'num_varieties' => (int) $this->num_varieties,
 
             // Pricing

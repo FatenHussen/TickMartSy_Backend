@@ -21,6 +21,11 @@ class BasketItemResource extends JsonResource
             'variant_sku' => $this->variant?->sku,
             'variant_model' => $this->variant?->model,
             'variant_barcode' => $this->variant?->barcode,
+            'brand' => $this->product?->brand ? [
+                'id' => $this->product->brand->id,
+                'name' => $this->product->brand->name,
+                'image' => $this->product->brand->image_url ?? null,
+            ] : null,
 
             // Product details
             'product' => $this->product ? new BasketItemProductResource($this->product) : null,

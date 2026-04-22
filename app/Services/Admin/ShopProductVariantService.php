@@ -30,10 +30,15 @@ class ShopProductVariantService extends BaseService
     {
         $query->with($this->relations);
 
+        $categoryIds = array_values(array_unique(array_filter(array_merge(
+            $this->normalizeIdInput($filters['category_id'] ?? null),
+            $this->normalizeIdInput($filters['category_ids'] ?? null)
+        ))));
+
         // Filter by category
-        if (!empty($filters['category_id'])) {
-            $query->whereHas('productVariant.product', function (Builder $q) use ($filters) {
-                $q->where('category_id', $filters['category_id']);
+        if (!empty($categoryIds)) {
+            $query->whereHas('productVariant.product', function (Builder $q) use ($categoryIds) {
+                $q->whereIn('category_id', $categoryIds);
             });
         }
 
@@ -52,8 +57,16 @@ class ShopProductVariantService extends BaseService
         // Search in product name
         if (!empty($filters['search'])) {
             $locale = app()->getLocale();
-            $query->whereHas('productVariant.product', function (Builder $q) use ($filters, $locale) {
-                $q->where("name->{$locale}", 'like', '%' . $filters['search'] . '%');
+            $search = trim((string) $filters['search']);
+
+            $query->whereHas('productVariant.product', function (Builder $q) use ($search, $locale) {
+                $q->where("name->{$locale}", 'like', '%' . $search . '%')
+                    ->orWhere('sku', 'like', '%' . $search . '%')
+                    ->orWhere('barcode', 'like', '%' . $search . '%');
+
+                if (ctype_digit($search)) {
+                    $q->orWhere('id', (int) $search);
+                }
             });
         }
 
@@ -66,6 +79,41 @@ class ShopProductVariantService extends BaseService
         }
 
         return $query;
+    }
+
+    private function normalizeIdInput(mixed $value): array
+    {
+        if ($value === null || $value === '') {
+            return [];
+        }
+
+        if (is_array($value)) {
+            return collect($value)
+                ->flatMap(fn($item) => $this->normalizeIdInput($item))
+                ->values()
+                ->all();
+        }
+
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return $this->normalizeIdInput($decoded);
+            }
+
+            if (str_contains($value, ',')) {
+                return collect(explode(',', $value))
+                    ->map(fn($item) => trim($item))
+                    ->flatMap(fn($item) => $this->normalizeIdInput($item))
+                    ->values()
+                    ->all();
+            }
+        }
+
+        if (is_numeric($value)) {
+            return [(int) $value];
+        }
+
+        return [];
     }
 
     public function query(array $filters = [])
@@ -103,4 +151,3 @@ class ShopProductVariantService extends BaseService
         return true;
     }
 }
-

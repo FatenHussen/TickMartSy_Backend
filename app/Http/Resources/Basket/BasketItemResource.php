@@ -28,6 +28,11 @@ class BasketItemResource extends JsonResource
             'variant_sku' => $this->variant?->sku,
             'variant_model' => $this->variant?->model,
             'variant_barcode' => $this->variant?->barcode,
+            'brand' => $this->product?->brand ? [
+                'id' => $this->product->brand->id,
+                'name' => $this->product->brand->name,
+                'image' => $this->product->brand->image_url ?? null,
+            ] : null,
             'product' =>new BasketItemProductResource($this->whenLoaded('product')) ?? null,
 
             'variant' => new BasketItemVariantResource($this->whenLoaded('variant')) ?? null,
@@ -73,6 +78,11 @@ class BasketItemResource extends JsonResource
                 'name' => trim(
                     ($product->name ?? '') . ' ' . ($brand->name ?? '')
                 ),
+                'brand' => $brand ? [
+                    'id' => $brand->id,
+                    'name' => $brand->name,
+                    'image' => $brand->image_url ?? null,
+                ] : null,
 
                 'image_url' => $media->first()?->url ?? null,
 

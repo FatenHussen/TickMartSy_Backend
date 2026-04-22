@@ -6,6 +6,7 @@ use App\Models\Basket;
 use App\Services\BaseService;
 use App\Http\Resources\Admin\Basket\OneResource;
 use App\Http\Resources\Admin\Basket\AllResource;
+use App\Services\Base\MediaService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -19,8 +20,11 @@ class BasketService extends BaseService
         'category',
         'categories',
         'items.product',
+        'items.product.brand',
+        'items.product.media',
         'items.variant',
         'items.shopProductVariant',
+        'basketImages',
     ];
 
     protected $searchableFields = [
@@ -79,6 +83,7 @@ class BasketService extends BaseService
     public function create($data)
     {
         $categoryIds = $this->resolveCategoryIds($data);
+        $imageData = $this->extractImageData($data);
 
         // Store items temporarily
         $items = $data['items'] ?? [];
@@ -100,7 +105,7 @@ class BasketService extends BaseService
         $basket = $this->model::create($data);
 
         // Handle single images (for basket image)
-        $this->handleSingleImages($basket, $data);
+        $this->handleSingleImages($basket, $imageData);
 
         if (!empty($categoryIds)) {
             $basket->categories()->sync($categoryIds);
@@ -122,6 +127,7 @@ class BasketService extends BaseService
     public function update($id, array $data)
     {
         $categoryIds = $this->resolveCategoryIds($data);
+        $imageData = $this->extractImageData($data);
 
         Log::info('BasketService::update called', [
             'id' => $id,
@@ -158,7 +164,7 @@ class BasketService extends BaseService
         $basket->update($data);
 
         // Handle single images (for basket image)
-        $this->handleSingleImages($basket, $data);
+        $this->handleSingleImages($basket, $imageData);
 
         if (!empty($categoryIds)) {
             $basket->categories()->sync($categoryIds);
@@ -265,11 +271,14 @@ class BasketService extends BaseService
     public function delete($id): bool
     {
         $basket = Basket::findOrFail($id);
+        $mediaService = new MediaService();
 
         // Delete image if exists
         if ($basket->image && Storage::disk('public')->exists($basket->image)) {
             Storage::disk('public')->delete($basket->image);
         }
+
+        $mediaService->deleteMany($basket->basketImages()->get());
 
         // Delete basket (items will be deleted automatically due to cascade)
         $basket->delete();
@@ -294,6 +303,8 @@ class BasketService extends BaseService
      */
     protected function handleSingleImages($object, array &$data): array
     {
+        $mediaService = new MediaService();
+
         if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
             // Delete old image if exists
             if ($object->image && Storage::disk('public')->exists($object->image)) {
@@ -304,6 +315,18 @@ class BasketService extends BaseService
             $imagePath = $data['image']->store('baskets', 'public');
             $object->update(['image' => $imagePath]);
             unset($data['image']);
+        }
+
+        if (!empty($data['deleted_image_ids']) && is_array($data['deleted_image_ids'])) {
+            $ids = array_values(array_unique(array_map('intval', $data['deleted_image_ids'])));
+            $mediaToDelete = $object->basketImages()->whereIn('id', $ids)->get();
+            $mediaService->deleteMany($mediaToDelete);
+            unset($data['deleted_image_ids']);
+        }
+
+        if (!empty($data['images']) && is_array($data['images'])) {
+            $mediaService->uploadMultiple($object, $data['images'], 'basket');
+            unset($data['images']);
         }
 
         return [];
@@ -321,5 +344,18 @@ class BasketService extends BaseService
         }
 
         return array_values(array_filter($categoryIds));
+    }
+
+    protected function extractImageData(array &$data): array
+    {
+        $imageData = [
+            'image' => $data['image'] ?? null,
+            'images' => $data['images'] ?? null,
+            'deleted_image_ids' => $data['deleted_image_ids'] ?? null,
+        ];
+
+        unset($data['image'], $data['images'], $data['deleted_image_ids']);
+
+        return $imageData;
     }
 }
