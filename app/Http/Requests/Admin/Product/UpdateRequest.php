@@ -153,6 +153,7 @@ class UpdateRequest extends FormRequest
             'discount_type'         => 'nullable|in:none,percentage,fixed',
             'quantity'              => 'nullable|integer|min:0',
             'unit'                  => 'nullable|string|max:50',
+            'unit_id'               => 'nullable|integer|exists:units,id',
             'warranty_period'       => 'nullable|integer|min:0',
             'stock'                 => 'nullable|integer|min:0',
             'max_purchase_quantity' => 'nullable|integer|min:1',

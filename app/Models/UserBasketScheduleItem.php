@@ -11,7 +11,7 @@ class UserBasketScheduleItem extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_basket_id',
+        'user_basket_schedule_id',
         'product_id',
         'shop_product_variant_id',
         'quantity',

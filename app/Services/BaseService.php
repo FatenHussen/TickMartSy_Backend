@@ -225,8 +225,11 @@ abstract class BaseService
                 }
             }
         }
-        $object->update($data);
+        // Handle uploaded single images first so image keys are removed from $data.
+        // This prevents null payload values from overwriting existing paths.
         $this->handleSingleImages($object, $data);
+
+        $object->update($data);
         $this->handleRelations($object, $data);
         $this->handleMedia($object, $data);
 

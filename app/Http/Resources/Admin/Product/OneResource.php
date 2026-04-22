@@ -27,6 +27,10 @@ class OneResource extends JsonResource
             'discount_type' => $this->discount_type,
             'quantity' => $this->quantity,
             'unit' => $this->unit,
+            'unit_option' => $this->unitOption ? [
+                'id' => $this->unitOption->id,
+                'name' => $this->unitOption->name,
+            ] : null,
             'warranty_period' => $this->warranty_period,
             'expiry_date' => $this->expiry_date?->format('Y-m-d'),
             'stock' => $this->stock,
@@ -47,7 +51,7 @@ class OneResource extends JsonResource
             }),
             'is_instant_delivery' => $this->is_instant_delivery,
 
-            'thumbnail' => $this->thumbnail ? asset('storage/' . $this->thumbnail) : null,
+            'thumbnail' => $this->thumbnail_url,
 
             'category' => [
                 'id' => $this->category?->id,

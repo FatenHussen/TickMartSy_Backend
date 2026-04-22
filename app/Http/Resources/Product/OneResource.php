@@ -46,7 +46,7 @@ class OneResource extends JsonResource
             'rating' => $this->average_rating ?? 0,
             'rating_breakdown' => $this->getRatingBreakdown() ?? [],
 
-            'thumbnail' => $this->thumbnail ? asset('storage/' . $this->thumbnail) : null,
+            'thumbnail' => $this->thumbnail_url,
 
             'category' => [
                 'id' => $this->category?->id,

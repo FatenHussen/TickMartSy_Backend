@@ -27,7 +27,8 @@ class StoreRequest extends FormRequest
             'description.en'       => 'nullable|string',
 
             'owner_name'           => 'required|string|max:255',
-            'owner_phone'          => 'required|string|max:20',
+            'owner_phone'          => 'nullable|string|max:20',
+            'whatsapp'             => 'nullable|string|max:20',
 
             'commercial_register'  => 'nullable|string|max:100',
             'contract_date'        => 'required|date',
