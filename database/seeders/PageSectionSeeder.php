@@ -38,6 +38,11 @@ class PageSectionSeeder extends Seeder
             'image' => 'images/display/shop.png',
         ]);
 
+        $shopDisplayType = DisplayType::create([
+            'manual_model' => 'suggested-basket',
+            'image' => 'images/display/basket.png',
+        ]);
+
         $basketsDisplayType = DisplayType::create([
             'manual_model' => 'basket',
             'image' => 'images/display/basket.png',
