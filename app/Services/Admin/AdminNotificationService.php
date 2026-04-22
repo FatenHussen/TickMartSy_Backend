@@ -21,13 +21,14 @@ class AdminNotificationService extends BaseService
     public function create($data)
     {
         $mediaPayload = $this->resolveMediaPayload($data);
-
         $channels = $data['channels'] ?? ['fcm'];
+        $targetTypes = $this->resolveTargetTypes($data);
+        $recipientIdsByType = $this->resolveRecipientIdsByType($data);
 
         $object = AdminNotification::create([
             'title' => $data['title'],
             'body' => $data['body'],
-            'type' => $data['type'],
+            'type' => implode(',', $targetTypes),
             'target_page' => $data['target_page'] ?? null,
             'emoji' => $data['emoji'] ?? null,
             'media_type' => $mediaPayload['type'] ?? null,
@@ -38,12 +39,68 @@ class AdminNotificationService extends BaseService
         SendBulkNotificationJob::dispatch(
             $object->title,
             $object->body,
-            $object->type,
+            $targetTypes,
             $channels,
-            $this->prepareJobData($data, $mediaPayload)
+            $this->prepareJobData($data, $mediaPayload, $targetTypes, $recipientIdsByType),
+            $recipientIdsByType
         );
 
         return $object;
+    }
+
+    private function resolveTargetTypes(array $data): array
+    {
+        $types = $data['types'] ?? [$data['type'] ?? 'all'];
+        if (! is_array($types)) {
+            $types = [$types];
+        }
+
+        $allowedTypes = ['all', 'driver', 'user', 'vendor'];
+        $normalizedTypes = array_values(
+            array_unique(
+                array_filter(
+                    array_map(
+                        static fn($type) => strtolower((string) $type),
+                        $types
+                    ),
+                    static fn($type) => in_array($type, $allowedTypes, true)
+                )
+            )
+        );
+
+        if (empty($normalizedTypes)) {
+            return ['all'];
+        }
+
+        if (in_array('all', $normalizedTypes, true)) {
+            return ['all'];
+        }
+
+        return $normalizedTypes;
+    }
+
+    private function resolveRecipientIdsByType(array $data): array
+    {
+        return [
+            'driver' => $this->normalizeIds($data['driver_ids'] ?? []),
+            'user' => $this->normalizeIds($data['user_ids'] ?? []),
+            'vendor' => $this->normalizeIds($data['vendor_ids'] ?? []),
+        ];
+    }
+
+    private function normalizeIds(array $ids): array
+    {
+        return array_values(
+            array_unique(
+                array_filter(
+                    array_map(
+                        static fn($id) => is_numeric($id) ? (int) $id : null,
+                        $ids
+                    ),
+                    static fn($id) => ! is_null($id)
+                )
+            )
+        );
     }
 
     private function resolveMediaPayload(array $data): ?array
@@ -77,7 +134,7 @@ class AdminNotificationService extends BaseService
         return $extension === 'gif' ? 'gif' : 'image';
     }
 
-    private function prepareJobData(array $data, ?array $media): array
+    private function prepareJobData(array $data, ?array $media, array $targetTypes, array $recipientIdsByType): array
     {
         return [
             'type' => 'admin',
@@ -85,6 +142,8 @@ class AdminNotificationService extends BaseService
             'emoji' => $data['emoji'] ?? null,
             'media_type' => $media['type'] ?? null,
             'media_url' => $media['url'] ?? null,
+            'target_types' => $targetTypes,
+            'recipient_ids' => $recipientIdsByType,
         ];
     }
 }
