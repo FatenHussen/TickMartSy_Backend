@@ -685,6 +685,7 @@ return [
         'is_active' => 'Active',
         'min_order_amount' => 'Minimum Order Amount',
         'affiliate_active_coupon' => 'This affiliate already has an active coupon.',
+        'affiliate_reassign_not_allowed' => 'This coupon cannot be reassigned to a new affiliate because it is already linked to another affiliate.',
         'cannot_use_own_coupon' => 'You cannot use your own coupon.',
         'discount_types' => [
             'percent' => 'Percentage',

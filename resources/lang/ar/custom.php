@@ -721,6 +721,7 @@ return [
             'is_active' => 'نشط',
             'min_order_amount' => 'الحد الأدنى لقيمة الطلب',
             'affiliate_active_coupon' => 'هذا المسوّق لديه كوبون نشط بالفعل.',
+            'affiliate_reassign_not_allowed' => 'لا يمكن إعادة إسناد هذا الكوبون إلى مسوّق جديد لأنه مرتبط بالفعل بمسوّق آخر.',
             'discount_types' => [],
         ],
         'sections' => [
