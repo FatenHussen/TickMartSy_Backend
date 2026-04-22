@@ -438,7 +438,7 @@ class PageSectionSeeder extends Seeder
         ]));
 
         PageSection::create($fillPageSectionColors([
-            'name' => ['en' => 'Latest Flash Sale Products', 'ar' => 'منتجات أحدث فلاش سيل'],
+            'name' => ['en' => 'Summer Offers', 'ar' => 'عروض الصيف'],
             'page_id' => $homePage->id,
             'section_id' => $productsSection->id,
             'display_type_id' => $productDisplayType->id,
