@@ -47,7 +47,6 @@ class PopupCampaignRequest extends FormRequest
                 'nullable',
                 'file',
                 'mimes:jpg,jpeg,png,gif,webp,mp4,mov,avi,webm,mkv',
-                'max:51200',
             ],
             'form_enabled' => ['sometimes', 'boolean'],
             'form_fields' => ['nullable', 'array'],

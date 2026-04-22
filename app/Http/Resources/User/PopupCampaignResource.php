@@ -28,7 +28,7 @@ class PopupCampaignResource extends JsonResource
             ],
             'media' => [
                 'type' => $this->media_type,
-                'path' => asset($this->media_path),
+                'path' => $this->media_path,
             ],
             'form' => [
                 'enabled' => $this->form_enabled,
