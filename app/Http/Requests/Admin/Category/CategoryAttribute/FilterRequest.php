@@ -26,6 +26,8 @@ class FilterRequest extends FormRequest
             'category_id' => 'nullable|exists:categories,id',
             'type' => 'nullable|string',
             'is_active' => 'nullable|boolean',
+            'date_from' => 'nullable|date',
+            'date_to' => 'nullable|date|after_or_equal:date_from',
 
         ];
     }

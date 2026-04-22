@@ -24,6 +24,16 @@ class BrandService extends BaseService
 
     public function queryBuilder($query, $filters = [], $config = [])
     {
+        if (!empty($filters['date_from'])) {
+            $query->whereDate('created_at', '>=', $filters['date_from']);
+            unset($filters['date_from']);
+        }
+
+        if (!empty($filters['date_to'])) {
+            $query->whereDate('created_at', '<=', $filters['date_to']);
+            unset($filters['date_to']);
+        }
+
         if (!empty($filters['name'])) {
             $search = strtolower(trim((string) $filters['name']));
             $query->where(function ($q) use ($search) {
@@ -39,8 +49,18 @@ class BrandService extends BaseService
         }
 
         if (!empty($filters['category_id'])) {
-            $query->where('category_id', $filters['category_id']);
+            $query->where(function ($q) use ($filters) {
+                $q->where('category_id', $filters['category_id'])
+                    ->orWhereHas('category', function ($categoryQuery) use ($filters) {
+                        $categoryQuery->where('parent_id', $filters['category_id']);
+                    });
+            });
             unset($filters['category_id']);
+        }
+
+        if (!empty($filters['sub_category_id'])) {
+            $query->where('category_id', $filters['sub_category_id']);
+            unset($filters['sub_category_id']);
         }
 
         if (!empty($filters['origin_country_id'])) {
