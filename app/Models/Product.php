@@ -27,6 +27,7 @@ class Product extends Model implements Sectionable
         'cost_price',
         'quantity',
         'unit',
+        'unit_id',
         'warranty_period',
         'stock',
         'max_purchase_quantity',
@@ -69,6 +70,7 @@ class Product extends Model implements Sectionable
         'is_visible' => 'boolean',
         'is_active' => 'boolean',
         'flash_sale_id' => 'integer',
+        'unit_id' => 'integer',
         'expiry_date' => 'date',
         'expiry_notified_at' => 'datetime',
     ];
@@ -188,6 +190,23 @@ class Product extends Model implements Sectionable
         return $this->productMedia()->first()?->url;
     }
 
+    public function getThumbnailUrlAttribute(): ?string
+    {
+        if (!$this->thumbnail) {
+            return null;
+        }
+
+        if (str_starts_with($this->thumbnail, 'http://') || str_starts_with($this->thumbnail, 'https://')) {
+            return $this->thumbnail;
+        }
+
+        if (str_starts_with($this->thumbnail, '/storage/')) {
+            return asset(ltrim($this->thumbnail, '/'));
+        }
+
+        return asset('storage/' . ltrim($this->thumbnail, '/'));
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Accessors (Ratings)
@@ -285,6 +304,11 @@ class Product extends Model implements Sectionable
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function unitOption()
+    {
+        return $this->belongsTo(Unit::class, 'unit_id');
     }
 
     public function vendor()

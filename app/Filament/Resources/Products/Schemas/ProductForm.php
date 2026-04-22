@@ -350,7 +350,6 @@ class ProductForm
                                 ->schema([
                                     Forms\Components\TextInput::make('price')
                                         ->label(__('custom.products.form.price_label'))
-                                        ->required()
                                         ->numeric()
                                         ->prefix('$')
                                         ->minValue(0)
@@ -370,11 +369,26 @@ class ProductForm
                                         ->minValue(0)
                                         ->columnSpan(1),
 
-                                    Forms\Components\TextInput::make('unit')
+                                    Forms\Components\Select::make('unit_id')
                                         ->label(__('custom.products.form.unit'))
+                                        ->options(fn() => \App\Models\Unit::query()
+                                            ->where('is_active', true)
+                                            ->orderBy('id')
+                                            ->get()
+                                            ->mapWithKeys(function (\App\Models\Unit $unit) {
+                                                $label = $unit->getTranslation('name', app()->getLocale(), false)
+                                                    ?? $unit->getTranslation('name', 'en', false)
+                                                    ?? $unit->getTranslation('name', 'ar', false)
+                                                    ?? (string) $unit->id;
+
+                                                return [$unit->id => $label];
+                                            })
+                                            ->toArray())
+                                        ->searchable()
+                                        ->preload()
+                                        ->native(false)
                                         ->placeholder(__('custom.products.form.unit_placeholder'))
                                         ->helperText(__('custom.products.form.unit_help'))
-                                        ->maxLength(50)
                                         ->columnSpan(1),
 
                                     Forms\Components\TextInput::make('warranty_period')

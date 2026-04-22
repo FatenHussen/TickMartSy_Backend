@@ -10,6 +10,11 @@ class AllResource extends JsonResource
     {
         // Calculate pricing (same logic as user resource)
         $totalPrice = $this->items?->sum(fn($item) => $item->price * $item->quantity) ?? 0;
+        $itemsPreview = ($this->items ?? collect())
+            ->map(fn($item) => $item->product?->name)
+            ->filter()
+            ->take(3)
+            ->values();
 
         $discountValue = $this->schedule?->discount_value ?? 0;
         $discountType = $this->schedule?->discount_type ?? null;
@@ -39,6 +44,7 @@ class AllResource extends JsonResource
             'name' => $this->name,
             'image' => null,
             'num_varieties' => $this->items?->count() ?? 0,
+            'items_preview' => $itemsPreview,
             'original_price' => round($totalPrice, 2),
             'discount_value' => $discountValue,
             'discount_type' => $discountType,

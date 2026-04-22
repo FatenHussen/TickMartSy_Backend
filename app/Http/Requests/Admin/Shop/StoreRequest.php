@@ -28,13 +28,14 @@ class StoreRequest extends FormRequest
             'description.ar'       => 'nullable|string',
             'description.en'       => 'nullable|string',
 
-            'address.ar'           => 'required|string',
-            'address.en'           => 'required|string',
+            'address.ar'           => 'nullable|string',
+            'address.en'           => 'nullable|string',
             'lat' => 'required|numeric|between:-90,90',
             'lng' => 'required|numeric|between:-180,180',
 
             'phone'                => 'nullable|string|max:20',
-            'mobile'               => 'required|string|max:20',
+            'mobile'               => 'nullable|string|max:20',
+            'whatsapp'             => 'nullable|string|max:20',
             'email'                => 'nullable|email|unique:stores,email',
 
             'working_hours'        => 'required|array',
@@ -54,7 +55,7 @@ class StoreRequest extends FormRequest
             'pricing_tier'         => 'nullable|in:cheap,medium,expensive',
             'is_recommended'       => 'sometimes|boolean',
 
-            'area_id'           => 'required|exists:areas,id',
+            'area_id'           => 'nullable|exists:areas,id',
             'vendor_id' => 'required|exists:vendors,id',
 
             'service_ids'          => 'nullable|array',

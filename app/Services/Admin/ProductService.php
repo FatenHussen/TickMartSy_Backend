@@ -19,6 +19,7 @@ class ProductService extends BaseService
 
     protected $relations = [
         'category',
+        'unitOption',
         'brand',
         'originCountry',
         'saleCountry',
@@ -94,12 +95,26 @@ class ProductService extends BaseService
 
     public function create($data)
     {
+        if (array_key_exists('unit_id', $data)) {
+            $unit = \App\Models\Unit::query()->find($data['unit_id']);
+            $data['unit'] = $unit?->getTranslation('name', app()->getLocale(), false)
+                ?? $unit?->getTranslation('name', 'en', false)
+                ?? $unit?->getTranslation('name', 'ar', false);
+        }
+
         $resource = parent::create($data);
         return $resource;
     }
 
     public function update($id, array $data)
     {
+        if (array_key_exists('unit_id', $data)) {
+            $unit = \App\Models\Unit::query()->find($data['unit_id']);
+            $data['unit'] = $unit?->getTranslation('name', app()->getLocale(), false)
+                ?? $unit?->getTranslation('name', 'en', false)
+                ?? $unit?->getTranslation('name', 'ar', false);
+        }
+
         $resource = parent::update($id, $data);
         return $resource;
     }

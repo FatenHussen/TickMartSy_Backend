@@ -18,8 +18,8 @@ class UserBasketScheduleService extends BaseService
     protected $relations = [
         'user',
         'schedule',
-        'items.product',
-        'items.variant',
+        'items.product.media',
+        'items.variant.productVariant.attributes_values',
     ];
 
     protected $searchableFields = [
