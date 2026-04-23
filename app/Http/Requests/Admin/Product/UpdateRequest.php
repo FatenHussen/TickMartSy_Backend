@@ -143,6 +143,7 @@ class UpdateRequest extends FormRequest
 
         $rules = [
             'category_id'           => 'nullable|exists:categories,id',
+            'product_number'        => 'nullable|string|max:255|unique:products,product_number,' . $productId,
             'sku'                   => 'nullable|string|unique:products,sku,' . $productId,
             'model'                 => 'nullable|string|unique:products,model,' . $productId,
             'country_id'            => 'nullable|exists:countries,id',

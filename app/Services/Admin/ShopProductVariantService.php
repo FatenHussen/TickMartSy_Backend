@@ -54,6 +54,12 @@ class ShopProductVariantService extends BaseService
             });
         }
 
+        if (!empty($filters['product_number'])) {
+            $query->whereHas('productVariant.product', function (Builder $q) use ($filters) {
+                $q->where('product_number', $filters['product_number']);
+            });
+        }
+
         // Search in product name
         if (!empty($filters['search'])) {
             $locale = app()->getLocale();
@@ -61,6 +67,7 @@ class ShopProductVariantService extends BaseService
 
             $query->whereHas('productVariant.product', function (Builder $q) use ($search, $locale) {
                 $q->where("name->{$locale}", 'like', '%' . $search . '%')
+                    ->orWhere('product_number', 'like', '%' . $search . '%')
                     ->orWhere('sku', 'like', '%' . $search . '%')
                     ->orWhere('barcode', 'like', '%' . $search . '%');
 

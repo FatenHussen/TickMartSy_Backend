@@ -101,6 +101,7 @@ class StoreRequest extends FormRequest
     {
         $rules = [
             'category_id'           => 'required|exists:categories,id',
+            'product_number'        => 'nullable|string|max:255|unique:products,product_number',
             'sku'                   => 'nullable|string|unique:products,sku',
             'model'                 => 'nullable|string|unique:products,model',
             'country_id'            => 'nullable|exists:countries,id',

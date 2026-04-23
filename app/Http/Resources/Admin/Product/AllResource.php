@@ -13,6 +13,7 @@ class AllResource extends JsonResource
     {
         return [
             'id'                    => $this->id,
+            'product_number'        => $this->product_number,
             'category_id'           => $this->category->name,
             'is_restaurant_category' => (bool) ($this->category?->is_restaurant ?? false),
             'brand_id'              => $this->brand?->name,

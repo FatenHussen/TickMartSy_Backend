@@ -63,6 +63,7 @@ class AllResource extends JsonResource
         return [
             'id' => $this->id,
             'label' => $label,
+            'product_number' => $this->productVariant?->product?->product_number,
             'variant_image' => $this->resolveVariantImage(),
             'shop_id' => $this->shop_id,
             'price' => $this->price,

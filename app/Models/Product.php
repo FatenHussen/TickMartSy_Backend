@@ -15,6 +15,7 @@ class Product extends Model implements Sectionable
     use HasFactory, HasTranslations, SoftDeletes, LogsActivity;
 
     protected $fillable = [
+        'product_number',
         'category_id',
         'name',
         'description',

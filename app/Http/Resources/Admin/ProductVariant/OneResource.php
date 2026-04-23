@@ -18,6 +18,7 @@ class OneResource extends JsonResource
             'barcode' => $this->barcode,
             'product' => [
                 'id' => $this->product->id,
+                'product_number' => $this->product->product_number,
                 'name' => $this->product->name,
                 'description' => $this->product->description,
                 'price' => $this->product->price,
