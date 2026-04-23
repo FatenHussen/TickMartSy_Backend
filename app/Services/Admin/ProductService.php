@@ -52,6 +52,7 @@ class ProductService extends BaseService
     protected $singleImages = ['thumbnail', 'seo_image'];
 
     protected $searchableFields = [
+        'product_number',
         'category_id',
         'name',
         'description',
@@ -78,6 +79,7 @@ class ProductService extends BaseService
 
     protected $sortableFields = [
         'id',
+        'product_number',
         'price',
         'created_at',
         'category_id',
@@ -121,6 +123,11 @@ class ProductService extends BaseService
 
     public function queryBuilder($query, $filters = [], $config = [])
     {
+        if (!empty($filters['product_number'])) {
+            $query->where('product_number', $filters['product_number']);
+            unset($filters['product_number']);
+        }
+
         $categoryIds = array_values(array_unique(array_filter(array_merge(
             $this->normalizeIdInput($filters['category_id'] ?? null),
             $this->normalizeIdInput($filters['category_ids'] ?? null)

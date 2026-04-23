@@ -52,6 +52,7 @@ class FilterRequest extends FormRequest
     {
         return [
             'shop_id'        => 'nullable|integer',
+            'product_number' => 'nullable|string|max:255',
             'category_id'    => 'nullable|integer|exists:categories,id',
             'category_ids'   => 'nullable|array',
             'category_ids.*' => 'integer|exists:categories,id',

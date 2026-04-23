@@ -36,6 +36,7 @@ class FilterRequest extends FormRequest
             'category_ids.*' => ['integer', 'exists:categories,id'],
             'shop_id' => ['nullable', 'exists:shops,id'],
             'product_id' => ['nullable', 'exists:products,id'],
+            'product_number' => ['nullable', 'string', 'max:255'],
             'search' => ['nullable', 'string', 'max:255'],
             'cost_price_min' => ['nullable', 'numeric', 'min:0'],
             'cost_price_max' => ['nullable', 'numeric', 'min:0'],

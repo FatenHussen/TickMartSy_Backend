@@ -34,6 +34,7 @@ class OneResource extends JsonResource
             'variant_image' => $variantImage ?? $productFallbackImage,
             'product' => [
                 'id' => $this->productVariant->product->id,
+                'product_number' => $this->productVariant->product->product_number,
                 'name' => $this->productVariant->product->name,
                 'description' => $this->productVariant->product->description,
                 'price' => $this->productVariant->product->price,
