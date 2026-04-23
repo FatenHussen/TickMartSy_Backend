@@ -10,10 +10,11 @@ use Spatie\Translatable\HasTranslations;
 class Banner extends Model
 {
     use HasTranslations, LogsActivity;
-    public array $translatable = ['title', 'description'];
+    public array $translatable = ['title', 'description', 'button_text'];
     protected $fillable = [
         'title',
         'description',
+        'button_text',
         'image',
         'link',
         'is_active',
@@ -63,6 +64,7 @@ class Banner extends Model
             'id'       => $this->id,
             'title'     => $this->title,
             'desc'     => $this->description,
+            'button_text' => $this->button_text,
             'image'    => $this->image_url,
             'price' => null,
             'discount' => null,

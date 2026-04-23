@@ -84,6 +84,8 @@ class HelpCenterController extends Controller
                 'phone' => $settings['phone']->value ?? null,
                 'whatsapp' => $settings['whts']->value ?? null,
                 'email' => $settings['email']->value ?? null,
+                'instagram' => $settings['instagram']->value ?? null,
+                'facebook' => $settings['facebook']->value ?? null,
             ],
             'color' => [
                 'main_color' => isset($settings['main_color'])

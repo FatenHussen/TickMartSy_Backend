@@ -602,6 +602,496 @@ class LegalDocumentSeeder extends Seeder
         12-   سريان الاحكام والشروط:  ان جميع الأحكام التي ينص على أنها سارية أو التي تسري بطبيعتها بعد إنهاء التعاقد تبقى سارية المفعول بعد إنهاء أو تعليق عضويتك في الموقع.
         TEXT;
 
+        $returnPolicyEn = <<<'TEXT'
+        Return Policy
+
+        Scope of Application of this Policy:
+
+        This return policy applies to customers who purchase products from a brand or seller listed on the Tikmool website www.tikmool.com or the Tikmool mobile application.
+
+        Returnable Products:
+
+        The following conditions must be met for products to be considered returnable:
+
+        - Tikmool reserves the right to reject any return request from the customer if the product does not meet the return requirements (rejected product).
+        - If the return request is rejected, the customer is not entitled to a refund.
+        - If the product is deemed rejected at any stage after the return, Tikmool will make one attempt to return the rejected product to the customer. If the customer does not receive the product, Tikmool will retain the product for two business days at the delivery warehouse.
+        - The customer has the right to submit a request to return the rejected product through the customer service center within 5 business days of the last notification of the failed delivery.
+        - If the customer does not receive the returned products after the last delivery attempt, we will send two reminder emails and make two phone calls to inform them of the return request.
+        - If the customer responds to our contact and return attempts and requests a return within 5 business days from the date of the first call, we will deliver the product to them. If they do not respond, the product will be disposed of, and Tikmool will not be responsible for the product price or return.
+
+        General Conditions for the Return Process:
+
+        - If the returned product does not meet the company's return conditions, Tikmool reserves the right to return the product to the customer.
+        - If the product does not meet the return conditions, the customer is not entitled to a refund.
+        - If a return request is rejected at any stage, Tikmool will make one attempt to return the product to the customer. In the event of a failed delivery attempt, the product will be retained for two business days after notifying the customer of the last failed delivery attempt. The customer may submit a return request to the customer service center within two days of the last notification.
+        - If a return request is not received from the customer, the product will be disposed of, and the customer will not be able to receive a refund or submit a new return request.
+
+        Returnable Products and Return Conditions:
+
+        1- Clothing, Shoes, Bags, and Fashion Accessories:
+        - Clothing may be returned provided that all tags and labels are intact and in the original packaging, and that the clothing has not been used, worn, washed, or damaged in any way.
+        - Underwear, swimwear, bras, socks, and tights are not returnable.
+        - Shoes, bags, luggage, eyeglasses, and watches may be returned provided that they are in the original packaging and that all tags and labels are intact and in good condition.
+
+        2- Electronics, Electrical Appliances, and Mobile Phones:
+        - If the box has been opened, the tags have been removed, the device has been used, or there is damage, the return request will be rejected. This excludes cases where a manufacturing defect is proven in the product.
+        - In case of a manufacturing defect, the product must be returned with the box, manuals, labels, and all accessories in good condition.
+        - The original box, with all labels intact and unopened, is a prerequisite for a return.
+        - After receiving the product, Tikmool will determine whether to repair the product, refund the customer, or return the product.
+
+        3- Beauty and Health:
+        - If opened or used, products (skin care, perfumes, cosmetics, etc.) cannot be returned.
+        - The following products cannot be returned: vitamins, nutritional supplements, personal care products, and hair care products.
+        - If there is a manufacturing or packaging defect in the product, the product must be returned with the original box and all labels and accessories, if any.
+
+        4- Sports and Outdoor Products:
+        - Returns are accepted if the product is unused or unopened, and the original labels, tags, and box are present.
+        - If a manufacturing defect is found, returns are accepted provided that the original box, labels, and tags are present and the product has not been used.
+
+        5- Home, Kitchen, and Accessories:
+        - All bedding and upholstery products cannot be returned if opened.
+        - Large household appliances and furniture cannot be returned.
+        - Products that can be assembled or installed, or that have undergone modifications, cannot be returned if opened and used, unless a manufacturing defect is found.
+        - Home or kitchen decor products are eligible for return if they are unopened, in their original packaging, and with tags, labels, and all accessories intact.
+
+        6- Baby Products:
+        - Products are eligible for return if they are unopened, in their original packaging, and with tags, labels, and all accessories intact.
+        - The following products are not eligible for return: diapers, accessories, hygiene and bathing products, feeding products, and educational and training products.
+
+        7- Home Maintenance Products:
+        - If the box has been opened, the labels have been removed, the device or tools have been used, or there is damage, the return request will be rejected. This excludes cases where a manufacturing defect is proven in the product.
+        - In case of a manufacturing defect, the product must be returned with the original packaging, manuals, labels, and all accessories in undamaged condition.
+
+        8- Toys:
+        - All costumes and party wear are non-returnable.
+        - Games that are used, assembled, opened, or missing parts are not refundable unless there is a manufacturing defect. In this case, the product must be returned with the original box, manuals, labels, and all accessories in good condition.
+
+        9- Stationery, Books, Tools, Office Supplies, and Accessories:
+        - If the box has been opened, labels have been removed, the products have been used, or are damaged, the return request will be rejected. This excludes cases where a manufacturing defect is proven in the product.
+        - In case of a manufacturing defect, the product must be returned with the original box, booklets, labels, and all accessories in good condition.
+
+        10- Automotive Products and Accessories:
+        - If a manufacturing defect is found, the product may be returned provided that the original box, labels, cards, booklets, and all accessories are intact and undamaged.
+        - The return request will be rejected if the original box has been opened, the protective cover or original packaging is removed, or any accessories are missing.
+
+        11- Other Products:
+        - If the box has been opened, labels have been removed, the products have been used, or are damaged, the return request will be rejected. This excludes cases where a manufacturing defect is proven in the product.
+        - In case of a manufacturing defect, the product must be returned with its original packaging, manuals, labels, and all accessories in good condition.
+
+        Procedures Taken Upon Receiving a Return Request from the Customer:
+        - Upon receipt of the product in question, we process the request within 3 business days.
+        - After processing and accepting the return request, the amount will be refunded within 5 to 7 business days for cash payments. The refunded amount depends on the condition of the returned product.
+        - When a product is returned, the refund amount and payment method may vary depending on the condition of the product, the length of time the customer has had the product, and the availability of the return conditions for each product.
+        - If you do not receive a response after the processing period has expired, please contact us for further assistance and information.
+        TEXT;
+
+        $returnPolicyAr = <<<'TEXT'
+        سياسة الإرجاع
+
+        نطاق تطبيق هذه السياسة:
+
+        تطبق سياسة الإرجاع هذه على العملاء الذين يشترون منتجات من علامة تجارية أو بائع مدرج على موقع تيك مول www.tikmool.com أو تطبيق تيك مول للجوال.
+
+        المنتجات القابلة للإرجاع:
+
+        يجب استيفاء الشروط التالية حتى تعتبر المنتجات قابلة للإرجاع:
+
+        - تحتفظ تيك مول بالحق في رفض أي طلب إرجاع من العميل إذا كان المنتج لا يفي بشروط الإرجاع (منتج مرفوض).
+        - إذا تم رفض طلب الإرجاع، فلن يكون العميل مستحقا لأي استرداد.
+        - إذا اعتبر المنتج مرفوضا في أي مرحلة بعد الإرجاع، ستقوم تيك مول بمحاولة واحدة لإعادة المنتج المرفوض إلى العميل. وإذا لم يستلم العميل المنتج، فسيتم الاحتفاظ به لمدة يومي عمل في مستودع التوصيل.
+        - يحق للعميل تقديم طلب لاستلام المنتج المرفوض من خلال مركز خدمة العملاء خلال 5 أيام عمل من آخر إشعار بمحاولة التسليم الفاشلة.
+        - إذا لم يستلم العميل المنتجات المعادة بعد آخر محاولة تسليم، فسنرسل رسالتي تذكير عبر البريد الإلكتروني وسنجري اتصالين هاتفيين لإبلاغه بطلب الإرجاع.
+        - إذا استجاب العميل لمحاولات التواصل وطلب الاستلام خلال 5 أيام عمل من تاريخ أول اتصال، سيتم تسليم المنتج له. وإذا لم يستجب، فسيتم التخلص من المنتج ولن تتحمل تيك مول مسؤولية سعر المنتج أو إرجاعه.
+
+        الشروط العامة لعملية الإرجاع:
+
+        - إذا لم يستوف المنتج المرتجع شروط الإرجاع المعتمدة لدى الشركة، تحتفظ تيك مول بالحق في إعادة المنتج إلى العميل.
+        - إذا لم يستوف المنتج شروط الإرجاع، فلا يحق للعميل استرداد المبلغ.
+        - إذا تم رفض طلب الإرجاع في أي مرحلة، ستقوم تيك مول بمحاولة واحدة لإعادة المنتج إلى العميل. وفي حال فشل التسليم، سيتم الاحتفاظ بالمنتج لمدة يومي عمل بعد إشعار العميل بآخر محاولة تسليم فاشلة. ويجوز للعميل تقديم طلب استلام عبر مركز خدمة العملاء خلال يومين من آخر إشعار.
+        - إذا لم يتم استلام طلب من العميل، سيتم التخلص من المنتج، ولن يتمكن العميل من استرداد المبلغ أو تقديم طلب إرجاع جديد.
+
+        المنتجات القابلة للإرجاع وشروط الإرجاع:
+
+        1- الملابس والأحذية والحقائب وإكسسوارات الأزياء:
+        - يمكن إرجاع الملابس بشرط وجود جميع البطاقات والملصقات وبقائها ضمن التغليف الأصلي، وألا تكون قد استعملت أو لُبست أو غُسلت أو تعرضت لأي تلف.
+        - لا يمكن إرجاع الملابس الداخلية وملابس السباحة وحمالات الصدر والجوارب والجوارب الطويلة.
+        - يمكن إرجاع الأحذية والحقائب والأمتعة والنظارات والساعات بشرط أن تكون في التغليف الأصلي وأن تكون جميع الملصقات والبطاقات سليمة وبحالة جيدة.
+
+        2- الإلكترونيات والأجهزة الكهربائية والهواتف المحمولة:
+        - إذا تم فتح الصندوق أو إزالة الملصقات أو استخدام الجهاز أو وجود تلف، فسيتم رفض طلب الإرجاع. ويستثنى من ذلك حالات وجود عيب مصنعي مثبت.
+        - في حال وجود عيب مصنعي، يجب إرجاع المنتج مع الصندوق والكتيبات والملصقات وجميع الملحقات بحالة جيدة.
+        - يعتبر وجود الصندوق الأصلي بجميع ملصقاته سليمة وغير مفتوحة شرطا أساسيا للإرجاع.
+        - بعد استلام المنتج، تقرر تيك مول ما إذا كان سيتم إصلاح المنتج أو رد المبلغ للعميل أو إعادة المنتج إليه.
+
+        3- منتجات الجمال والصحة:
+        - لا يمكن إرجاع المنتجات (العناية بالبشرة، العطور، مستحضرات التجميل وغيرها) إذا تم فتحها أو استخدامها.
+        - المنتجات التالية غير قابلة للإرجاع: الفيتامينات، المكملات الغذائية، منتجات العناية الشخصية، ومنتجات العناية بالشعر.
+        - إذا وجد عيب مصنعي أو عيب في التغليف، يجب إرجاع المنتج مع العبوة الأصلية وجميع الملصقات والملحقات إن وجدت.
+
+        4- المنتجات الرياضية ومنتجات الهواء الطلق:
+        - تقبل الإرجاعات إذا كان المنتج غير مستخدم أو غير مفتوح، مع وجود الملصقات والبطاقات والصندوق الأصلي.
+        - تقبل الإرجاعات عند وجود عيب مصنعي بشرط وجود الصندوق الأصلي والملصقات والبطاقات وألا يكون المنتج مستخدما.
+
+        5- المنزل والمطبخ والإكسسوارات:
+        - لا يمكن إرجاع جميع منتجات المفروشات وأغطية الأسرّة إذا تم فتحها.
+        - لا يمكن إرجاع الأجهزة المنزلية الكبيرة والأثاث.
+        - المنتجات التي يمكن تركيبها أو تثبيتها أو التي خضعت لتعديلات لا يمكن إرجاعها إذا فُتحت واستُخدمت، ما لم يثبت وجود عيب مصنعي.
+        - منتجات ديكور المنزل أو المطبخ قابلة للإرجاع إذا كانت غير مفتوحة وضمن تغليفها الأصلي ومع وجود البطاقات والملصقات وجميع الملحقات.
+
+        6- منتجات الأطفال:
+        - المنتجات قابلة للإرجاع إذا كانت غير مفتوحة وضمن التغليف الأصلي ومع البطاقات والملصقات وجميع الملحقات.
+        - المنتجات التالية غير قابلة للإرجاع: الحفاضات، والإكسسوارات، ومنتجات النظافة والاستحمام، ومنتجات التغذية، ومنتجات التعليم والتدريب.
+
+        7- منتجات الصيانة المنزلية:
+        - إذا تم فتح الصندوق أو إزالة الملصقات أو استخدام الجهاز أو الأدوات أو وجود تلف، فسيتم رفض طلب الإرجاع. ويستثنى من ذلك حالات وجود عيب مصنعي مثبت.
+        - في حال وجود عيب مصنعي، يجب إرجاع المنتج مع التغليف الأصلي والكتيبات والملصقات وجميع الملحقات بحالة غير متضررة.
+
+        8- الألعاب:
+        - جميع أزياء التنكر وملابس الحفلات غير قابلة للإرجاع.
+        - الألعاب التي تم استخدامها أو تركيبها أو فتحها أو كانت ناقصة الأجزاء غير قابلة للاسترداد إلا في حالة وجود عيب مصنعي. وفي هذه الحالة يجب إرجاع المنتج مع الصندوق الأصلي والكتيبات والملصقات وجميع الملحقات بحالة جيدة.
+
+        9- القرطاسية والكتب والأدوات واللوازم المكتبية والإكسسوارات:
+        - إذا تم فتح الصندوق أو إزالة الملصقات أو استخدام المنتجات أو تعرضها للتلف، فسيتم رفض طلب الإرجاع. ويستثنى من ذلك حالات وجود عيب مصنعي مثبت.
+        - في حال وجود عيب مصنعي، يجب إرجاع المنتج مع الصندوق الأصلي والكتيبات والملصقات وجميع الملحقات بحالة جيدة.
+
+        10- منتجات وإكسسوارات السيارات:
+        - في حال وجود عيب مصنعي، يمكن إرجاع المنتج بشرط أن يكون الصندوق الأصلي والملصقات والبطاقات والكتيبات وجميع الملحقات سليمة وغير متضررة.
+        - يتم رفض طلب الإرجاع إذا كان الصندوق الأصلي مفتوحا أو تمت إزالة الغلاف الواقي أو التغليف الأصلي أو فقد أي من الملحقات.
+
+        11- منتجات أخرى:
+        - إذا تم فتح الصندوق أو إزالة الملصقات أو استخدام المنتجات أو تعرضها للتلف، فسيتم رفض طلب الإرجاع. ويستثنى من ذلك حالات وجود عيب مصنعي مثبت.
+        - في حال وجود عيب مصنعي، يجب إرجاع المنتج مع التغليف الأصلي والكتيبات والملصقات وجميع الملحقات بحالة جيدة.
+
+        الإجراءات المتخذة عند استلام طلب إرجاع من العميل:
+        - عند استلام المنتج المعني، تتم معالجة الطلب خلال 3 أيام عمل.
+        - بعد معالجة طلب الإرجاع وقبوله، يتم رد المبلغ خلال 5 إلى 7 أيام عمل للمدفوعات النقدية. ويعتمد المبلغ المسترد على حالة المنتج المرتجع.
+        - عند إرجاع المنتج، قد يختلف مبلغ الاسترداد وطريقة الدفع بحسب حالة المنتج، والمدة التي احتفظ بها العميل بالمنتج، وتوفر شروط الإرجاع الخاصة بكل منتج.
+        - إذا لم تتلق ردا بعد انتهاء مدة المعالجة، يرجى التواصل معنا للحصول على المساعدة والمعلومات الإضافية.
+        TEXT;
+
+        $warrantyPolicyEn = <<<'TEXT'
+        Warranty Policy
+
+        Product Warranty Policy:
+        - Tikmool's warranty policy protects you and your product from manufacturing defects after purchase.
+        - All electrical and electronic devices are subject to the warranty of the manufacturer or supplier according to the period specified by them, with the exception of accessories that follow the manufacturer's or seller's policy.
+        - The original invoice containing the serial number and warranty period must be kept to ensure validity. If devices are delivered with a warranty card, customers must visit the service centers and show the card to follow up on their request.
+        - The service centers of the seller that issued the warranty card are obligated to carry out warranty repairs in cases where products are purchased through that seller, and the seller's warranty terms apply in this case.
+        - Companies, brands, and sellers other than Tikmool are obligated to the warranty services they provide, including the provision of spare parts and repair quality. In the event of a complaint, inquiry, or note, customers must contact the warranty service provider for their product.
+        - The customer can claim direct compensation from service providers in the event of delay in resolving the warranty claim in accordance with applicable laws in the country, and Tikmool bears no responsibility for such compensation.
+
+        Repairing or replacing the device under warranty does not require extending or renewing the warranty period and remains subject to the manufacturer's warranty terms.
+
+        Instructions for Receiving and Delivering Warranty Items:
+        - The customer must keep the original packaging of the product and repackage the product safely and properly. Tikmool is not responsible for damage during transport if packaging or wrapping is not intact.
+        - The product and all its accessories must be delivered by the customer to the delivery representative.
+        - If the customer receives a damaged product or one of its accessories is missing, this must be reported within 24 hours of receiving the product. We are not responsible for any claim after this period.
+        - The customer must remove all additional accessories (SIM cards, covers, protectors, electronic pens, accessories) when handing over the device, and remains responsible for them. Tikmool bears no responsibility for their loss or damage.
+        - The address used when submitting the order is approved for both pickup and delivery. If you wish to change it, please contact Tikmool customer service. Changes will be shared with the delivery company. Submitting the device or product to the service center also includes implicit customer consent to use contact information by us and the service provider to meet service requirements.
+        - Contact information may not be changed during the warranty claim, and Tikmool and service centers have the right to use it while processing the request.
+        - If the product cannot be repaired under warranty, the customer is entitled to request product replacement or a refund after deducting the value of use and missing parts. Customers must request this directly from brands, commercial companies, or the seller according to applicable laws.
+        - The warranty does not cover damage resulting from misuse, accidents, or any external cause unrelated to manufacturing defects.
+        - If the warranty card is rejected or the product is out of warranty, some service centers may charge inspection fees.
+        - The inspection period does not include the time spent obtaining customer approval or product information.
+        - Any data on the device (personal data, contacts, accounts, passwords, etc.) is the customer's responsibility. Customers are requested to back up their data, remove any lock or password, and disable Find My Device before handing the device to the service center.
+        - We emphasize that customers must provide correct information when submitting warranty requests.
+        - If the customer refuses to receive the product after processing is complete, it will be kept for 15 days from the completion date. After that, the product will be disposed of without any responsibility or compensation on Tikmool, including the product price.
+
+        Pick-up and Delivery Policy (If Available):
+        - If Tikmool provides pickup and delivery service for warranty requests in any area, this is considered an additional service and may include fees charged to customers as determined by Tikmool. Tikmool reserves the right to discontinue the service at any time.
+        - If this service is provided, the processing period is 30 business days as follows:
+        - 7 business days: from receipt of the product from the customer until delivery to the seller or service center.
+        - 16 business days: processing, inspection, and maintenance time at the seller or service center.
+        - 7 business days: delivery of the product to the customer after inspection and maintenance by the seller or service center.
+
+        Seller or Brand Warranty:
+        1. Tikmool is not responsible for warranty services provided by the seller or brand in terms of repair quality, parts availability, or repair duration, and customers must contact the warranty service provider directly for complaints or inquiries.
+        2. The manufacturer or service provider offers a warranty for the device subject to manufacturer, producer, or seller policies. These policies may be found in the user manual or on the official website of the manufacturer or seller. To obtain warranty service, customers can contact manufacturers, sellers, or their authorized service centers according to approved policies.
+        3. Tikmool provides its own warranty for some devices to ensure service quality.
+        TEXT;
+
+        $warrantyPolicyAr = <<<'TEXT'
+        سياسة الضمان
+
+        سياسة ضمان المنتجات:
+        - تحميك سياسة الضمان في تيك مول وتحمي منتجك من عيوب التصنيع بعد الشراء.
+        - تخضع جميع الأجهزة الكهربائية والإلكترونية لضمان الشركة المصنعة أو المورد حسب المدة المحددة من قبلهم، باستثناء الملحقات التي تتبع سياسة الشركة المصنعة أو البائع.
+        - يجب الاحتفاظ بالفاتورة الأصلية التي تتضمن الرقم التسلسلي ومدة الضمان لضمان سريانه. وإذا تم تسليم الأجهزة مع بطاقة ضمان، يجب على العملاء زيارة مراكز الخدمة وإبراز البطاقة لمتابعة الطلب.
+        - تلتزم مراكز خدمة البائع صاحب بطاقة الضمان بإجراء إصلاحات الضمان للحالات التي يتم فيها شراء المنتجات من خلال ذلك البائع، وتطبق شروط ضمان البائع في هذه الحالة.
+        - تلتزم الشركات والعلامات التجارية والبائعون غير تيك مول بخدمات الضمان التي يقدمونها، بما في ذلك توفير قطع الغيار وجودة الإصلاح. وفي حال وجود شكوى أو استفسار أو ملاحظة، يجب على العملاء التواصل مع مزود خدمة الضمان الخاص بمنتجهم.
+        - يحق للعميل المطالبة بتعويض مباشر من مزودي الخدمة في حال التأخر في معالجة مطالبة الضمان وفقا للقوانين النافذة في الدولة، ولا تتحمل تيك مول أي مسؤولية عن هذا التعويض.
+
+        إن إصلاح الجهاز أو استبداله ضمن الضمان لا يستلزم تمديد فترة الضمان أو تجديدها، ويظل خاضعا لشروط الضمان وفق سياسة الشركة المصنعة للجهاز.
+
+        تعليمات استلام وتسليم الضمان:
+        - يجب على العميل الاحتفاظ بالتغليف الأصلي للمنتج وإعادة تغليف المنتج بطريقة آمنة وسليمة. ولا تتحمل تيك مول مسؤولية أي ضرر أثناء نقل المنتج إذا لم يكن التغليف سليما.
+        - يجب على العميل تسليم المنتج وجميع ملحقاته إلى مندوب التوصيل.
+        - إذا استلم العميل منتجا متضررا أو كان أحد ملحقاته مفقودا، فيجب الإبلاغ عن ذلك خلال 24 ساعة من استلام المنتج، ولا نتحمل أي مطالبة بعد هذه المدة.
+        - يجب على العميل إزالة جميع الملحقات الإضافية (شرائح الاتصال، الأغطية، الواقيات، الأقلام الإلكترونية، الإكسسوارات) عند تسليم الجهاز، ويكون مسؤولا عنها، ولا تتحمل تيك مول أي مسؤولية عن فقدانها أو تلفها.
+        - يعتمد العنوان المستخدم عند تقديم الطلب لعمليتي الاستلام والتسليم. وإذا رغبت بتعديله، يرجى التواصل مع خدمة عملاء تيك مول، وسيتم مشاركة التعديل مع شركة التوصيل. كما أن تسليم الجهاز أو المنتج إلى مركز الخدمة يتضمن موافقة ضمنية من العميل على استخدام معلومات التواصل من قبلنا ومن قبل مزود الخدمة لتلبية متطلبات الخدمة.
+        - لا يمكن تغيير معلومات التواصل أثناء مطالبة الضمان، ويحق لتيك مول ولمراكز الخدمة استخدامها أثناء معالجة الطلب.
+        - إذا تعذر إصلاح المنتج ضمن الضمان، يحق للعميل طلب استبدال المنتج أو استرداد المبلغ بعد خصم قيمة الاستخدام وقيمة الأجزاء المفقودة. ويجب على العملاء طلب ذلك مباشرة من العلامات التجارية أو الشركات التجارية أو البائع وفق القوانين النافذة.
+        - لا يغطي الضمان الأضرار الناتجة عن سوء الاستخدام أو الحوادث أو أي سبب خارجي لا يتعلق بعيوب التصنيع.
+        - في حال رفض بطاقة الضمان أو كان المنتج خارج الضمان، قد تفرض بعض مراكز الخدمة رسوما على الفحص.
+        - لا تشمل مدة الفحص الوقت المستغرق للحصول على موافقة العميل أو معلومات المنتج.
+        - أي بيانات موجودة على الجهاز (بيانات شخصية، جهات اتصال، حسابات، كلمات مرور، وغيرها) هي مسؤولية العميل. لذلك يرجى عمل نسخة احتياطية وإزالة أي قفل أو كلمة مرور وإيقاف خدمة Find My Device قبل تسليم الجهاز لمركز الخدمة.
+        - نؤكد على العملاء عند طلب الضمان ضرورة تقديم معلومات صحيحة.
+        - في حال رفض العميل استلام المنتج بعد إتمام المعالجة، سيتم الاحتفاظ به لمدة 15 يوما من تاريخ اكتمال المعالجة، وبعد ذلك سيتم التخلص من المنتج دون أي مسؤولية أو تعويض على تيك مول، بما في ذلك قيمة المنتج.
+
+        سياسة الاستلام والتسليم (إن وجدت):
+        - إذا وفرت تيك مول خدمة الاستلام والتسليم لطلبات الضمان في أي منطقة ممكنة، فتعد هذه خدمة إضافية وقد يترتب عليها رسوم وتكاليف على العملاء تحددها تيك مول، وتحتفظ تيك مول بحق إيقاف الخدمة متى تشاء.
+        - في حال توفير هذه الخدمة، تكون مدة معالجة الطلب 30 يوم عمل موزعة كما يلي:
+        - 7 أيام عمل: من تاريخ استلام المنتج من العميل وحتى تسليمه إلى البائع أو مركز الخدمة.
+        - 16 يوم عمل: مدة المعالجة والفحص والصيانة لدى البائع أو مركز الخدمة.
+        - 7 أيام عمل: تسليم المنتج إلى العميل بعد الفحص والصيانة من قبل البائع أو مركز الخدمة.
+
+        ضمان البائع أو العلامة التجارية:
+        1. تيك مول غير مسؤولة عن خدمة الضمان المقدمة من البائع أو العلامة التجارية من حيث جودة الإصلاح أو توفر القطع أو مدة الإصلاح، ويجب على العملاء التواصل مباشرة مع مزود خدمة الضمان في حال وجود شكوى أو استفسار.
+        2. تقدم الشركة المصنعة أو مزود الخدمة ضمانا للجهاز وفقا لسياسات الشركة المصنعة أو المنتج أو البائع. وقد تتوفر هذه السياسات في دليل المستخدم الخاص بالجهاز أو على الموقع الرسمي للشركة المصنعة أو البائع. وللحصول على خدمة الضمان، يمكن للعملاء التواصل مع المصنعين أو البائعين أو مراكز الخدمة المعتمدة لديهم وفقا لسياساتهم المعتمدة.
+        3. توفر تيك مول ضمانها الخاص لبعض الأجهزة لضمان جودة الخدمة.
+        TEXT;
+
+        $termsOfSaleEn = <<<'TEXT'
+        Terms of Sale
+
+        Last updated: 02/15/2025
+
+        Introduction
+
+        The terms of sale in this document are the terms and conditions under which purchases are received and delivered to the customer as a buyer on the website www.tikmool.com or through our mobile application, owned and operated by Online Tech Mall Limited. Please read and understand these terms carefully before making any purchase through the website or application. If you make a purchase through the website, this constitutes your acknowledgment and agreement to these terms of sale and your commitment to all their provisions. You must also review, read, and understand the privacy policy adopted on our website and application, as your use and all transactions are subject to it.
+
+        Approved Definitions:
+
+        1- Purchase Order: When you place a purchase order, we will notify you via email, SMS, or a notification on the application and website of our acceptance or rejection of the order. In this case, you will not be charged any amount or product value unless the order is confirmed.
+
+        2- Supplier: All products available on our website and mobile application are sold by Tikmool or by a local or international seller.
+
+        3- Payment: Upon placing and confirming a purchase order, you authorize Tikmool or any third party specialized in electronic payments with whom we have contracts to deduct the purchase value from your card, or to collect payment in cash on delivery.
+
+        4- Payment by Credit Card (if available): We may require you to open an account with our contracted electronic payment companies, and this means accepting their terms and conditions. We also reserve the right to add or remove any approved payment method at any time without prior notice.
+
+        5- Cancellation of Purchase Order: We allow you to cancel your order during the packaging stage for any reason, before shipping and delivery start.
+
+        6- Order Rejection by Us: We reserve the right to reject your order if you fail to pay the purchase value, fail to provide required delivery details, or are unable to receive the order.
+
+        7- Delivery of Orders: Delivery cost and expected date are clearly shown on the website and application.
+
+        8- Late Delivery: Delivery delays may happen for several reasons, including:
+        - You are not available at the delivery address and time. In this case, we will inform you about the delivery procedure.
+        - You are unable to receive the order for any reason, or unable to schedule another delivery date. In this case, we will contact you for additional delivery details. The order will be canceled if we are unable to reach you.
+        - Delays may occur due to factors beyond our control. We strive to reduce the impact of any delay and we will contact you directly in all cases.
+
+        9- Invoices: We provide an electronic invoice for your purchases, sent to your email address. Please make sure you provide a valid and correct email.
+
+        10- Product Ownership: After you place your order, pay for it, and receive it at the delivery address, ownership of the product transfers fully to you.
+
+        Warranty:
+
+        - Tikmool warranty is subject to our approved warranty policy. We provide warranty for certain products sold by us, and warranty availability may depend on suppliers and their approved terms and policies. Warranty applies only to manufacturing, material, or design defects. Product warranty is limited to repairing the defective product, replacing the defective part, replacing the product, or refunding the paid amount according to the paid price.
+        - Warranty does not apply to all products and depends on supplier warranty availability and policy. Please always review the warranty policy on our website and app, along with supplier policies and warranty cards.
+        - If products are purchased from another seller, that seller's warranty terms apply. For details, review the approved warranty policy on our website and app.
+        - Repairing or replacing the product does not require extending or renewing the warranty period.
+        - Replacement, repair, or refund rules are as follows:
+          1. Maximum repair attempts before replacement or refund: 3.
+          2. Maximum repair period: 15 business days.
+          3. Repair-eligible categories include electrical appliances, electronics, watches, electronics accessories, toys, children's supplies, sports equipment, and electrical tools.
+          4. If repair is not possible after the permitted attempts, the product is replaced or the customer is refunded.
+        - Warranty is void in these cases:
+          1. Removing or hiding the product serial number.
+          2. Attempting repair at non-authorized service centers.
+          3. Damage or failure to any part that prevents proper operation or use (broken screen, puncture, bending, etc.).
+          4. Liquid damage by immersion or spray causing damage to the product or any of its parts.
+          5. Tampering with operating software.
+          6. Using unauthorized or non-original accessories.
+          7. Replacing consumables (ink, batteries, etc.).
+          8. Misuse that violates manufacturer usage instructions.
+          9. Tampering with labels, seals, and tags.
+
+        Returns:
+
+        1- Return Conditions:
+        - Original packaging is unopened.
+        - Product is unused.
+        - All labels and tags are present and in good condition.
+        - Product differs from its description or image shown on the website or app.
+
+        2- Returns: Some products are eligible for return. Please review the returns policy on our website and app.
+
+        3- Reasons for Return and Exchange:
+        - Receiving a damaged or defective product.
+        - Receiving a product that does not match the listed description.
+        - Receiving the wrong product.
+
+        4- Non-Returnable Products:
+        - Products that were used, damaged, spoiled, or altered from original condition.
+        - Products with damaged, altered, or erased serial numbers.
+        - Products classified as hazardous or containing flammable materials.
+        - Products mixed or used with other products or materials.
+        - Products listed as non-returnable in our return policy.
+
+        5- Refund Process:
+        For returnable products we approve for return, the customer receives full paid value including applicable fees, excluding shipping fees if paid, in the following cases:
+        - Manufacturing defect.
+        - Product does not match description on website/app.
+        - Error from our side (pricing error, description error, delivery delay).
+        In all other cases, we refund only the value of the returnable product (excluding shipping fees paid for delivery to you), and the customer bears return shipping cost.
+        For undelivered products, full refund applies if you cancel according to Clause 5 under Approved Definitions.
+
+        6- Refund Procedures:
+        Refunds are made through the same payment method selected during checkout within a maximum of 15 days from receiving the returned product, or immediately when cancellation occurs during packaging stage.
+
+        Customer Legal Obligations:
+        Once you register an account with Tikmool, you agree to:
+        1. Comply with all applicable laws and regulations in countries where we operate, including privacy laws.
+        2. Confirm you have full legal capacity to agree and pay all due amounts.
+        3. Accept services are provided on an "as-is" basis without special warranties.
+        4. Accept that we disclaim direct and indirect warranties such as merchantability, non-infringement, secure or error-free services.
+        5. Acknowledge that the only warranty provided is the one in the Warranty section of this document.
+
+        General Provisions:
+        1- These terms do not exempt either party from liability for fraud or deception, death or personal injury caused by negligence, or any liability that cannot be excluded by law.
+        2- We are not liable for damage, harm, data or profit loss, even if notified, in the following cases:
+        - Use of, or inability to use, the product.
+        - Late delivery or failure to deliver due to your failure or delay in providing requested information.
+        - Damage resulting from non-authorized repair.
+        - Loss of stored data in repaired or replaced products.
+        - Interruption or delay of website, app, or services, and resulting effects.
+        - Damage to your device resulting from purchased products.
+        - Viruses or malicious software resulting from product use.
+        - Reliance only on product information shown on our website when ordering.
+        - Any emergency or circumstance beyond our control.
+        3- Our total legal liability for breach of duties related to these terms is limited to compensation equal to product price and shipping, delivery, and return costs only. You agree to this limitation and release us from other losses, damages, and expenses arising from:
+        - Your non-compliance with any terms of this document.
+        - Third-party claims resulting from your use of the website, app, or services.
+        - Violations of applicable laws and regulations.
+        4- These terms and related obligations are governed by the laws in countries where we operate.
+        5- No party other than parties to this agreement may enforce its provisions.
+        6- We may amend the Terms of Sale at any time and notify you by posting updates on our website and app. Updates are effective from the posting date. Any purchase after posting constitutes acknowledgment and acceptance.
+        7- Neither party is liable for loss, delay, or service interruption caused by force majeure or circumstances beyond control, including acts of God, court rulings, new laws, regulatory decisions, international sanctions, economic boycotts, power outages, or similar events affecting service continuity.
+        8- These Terms of Sale remain effective even after suspension or cancellation of your membership on the website and app.
+        TEXT;
+
+        $termsOfSaleAr = <<<'TEXT'
+        شروط البيع
+
+        آخر تحديث: 15/02/2025
+
+        المقدمة:
+
+        شروط البيع الواردة في هذه الوثيقة هي الأحكام والشروط التي يتم بموجبها استلام المشتريات وتسليمها للعميل بصفته مشتريا عبر موقع www.tikmool.com أو عبر تطبيقنا للجوال المملوك والمدار من قبل شركة Online Tech Mall Limited. لذلك يرجى قراءة هذه الشروط وفهمها جيدا قبل إجراء أي عملية شراء عبر الموقع أو التطبيق. إن قيامك بالشراء عبر الموقع يعد إقرارا منك وموافقة على شروط البيع والتزاما بجميع أحكامها. كما يجب عليك مراجعة وقراءة وفهم سياسة الخصوصية المعتمدة على موقعنا وتطبيقنا، حيث يخضع استخدامك وجميع معاملاتك لها.
+
+        التعريفات المعتمدة:
+
+        1- طلب الشراء: عند تقديم طلب شراء، سنقوم بإشعار العميل عبر البريد الإلكتروني أو رسالة هاتفية أو إشعار داخل التطبيق والموقع بقبول الطلب أو رفضه. وفي هذه الحالة لا يتم تحصيل أي مبلغ أو قيمة المنتج إلا بعد تأكيد الطلب.
+
+        2- المورد: جميع المنتجات المعروضة على موقعنا وتطبيقنا تباع من قبل تيك مول أو من قبل بائع محلي أو دولي.
+
+        3- الدفع: عند تقديم وتأكيد طلب الشراء، فإنك تفوض تيك مول أو أي طرف ثالث متخصص في الدفع الإلكتروني ومتعاقد معنا بخصم قيمة الشراء من بطاقتك أو تحصيلها نقدا عند الاستلام.
+
+        4- الدفع بالبطاقة (إن توفر): قد نطلب منك فتح حساب لدى شركات الدفع الإلكتروني المتعاقد معها، ويعني ذلك قبول شروطها وأحكامها. كما نحتفظ بحق إضافة أو حذف أي وسيلة دفع معتمدة في أي وقت ودون إشعار مسبق.
+
+        5- إلغاء طلب الشراء: نتيح لك إلغاء الطلب خلال مرحلة التغليف لأي سبب وقبل بدء الشحن والتسليم.
+
+        6- رفض الطلب من طرفنا: نحتفظ بحق رفض الطلب إذا لم يتم سداد قيمة الشراء، أو لم يتم تزويدنا بمعلومات التسليم المطلوبة، أو تعذر عليك استلام الطلب.
+
+        7- تسليم الطلبات: يتم توضيح تكلفة وموعد التسليم بشكل واضح على الموقع والتطبيق.
+
+        8- التأخر في التسليم: قد يحدث التأخر لعدة أسباب، من أهمها:
+        - عدم تواجدك في عنوان ووقت التسليم، وفي هذه الحالة سنبلغك بآلية التسليم.
+        - عدم القدرة على استلام الطلب لأي سبب أو عدم القدرة على تحديد موعد تسليم آخر. في هذه الحالة سنتواصل معك لمعلومات إضافية، ويُلغى الطلب إذا تعذر التواصل.
+        - قد تحدث التأخيرات لأسباب خارجة عن إرادتنا، ونبذل جهدنا لتقليل آثار التأخير، وسنتواصل معك مباشرة في جميع الحالات.
+
+        9- الفواتير: نوفر لك فاتورة إلكترونية بقيمة مشترياتك ترسل إلى بريدك الإلكتروني، ويرجى التأكد من تزويدنا ببريد صحيح وسليم.
+
+        10- ملكية المنتج: بعد تقديم الطلب وسداد قيمته واستلامه على عنوان التسليم تصبح ملكية المنتج لك بالكامل.
+
+        الضمان:
+
+        - يخضع ضمان تيك مول لسياسة الضمان المعتمدة لدينا، حيث نوفر ضمانا لبعض المنتجات المباعة من طرفنا. وقد يتوقف الضمان على الموردين أصحاب المنتجات المعروضة وفقا لسياساتهم وشروطهم المعتمدة. ولا يطبق الضمان إلا على عيوب التصنيع أو المواد أو التصميم. ويقتصر الضمان على إصلاح المنتج المعيب أو استبدال الجزء المعيب أو استبدال المنتج أو رد المبلغ المدفوع وفق السعر المدفوع.
+        - لا يشمل الضمان جميع المنتجات، إذ يعتمد على توفر الضمان من الموردين حسب سياساتهم. لذلك يرجى مراجعة سياسة الضمان على موقعنا وتطبيقنا، إضافة إلى سياسات الموردين وبطاقات الضمان الخاصة بهم.
+        - في حال شراء المنتجات من بائع آخر، تطبق شروط ضمان ذلك البائع. ولمزيد من المعلومات يرجى الرجوع إلى سياسة الضمان المعتمدة على موقعنا وتطبيقنا.
+        - إصلاح المنتج أو استبداله لا يترتب عليه تمديد أو تجديد مدة الضمان.
+        - أحكام الاستبدال أو الإصلاح أو رد المبلغ:
+          1. عدد محاولات الإصلاح قبل الاستبدال أو الاسترداد هو 3 محاولات.
+          2. الحد الأقصى لمدة الإصلاح 15 يوم عمل.
+          3. المنتجات القابلة للإصلاح تشمل: الأجهزة الكهربائية، الإلكترونيات، الساعات، ملحقات الإلكترونيات، الألعاب، مستلزمات الأطفال، المعدات الرياضية، والأدوات الكهربائية.
+          4. إذا تعذر الإصلاح بعد المحاولات المسموح بها، يتم استبدال المنتج أو رد المبلغ للعميل.
+        - يبطل الضمان في الحالات التالية:
+          1. إزالة الرقم التسلسلي للمنتج أو إخفاؤه.
+          2. محاولة إصلاح المنتج لدى مراكز غير معتمدة من قبلنا أو من قبل البائع.
+          3. حدوث ضرر أو عطل في أي جزء يمنع تشغيل المنتج أو استخدامه (كسر شاشة، ثقب، التواء، وغيرها).
+          4. دخول السوائل للمنتج بالغمر أو الرش بما يؤدي إلى تلف المنتج أو أحد أجزائه.
+          5. العبث ببرمجيات تشغيل الجهاز.
+          6. استخدام ملحقات خارجية غير أصلية أو غير معتمدة.
+          7. استبدال المواد الاستهلاكية للمنتج (الأحبار، البطاريات وغيرها).
+          8. سوء استخدام المنتج بما يخالف تعليمات التشغيل والاستعمال المعتمدة من الشركة المصنعة.
+          9. العبث بملصقات المنتج والأختام والبطاقات.
+
+        الإرجاع:
+
+        1- شروط الإرجاع:
+        - أن يكون التغليف الأصلي غير مفتوح.
+        - أن يكون المنتج غير مستخدم.
+        - أن تكون جميع الملصقات والبطاقات موجودة وبحالة جيدة.
+        - أن يكون المنتج مختلفا عن الوصف أو الصورة المعروضة في بطاقة المنتج على الموقع أو التطبيق.
+
+        2- الإرجاع: بعض المنتجات تقبل الإرجاع. يمكنك الاطلاع على سياسة الإرجاع عبر موقعنا وتطبيقنا.
+
+        3- أسباب الإرجاع والاستبدال:
+        - استلام منتج تالف أو معيب.
+        - استلام منتج غير مطابق للوصف.
+        - استلام منتج خاطئ.
+
+        4- المنتجات غير القابلة للإرجاع:
+        - المنتجات التي تم استخدامها أو إتلافها أو تلفها أو تغيير حالتها الأصلية.
+        - المنتجات التي تعرض الرقم التسلسلي فيها للتلف أو التعديل أو الطمس.
+        - المنتجات المصنفة كمواد خطرة أو القابلة للاشتعال.
+        - المنتجات التي تم خلطها أو استخدامها مع مواد أو منتجات أخرى.
+        - المنتجات المدرجة ضمن سياسة الإرجاع كغير قابلة للإرجاع.
+
+        5- آلية الاسترداد:
+        بالنسبة للمنتجات القابلة للإرجاع والتي نوافق على إرجاعها، يتم رد كامل المبلغ المدفوع بما فيه الرسوم المطبقة باستثناء رسوم الشحن إن وجدت في الحالات التالية:
+        - عيب تصنيعي في المنتج.
+        - عدم مطابقة المنتج للوصف على الموقع والتطبيق.
+        - خطأ من طرفنا مثل خطأ تسعير أو خطأ وصف أو تأخر في التسليم.
+        وفي جميع الحالات الأخرى يتم رد قيمة المنتج القابل للإرجاع فقط (دون رسوم الشحن المدفوعة لتوصيل المنتج إليك)، ويتحمل العميل تكلفة إعادة المنتج.
+        أما المنتجات التي لم يتم تسليمها، فيتم رد كامل المبلغ عند إلغاء الطلب وفقا للبند 5 من قسم التعريفات المعتمدة.
+
+        6- إجراءات الاسترداد:
+        يتم رد المبلغ المدفوع عبر نفس وسيلة الدفع المستخدمة عند الطلب خلال مدة أقصاها 15 يوما من استلام المنتج المرتجع، أو فورا عند إلغاء الطلب خلال مرحلة التغليف.
+
+        الالتزامات القانونية على العميل:
+        بمجرد تسجيل حساب لدى تيك مول، يوافق العميل على ما يلي:
+        1. الالتزام بجميع القوانين والأنظمة النافذة في الدول التي نعمل بها، بما في ذلك قوانين حماية الخصوصية.
+        2. أن العميل يتمتع بالأهلية القانونية الكاملة للموافقة وسداد جميع المستحقات.
+        3. أن خدماتنا تقدم كما هي دون أي ضمانات خاصة.
+        4. إخلاء مسؤوليتنا من أي ضمانات أو شروط مباشرة أو غير مباشرة مثل القابلية التجارية أو عدم الانتهاك أو أمن الخدمات أو خلوها من الأخطاء.
+        5. أن الضمان الوحيد المقدم من طرفنا هو الوارد في قسم الضمان من هذه الوثيقة.
+
+        أحكام عامة:
+        1- لا تعفي شروط البيع المذكورة أي طرف من المسؤولية عن الاحتيال أو التدليس، أو عن الوفاة أو الإصابة الشخصية الناتجة عن الإهمال، أو أي مسؤولية لا يجوز الإعفاء منها قانونا.
+        2- لا نتحمل أي ضرر أو خسارة أو فقد معلومات أو أرباح أو بيانات حتى لو تم إخطارنا بذلك، في الحالات التالية:
+        - استخدام المنتج أو عدم القدرة على استخدامه.
+        - التأخر في التسليم أو عدم تسليم الطلب أو جزء منه بسبب عدم تقديمك للمعلومات المطلوبة أو تأخرك في ذلك.
+        - أي ضرر ناتج عن إصلاح غير معتمد من طرفنا.
+        - فقدان البيانات المخزنة في المنتجات التي تم إصلاحها أو استبدالها.
+        - تعطل أو تأخر الموقع أو التطبيق أو الخدمات وما يترتب على ذلك.
+        - الأضرار التي تصيب جهازك نتيجة استخدام المنتجات التي اشتريتها.
+        - الفيروسات والبرمجيات الخبيثة الناتجة عن استخدام المنتج.
+        - اعتمادك فقط على معلومات المنتج المتوفرة على الموقع عند الطلب.
+        - أي حدث أو ظرف طارئ خارج عن إرادتنا.
+        3- تقتصر مسؤوليتنا القانونية عند الإخلال أو مخالفة الواجبات القانونية المرتبطة بشروط البيع على تعويض يساوي سعر المنتج المباع وتكاليف الشحن والتسليم والإرجاع فقط. وتوافق على هذا الحد من المسؤولية وإبرائنا من أي خسائر أو أضرار أو نفقات أخرى ناتجة عن:
+        - عدم التزامك بأي من شروط هذه الوثيقة.
+        - مطالبات أو دعاوى طرف ثالث بسبب استخدامك للموقع أو التطبيق أو أي من خدماتنا.
+        - مخالفة القوانين والأنظمة والتشريعات المعمول بها.
+        4- تخضع شروط البيع والالتزامات الناشئة عنها للقوانين والتشريعات النافذة في الدول التي نعمل بها.
+        5- لا يحق لأي طرف غير أطراف هذه الاتفاقية تنفيذ أحكامها.
+        6- نحتفظ بحق تعديل أو تغيير شروط البيع في أي وقت، ويتم إشعارك بذلك من خلال نشر التعديلات على الموقع والتطبيق. وتصبح التحديثات نافذة من تاريخ نشرها. ويعد استمرارك بالشراء بعد النشر موافقة منك على التعديلات والالتزام بها.
+        7- لا يتحمل أي طرف مسؤولية أي خسارة أو ضرر أو تأخير أو انقطاع للخدمات بسبب ظروف أو أحداث خارجة عن السيطرة أو غير متوقعة أو طارئة، بما في ذلك الكوارث الطبيعية، الأحكام القضائية، القوانين الجديدة، القرارات التنظيمية، العقوبات الدولية، المقاطعات الاقتصادية، انقطاع الكهرباء، أو أي أحداث تؤثر على استمرارية الخدمة.
+        8- تبقى شروط وأحكام البيع هذه سارية حتى بعد تعليق أو إلغاء عضويتك في الموقع والتطبيق.
+        TEXT;
+
         LegalDocument::create([
             'key' => 'privacy_policy',
             'title' => [
@@ -623,6 +1113,42 @@ class LegalDocumentSeeder extends Seeder
             'content' => [
                 'en' => $termsOfUseEn,
                 'ar' => $termsOfUseAr,
+            ],
+        ]);
+
+        LegalDocument::create([
+            'key' => 'return_policy',
+            'title' => [
+                'en' => 'Return Policy',
+                'ar' => 'سياسة الإرجاع',
+            ],
+            'content' => [
+                'en' => $returnPolicyEn,
+                'ar' => $returnPolicyAr,
+            ],
+        ]);
+
+        LegalDocument::create([
+            'key' => 'warranty_policy',
+            'title' => [
+                'en' => 'Warranty Policy',
+                'ar' => 'سياسة الضمان',
+            ],
+            'content' => [
+                'en' => $warrantyPolicyEn,
+                'ar' => $warrantyPolicyAr,
+            ],
+        ]);
+
+        LegalDocument::create([
+            'key' => 'termsOfSale',
+            'title' => [
+                'en' => 'Terms of Sale',
+                'ar' => 'شروط البيع',
+            ],
+            'content' => [
+                'en' => $termsOfSaleEn,
+                'ar' => $termsOfSaleAr,
             ],
         ]);
 

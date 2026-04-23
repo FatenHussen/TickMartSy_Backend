@@ -43,6 +43,16 @@ class SettingSeeder extends Seeder
             'type' => 'string',
         ]);
 
+        Setting::updateOrCreate(['key' => 'instagram'], [
+            'value' => 'https://instagram.com/tikmool',
+            'type'  => 'string',
+        ]);
+
+        Setting::updateOrCreate(['key' => 'facebook'], [
+            'value' => 'https://facebook.com/tikmool',
+            'type'  => 'string',
+        ]);
+
         // واجهة اللوجين
         Setting::create([
             'key' => 'login_image',

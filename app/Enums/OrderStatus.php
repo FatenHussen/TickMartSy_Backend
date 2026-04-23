@@ -9,6 +9,7 @@ enum OrderStatus: string
     case OUT_DELIVERY = 'out_delivery';
     case DELIVERED = 'delivered';
     case CANCELLED = 'cancelled';
+    case CANCELLED_BY_ADMIN = 'cancelled_by_admin';
     case REJECTEDBYDELIVERY = 'rejected_by_delivery';
     case FAILDDELIVER = 'faild_deliver';
 
@@ -20,6 +21,9 @@ enum OrderStatus: string
             self::OUT_DELIVERY => 'خرج للتوصيل',
             self::DELIVERED => 'تم التوصيل',
             self::CANCELLED => 'ملغي',
+            self::CANCELLED_BY_ADMIN => 'ملغي من الإدارة',
+            self::REJECTEDBYDELIVERY => 'مرفوض من الدليفري',
+            self::FAILDDELIVER => 'فشل التوصيل',
         };
     }
 
@@ -31,6 +35,9 @@ enum OrderStatus: string
             self::OUT_DELIVERY => 'Out for delivery',
             self::DELIVERED => 'Delivered',
             self::CANCELLED => 'Cancelled',
+            self::CANCELLED_BY_ADMIN => 'Cancelled by admin',
+            self::REJECTEDBYDELIVERY => 'Rejected by delivery',
+            self::FAILDDELIVER => 'Failed delivery',
         };
     }
 }

@@ -75,7 +75,7 @@ class HandleOrderStatusNotifications implements ShouldQueue
     {
         if (
             $event->changedBy === 'admin' &&
-            $event->to === OrderStatus::CANCELLED->value
+            $event->to === OrderStatus::CANCELLED_BY_ADMIN->value
         ) {
             $reason = trim((string) $order->rejection_reason);
 
@@ -119,6 +119,11 @@ class HandleOrderStatusNotifications implements ShouldQueue
             OrderStatus::CANCELLED->value => [
                 'title' => 'تم إلغاء الطلب ❌',
                 'body'  => "تم إلغاء طلبك رقم {$order->order_code}",
+            ],
+
+            OrderStatus::CANCELLED_BY_ADMIN->value => [
+                'title' => 'تم إلغاء الطلب من الإدارة ⚠️',
+                'body'  => "تم إلغاء طلبك رقم {$order->order_code} من قبل الإدارة",
             ],
 
             // OrderStatus::REJECTED->value => [

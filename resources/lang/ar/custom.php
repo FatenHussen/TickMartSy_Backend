@@ -462,6 +462,7 @@ return [
             'out_delivery' => 'في التوصيل',
             'delivered' => 'تم التوصيل',
             'cancelled' => 'ملغي',
+            'cancelled_by_admin' => 'ملغي من الإدارة',
         ],
         'delivery_types' => [
             'instant' => 'فوري',

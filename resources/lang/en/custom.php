@@ -422,6 +422,7 @@ return [
             'out_delivery' => 'Out for Delivery',
             'delivered' => 'Delivered',
             'cancelled' => 'Cancelled',
+            'cancelled_by_admin' => 'Cancelled by admin',
         ],
         'delivery_types' => [
             'instant' => 'Instant',

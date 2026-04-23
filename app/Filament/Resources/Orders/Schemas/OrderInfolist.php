@@ -40,7 +40,8 @@ class OrderInfolist
                                                 OrderStatus::PREPARING->value => 'info',
                                                 OrderStatus::OUT_DELIVERY->value => 'primary',
                                                 OrderStatus::DELIVERED->value => 'success',
-                                                // OrderStatus::CANCELLED->value => 'danger',
+                                                OrderStatus::CANCELLED->value => 'danger',
+                                                OrderStatus::CANCELLED_BY_ADMIN->value => 'danger',
                                                 default => 'gray',
                                             })
                                             ->formatStateUsing(fn(string $state): string => match ($state) {
@@ -48,7 +49,8 @@ class OrderInfolist
                                                 OrderStatus::PREPARING->value => __('custom.orders.statuses.preparing'),
                                                 OrderStatus::OUT_DELIVERY->value => __('custom.orders.statuses.out_delivery'),
                                                 OrderStatus::DELIVERED->value => __('custom.orders.statuses.delivered'),
-                                                // OrderStatus::CANCELLED->value => __('custom.orders.statuses.cancelled'),
+                                                OrderStatus::CANCELLED->value => __('custom.orders.statuses.cancelled'),
+                                                OrderStatus::CANCELLED_BY_ADMIN->value => __('custom.orders.statuses.cancelled_by_admin'),
                                                 default => $state,
                                             }),
 
@@ -182,6 +184,7 @@ class OrderInfolist
                                                         OrderStatus::OUT_DELIVERY->value => 'primary',
                                                         OrderStatus::DELIVERED->value => 'success',
                                                         OrderStatus::CANCELLED->value => 'danger',
+                                                        OrderStatus::CANCELLED_BY_ADMIN->value => 'danger',
                                                         default => 'gray',
                                                     })
                                                     ->formatStateUsing(fn(string $state): string => match ($state) {
@@ -190,6 +193,7 @@ class OrderInfolist
                                                         OrderStatus::OUT_DELIVERY->value => __('custom.orders.statuses.out_delivery'),
                                                         OrderStatus::DELIVERED->value => __('custom.orders.statuses.delivered'),
                                                         OrderStatus::CANCELLED->value => __('custom.orders.statuses.cancelled'),
+                                                        OrderStatus::CANCELLED_BY_ADMIN->value => __('custom.orders.statuses.cancelled_by_admin'),
                                                         default => $state,
                                                     }),
 

@@ -41,14 +41,17 @@ class OrderService extends BaseService
             OrderStatus::PENDING->value => [
                 OrderStatus::PREPARING->value,
                 OrderStatus::CANCELLED->value,
+                OrderStatus::CANCELLED_BY_ADMIN->value,
             ],
             OrderStatus::PREPARING->value => [
                 OrderStatus::OUT_DELIVERY->value,
                 OrderStatus::CANCELLED->value,
+                OrderStatus::CANCELLED_BY_ADMIN->value,
             ],
             OrderStatus::OUT_DELIVERY->value => [
                 OrderStatus::DELIVERED->value,
                 OrderStatus::CANCELLED->value,
+                OrderStatus::CANCELLED_BY_ADMIN->value,
             ],
         ];
 
@@ -109,10 +112,7 @@ class OrderService extends BaseService
                 $newStatus
             );
 
-            if (
-                $newStatus === OrderStatus::CANCELLED->value &&
-                blank($rejectionReason)
-            ) {
+            if ($newStatus === OrderStatus::CANCELLED_BY_ADMIN->value && blank($rejectionReason)) {
                 throw new CustomExceptionWithMessage(
                     'custom.orders.rejection_reason_required'
                 );
@@ -122,7 +122,7 @@ class OrderService extends BaseService
 
             $order->update([
                 'status' => $newStatus,
-                'rejection_reason' => $newStatus === OrderStatus::CANCELLED->value
+                'rejection_reason' => $newStatus === OrderStatus::CANCELLED_BY_ADMIN->value
                     ? $rejectionReason
                     : null,
             ]);
@@ -212,6 +212,16 @@ class OrderService extends BaseService
         return DB::transaction(function () use ($orderId, $driverId) {
 
             $order = Order::lockForUpdate()->findOrFail($orderId);
+            $assignableStatuses = [
+                OrderStatus::PENDING->value,
+                OrderStatus::PREPARING->value,
+            ];
+
+            if (! in_array($order->status, $assignableStatuses, true)) {
+                throw new CustomExceptionWithMessage(
+                    'custom.orders.invalid_order_state'
+                );
+            }
 
             if ($order->driver_id !== null) {
                 throw new CustomExceptionWithMessage(

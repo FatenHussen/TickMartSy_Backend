@@ -34,6 +34,7 @@ class OrdersTable
                         OrderStatus::OUT_DELIVERY->value => 'primary',
                         OrderStatus::DELIVERED->value => 'success',
                         OrderStatus::CANCELLED->value => 'danger',
+                        OrderStatus::CANCELLED_BY_ADMIN->value => 'danger',
                         default => 'gray',
                     })
                     ->formatStateUsing(fn(string $state): string => match ($state) {
@@ -42,6 +43,7 @@ class OrdersTable
                         OrderStatus::OUT_DELIVERY->value => __('custom.orders.statuses.out_delivery'),
                         OrderStatus::DELIVERED->value => __('custom.orders.statuses.delivered'),
                         OrderStatus::CANCELLED->value => __('custom.orders.statuses.cancelled'),
+                        OrderStatus::CANCELLED_BY_ADMIN->value => __('custom.orders.statuses.cancelled_by_admin'),
                         default => $state,
                     })
                     ->sortable(),
@@ -74,6 +76,7 @@ class OrdersTable
                         OrderStatus::OUT_DELIVERY->value => __('custom.orders.statuses.out_delivery'),
                         OrderStatus::DELIVERED->value => __('custom.orders.statuses.delivered'),
                         OrderStatus::CANCELLED->value => __('custom.orders.statuses.cancelled'),
+                        OrderStatus::CANCELLED_BY_ADMIN->value => __('custom.orders.statuses.cancelled_by_admin'),
                     ]),
 
                 Tables\Filters\TernaryFilter::make('is_instant_delivery')

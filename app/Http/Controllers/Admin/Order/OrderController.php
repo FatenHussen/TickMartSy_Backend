@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Order;
 
+use App\Enums\OrderStatus;
 use App\Http\Controllers\BaseIndexController;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Order\FilterRequest;
@@ -27,8 +28,8 @@ class OrderController extends BaseIndexController
     public function changeStatus(Request $request, int $orderId)
     {
         $data = $request->validate([
-            'status' => 'required|in:pending,preparing,out_delivery,delivered,cancelled',
-            'rejection_reason' => 'nullable|string|max:1000|required_if:status,cancelled',
+            'status' => 'required|in:' . implode(',', array_column(OrderStatus::cases(), 'value')),
+            'rejection_reason' => 'nullable|string|max:1000|required_if:status,' . OrderStatus::CANCELLED_BY_ADMIN->value,
         ]);
 
         $order = $this->service->changeOrderStatus(

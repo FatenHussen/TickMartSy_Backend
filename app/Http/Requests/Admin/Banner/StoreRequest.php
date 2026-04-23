@@ -18,6 +18,8 @@ class StoreRequest extends FormRequest
             'title.*' => ['required', 'string'],
             'description' => ['nullable', 'array'],
             'description.*' => ['required', 'string'],
+            'button_text' => ['nullable', 'array'],
+            'button_text.*' => ['required', 'string', 'max:255'],
             'image' => 'required|file|mimes:jpeg,png,jpg,gif,webp,mp4,mov,avi,webm',
             'link' => 'nullable|string|url',
             'is_active' => ['sometimes', 'boolean'],

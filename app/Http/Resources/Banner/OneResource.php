@@ -18,6 +18,7 @@ class OneResource extends JsonResource
             'id'                    => $this->id,
             'title'                  => $this->getTranslations('title'),
             'description'            => $this->getTranslations('description'),
+            'button_text'            => $this->getTranslations('button_text'),
             'image_url'                => $this->image_url,
             'link' =>                  $this->link,
             'expires_at' =>           $this->expires_at?->format('Y-m-d H:i'),
