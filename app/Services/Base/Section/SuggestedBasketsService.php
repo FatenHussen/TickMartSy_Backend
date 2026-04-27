@@ -23,12 +23,20 @@ class SuggestedBasketsService
                 ->where('orders.user_id', $userId)
                 ->whereIn('orders.status', $deliveredStatuses)
                 ->where('baskets.is_schedule', 0)
+                ->where(function ($q) {
+                    $q->whereNull('baskets.offer_ends_at')
+                        ->orWhereDate('baskets.offer_ends_at', '>=', now()->toDateString());
+                })
                 ->selectRaw('orders.basket_id, COUNT(*) as total')
                 ->groupBy('orders.basket_id');
 
             if ((clone $userTotals)->limit(1)->exists()) {
                 $query = Basket::query()
                     ->where('is_schedule', 0)
+                    ->where(function ($q) {
+                        $q->whereNull('offer_ends_at')
+                            ->orWhereDate('offer_ends_at', '>=', now()->toDateString());
+                    })
                     ->select('baskets.*')
                     ->joinSub($userTotals, 'user_baskets', function ($join) {
                         $join->on('baskets.id', '=', 'user_baskets.basket_id');
@@ -43,12 +51,20 @@ class SuggestedBasketsService
             ->join('baskets', 'baskets.id', '=', 'orders.basket_id')
             ->whereIn('orders.status', $deliveredStatuses)
             ->where('baskets.is_schedule', 0)
+            ->where(function ($q) {
+                $q->whereNull('baskets.offer_ends_at')
+                    ->orWhereDate('baskets.offer_ends_at', '>=', now()->toDateString());
+            })
             ->selectRaw('orders.basket_id, COUNT(*) as total')
             ->groupBy('orders.basket_id');
 
         if ((clone $globalTotals)->limit(1)->exists()) {
             $query = Basket::query()
                 ->where('is_schedule', 0)
+                ->where(function ($q) {
+                    $q->whereNull('offer_ends_at')
+                        ->orWhereDate('offer_ends_at', '>=', now()->toDateString());
+                })
                 ->select('baskets.*')
                 ->joinSub($globalTotals, 'global_baskets', function ($join) {
                     $join->on('baskets.id', '=', 'global_baskets.basket_id');
@@ -60,6 +76,10 @@ class SuggestedBasketsService
 
         $query = Basket::query()
             ->where('is_schedule', 0)
+            ->where(function ($q) {
+                $q->whereNull('offer_ends_at')
+                    ->orWhereDate('offer_ends_at', '>=', now()->toDateString());
+            })
             ->latest();
 
         return $this->addFavoriteFlag($query);
