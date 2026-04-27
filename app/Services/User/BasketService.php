@@ -63,9 +63,9 @@ class BasketService extends BaseService
         // Calculate minimum price within basket
         $query->withMin('items', 'price');
 
-        // Apply latest ordering by default
-        if (empty($config['sortField'])) {
-            $query->latest();
+        // Keep default ordering stable when no explicit basket sort/type is requested.
+        if (!$type && !$sort) {
+            $query->reorder()->latest();
         }
 
         // Filter by schedule status
@@ -82,7 +82,7 @@ class BasketService extends BaseService
         }
 
         // Category filter
-        if ($categoryId) {
+        if ($categoryId !== null) {
             $query->where(function ($q) use ($categoryId) {
                 $q->whereHas('categories', function ($categoryQuery) use ($categoryId) {
                     $categoryQuery->where('categories.id', $categoryId);
@@ -91,37 +91,38 @@ class BasketService extends BaseService
         }
 
         // Price range filter - use having for aggregated column
-        if ($priceMin || $priceMax) {
+        if ($priceMin !== null || $priceMax !== null) {
             // Convert price range from user currency to USD
             $priceRange = \App\Helpers\CurrencyHelper::convertPriceRangeToUSD($priceMin, $priceMax);
 
-            if ($priceRange['min']) {
+            if ($priceRange['min'] !== null) {
                 $query->having('items_min_price', '>=', $priceRange['min']);
             }
-            if ($priceRange['max']) {
+            if ($priceRange['max'] !== null) {
                 $query->having('items_min_price', '<=', $priceRange['max']);
             }
         }
 
         // Rating filter
-        if ($ratingMin) {
+        if ($ratingMin !== null) {
             $query->where('rating', '>=', $ratingMin);
         }
 
         // Items count filter - use having for aggregated column
-        if ($itemsCountMin || $itemsCountMax) {
+        if ($itemsCountMin !== null || $itemsCountMax !== null) {
             $query->withCount('items');
 
-            if ($itemsCountMin) {
+            if ($itemsCountMin !== null) {
                 $query->having('items_count', '>=', $itemsCountMin);
             }
-            if ($itemsCountMax) {
+            if ($itemsCountMax !== null) {
                 $query->having('items_count', '<=', $itemsCountMax);
             }
         }
 
         // Type filters
         if ($type) {
+            $query->reorder();
             $this->applyTypeFilters($query, $type);
         }
 
