@@ -38,14 +38,15 @@ class PageSectionSeeder extends Seeder
             'image' => 'images/display/shop.png',
         ]);
 
-        $SbasketsDisplayType = DisplayType::create([
-            'manual_model' => 'suggested-basket',
-            'image' => 'images/display/basket.png',
-        ]);
+
 
         $basketsDisplayType = DisplayType::create([
             'manual_model' => 'basket',
             'image' => 'images/display/basket.png',
+        ]);
+        $scheduleBasketsDisplayType = DisplayType::create([
+            'manual_model' => 'schedule-basket',
+            'image' => 'images/display/schedule-basket.png',
         ]);
 
 
@@ -141,6 +142,8 @@ class PageSectionSeeder extends Seeder
             ['title' => 'shop_details', 'slug' => 'shop_details'],
             ['title' => 'brands', 'slug' => 'brands'],
             ['title' => 'brand_details', 'slug' => 'brand_details'],
+            ['title' => 'Orders', 'slug' => 'orders'],
+            ['title' => 'Order details', 'slug' => 'order_details'],
         ];
 
         /*
@@ -319,7 +322,7 @@ class PageSectionSeeder extends Seeder
             'name' => ['en' => 'Scheduled baskets for the week', 'ar' => 'قسم السلات المجدولة ل شهر'],
             'page_id' => $homePage->id,
             'section_id' => $schedulebasketSection->id,
-            'display_type_id' => $basketsDisplayType->id,
+            'display_type_id' => $scheduleBasketsDisplayType->id,
             'position' => 'after',
             'variant' => VariantSection::Square->value,
             'order' => 7,
@@ -331,7 +334,7 @@ class PageSectionSeeder extends Seeder
             'name' => ['en' => 'Baskets scheduled for two weeks', 'ar' => 'قسم السلات المجدولة ل أسبوعين'],
             'page_id' => $homePage->id,
             'section_id' => $schedulebasketSection->id,
-            'display_type_id' => $basketsDisplayType->id,
+            'display_type_id' => $scheduleBasketsDisplayType->id,
             'position' => 'after',
             'variant' => VariantSection::Vertical->value,
             'order' => 7,
@@ -343,7 +346,7 @@ class PageSectionSeeder extends Seeder
             'name' => ['en' => 'Scheduled baskets for the week ', 'ar' => ' السلات المجدولة ل أسبوع'],
             'page_id' => $homePage->id,
             'section_id' => $schedulebasketSection->id,
-            'display_type_id' => $basketsDisplayType->id,
+            'display_type_id' => $scheduleBasketsDisplayType->id,
             'position' => 'after',
             'variant' => VariantSection::Horizontal->value,
             'order' => 7,
