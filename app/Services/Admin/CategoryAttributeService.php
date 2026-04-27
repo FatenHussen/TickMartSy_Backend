@@ -112,7 +112,10 @@ class CategoryAttributeService extends BaseService
         foreach ($colors as $color) {
             AttributeValue::create([
                 'category_attribute_id' => $categoryAttribute->id,
-                'name' => ['en' => $color->hex, 'ar' => $color->hex],
+                'name' => [
+                    'en' => $color->getTranslation('name', 'en', false) ?? $color->getTranslation('name', 'ar', false) ?? $color->hex,
+                    'ar' => $color->getTranslation('name', 'ar', false) ?? $color->getTranslation('name', 'en', false) ?? $color->hex,
+                ],
                 'color_id' => $color->id,
             ]);
         }
