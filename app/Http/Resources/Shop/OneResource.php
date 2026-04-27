@@ -37,10 +37,17 @@ class OneResource extends JsonResource
             'is_service_provider'   => (bool) $this->is_service_provider,
             'is_restaurant'         => (bool) $this->is_restaurant,
             'payment_methods'       => $this->payment_methods ?? [],
-            'pricing_tier'          => $this->pricing_tier?? null ,
+            'pricing_tier'          => $this->pricing_tier ?? null,
             'is_recommended'        => (bool) $this->is_recommended,
             'is_favorite' => (bool) ($this->is_favorite ?? false),
-            'badges'                => BadgeOneResource::collection($this->badges),
+
+            'top_badges' => BadgeOneResource::collection(
+                $this->badges->where('position', 'top')->values()
+            ),
+
+            'bottom_badges' => BadgeOneResource::collection(
+                $this->badges->where('position', 'bottom')->values()
+            ),
 
             'area'                 => $this->area->name,
             'categories'           => $this->getShopCategories(),
