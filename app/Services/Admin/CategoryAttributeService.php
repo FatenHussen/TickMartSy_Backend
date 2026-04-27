@@ -19,6 +19,7 @@ class CategoryAttributeService extends BaseService
     protected $pagination = true;
     protected $relations = [
         'values',
+        'values.color',
     ];
 
     protected $syncRelations = [

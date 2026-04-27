@@ -21,7 +21,9 @@ class AllResource extends JsonResource
             'type' => $this->type,
             'values'   => $this->values->map(fn($value) => [
                 'id'   => $value->id,
-                'name' => $value->name,
+                'name' => $this->type === 'color'
+                    ? ($value->color?->name ?? $value->name)
+                    : $value->name,
             ]),
             'is_active' => $this->is_active,
 
