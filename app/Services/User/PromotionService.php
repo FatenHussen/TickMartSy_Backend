@@ -42,10 +42,10 @@ class PromotionService
                 return false;
             })
             ->values()
-            ->map(fn (Promotion $promotion) => [
+            ->map(fn(Promotion $promotion) => [
                 'id' => $promotion->id,
-                'name' => $promotion->getTranslations('name'),
-                'description' => $promotion->getTranslations('description'),
+                'name' => $promotion->name,
+                'description' => $promotion->description,
             ]);
     }
 
@@ -133,7 +133,7 @@ class PromotionService
             })
             ->orderBy('id')
             ->get()
-            ->map(fn (Promotion $p) => [
+            ->map(fn(Promotion $p) => [
                 'promotion_id' => $p->id,
                 'name' => $p->getTranslations('name'),
                 'description' => $p->getTranslations('description'),
