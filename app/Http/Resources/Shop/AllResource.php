@@ -38,10 +38,17 @@ class AllResource extends JsonResource
             'created_at'            => $this->created_at?->format('Y-m-d H:i'),
             'is_favorite'           => (bool) ($this->is_favorite ?? false),
             'average_rating'        => $this->average_rating ?? 0,
-            'badges'                => BadgeOneResource::collection($this->badges),
             // 'ratings_count'      => $this->ratings_count,
             'categories'            => $this->getShopCategories(),
             'vendor'                => VendorAllResource::make($this->vendor),
+            'top_badges' => BadgeOneResource::collection(
+                $this->badges->where('position', 'top')->values()
+            ),
+
+            'bottom_badges' => BadgeOneResource::collection(
+                $this->badges->where('position', 'bottom')->values()
+            ),
+
         ];
     }
 }
