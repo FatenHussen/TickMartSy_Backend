@@ -151,7 +151,7 @@ class PopupCampaign extends Model
             return $value;
         }
 
-        return asset($value);
+        return asset('storage/' . $value);
     }
 
     public function scopeActive(Builder $query): Builder
