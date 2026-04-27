@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Http\Resources\Product\AllResource;
 use App\Traits\LogsActivity;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Model;
@@ -78,6 +79,37 @@ class Product extends Model implements Sectionable
 
     protected bool $activeFlashSaleResolved = false;
     protected ?FlashSale $activeFlashSaleCache = null;
+
+    public function setExpiryDateAttribute($value): void
+    {
+        if ($value === null) {
+            $this->attributes['expiry_date'] = null;
+            return;
+        }
+
+        if (is_string($value)) {
+            $normalized = trim($value);
+
+            if ($normalized === '' || $normalized === '"' || $normalized === "'" || strtolower($normalized) === 'null') {
+                $this->attributes['expiry_date'] = null;
+                return;
+            }
+
+            try {
+                $this->attributes['expiry_date'] = Carbon::parse($normalized)->format('Y-m-d');
+                return;
+            } catch (\Throwable $e) {
+                $this->attributes['expiry_date'] = null;
+                return;
+            }
+        }
+
+        try {
+            $this->attributes['expiry_date'] = Carbon::parse($value)->format('Y-m-d');
+        } catch (\Throwable $e) {
+            $this->attributes['expiry_date'] = null;
+        }
+    }
 
     /*
     |--------------------------------------------------------------------------

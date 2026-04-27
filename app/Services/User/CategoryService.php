@@ -108,7 +108,6 @@ class CategoryService extends BaseService
                     INNER JOIN order_items ON shop_product_variants.id = order_items.shop_product_variant_id
                     WHERE products.category_id = categories.id
                     AND products.deleted_at IS NULL
-                    AND product_variants.deleted_at IS NULL
                     AND shop_product_variants.deleted_at IS NULL
                 ) as total_sales')
                     ->orderBy('total_sales', 'desc');
