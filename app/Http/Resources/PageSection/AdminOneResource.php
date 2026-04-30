@@ -31,6 +31,7 @@ class AdminOneResource extends JsonResource
             'background_color' => $this->background_color,
             'background_card_color' => $this->background_card_color,
             'filters' => $this->filters,
+            'show_when' => $this->show_when,
         ];
     }
 }

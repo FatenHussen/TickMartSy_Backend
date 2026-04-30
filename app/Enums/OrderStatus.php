@@ -12,6 +12,7 @@ enum OrderStatus: string
     case CANCELLED_BY_ADMIN = 'cancelled_by_admin';
     case REJECTEDBYDELIVERY = 'rejected_by_delivery';
     case FAILDDELIVER = 'faild_deliver';
+    case RETURNED_BY_USER = 'returned_by_user';
 
     public function labelAr(): string
     {
@@ -24,6 +25,7 @@ enum OrderStatus: string
             self::CANCELLED_BY_ADMIN => 'ملغي من الإدارة',
             self::REJECTEDBYDELIVERY => 'مرفوض من الدليفري',
             self::FAILDDELIVER => 'فشل التوصيل',
+            self::RETURNED_BY_USER => 'مرتجع من قبل المستخدم',
         };
     }
 
@@ -38,6 +40,7 @@ enum OrderStatus: string
             self::CANCELLED_BY_ADMIN => 'Cancelled by admin',
             self::REJECTEDBYDELIVERY => 'Rejected by delivery',
             self::FAILDDELIVER => 'Failed delivery',
+            self::RETURNED_BY_USER => 'Returned by user',
         };
     }
 }

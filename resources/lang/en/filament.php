@@ -123,6 +123,7 @@ return [
     'spend_x_discount' => 'Spend X Discount',
     'spend_x_gift' => 'Spend X Gift',
     'simple_discount' => 'Simple Discount',
+    'spend_x_get_free_shipping' => 'Spend X Get Free Shipping',
 
     'percentage' => 'Percentage',
     'fixed' => 'Fixed Amount',

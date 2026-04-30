@@ -24,7 +24,8 @@ class AllResource extends JsonResource
             'display_type_id' => $this->display_type_id,
             'variant' => $this->variant ?? VariantSection::Horizontal->value,
             'background_color' => $this->background_color,
-            'background_card_color' => $this->background_card_color
+            'background_card_color' => $this->background_card_color,
+            'show_when' => $this->show_when,
 
         ];
     }

@@ -20,6 +20,7 @@ class PageSection extends Model
         'position',
         'order',
         'filters',
+        'show_when',
         'background_card_color',
         'background_color',
         'display_type_id',
@@ -31,6 +32,7 @@ class PageSection extends Model
     ];
     protected $casts = [
         'filters' => 'array',
+        'show_when' => 'array',
         'is_active' => 'boolean',
     ];
 

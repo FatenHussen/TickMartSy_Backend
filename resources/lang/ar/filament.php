@@ -122,6 +122,7 @@ return [
     'spend_x_discount' => 'خصم عند الإنفاق',
     'spend_x_gift' => 'هدية عند الإنفاق',
     'simple_discount' => 'خصم مباشر',
+    'spend_x_get_free_shipping' => 'توصيل مجاني عند الإنفاق',
 
     // Discount types
     'percentage' => 'نسبة مئوية',

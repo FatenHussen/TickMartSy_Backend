@@ -17,6 +17,7 @@ class RecipeService extends BaseService
         $this->collection = AllResource::class;
         $this->relations = [
             'items.shopProductVariant.productVariant.product.category',
+            'items.shopProductVariant.productVariant.product.brand',
             'items.shopProductVariant.shop',
             'steps',
             'favorites',

@@ -84,6 +84,7 @@ class OneResource extends JsonResource
                 'preparing_at' => $this->preparing_at,
                 'out_delivery_at' => $this->out_delivery_at,
                 'delivered_at' => $this->delivered_at,
+                'returned_by_user_at' => $this->returned_by_user_at,
             ],
             'user' => AllResource::make($this->user),
             'driver' => DriverAllResource::make($this->driver),

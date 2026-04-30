@@ -65,6 +65,14 @@ class PromotionService extends BaseService
                 'starts_at',
                 'ends_at'
             ],
+            'spend_x_get_free_shipping' => [
+                'name',
+                'description',
+                'min_spend',
+                'is_active',
+                'starts_at',
+                'ends_at'
+            ],
             default => ['name', 'description', 'is_active', 'starts_at', 'ends_at']
         };
     }

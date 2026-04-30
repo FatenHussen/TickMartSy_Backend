@@ -73,6 +73,7 @@ class RecipeItemResource extends JsonResource
                     'shop_product_variant_id' => $this->shop_product_variant_id,
                     'image_url' => $this->shopProductVariant->productVariant->product->image_url,
                     'name' => $this->shopProductVariant->productVariant->product->name,
+                    'brand_name' => $this->shopProductVariant->productVariant->product->brand?->name,
                     'sku' => $this->shopProductVariant->productVariant->sku,
                     'model' => $this->shopProductVariant->productVariant->model,
                     'barcode' => $this->shopProductVariant->productVariant->barcode,

@@ -140,7 +140,8 @@ class OrderService extends BaseService
             $promotionService = app(PromotionService::class);
             $deliveryBeforeAutomaticFreeShipping = $deliveryPrice;
             $deliveryPrice = $promotionService->resolveAutomaticFreeShippingDeliveryPrice(
-                $deliveryPrice
+                $deliveryPrice,
+                $subtotalBeforeDiscount
             );
             $discounts['delivery_price'] = $deliveryPrice;
 
@@ -187,7 +188,8 @@ class OrderService extends BaseService
             $automaticSnapshot = $promotionService->compileAutomaticPromotionsSnapshot(
                 $deliveryBeforeAutomaticFreeShipping,
                 $deliveryPrice,
-                $automaticPromotionsResult
+                $automaticPromotionsResult,
+                $subtotalBeforeDiscount
             );
             if ($automaticSnapshot !== null) {
                 $order->update(['automatic_promotions_snapshot' => $automaticSnapshot]);
@@ -235,7 +237,8 @@ class OrderService extends BaseService
         $deliveryPrice = $discounts['delivery_price'];
 
         $deliveryPrice = $promotionService->resolveAutomaticFreeShippingDeliveryPrice(
-            $deliveryPrice
+            $deliveryPrice,
+            $subtotalBeforeDiscount
         );
         $discounts['delivery_price'] = $deliveryPrice;
 
@@ -293,7 +296,7 @@ class OrderService extends BaseService
             'total' => $this->convertFormattedPrice($finalTotal),
             'available_promotions' => $availablePromotions,
             'automatic_promotions' => array_merge($automaticPromotions, [
-                'free_shipping_applies' => $promotionService->hasActiveAutomaticFreeShipping(),
+                'free_shipping_applies' => $promotionService->hasActiveAutomaticFreeShipping($subtotalBeforeDiscount),
             ]),
             'excluded_items' => $discounts['excluded_items'] ?? [],
             'orderItems' => $formattedItems

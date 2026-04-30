@@ -27,6 +27,7 @@ class UpdateRequest extends FormRequest
                 'spend_x_get_gift',
                 'spend_x_get_points',
                 'free_shipping',
+                'spend_x_get_free_shipping',
             ])],
             'is_active' => 'boolean',
             'starts_at' => 'nullable|date',
@@ -37,7 +38,7 @@ class UpdateRequest extends FormRequest
                 'min:0',
                 Rule::requiredIf(fn () => in_array(
                     $this->input('type'),
-                    ['spend_x_discount', 'spend_x_get_gift', 'spend_x_get_points'],
+                    ['spend_x_discount', 'spend_x_get_gift', 'spend_x_get_points', 'spend_x_get_free_shipping'],
                     true
                 )),
             ],

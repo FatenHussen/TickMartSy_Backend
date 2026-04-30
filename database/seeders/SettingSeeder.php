@@ -66,6 +66,12 @@ class SettingSeeder extends Seeder
             'type' => 'string',
         ]);
 
+        Setting::create([
+            'key' => 'quick_action_image',
+            'value' => 'settings/quick-action.png',
+            'type' => 'file',
+        ]);
+
         // واجهة الترحيب
         Setting::create([
             'key' => 'welcome_image',

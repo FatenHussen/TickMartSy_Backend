@@ -40,6 +40,9 @@ class StoreRequest extends FormRequest
             // 'filters.price_min' => ['nullable', 'integer', 'min:1'],
             // 'filters.price_max' => ['nullable', 'integer', 'min:1'],
             'filters.type' => ['nullable', 'string'],
+
+            'show_when' => ['nullable', 'array'],
+            'show_when.*' => ['nullable'],
         ];
     }
 }

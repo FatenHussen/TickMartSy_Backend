@@ -22,6 +22,7 @@ class ShopProductVariantResource extends JsonResource
             'is_restaurant' => (bool) ($this->shop?->is_restaurant ?? false),
             'city_id' => $this->shop?->city_id ?? $this->shop?->area?->city_id,
             'name' => $this->productVariant->product->name,
+            'brand_name' => $this->productVariant->product->brand?->name,
             'sku' => $this->productVariant->sku,
             'model' => $this->productVariant->model,
             'barcode' => $this->productVariant->barcode,

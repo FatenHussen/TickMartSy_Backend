@@ -464,6 +464,44 @@ class OrderService
         });
     }
 
+    public function returnedByUser(int $orderId)
+    {
+        $driverId = auth('driver')->id();
+
+        return DB::transaction(function () use ($orderId, $driverId) {
+            $order = Order::with('items')
+                ->lockForUpdate()
+                ->findOrFail($orderId);
+
+            if ($order->driver_id !== $driverId) {
+                throw new CustomExceptionWithMessage('custom.orders.not_your_order');
+            }
+
+            if ($order->status !== OrderStatus::OUT_DELIVERY->value) {
+                throw new CustomExceptionWithMessage('custom.orders.not_out_delivery');
+            }
+
+            $oldStatus = $order->status;
+
+            $order->update([
+                'status' => OrderStatus::RETURNED_BY_USER->value,
+            ]);
+
+            $order->items()->update([
+                'item_status' => OrderStatus::RETURNED_BY_USER->value,
+            ]);
+
+            OrderStatusChanged::dispatch(
+                $order->fresh('items'),
+                $oldStatus,
+                OrderStatus::RETURNED_BY_USER->value,
+                'driver'
+            );
+
+            return $order->fresh('items');
+        });
+    }
+
 
     /* =======================
        📊 STATISTICS

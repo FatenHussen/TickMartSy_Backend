@@ -293,8 +293,8 @@ class RecipeSeeder extends Seeder
             RecipeItem::create([
                 'recipe_id' => $recipe->id,
                 'shop_product_variant_id' => $gheeShopVariant->id,
-                'quantity' => 1,
-                'is_required' => true,
+                'quantity' => 2,
+                'is_required' => false,
                 'min_quantity' => 1,
                 'max_quantity' => 3,
             ]);

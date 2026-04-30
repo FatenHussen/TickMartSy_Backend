@@ -80,6 +80,11 @@ class HelpCenterController extends Controller
                     : null,
                 'link'  => $settings['login_link']->value ?? null,
             ],
+            'quick_action' => [
+                'image' => isset($settings['quick_action_image'])
+                    ? asset('storage/' . $settings['quick_action_image']->value)
+                    : null,
+            ],
             'contact' => [
                 'phone' => $settings['phone']->value ?? null,
                 'whatsapp' => $settings['whts']->value ?? null,

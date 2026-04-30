@@ -8,15 +8,16 @@ use Illuminate\Support\Collection;
 
 class PromotionService
 {
-    /** أنواع يختارها المستخدم عبر promotion_id فقط */
     public const USER_SELECTABLE_TYPES = ['simple_discount', 'spend_x_discount'];
 
-    /** تُطبَّق تلقائياً عند استيفاء الشروط (بدون promotion_id) */
-    public const AUTOMATIC_TYPES = ['spend_x_get_gift', 'spend_x_get_points', 'free_shipping'];
+    public const AUTOMATIC_TYPES = [
+        'spend_x_get_gift',
+        'spend_x_get_points',
+        'free_shipping',
+        'spend_x_get_free_shipping',
+    ];
 
-    /**
-     * عروض يمكن للمستخدم اختيار واحد منها مع الطلب (خصم فقط).
-     */
+
     public function getAvailablePromotions(float $subtotal, Collection $items): Collection
     {
         return Promotion::query()
@@ -49,9 +50,7 @@ class PromotionService
             ]);
     }
 
-    /**
-     * خصم من عرض يختاره المستخدم (simple_discount أو spend_x_discount فقط).
-     */
+
     public function applyDiscountPromotion($orderOrNull, int $promotionId, float $subtotal): float
     {
         $promotion = Promotion::find($promotionId);
@@ -78,63 +77,33 @@ class PromotionService
         }
     }
 
-    /**
-     * توصيل مجاني تلقائياً إذا وُجد عرض free_shipping نشط ضمن التواريخ (دون اختيار المستخدم).
-     */
-    public function resolveAutomaticFreeShippingDeliveryPrice(float $deliveryPrice): float
+
+    public function resolveAutomaticFreeShippingDeliveryPrice(float $deliveryPrice, ?float $subtotal = null): float
     {
         if ($deliveryPrice <= 0) {
             return $deliveryPrice;
         }
 
-        if (! $this->hasActiveAutomaticFreeShipping()) {
+        if (! $this->hasActiveAutomaticFreeShipping($subtotal)) {
             return $deliveryPrice;
         }
 
         return 0.0;
     }
 
-    /**
-     * هل يوجد حالياً عرض توصيل مجاني تلقائي مفعّل (للمعاينة).
-     */
-    public function hasActiveAutomaticFreeShipping(): bool
+
+    public function hasActiveAutomaticFreeShipping(?float $subtotal = null): bool
     {
-        return Promotion::query()
-            ->where('type', 'free_shipping')
-            ->where('is_active', true)
-            ->where(function ($q) {
-                $q->whereNull('starts_at')
-                    ->orWhere('starts_at', '<=', now());
-            })
-            ->where(function ($q) {
-                $q->whereNull('ends_at')
-                    ->orWhere('ends_at', '>=', now());
-            })
-            ->exists();
+        return $this->activeAutomaticFreeShippingPromotions($subtotal)->isNotEmpty();
     }
 
-    /**
-     * العروض النشطة من نوع free_shipping (للقطة JSON على الطلب).
-     *
-     * @return array<int, array{promotion_id: int, name: array, description: array}>
-     */
-    public function freeShippingPromotionsSnapshot(): array
+    public function freeShippingPromotionsSnapshot(?float $subtotal = null): array
     {
-        return Promotion::query()
-            ->where('type', 'free_shipping')
-            ->where('is_active', true)
-            ->where(function ($q) {
-                $q->whereNull('starts_at')
-                    ->orWhere('starts_at', '<=', now());
-            })
-            ->where(function ($q) {
-                $q->whereNull('ends_at')
-                    ->orWhere('ends_at', '>=', now());
-            })
-            ->orderBy('id')
-            ->get()
+        return $this->activeAutomaticFreeShippingPromotions($subtotal)
             ->map(fn(Promotion $p) => [
                 'promotion_id' => $p->id,
+                'type' => $p->type,
+                'min_spend' => (float) ($p->min_spend ?? 0),
                 'name' => $p->getTranslations('name'),
                 'description' => $p->getTranslations('description'),
             ])
@@ -142,23 +111,22 @@ class PromotionService
             ->all();
     }
 
-    /**
-     * لقطة للعروض التلقائية المطبّقة على الطلب (تُخزَّن في orders.automatic_promotions_snapshot).
-     */
+
     public function compileAutomaticPromotionsSnapshot(
         float $deliveryBeforeAutomaticFreeShipping,
         float $deliveryAfterAutomaticFreeShipping,
-        array $automaticOrderPromotionsResult
+        array $automaticOrderPromotionsResult,
+        ?float $subtotal = null
     ): ?array {
         $freeShipping = null;
         if (
             $deliveryBeforeAutomaticFreeShipping > 0
             && $deliveryAfterAutomaticFreeShipping <= 0
-            && $this->hasActiveAutomaticFreeShipping()
+            && $this->hasActiveAutomaticFreeShipping($subtotal)
         ) {
             $freeShipping = [
                 'waived_delivery_amount' => round($deliveryBeforeAutomaticFreeShipping, 2),
-                'promotions' => $this->freeShippingPromotionsSnapshot(),
+                'promotions' => $this->freeShippingPromotionsSnapshot($subtotal),
             ];
         }
 
@@ -183,11 +151,7 @@ class PromotionService
         ];
     }
 
-    /**
-     * تطبيق عروض الهدايا والنقاط التلقائية (معاينة أو بعد إنشاء الطلب).
-     *
-     * @return array{gifts: array<int, array>, points_expected: int, points_awarded: int, points_awards: array<int, array>}
-     */
+
     public function applyAutomaticOrderPromotions(
         $orderOrNull,
         ?int $userId,
@@ -305,5 +269,41 @@ class PromotionService
         }
 
         return true;
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection<int, Promotion>
+     */
+    protected function activeAutomaticFreeShippingPromotions(?float $subtotal = null): Collection
+    {
+        return Promotion::query()
+            ->whereIn('type', ['free_shipping', 'spend_x_get_free_shipping'])
+            ->where('is_active', true)
+            ->where(function ($q) {
+                $q->whereNull('starts_at')
+                    ->orWhere('starts_at', '<=', now());
+            })
+            ->where(function ($q) {
+                $q->whereNull('ends_at')
+                    ->orWhere('ends_at', '>=', now());
+            })
+            ->orderBy('id')
+            ->get()
+            ->filter(function (Promotion $promotion) use ($subtotal) {
+                if ($promotion->type === 'free_shipping') {
+                    return true;
+                }
+
+                if ($promotion->type === 'spend_x_get_free_shipping') {
+                    if ($subtotal === null) {
+                        return false;
+                    }
+
+                    return $subtotal >= (float) ($promotion->min_spend ?? 0);
+                }
+
+                return false;
+            })
+            ->values();
     }
 }

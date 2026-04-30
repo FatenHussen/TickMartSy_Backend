@@ -18,7 +18,7 @@ class OrderController extends Controller
     public function orders(Request $request)
     {
         $data = $request->validate([
-            'status' => 'required|in:pending,preparing,out_delivery,delivered',
+            'status' => 'required|in:pending,preparing,out_delivery,delivered,returned_by_user',
             'assigned_by' => 'nullable|in:admin,driver',
         ]);
 
@@ -151,6 +151,15 @@ class OrderController extends Controller
 
         return $this->sendResponse(
             // data: OneResource::make($order),
+        );
+    }
+
+    public function returnedByUser(int $orderId)
+    {
+        $this->service->returnedByUser($orderId);
+
+        return $this->sendResponse(
+            message: __('custom.driver.order_returned_by_user')
         );
     }
 

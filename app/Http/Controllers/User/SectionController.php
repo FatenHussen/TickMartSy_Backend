@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 class SectionController extends Controller
 {
     public function __construct(private UserService $service) {}
+
     public function index(Request $request)
     {
         $page = Page::where('slug', $request->page_slug)->firstOrFail();
@@ -24,6 +25,25 @@ class SectionController extends Controller
             ->with('section.sectionItems.item')
             ->get();
 
+        $sections = $sections
+            ->filter(fn ($pageSection) => $this->matchesShowWhen($pageSection->show_when ?? [], $request))
+            ->values();
+
         return $this->sendResponse(data: OneResource::collection($sections));
+    }
+
+    private function matchesShowWhen(array $showWhen, Request $request): bool
+    {
+        if (empty($showWhen)) {
+            return true;
+        }
+
+        foreach ($showWhen as $key => $expectedValue) {
+            if ((string) $request->query($key) !== (string) $expectedValue) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

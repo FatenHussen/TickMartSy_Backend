@@ -453,6 +453,28 @@ class PageSectionSeeder extends Seeder
             ]
         ]));
 
+        $productsPage = Page::firstOrCreate(
+            ['slug' => 'products'],
+            ['title' => 'products']
+        );
+
+        // Example: this section appears in products page only when category_id=5 is selected.
+        PageSection::create($fillPageSectionColors([
+            'name' => ['en' => 'Category 5 Products', 'ar' => 'منتجات التصنيف 5'],
+            'page_id' => $productsPage->id,
+            'section_id' => $productsSection->id,
+            'display_type_id' => $productDisplayType->id,
+            'position' => 'after',
+            'variant' => VariantSection::Vertical->value,
+            'order' => 12,
+            'filters' => [
+                'type' => 'new',
+            ],
+            'show_when' => [
+                'category_id' => 5,
+            ],
+        ]));
+
         //   $suggestedSection = Section::create([
         //     'name' => ['en' => 'Suggested', 'ar' => 'المقترحات'],
         //     'type' => 'api',

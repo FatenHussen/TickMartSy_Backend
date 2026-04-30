@@ -991,6 +991,7 @@ return [
         'order_out_delivery' => 'Order marked as out for delivery.',
         'shop_out_delivery' => 'Shop items marked as out for delivery.',
         'order_delivered' => 'Order delivered successfully.',
+        'order_returned_by_user' => 'Order marked as returned by user.',
         'statistics_retrieved' => 'Driver statistics retrieved successfully.',
         'no_current_order' => 'No current order.',
         'current_order_retrieved' => 'Current order retrieved successfully.',

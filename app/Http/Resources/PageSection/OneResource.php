@@ -36,6 +36,7 @@ class OneResource extends JsonResource
                     'params' => $this->filters
                 ]
                 : null,
+            'show_when' => $this->show_when,
 
             'action' => [
                 'page_slug' => $this->section->details_slug,

@@ -110,6 +110,22 @@ class PromotionSeeder extends Seeder
                 'gift_description' => null,
                 'reward_points' => null,
             ],
+            'spend_x_get_free_shipping' => [
+                ...$window,
+                'name' => [
+                    'en' => 'Spend 250 Get Free Shipping',
+                    'ar' => 'أنفق 250 واحصل على توصيل مجاني',
+                ],
+                'description' => [
+                    'en' => 'Free delivery when you spend 250 or more.',
+                    'ar' => 'توصيل مجاني عند الإنفاق 250 أو أكثر.',
+                ],
+                'min_spend' => 250,
+                'discount_value' => null,
+                'discount_type' => null,
+                'gift_description' => null,
+                'reward_points' => null,
+            ],
         ];
 
         $expectedTypes = array_values(array_unique(array_merge(

@@ -209,6 +209,7 @@ class Order extends Model
                     OrderStatus::PREPARING->value    => 'preparing_at',
                     OrderStatus::OUT_DELIVERY->value => 'out_delivery_at',
                     OrderStatus::DELIVERED->value    => 'delivered_at',
+                    OrderStatus::RETURNED_BY_USER->value => 'returned_by_user_at',
                 ];
 
                 $field = $timestampsMap[$order->status] ?? null;

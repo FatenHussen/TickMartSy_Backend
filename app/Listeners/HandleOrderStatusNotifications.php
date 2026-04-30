@@ -116,6 +116,11 @@ class HandleOrderStatusNotifications implements ShouldQueue
                 'body'  => "فشل تسليم طلبك رقم {$order->order_code} و ستتم المراجعة من الادمن",
             ],
 
+            OrderStatus::RETURNED_BY_USER->value => [
+                'title' => 'تم إرجاع الطلب',
+                'body'  => "تم إرجاع طلبك رقم {$order->order_code} بسبب عدم المطابقة",
+            ],
+
             OrderStatus::CANCELLED->value => [
                 'title' => 'تم إلغاء الطلب ❌',
                 'body'  => "تم إلغاء طلبك رقم {$order->order_code}",
@@ -226,6 +231,13 @@ class HandleOrderStatusNotifications implements ShouldQueue
             return [
                 'title' => 'فشل في تسليم الطلب',
                 'body'  =>  " فشل تسليم الطلب رقم {$order->order_code} ",
+            ];
+        }
+
+        if ($event->to === OrderStatus::RETURNED_BY_USER->value) {
+            return [
+                'title' => 'تم إرجاع الطلب من قبل المستخدم',
+                'body'  =>  "الطلب رقم {$order->order_code} تم إرجاعه من قبل المستخدم بعد محاولة التسليم",
             ];
         }
 

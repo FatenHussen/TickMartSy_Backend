@@ -19,6 +19,7 @@ use App\Http\Controllers\User\Category\CategoryController;
 use App\Http\Controllers\User\SectionController;
 use App\Http\Controllers\User\CityController;
 use App\Http\Controllers\User\ComplaintController;
+use App\Http\Controllers\User\ContactMethodController;
 use App\Http\Controllers\User\CountryController;
 use App\Http\Controllers\User\FavoriteController;
 use App\Http\Controllers\User\FlashSaleController;
@@ -118,6 +119,10 @@ Route::prefix('user')->group(
 
         Route::prefix('promotions')->group(function () {
             Route::get('/', [PromotionController::class, 'index']);
+        });
+
+        Route::prefix('contact-methods')->group(function () {
+            Route::get('/', [ContactMethodController::class, 'index']);
         });
 
         Route::prefix('flash-sales')->group(function () {

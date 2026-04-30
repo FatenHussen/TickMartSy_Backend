@@ -38,6 +38,9 @@ class UpdateRequest extends FormRequest
             'filters.min_price' => ['nullable', 'integer', 'min:1'],
             'filters.max_price' => ['nullable', 'integer', 'min:1'],
             'filters.price' => ['nullable', 'integer', 'min:1'],
+
+            'show_when' => ['nullable', 'array'],
+            'show_when.*' => ['nullable'],
         ];
     }
 

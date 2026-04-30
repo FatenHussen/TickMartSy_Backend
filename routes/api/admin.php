@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\Category\CategoryController;
 use App\Http\Controllers\Admin\Category\CategoryDetailController;
 use App\Http\Controllers\Admin\Color\ColorController;
 use App\Http\Controllers\Admin\Complaint\ComplaintController;
+use App\Http\Controllers\Admin\ContactMethodController;
 use App\Http\Controllers\Admin\Country\CountryCrudController;
 use App\Http\Controllers\Admin\Coupon\CouponCrudController;
 use App\Http\Controllers\Admin\Currency\CurrencyController;
@@ -298,6 +299,7 @@ Route::prefix('admin')->group(function () {
         Route::apiResource('popup-campaigns', PopupCampaignController::class)->middleware('crud.permission:popupcampaign');
         Route::apiResource('badges', BadgeController::class)->middleware('crud.permission:badge');
         Route::apiResource('promotions', PromotionController::class)->middleware('crud.permission:promotion');
+        Route::apiResource('contact-methods', ContactMethodController::class);
         Route::apiResource('flash-sales', FlashSaleController::class)
             ->only(['index', 'store', 'show', 'update'])
             ->middleware('crud.permission:flashsale');

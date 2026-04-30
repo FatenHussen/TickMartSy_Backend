@@ -1006,6 +1006,7 @@ return [
         'order_out_delivery' => 'تم وضع الطلب في حالة الخروج للتوصيل.',
         'shop_out_delivery' => 'تم وضع عناصر المتجر في حالة الخروج للتوصيل.',
         'order_delivered' => 'تم تسليم الطلب بنجاح.',
+        'order_returned_by_user' => 'تم وضع الطلب في حالة مرتجع من قبل المستخدم.',
         'statistics_retrieved' => 'تم جلب إحصائيات السائق بنجاح.',
         'no_current_order' => 'لا يوجد طلب حالي.',
         'current_order_retrieved' => 'تم جلب الطلب الحالي بنجاح.',
