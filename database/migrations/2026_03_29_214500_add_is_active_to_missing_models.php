@@ -48,7 +48,6 @@ return new class extends Migration
             'page_sections',
             'products',
             'product_category_details',
-            'product_extra_details',
             'product_media',
             'product_variants',
             'point_exchanges',
