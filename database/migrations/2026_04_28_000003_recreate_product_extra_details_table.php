@@ -9,7 +9,6 @@ return new class extends Migration
     public function up(): void
     {
         // Drop old table if exists with product_id
-        Schema::dropIfExists('product_extra_details');
 
         // Create new generic extra details table
         Schema::create('product_extra_details', function (Blueprint $table) {
