@@ -13,17 +13,27 @@ class ProductExtraDetailSeeder extends Seeder
         $categories = Category::limit(5)->get();
 
         foreach ($categories as $category) {
-            ProductExtraDetail::create([
-                'category_id' => $category->id,
-                'detail_key' => ['en' => 'Material', 'ar' => 'الخامة'],
-                'detail_value' => ['en' => 'Cotton', 'ar' => 'قطن'],
-            ]);
+            ProductExtraDetail::firstOrCreate(
+                [
+                    'category_id' => $category->id,
+                    'detail_key' => ['en' => 'Material', 'ar' => 'الخامة'],
+                    'detail_value' => ['en' => 'Cotton', 'ar' => 'قطن'],
+                ],
+                [
+                    'is_active' => true,
+                ]
+            );
 
-            ProductExtraDetail::create([
-                'category_id' => $category->id,
-                'detail_key' => ['en' => 'Warranty', 'ar' => 'الضمان'],
-                'detail_value' => ['en' => '2 Years', 'ar' => 'سنتين'],
-            ]);
+            ProductExtraDetail::firstOrCreate(
+                [
+                    'category_id' => $category->id,
+                    'detail_key' => ['en' => 'Warranty', 'ar' => 'الضمان'],
+                    'detail_value' => ['en' => '2 Years', 'ar' => 'سنتين'],
+                ],
+                [
+                    'is_active' => true,
+                ]
+            );
         }
     }
 }
