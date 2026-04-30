@@ -28,6 +28,11 @@ class FilterRequest extends FormRequest
                 'nullable',
                 'in:' . implode(',', array_column(OrderStatus::cases(), 'value')),
             ],
+            'driver_id' => [
+                'nullable',
+                'integer',
+                'exists:drivers,id',
+            ],
         ];
     }
 }
