@@ -35,10 +35,14 @@ class AllResource extends JsonResource
                 ? ($attrNameData[$locale] ?? $attrNameData['ar'] ?? $attrNameData['en'] ?? '')
                 : (string) $attrNameData;
 
-            $attrValueData = $attr['name'] ?? [];
+            $attrValueData = $attr['display_name'] ?? $attr['name'] ?? [];
             $attrValue = is_array($attrValueData)
                 ? ($attrValueData[$locale] ?? $attrValueData['ar'] ?? $attrValueData['en'] ?? '')
                 : (string) $attrValueData;
+
+            if ($attrValue === '' && !empty($attr['hex'])) {
+                $attrValue = (string) ($attr['hex'] ?? '');
+            }
 
             if (!empty($attrName) && !empty($attrValue)) {
                 $attributesParts[] = "{$attrName}: {$attrValue}";

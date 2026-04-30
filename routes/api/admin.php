@@ -39,6 +39,7 @@ use App\Http\Controllers\Admin\PointExchange\PointExchangeController;
 use App\Http\Controllers\Admin\PointRuleController;
 use App\Http\Controllers\Admin\PopupCampaignController;
 use App\Http\Controllers\Admin\Product\ProductController;
+use App\Http\Controllers\Admin\ProductExtraDetail\ProductExtraDetailController;
 use App\Http\Controllers\Admin\ProductVariant\ProductVariantController;
 use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\PromotionRequest\PromotionRequestCrudController;
@@ -255,6 +256,8 @@ Route::prefix('admin')->group(function () {
         Route::resource('category-details', CategoryDetailController::class)
             ->middleware('crud.permission:categorydetail');
         Route::resource('products', ProductController::class)->middleware('crud.permission:product');
+        Route::apiResource('product-extra-details', ProductExtraDetailController::class)
+            ->middleware('crud.permission:productextradetail');
         Route::resource('product-variants', ProductVariantController::class)
             ->middleware('crud.permission:productvariant');
         Route::resource('shop-product-variants', ShopProductVariantController::class)

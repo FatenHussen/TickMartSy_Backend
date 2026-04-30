@@ -18,6 +18,7 @@ class SellerRegistrationResource extends JsonResource
         return [
             'id' => $this->id,
             'email' => $this->email,
+               'phone' => $this->phone,
             'seller_name' => $this->seller_name,
             'store_name' => $this->store_name,
             'address' => $this->address,

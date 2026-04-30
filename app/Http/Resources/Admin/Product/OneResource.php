@@ -148,10 +148,15 @@ class OneResource extends JsonResource
             'extra_details' => ($this->extraDetails ?? collect())->map(function ($detail) {
                 return [
                     'id' => $detail->id,
+                    'category' => $detail->category ? [
+                        'id' => $detail->category->id,
+                        'name' => $detail->category->name,
+                    ] : null,
                     'key' => $detail->getTranslations('detail_key') ?? [],
                     'value' => $detail->getTranslations('detail_value') ?? [],
-                    'price' => (float) $detail->price,
-                    'price_currencies' => $this->dualCurrency($detail->price),
+                    'quantity' => (int) $detail->pivot->quantity,
+                    'price' => (float) $detail->pivot->price,
+                    'price_currencies' => $this->dualCurrency($detail->pivot->price),
                 ];
             })->values(),
 

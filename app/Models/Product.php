@@ -381,7 +381,9 @@ class Product extends Model implements Sectionable
 
     public function extraDetails()
     {
-        return $this->hasMany(ProductExtraDetail::class);
+        return $this->belongsToMany(ProductExtraDetail::class, 'product_extra_detail_options')
+            ->withPivot('quantity', 'price')
+            ->withTimestamps();
     }
 
     public function media()

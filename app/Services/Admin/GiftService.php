@@ -147,13 +147,21 @@ class GiftService extends BaseService
                     ? ($attrNameData['en'] ?? $attrNameData['ar'] ?? '')
                     : (string) $attrNameData;
 
-                $attrValueData = $attr['name'] ?? [];
+                $attrValueData = $attr['display_name'] ?? $attr['name'] ?? [];
                 $attrValueAr = is_array($attrValueData)
                     ? ($attrValueData['ar'] ?? $attrValueData['en'] ?? '')
                     : (string) $attrValueData;
                 $attrValueEn = is_array($attrValueData)
                     ? ($attrValueData['en'] ?? $attrValueData['ar'] ?? '')
                     : (string) $attrValueData;
+
+                if ($attrValueAr === '' && !empty($attr['hex'])) {
+                    $attrValueAr = (string) $attr['hex'];
+                }
+
+                if ($attrValueEn === '' && !empty($attr['hex'])) {
+                    $attrValueEn = (string) $attr['hex'];
+                }
 
                 if (!empty($attrNameAr) && !empty($attrValueAr)) {
                     $attributesPartsAr[] = "{$attrNameAr}: {$attrValueAr}";

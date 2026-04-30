@@ -52,13 +52,8 @@ class StoreRequest extends FormRequest
 
         if (isset($data['extra_details'])) {
             foreach ($data['extra_details'] as $i => $ed) {
-                foreach ($this->locales as $locale) {
-                    if (!isset($ed['detail_key'][$locale])) {
-                        $data['extra_details'][$i]['detail_key'][$locale] = null;
-                    }
-                    if (!isset($ed['detail_value'][$locale])) {
-                        $data['extra_details'][$i]['detail_value'][$locale] = null;
-                    }
+                if (!isset($data['extra_details'][$i]['product_extra_detail_id'])) {
+                    continue;
                 }
             }
             $this->merge(['extra_details' => $data['extra_details']]);
@@ -146,11 +141,11 @@ class StoreRequest extends FormRequest
             'category_details.*.category_detail_id' => 'nullable|exists:category_details,id',
             'category_details.*.detail_value'       => 'nullable|array',
 
-            // Extra Details
-            'extra_details'                 => 'nullable|array',
-            'extra_details.*.detail_key'    => 'nullable|array',
-            'extra_details.*.detail_value'  => 'nullable|array',
-            'extra_details.*.price'         => 'nullable|numeric|min:0',
+            // Extra Details (select from existing pool)
+            'extra_details'                       => 'nullable|array',
+            'extra_details.*.product_extra_detail_id' => 'required|exists:product_extra_details,id',
+            'extra_details.*.quantity'            => 'required|integer|min:0',
+            'extra_details.*.price'               => 'required|numeric|min:0',
 
             // Media
             'media' => 'required|array|min:1',

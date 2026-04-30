@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use App\Forms\Components\TinyEditor;
+use App\Models\AttributeValue;
+use App\Models\Color;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\VendorUser;
@@ -1018,41 +1020,66 @@ class ProductForm
 
     private static function getColorOptions(int $attributeId): array
     {
-        $values = \App\Models\AttributeValue::where('category_attribute_id', $attributeId)->get();
+        $values = AttributeValue::with('color')
+            ->where('category_attribute_id', $attributeId)
+            ->get();
 
         $options = [];
         foreach ($values as $value) {
-            $hex = static::getAttributeValueHexById($value->id);
-            if (!$hex) {
+            $label = static::getColorOptionLabel($value);
+
+            if (!$label) {
                 continue;
             }
-            $options[$value->id] = static::renderColorSwatch($hex);
+
+            $options[$value->id] = $label;
         }
 
         return $options;
     }
 
-    private static function renderColorSwatch(string $hex): string
+    private static function getColorOptionLabel(AttributeValue $value): ?string
     {
+        $color = $value->color;
+        $hex = $color?->hex;
+
+        if (!$hex) {
+            return null;
+        }
+
+        $name = $color ? static::getTranslatedColorName($color) : null;
+
+        if (!$name) {
+            $name = $value->getTranslation('name', app()->getLocale(), false)
+                ?: $value->getTranslation('name', 'en', false)
+                ?: $value->getTranslation('name', 'ar', false)
+                ?: $hex;
+        }
+
+        return static::renderColorSwatch($name, $hex);
+    }
+
+    private static function getTranslatedColorName(Color $color): ?string
+    {
+        $name = $color->getTranslation('name', app()->getLocale(), false)
+            ?: $color->getTranslation('name', 'en', false)
+            ?: $color->getTranslation('name', 'ar', false);
+
+        return is_string($name) && $name !== '' ? $name : null;
+    }
+
+    private static function renderColorSwatch(string $name, string $hex): string
+    {
+        $nameSafe = e($name);
         $hexSafe = e($hex);
 
         return '<span style="display:inline-flex;align-items:center;gap:8px;">' .
             '<span style="display:inline-block;width:18px;height:18px;border-radius:9999px;background:' . $hexSafe . ';border:1px solid #d1d5db;"></span>' .
+            '<span style="display:flex;flex-direction:column;line-height:1.1;">' .
+            '<span>' . $nameSafe . '</span>' .
+            '<small style="color:#6b7280;">' . $hexSafe . '</small>' .
+            '</span>' .
             '</span>';
-    }
-
-    private static function getAttributeValueIdByHex(int $attributeId, string $hex): ?int
-    {
-        $query = \App\Models\AttributeValue::where('category_attribute_id', $attributeId)
-            ->where(function ($q) use ($hex) {
-                $q->where('name->en', $hex)
-                    ->orWhere('name->ar', $hex)
-                    ->orWhere('name', $hex);
-            })
-            ->select('id')
-            ->first();
-
-        return $query?->id;
     }
 
     private static function badgeOptions(): array

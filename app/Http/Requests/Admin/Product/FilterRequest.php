@@ -51,6 +51,7 @@ class FilterRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'id'             => 'nullable|integer|exists:products,id',
             'shop_id'        => 'nullable|integer',
             'product_number' => 'nullable|string|max:255',
             'category_id'    => 'nullable|integer|exists:categories,id',

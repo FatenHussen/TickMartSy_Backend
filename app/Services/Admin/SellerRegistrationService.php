@@ -4,6 +4,7 @@ namespace App\Services\Admin;
 
 use App\Http\Resources\SellerRegistration\AllResource;
 use App\Http\Resources\SellerRegistration\OneResource;
+use App\Jobs\SendApprovalNotificationJob;
 use App\Models\SellerRegistration;
 use App\Models\Vendor;
 use App\Models\Shop;
@@ -81,6 +82,17 @@ class SellerRegistrationService extends BaseService
                 // Update registration status
                 $registration->update(['status' => 'approved']);
 
+                if ($registration->phone) {
+                    SendApprovalNotificationJob::dispatch(
+                        $registration->phone,
+                        'emails.service-provider-approved',
+                        [
+                            'vendorName' => $registration->seller_name,
+                            'shopName' => $registration->store_name,
+                        ]
+                    );
+                }
+
                 // Send service provider approval email (no dashboard credentials)
                 Mail::to($registration->email)->send(
                     new ServiceProviderApprovedMail(
@@ -126,6 +138,19 @@ class SellerRegistrationService extends BaseService
             }
             // Update registration status
             $registration->update(['status' => 'approved']);
+
+                if ($registration->phone) {
+                    SendApprovalNotificationJob::dispatch(
+                        $registration->phone,
+                        'emails.vendor-credentials',
+                        [
+                            'vendorName' => $registration->seller_name,
+                            'email' => $registration->email,
+                            'password' => $password,
+                            'shopName' => $registration->store_name,
+                        ]
+                    );
+                }
 
             // Send email with credentials
             Mail::to($registration->email)->send(

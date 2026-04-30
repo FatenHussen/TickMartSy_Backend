@@ -26,7 +26,7 @@ class ProductService extends BaseService
         'variants',
         'variants.shopVariants',
         'categoryDetails.categoryDetail',
-        'extraDetails',
+        'extraDetails.category',
         'variants.shopVariants.shop',
     ];
 
@@ -123,6 +123,12 @@ class ProductService extends BaseService
 
     public function queryBuilder($query, $filters = [], $config = [])
     {
+        // Filter by product ID
+        if (!empty($filters['id'])) {
+            $query->where('id', $filters['id']);
+            unset($filters['id']);
+        }
+
         if (!empty($filters['product_number'])) {
             $query->where('product_number', $filters['product_number']);
             unset($filters['product_number']);
@@ -320,12 +326,26 @@ class ProductService extends BaseService
                 continue;
             }
 
-            $relationObj = $object->$relation();
+            // Handle many-to-many relationships with pivot data (like extra_details)
+            if ($requestKey === 'extra_details') {
+                $syncData = [];
+                foreach ($items as $item) {
+                    if (isset($item['product_extra_detail_id'])) {
+                        $syncData[$item['product_extra_detail_id']] = [
+                            'quantity' => $item['quantity'] ?? 0,
+                            'price' => $item['price'] ?? 0,
+                        ];
+                    }
+                }
+                $object->extraDetails()->sync($syncData);
+            } else {
+                // Handle hasMany relationships (create/delete)
+                $relationObj = $object->$relation();
+                $relationObj->delete();
 
-            $relationObj->delete();
-
-            foreach ($items as $item) {
-                $relationObj->create($item);
+                foreach ($items as $item) {
+                    $relationObj->create($item);
+                }
             }
         }
 
