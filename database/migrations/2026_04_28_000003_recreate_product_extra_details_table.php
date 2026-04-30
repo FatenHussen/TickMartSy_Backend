@@ -29,7 +29,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2)->default(0);
             $table->timestamps();
 
-            $table->unique(['product_id', 'product_extra_detail_id']);
+            $table->unique(['product_id', 'product_extra_detail_id'], 'pr_extra_detail_unique');
         });
     }
 
