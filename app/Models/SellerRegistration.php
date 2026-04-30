@@ -14,6 +14,7 @@ class SellerRegistration extends Model
 
     protected $fillable = [
         'email',
+        'phone',
         'password',
         'seller_name',
         'store_name',

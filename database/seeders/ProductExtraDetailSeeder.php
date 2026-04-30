@@ -3,27 +3,37 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Product;
 use App\Models\ProductExtraDetail;
+use App\Models\Category;
 
 class ProductExtraDetailSeeder extends Seeder
 {
     public function run(): void
     {
-        $products = Product::all();
+        $categories = Category::limit(5)->get();
 
-        foreach ($products as $product) {
-            ProductExtraDetail::create([
-                'product_id' => $product->id,
-                'detail_key' => ['en' => 'Material', 'ar' => 'الخامة'],
-                'detail_value' => ['en' => 'Cotton', 'ar' => 'قطن'],
-            ]);
+        foreach ($categories as $category) {
+            ProductExtraDetail::firstOrCreate(
+                [
+                    'category_id' => $category->id,
+                    'detail_key' => ['en' => 'Material', 'ar' => 'الخامة'],
+                    'detail_value' => ['en' => 'Cotton', 'ar' => 'قطن'],
+                ],
+                [
+                    'is_active' => true,
+                ]
+            );
 
-            ProductExtraDetail::create([
-                'product_id' => $product->id,
-                'detail_key' => ['en' => 'Warranty', 'ar' => 'الضمان'],
-                'detail_value' => ['en' => '2 Years', 'ar' => 'سنتين'],
-            ]);
+            ProductExtraDetail::firstOrCreate(
+                [
+                    'category_id' => $category->id,
+                    'detail_key' => ['en' => 'Warranty', 'ar' => 'الضمان'],
+                    'detail_value' => ['en' => '2 Years', 'ar' => 'سنتين'],
+                ],
+                [
+                    'is_active' => true,
+                ]
+            );
         }
     }
 }

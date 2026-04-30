@@ -80,17 +80,48 @@ class ProductVariant extends Model
             return [];
         }
 
-        $attributeValues = AttributeValue::with('categoryAttribute')
+        $attributeValues = AttributeValue::with(['categoryAttribute', 'color'])
             ->whereIn('id', $this->attributes_values_ids)
             ->get();
 
         return $attributeValues->map(function ($attributeValue) {
+            $isColorType = ($attributeValue->categoryAttribute->type ?? null) === 'color';
+            $attributeName = $attributeValue->categoryAttribute->name ?? null;
+
+            if ($isColorType) {
+                $colorName = $attributeValue->color?->getTranslation('name', app()->getLocale(), false)
+                    ?: $attributeValue->color?->getTranslation('name', 'en', false)
+                    ?: $attributeValue->color?->getTranslation('name', 'ar', false)
+                    ?: $attributeValue->name;
+                $hex = $attributeValue->color?->hex;
+
+                return [
+                    'id' => $attributeValue->id,
+                    'name' => $colorName,
+                    'display_name' => $hex ? ($colorName . ' (' . $hex . ')') : $colorName,
+                    'hex' => $hex,
+                    'color' => $attributeValue->color ? [
+                        'id' => $attributeValue->color->id,
+                        'name' => $colorName,
+                        'hex' => $hex,
+                    ] : null,
+                    'category_attribute' => [
+                        'id' => $attributeValue->categoryAttribute->id,
+                        'name' => $attributeName,
+                        'type' => $attributeValue->categoryAttribute->type ?? null,
+                    ],
+                ];
+            }
+
             return [
                 'id' => $attributeValue->id,
                 'name' => $attributeValue->name,
+                'display_name' => $attributeValue->name,
+                'hex' => null,
+                'color' => null,
                 'category_attribute' => [
                     'id' => $attributeValue->categoryAttribute->id,
-                    'name' => $attributeValue->categoryAttribute->name,
+                    'name' => $attributeName,
                     'type' => $attributeValue->categoryAttribute->type ?? null,
                 ],
             ];
@@ -125,7 +156,11 @@ class ProductVariant extends Model
 
     public function getAttributesValuesAttribute()
     {
-        return VariantAttributeResource::collection(AttributeValue::whereIn('id', $this->attributes_values_ids ?? [])->get());
+        return VariantAttributeResource::collection(
+            AttributeValue::with(['categoryAttribute', 'color'])
+                ->whereIn('id', $this->attributes_values_ids ?? [])
+                ->get()
+        );
     }
 
     public function ratings(): MorphMany

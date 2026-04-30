@@ -28,7 +28,7 @@
 
         <div class="info-row">
             <span class="info-label">إجمالي المبيعات</span>
-            <span class="info-value">{{ number_format($data['total_sales'], 2) }}</span>
+            <span class="info-value">{{ \App\Helpers\CurrencyHelper::formatAmount($data['total_sales']) }}</span>
         </div>
 
         <div class="info-row">
@@ -38,7 +38,7 @@
 
         <div class="info-row">
             <span class="info-label">متوسط قيمة الطلب</span>
-            <span class="info-value">{{ number_format($data['average_order_value'], 2) }}</span>
+            <span class="info-value">{{ \App\Helpers\CurrencyHelper::formatAmount($data['average_order_value']) }}</span>
         </div>
 
         <div class="info-row">

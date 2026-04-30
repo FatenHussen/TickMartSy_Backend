@@ -82,7 +82,7 @@ class AllResource extends JsonResource
             'payment_method' => $this->paymentMethod ? [
                 'id' => $this->paymentMethod->id,
                 'name' => $this->paymentMethod->name,
-                'icon' => $this->paymentMethod->icon,
+                'icon' => $this->paymentMethod->image_url,
 
             ] : null,
 

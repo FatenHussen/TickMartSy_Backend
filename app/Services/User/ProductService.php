@@ -23,7 +23,7 @@ class ProductService extends BaseService
         'variants',
         'variants.shopVariants',
         'categoryDetails.categoryDetail',
-        'extraDetails',
+        'extraDetails.category',
         'variants.shopVariants.shop',
         'favorites',
         'icons',

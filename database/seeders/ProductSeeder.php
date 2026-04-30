@@ -645,11 +645,22 @@ class ProductSeeder extends Seeder
 
             // Add extra details
             foreach ($extraDetails as $detail) {
-                ProductExtraDetail::create([
-                    'product_id' => $product->id,
-                    'detail_key' => $detail['key'],
-                    'detail_value' => $detail['value'],
-                    'price' => $detail['price'] ?? 0,
+                $detailModel = ProductExtraDetail::firstOrCreate(
+                    [
+                        'category_id' => $product->category_id,
+                        'detail_key' => $detail['key'],
+                        'detail_value' => $detail['value'],
+                    ],
+                    [
+                        'is_active' => true,
+                    ]
+                );
+
+                $product->extraDetails()->syncWithoutDetaching([
+                    $detailModel->id => [
+                        'quantity' => $detail['quantity'] ?? 0,
+                        'price' => $detail['price'] ?? 0,
+                    ],
                 ]);
             }
 

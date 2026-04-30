@@ -21,7 +21,9 @@ class OneResource extends JsonResource
             'type'     =>$this->type,
             'values'   => $this->values->map(fn($value) => [
                 'id'   => $value->id,
-                'name' => $value->getTranslations('name'),
+                'name' => $this->type === 'color'
+                    ? ($value->color?->getTranslations('name') ?? $value->getTranslations('name'))
+                    : $value->getTranslations('name'),
             ]),
             'is_active' => $this->is_active,
 

@@ -97,27 +97,32 @@ class ShopService extends BaseService
      ========================= */
     protected function applyGeographicalFilters(Builder $query, array $filters)
     {
-        if (!empty($filters['governorate_id'])) {
-            $query->whereHas('area.city', function ($q) use ($filters) {
-                $q->where('governorate_id', $filters['governorate_id']);
+        $governorateId = $this->normalizeFilterId($filters['governorate_id'] ?? null);
+        if ($governorateId !== null) {
+            $query->whereHas('area.city', function ($q) use ($governorateId) {
+                $q->where('governorate_id', $governorateId);
             });
         }
 
-        if (!empty($filters['city_id'])) {
-            $query->whereHas('area', function ($q) use ($filters) {
-                $q->where('city_id', $filters['city_id']);
+        $cityId = $this->normalizeFilterId($filters['city_id'] ?? null);
+        if ($cityId !== null) {
+            $query->whereHas('area', function ($q) use ($cityId) {
+                $q->where('city_id', $cityId);
             });
         }
 
         // Product-based filters - shops that have products matching category/brand conditions
-        if (!empty($filters['category_id']) || !empty($filters['brand_id'])) {
-            $query->whereHas('productVariants.productVariant.product', function ($q) use ($filters) {
-                if (!empty($filters['category_id'])) {
-                    $q->where('category_id', $filters['category_id']);
+        $categoryId = $this->normalizeFilterId($filters['category_id'] ?? null);
+        $brandId = $this->normalizeFilterId($filters['brand_id'] ?? null);
+
+        if ($categoryId !== null || $brandId !== null) {
+            $query->whereHas('productVariants.productVariant.product', function ($q) use ($categoryId, $brandId) {
+                if ($categoryId !== null) {
+                    $q->where('category_id', $categoryId);
                 }
 
-                if (!empty($filters['brand_id'])) {
-                    $q->where('brand_id', $filters['brand_id']);
+                if ($brandId !== null) {
+                    $q->where('brand_id', $brandId);
                 }
             });
         }
@@ -253,5 +258,14 @@ class ShopService extends BaseService
         $query = Shop::query();
         $query =  $this->queryBuilder($query, $filters);
         return $query;
+    }
+
+    private function normalizeFilterId(mixed $value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return is_numeric($value) ? (int) $value : null;
     }
 }

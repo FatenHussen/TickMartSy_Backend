@@ -11,10 +11,9 @@ class ProductExtraDetail extends Model
     use HasFactory, HasTranslations;
 
     protected $fillable = [
-        'product_id',
+        'category_id',
         'detail_key',
         'detail_value',
-        'price',
         'is_active',
     ];
 
@@ -33,8 +32,15 @@ class ProductExtraDetail extends Model
     |--------------------------------------------------------------------------
     */
 
-    public function product()
+    public function category()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Category::class);
+    }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'product_extra_detail_options')
+            ->withPivot('quantity', 'price')
+            ->withTimestamps();
     }
 }

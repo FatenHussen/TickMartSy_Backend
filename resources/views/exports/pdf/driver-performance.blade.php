@@ -33,7 +33,7 @@
 
         <div class="info-row">
             <span class="info-label">إجمالي الأرباح</span>
-            <span class="info-value">{{ number_format($data['total_earnings'], 2) }}</span>
+            <span class="info-value">{{ \App\Helpers\CurrencyHelper::formatAmount($data['total_earnings']) }}</span>
         </div>
 
         <div class="info-row">
