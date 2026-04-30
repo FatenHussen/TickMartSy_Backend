@@ -7,6 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\PointRule;
 use App\Models\PointTransaction;
 use App\Models\Currency;
+use App\Helpers\CurrencyHelper;
 
 class PointSummaryResource extends JsonResource
 {
@@ -44,10 +45,10 @@ class PointSummaryResource extends JsonResource
         return [
             'points' =>  $balance,
             'value' => [
-                'point_value'              => "1 pt = {$currencyRate} {$currencySymbol}",
-                'point_value_base'         => "1 pt = {$currencyRateBase} USD",
-                'estimated_value'          => number_format($estimatedValue, 2) . " {$currencySymbol}",
-                'estimated_value_formatted'=> "{$currencySymbol} " . number_format($estimatedValue, 2),
+                'point_value'              => "1 pt = " . CurrencyHelper::formatAmount($currencyRate) . " {$currencySymbol}",
+                'point_value_base'         => "1 pt = " . CurrencyHelper::formatAmount($currencyRateBase) . " USD",
+                'estimated_value'          => CurrencyHelper::formatAmount($estimatedValue) . " {$currencySymbol}",
+                'estimated_value_formatted'=> "{$currencySymbol} " . CurrencyHelper::formatAmount($estimatedValue),
                 'currency_code'            => $currencyCode,
                 'currency_symbol'          => $currencySymbol,
             ],

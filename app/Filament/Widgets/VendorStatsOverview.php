@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Helpers\CurrencyHelper;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -200,6 +201,6 @@ class VendorStatsOverview extends BaseWidget
 
     private function formatMoney(float $value): string
     {
-        return '$' . number_format($value, 2);
+        return '$' . CurrencyHelper::formatAmount($value);
     }
 }

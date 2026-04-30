@@ -86,23 +86,23 @@
             </div>
             <div class="summary-item" style="padding-right: 10px;">
                 <div class="label">إجمالي الإيرادات</div>
-                <div class="value">{{ number_format($data['total_revenue'], 2) }}</div>
+                <div class="value">{{ \App\Helpers\CurrencyHelper::formatAmount($data['total_revenue']) }}</div>
             </div>
         </div>
         <div class="summary-row">
             <div class="summary-item">
                 <div class="label">رسوم التوصيل</div>
-                <div class="value">{{ number_format($data['total_delivery_fees'], 2) }}</div>
+                <div class="value">{{ \App\Helpers\CurrencyHelper::formatAmount($data['total_delivery_fees']) }}</div>
             </div>
             <div class="summary-item" style="padding-right: 10px;">
                 <div class="label">إجمالي الخصومات</div>
-                <div class="value">{{ number_format($data['total_discounts'], 2) }}</div>
+                <div class="value">{{ \App\Helpers\CurrencyHelper::formatAmount($data['total_discounts']) }}</div>
             </div>
         </div>
         <div class="summary-row">
             <div class="summary-item">
                 <div class="label">متوسط قيمة الطلب</div>
-                <div class="value">{{ number_format($data['average_order_value'], 2) }}</div>
+                <div class="value">{{ \App\Helpers\CurrencyHelper::formatAmount($data['average_order_value']) }}</div>
             </div>
  </div>
     </div>
@@ -121,8 +121,8 @@
             <tr>
                 <td>{{ $order['order_code'] }}</td>
                 <td>{{ $order['user'] }}</td>
-                <td>{{ number_format($order['total'], 2) }}</td>
-                <td>{{ number_format($order['delivery_price'], 2) }}</td>
+                <td>{{ \App\Helpers\CurrencyHelper::formatAmount($order['total']) }}</td>
+                <td>{{ \App\Helpers\CurrencyHelper::formatAmount($order['delivery_price']) }}</td>
                 <td>{{ $order['delivered_at'] }}</td>
             </tr>
             @endforeach

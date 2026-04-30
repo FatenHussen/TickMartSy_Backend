@@ -39,7 +39,7 @@
                     <td>{{ $item['product_id'] }}</td>
                     <td>{{ is_array($item['product_name']) ? ($item['product_name']['ar'] ?? $item['product_name']['en'] ?? 'N/A') : $item['product_name'] }}</td>
                     <td>{{ number_format($item['total_sold']) }}</td>
-                    <td>{{ number_format($item['total_revenue'], 2) }}</td>
+                    <td>{{ \App\Helpers\CurrencyHelper::formatAmount($item['total_revenue']) }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -63,7 +63,7 @@
                     <td>{{ $item['product_id'] }}</td>
                     <td>{{ is_array($item['product_name']) ? ($item['product_name']['ar'] ?? $item['product_name']['en'] ?? 'N/A') : $item['product_name'] }}</td>
                     <td>{{ number_format($item['total_sold']) }}</td>
-                    <td>{{ number_format($item['total_revenue'], 2) }}</td>
+                    <td>{{ \App\Helpers\CurrencyHelper::formatAmount($item['total_revenue']) }}</td>
                 </tr>
                 @endforeach
             </tbody>

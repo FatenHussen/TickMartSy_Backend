@@ -6,6 +6,16 @@ use App\Models\Currency;
 
 class CurrencyHelper
 {
+    public static function formatAmount(?float $amount, int $decimals = 2): ?string
+    {
+        if ($amount === null) {
+            return null;
+        }
+
+        $formatted = number_format($amount, $decimals, '.', ',');
+
+        return rtrim(rtrim($formatted, '0'), '.');
+    }
     /**
      * تحويل السعر من عملة اليوزر إلى الدولار (العملة الأساسية)
      */
@@ -63,7 +73,7 @@ class CurrencyHelper
                 'amount'    => round($priceInBase, 2),
                 'currency'  => $currency?->code ?? 'USD',
                 'symbol'    => $currency?->symbol ?? '$',
-                'formatted' => ($currency?->symbol ?? '$') . ' ' . number_format($priceInBase, 2),
+                'formatted' => ($currency?->symbol ?? '$') . ' ' . self::formatAmount($priceInBase),
             ];
         }
 
@@ -73,7 +83,7 @@ class CurrencyHelper
             'amount'    => $convertedAmount,
             'currency'  => $currency->code,
             'symbol'    => $currency->symbol,
-            'formatted' => $currency->symbol . ' ' . number_format($convertedAmount, 2),
+            'formatted' => $currency->symbol . ' ' . self::formatAmount($convertedAmount),
         ];
     }
 

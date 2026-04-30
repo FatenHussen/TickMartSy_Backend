@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Helpers\CurrencyHelper;
 use App\Models\Currency;
 
 trait HasCurrencyConversion
@@ -41,7 +42,7 @@ trait HasCurrencyConversion
                 'amount'    => round($priceInBase, 2),
                 'currency'  => $currency?->code ?? 'USD',
                 'symbol'    => $currency?->symbol ?? '$',
-                'formatted' => ($currency?->symbol ?? '$') . ' ' . number_format($priceInBase, 2),
+                'formatted' => ($currency?->symbol ?? '$') . ' ' . CurrencyHelper::formatAmount($priceInBase),
             ];
         }
 
@@ -51,7 +52,7 @@ trait HasCurrencyConversion
             'amount'    => $convertedAmount,
             'currency'  => $currency->code,
             'symbol'    => $currency->symbol,
-            'formatted' => $currency->symbol . ' ' . number_format($convertedAmount, 2),
+            'formatted' => $currency->symbol . ' ' . CurrencyHelper::formatAmount($convertedAmount),
         ];
     }
 
@@ -128,7 +129,7 @@ trait HasCurrencyConversion
                 'amount' => round($priceInBase, 2),
                 'currency' => $code,
                 'symbol' => $fallbackSymbol,
-                'formatted' => $fallbackSymbol . ' ' . number_format($priceInBase, 2),
+                'formatted' => $fallbackSymbol . ' ' . CurrencyHelper::formatAmount($priceInBase),
             ];
         }
 
@@ -140,7 +141,7 @@ trait HasCurrencyConversion
             'amount' => $amount,
             'currency' => $currency->code,
             'symbol' => $currency->symbol,
-            'formatted' => $currency->symbol . ' ' . number_format($amount, 2),
+            'formatted' => $currency->symbol . ' ' . CurrencyHelper::formatAmount($amount),
         ];
     }
 
