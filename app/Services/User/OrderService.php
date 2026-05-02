@@ -669,17 +669,26 @@ class OrderService extends BaseService
             $extrasData = [];
 
             if (!empty($item['extras']) && is_array($item['extras'])) {
-                $extraDetails = \App\Models\ProductExtraDetail::whereIn('id', $item['extras'])
+                $extrasMap = collect($item['extras'])
+                    ->filter(fn ($extra) => is_array($extra) && isset($extra['id']))
+                    ->mapWithKeys(fn ($extra) => [
+                        (int) $extra['id'] => (int) ($extra['quantity'] ?? 1),
+                    ])
+                    ->all();
+
+                $extraDetails = \App\Models\ProductExtraDetail::whereIn('id', array_keys($extrasMap))
                     ->where('product_id', $product->id)
                     ->get();
 
                 foreach ($extraDetails as $extra) {
-                    $extrasTotal += $extra->price;
+                    $extraQuantity = $extrasMap[$extra->id] ?? 1;
+                    $extrasTotal += $extra->price * $extraQuantity;
                     $extrasData[] = [
                         'id' => $extra->id,
                         'detail_key' => $extra->detail_key,
                         'detail_value' => $extra->detail_value,
                         'price' => $extra->price,
+                        'quantity' => $extraQuantity,
                     ];
                 }
             }
@@ -731,6 +740,7 @@ class OrderService extends BaseService
                         $orderItem->extras()->create([
                             'product_extra_detail_id' => $extra['id'],
                             'price' => $extra['price'],
+                            'quantity' => $extra['quantity'],
                         ]);
                     }
                 }
