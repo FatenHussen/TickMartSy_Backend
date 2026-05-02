@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Schema;
 use Spatie\Translatable\HasTranslations;
@@ -60,6 +61,11 @@ class Shop extends Model implements Sectionable
     public function favorites(): MorphMany
     {
         return $this->morphMany(Favorite::class, 'favoriteable');
+    }
+
+    public function popupCampaigns(): MorphToMany
+    {
+        return $this->morphToMany(PopupCampaign::class, 'attachable', 'popup_campaign_attachables');
     }
 
     protected $casts = [

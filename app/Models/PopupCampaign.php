@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Http\Request;
 use Spatie\Translatable\HasTranslations;
 
 class PopupCampaign extends Model
@@ -95,6 +99,10 @@ class PopupCampaign extends Model
         self::TRIGGER_EXIT_INTENT,
     ];
 
+    public const DEFAULT_MAX_IMPRESSIONS = 1;
+
+    public const DEFAULT_SHOW_EVERY = 0;
+
     protected $fillable = [
         'title',
         'headline',
@@ -112,7 +120,6 @@ class PopupCampaign extends Model
         'media_path',
         'form_enabled',
         'form_fields',
-        'show_on_pages',
         'audience_type',
         'trigger_type',
         'trigger_value',
@@ -126,7 +133,6 @@ class PopupCampaign extends Model
         'subheadline' => 'array',
         'description' => 'array',
         'form_fields' => 'array',
-        'show_on_pages' => 'array',
         'form_enabled' => 'boolean',
         'priority' => 'integer',
         'trigger_value' => 'integer',
@@ -162,5 +168,120 @@ class PopupCampaign extends Model
     public function scopeOrderedByPriority(Builder $query): Builder
     {
         return $query->orderByDesc('priority');
+    }
+
+    public function pages(): BelongsToMany
+    {
+        return $this->belongsToMany(Page::class)->withTimestamps();
+    }
+
+    public function attachableLinks(): HasMany
+    {
+        return $this->hasMany(PopupCampaignAttachable::class);
+    }
+
+    public function products(): MorphToMany
+    {
+        return $this->morphedByMany(Product::class, 'attachable', 'popup_campaign_attachables');
+    }
+
+    public function shops(): MorphToMany
+    {
+        return $this->morphedByMany(Shop::class, 'attachable', 'popup_campaign_attachables');
+    }
+
+    public function recipes(): MorphToMany
+    {
+        return $this->morphedByMany(Recipe::class, 'attachable', 'popup_campaign_attachables');
+    }
+
+    public function baskets(): MorphToMany
+    {
+        return $this->morphedByMany(Basket::class, 'attachable', 'popup_campaign_attachables');
+    }
+
+    public function loadAttachablesForUserApi(): self
+    {
+        $this->loadMissing([
+            'pages',
+            'products' => fn ($q) => $q->with([
+                'category',
+                'vendor',
+                'media',
+                'badges',
+                'country',
+                'variants.shopVariants',
+            ]),
+            'shops' => fn ($q) => $q->with(['vendor', 'badges']),
+            'recipes' => fn ($q) => $q->with(['items.shopProductVariant', 'badges', 'media']),
+            'baskets' => fn ($q) => $q->with([
+                'category',
+                'categories',
+                'items',
+                'badges',
+                'basketImages',
+                'defaultSchedule',
+            ]),
+        ]);
+
+        return $this;
+    }
+
+    /**
+     * When no attachables are linked, the campaign applies everywhere (subject to pages/audience).
+     * When attachables exist, pass one of: product_id, shop_id, recipe_id, basket_id on the request
+     * so the campaign matches a linked entity.
+     */
+    public function matchesAttachableContext(Request $request): bool
+    {
+        $linkedCount = (int) ($this->attachable_links_count ?? $this->attachableLinks()->count());
+        if ($linkedCount === 0) {
+            return true;
+        }
+
+        $pairs = array_filter([
+            $this->morphPair(Product::class, self::positiveIntOrNull($request->query('product_id'))),
+            $this->morphPair(Shop::class, self::positiveIntOrNull($request->query('shop_id'))),
+            $this->morphPair(Recipe::class, self::positiveIntOrNull($request->query('recipe_id'))),
+            $this->morphPair(Basket::class, self::positiveIntOrNull($request->query('basket_id'))),
+        ]);
+
+        if ($pairs === []) {
+            return false;
+        }
+
+        return $this->attachableLinks()
+            ->where(function ($query) use ($pairs) {
+                foreach ($pairs as [$type, $id]) {
+                    $query->orWhere(function ($q) use ($type, $id) {
+                        $q->where('attachable_type', $type)
+                            ->where('attachable_id', $id);
+                    });
+                }
+            })
+            ->exists();
+    }
+
+    /**
+     * @return array{0: string, 1: int}|null
+     */
+    protected function morphPair(string $class, ?int $id): ?array
+    {
+        if ($id === null) {
+            return null;
+        }
+
+        return [(new $class)->getMorphClass(), $id];
+    }
+
+    protected static function positiveIntOrNull(mixed $value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        $id = (int) $value;
+
+        return $id > 0 ? $id : null;
     }
 }

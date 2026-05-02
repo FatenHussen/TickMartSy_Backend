@@ -2,6 +2,10 @@
 
 namespace App\Http\Resources\User;
 
+use App\Http\Resources\Basket\AllResource as BasketAllResource;
+use App\Http\Resources\Product\AllResource as ProductAllResource;
+use App\Http\Resources\Recipe\AllResource as RecipeAllResource;
+use App\Http\Resources\Shop\AllResource as ShopAllResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -35,7 +39,9 @@ class PopupCampaignResource extends JsonResource
                 'fields' => $this->form_fields,
             ],
             'display' => [
-                'pages' => $this->show_on_pages,
+                'pages' => $this->relationLoaded('pages')
+                    ? $this->pages->pluck('slug')->values()->all()
+                    : [],
                 'audience_type' => $this->audience_type,
             ],
             'trigger' => [
@@ -46,6 +52,11 @@ class PopupCampaignResource extends JsonResource
                 'show_every' => $this->show_every,
                 'max_impressions' => $this->max_impressions,
             ],
+            'scoped_to_entities' => (int) ($this->attachable_links_count ?? 0) > 0,
+            'products' => ProductAllResource::collection($this->relationLoaded('products') ? $this->products : collect()),
+            'shops' => ShopAllResource::collection($this->relationLoaded('shops') ? $this->shops : collect()),
+            'recipes' => RecipeAllResource::collection($this->relationLoaded('recipes') ? $this->recipes : collect()),
+            'baskets' => BasketAllResource::collection($this->relationLoaded('baskets') ? $this->baskets : collect()),
         ];
     }
 }

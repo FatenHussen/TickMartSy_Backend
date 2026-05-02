@@ -2,14 +2,23 @@
 
 namespace Database\Seeders;
 
+use App\Models\Basket;
+use App\Models\Page;
 use App\Models\PopupCampaign;
+use App\Models\Product;
 use App\Models\Promotion;
+use App\Models\Recipe;
+use App\Models\Shop;
 use Illuminate\Database\Seeder;
 
 /**
  * One popup per {@see PromotionSeeder} promotion, with display rules varied so that
- * together they exercise every {@see PopupCampaign} type, audience, and trigger,
- * plus diverse `show_every` / `max_impressions` pairs.
+ * together they exercise every {@see PopupCampaign} type, audience, and trigger.
+ *
+ * Frequency fields match {@see PopupCampaign::DEFAULT_SHOW_EVERY} and
+ * {@see PopupCampaign::DEFAULT_MAX_IMPRESSIONS} (same as the admin API).
+ *
+ * Sample attachables (product / shop / recipe / basket) are linked when those rows exist.
  *
  * Run after {@see PromotionSeeder}.
  */
@@ -26,13 +35,17 @@ class PopupCampaignSeeder extends Seeder
         }
 
         $priority = 50;
+        $productId = Product::query()->value('id');
+        $shopId = Shop::query()->value('id');
+        $recipeId = Recipe::query()->value('id');
+        $basketId = Basket::query()->value('id');
 
         foreach ($promotions as $promotion) {
             $slug = 'popup-announce-' . str_replace('_', '-', $promotion->type);
             $announcement = $this->announcementHeadline($promotion->type);
             $display = $this->displayVariantForPromotionType($promotion->type);
 
-            PopupCampaign::updateOrCreate(
+            $campaign = PopupCampaign::updateOrCreate(
                 ['slug' => $slug],
                 [
                     'title' => $announcement,
@@ -49,25 +62,44 @@ class PopupCampaignSeeder extends Seeder
                     'media_path' => $display['media_path'],
                     'form_enabled' => false,
                     'form_fields' => null,
-                    'show_on_pages' => $display['show_on_pages'],
                     'audience_type' => $display['audience_type'],
                     'trigger_type' => $display['trigger_type'],
                     'trigger_value' => $display['trigger_value'],
-                    'show_every' => $display['show_every'],
-                    'max_impressions' => $display['max_impressions'],
+                    'show_every' => PopupCampaign::DEFAULT_SHOW_EVERY,
+                    'max_impressions' => PopupCampaign::DEFAULT_MAX_IMPRESSIONS,
                 ]
             );
+
+            $this->syncAttachablesForPromotionType(
+                $campaign,
+                $promotion->type,
+                $productId,
+                $shopId,
+                $recipeId,
+                $basketId
+            );
+
+            $this->syncPagesForCampaign($campaign, $display['show_on_pages'] ?? null);
         }
+    }
+
+    private function syncPagesForCampaign(PopupCampaign $campaign, ?array $slugs): void
+    {
+        if ($slugs === null || $slugs === []) {
+            $campaign->pages()->detach();
+
+            return;
+        }
+
+        $ids = Page::query()->whereIn('slug', $slugs)->pluck('id')->all();
+        $campaign->pages()->sync($ids);
     }
 
     /**
      * Maps each seeded promotion type to a distinct popup configuration.
      *
-     * Across the five default promotion types, this covers:
-     * - type: {@see PopupCampaign::TYPE_MODAL}, {@see PopupCampaign::TYPE_SLIDE_IN}, {@see PopupCampaign::TYPE_FULLSCREEN}
-     * - audience_type: every {@see PopupCampaign::AUDIENCE_TYPES} value
-     * - trigger_type: every {@see PopupCampaign::TRIGGER_TYPES} value
-     * - show_every / max_impressions: several different non-trivial pairs (incl. 0 show_every)
+     * Covers {@see PopupCampaign::TYPES}, {@see PopupCampaign::AUDIENCE_TYPES},
+     * and {@see PopupCampaign::TRIGGER_TYPES} across default promotion types.
      */
     private function displayVariantForPromotionType(string $promotionType): array
     {
@@ -77,8 +109,6 @@ class PopupCampaignSeeder extends Seeder
                 'audience_type' => PopupCampaign::AUDIENCE_ALL,
                 'trigger_type' => PopupCampaign::TRIGGER_ON_LOAD,
                 'trigger_value' => null,
-                'show_every' => 0,
-                'max_impressions' => 10,
                 'media_type' => PopupCampaign::MEDIA_GIF,
                 'media_path' => 'images/display/banner.png',
                 'show_on_pages' => null,
@@ -88,8 +118,6 @@ class PopupCampaignSeeder extends Seeder
                 'audience_type' => PopupCampaign::AUDIENCE_GUESTS,
                 'trigger_type' => PopupCampaign::TRIGGER_DELAY,
                 'trigger_value' => 5,
-                'show_every' => 60,
-                'max_impressions' => 5,
                 'media_type' => PopupCampaign::MEDIA_IMAGE,
                 'media_path' => 'images/display/banner.png',
                 'show_on_pages' => ['home', 'products'],
@@ -99,8 +127,6 @@ class PopupCampaignSeeder extends Seeder
                 'audience_type' => PopupCampaign::AUDIENCE_LOGGED_IN,
                 'trigger_type' => PopupCampaign::TRIGGER_SCROLL,
                 'trigger_value' => 40,
-                'show_every' => 30,
-                'max_impressions' => 3,
                 'media_type' => PopupCampaign::MEDIA_VIDEO,
                 'media_path' => 'images/display/banner.png',
                 'show_on_pages' => ['products', 'product_details'],
@@ -110,8 +136,6 @@ class PopupCampaignSeeder extends Seeder
                 'audience_type' => PopupCampaign::AUDIENCE_NEW,
                 'trigger_type' => PopupCampaign::TRIGGER_EXIT_INTENT,
                 'trigger_value' => null,
-                'show_every' => 15,
-                'max_impressions' => 1,
                 'media_type' => PopupCampaign::MEDIA_IMAGE,
                 'media_path' => 'images/display/banner.png',
                 'show_on_pages' => ['home'],
@@ -121,19 +145,24 @@ class PopupCampaignSeeder extends Seeder
                 'audience_type' => PopupCampaign::AUDIENCE_RETURNING,
                 'trigger_type' => PopupCampaign::TRIGGER_DELAY,
                 'trigger_value' => 8,
-                'show_every' => 120,
-                'max_impressions' => 7,
                 'media_type' => PopupCampaign::MEDIA_GIF,
                 'media_path' => 'images/display/banner.png',
                 'show_on_pages' => null,
+            ],
+            'spend_x_get_free_shipping' => [
+                'type' => PopupCampaign::TYPE_MODAL,
+                'audience_type' => PopupCampaign::AUDIENCE_LOGGED_IN,
+                'trigger_type' => PopupCampaign::TRIGGER_SCROLL,
+                'trigger_value' => 25,
+                'media_type' => PopupCampaign::MEDIA_IMAGE,
+                'media_path' => 'images/display/banner.png',
+                'show_on_pages' => ['shops', 'shop_details'],
             ],
             default => [
                 'type' => PopupCampaign::TYPE_MODAL,
                 'audience_type' => PopupCampaign::AUDIENCE_ALL,
                 'trigger_type' => PopupCampaign::TRIGGER_DELAY,
                 'trigger_value' => 4,
-                'show_every' => 45,
-                'max_impressions' => 4,
                 'media_type' => PopupCampaign::MEDIA_IMAGE,
                 'media_path' => 'images/display/banner.png',
                 'show_on_pages' => null,
@@ -141,8 +170,69 @@ class PopupCampaignSeeder extends Seeder
         };
     }
 
+    private function syncAttachablesForPromotionType(
+        PopupCampaign $campaign,
+        string $promotionType,
+        ?int $productId,
+        ?int $shopId,
+        ?int $recipeId,
+        ?int $basketId
+    ): void {
+        $payload = match ($promotionType) {
+            'free_shipping' => [
+                'products' => [],
+                'shops' => [],
+                'recipes' => [],
+                'baskets' => [],
+            ],
+            'simple_discount' => [
+                'products' => $productId !== null ? [$productId] : [],
+                'shops' => $shopId !== null ? [$shopId] : [],
+                'recipes' => [],
+                'baskets' => [],
+            ],
+            'spend_x_discount' => [
+                'products' => $productId !== null ? [$productId] : [],
+                'shops' => [],
+                'recipes' => [],
+                'baskets' => [],
+            ],
+            'spend_x_get_gift' => [
+                'products' => [],
+                'shops' => [],
+                'recipes' => $recipeId !== null ? [$recipeId] : [],
+                'baskets' => [],
+            ],
+            'spend_x_get_points' => [
+                'products' => [],
+                'shops' => [],
+                'recipes' => [],
+                'baskets' => $basketId !== null ? [$basketId] : [],
+            ],
+            'spend_x_get_free_shipping' => [
+                'products' => [],
+                'shops' => $shopId !== null ? [$shopId] : [],
+                'recipes' => [],
+                'baskets' => [],
+            ],
+            default => [
+                'products' => $productId !== null ? [$productId] : [],
+                'shops' => [],
+                'recipes' => [],
+                'baskets' => [],
+            ],
+        };
+
+        $campaign->products()->sync($payload['products']);
+        $campaign->shops()->sync($payload['shops']);
+        $campaign->recipes()->sync($payload['recipes']);
+        $campaign->baskets()->sync($payload['baskets']);
+    }
+
     /**
      * One-line announcement per {@see PromotionSeeder} promotion type.
+     *
+     * @return array<string, string>
      */
     private function announcementHeadline(string $type): array
     {
@@ -166,6 +256,10 @@ class PopupCampaignSeeder extends Seeder
             'free_shipping' => [
                 'en' => 'Free shipping is available.',
                 'ar' => 'يتوفر توصيل مجاني.',
+            ],
+            'spend_x_get_free_shipping' => [
+                'en' => 'Free shipping unlocks on qualifying spend.',
+                'ar' => 'يتم تفعيل التوصيل المجاني عند إنفاق مؤهل.',
             ],
             default => [
                 'en' => 'A special promotion is available.',

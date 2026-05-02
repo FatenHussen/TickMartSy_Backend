@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use App\Models\ProductMedia;
 use Spatie\Translatable\HasTranslations;
 use App\Models\Favorite;
@@ -37,6 +38,12 @@ class Basket extends Model implements Sectionable
     {
         return $this->morphMany(Favorite::class, 'favoriteable');
     }
+
+    public function popupCampaigns(): MorphToMany
+    {
+        return $this->morphToMany(PopupCampaign::class, 'attachable', 'popup_campaign_attachables');
+    }
+
     public $translatable = ['name', 'description'];
 
     protected $casts = [

@@ -5,7 +5,10 @@ namespace App\Providers;
 use App\Events\OrderStatusChanged;
 use App\Listeners\AwardPointsListener;
 use App\Models\Admin;
+use App\Models\Basket;
 use App\Models\Driver;
+use App\Models\Product;
+use App\Models\Recipe;
 use App\Models\Shop;
 use App\Models\VendorWithdrawRequest;
 use App\Observers\VendorWithdrawRequestObserver;
@@ -16,6 +19,7 @@ use App\Filament\Widgets\ShopSwitcher;
 use BezhanSalleh\LanguageSwitch\LanguageSwitch;
 // use BezhanSalleh\LanguageSwitch\LanguageSwitch;
 use Filament\Facades\Filament;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -32,6 +36,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Relation::morphMap([
+            'product' => Product::class,
+            'shop' => Shop::class,
+            'recipe' => Recipe::class,
+            'basket' => Basket::class,
+        ]);
+
         Gate::policy(Driver::class, DriverPolicy::class);
         Gate::policy(Admin::class, AdminPolicy::class);
         Gate::policy(Shop::class, ShopPolicy::class);

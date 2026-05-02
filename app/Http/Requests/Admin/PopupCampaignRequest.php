@@ -56,18 +56,50 @@ class PopupCampaignRequest extends FormRequest
             'audience_type' => ['required', 'in:' . implode(',', PopupCampaign::AUDIENCE_TYPES)],
             'trigger_type' => ['required', 'in:' . implode(',', PopupCampaign::TRIGGER_TYPES)],
             'trigger_value' => ['nullable', 'integer', 'min:0'],
-            'show_every' => ['required', 'integer', 'min:0'],
-            'max_impressions' => ['required', 'integer', 'min:0'],
+            'show_every' => ['prohibited'],
+            'max_impressions' => ['prohibited'],
+            'product_ids' => ['sometimes', 'array'],
+            'product_ids.*' => ['integer', Rule::exists('products', 'id')->where(fn ($q) => $q->whereNull('deleted_at'))],
+            'shop_ids' => ['sometimes', 'array'],
+            'shop_ids.*' => ['integer', Rule::exists('shops', 'id')->where(fn ($q) => $q->whereNull('deleted_at'))],
+            'recipe_ids' => ['sometimes', 'array'],
+            'recipe_ids.*' => ['integer', 'exists:recipes,id'],
+            'basket_ids' => ['sometimes', 'array'],
+            'basket_ids.*' => ['integer', 'exists:baskets,id'],
         ];
     }
 
     protected function prepareForValidation(): void
     {
-        $this->merge([
+        $merge = [
             'form_fields' => $this->normalizeArray($this->input('form_fields')),
-            'show_on_pages' => $this->normalizeArray($this->input('show_on_pages')),
             'form_enabled' => (bool) $this->input('form_enabled'),
-        ]);
+        ];
+
+        if ($this->has('show_on_pages')) {
+            $merge['show_on_pages'] = $this->normalizeShowOnPageSlugList($this->input('show_on_pages'));
+        }
+
+        $this->merge($merge);
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function normalizeShowOnPageSlugList(mixed $value): array
+    {
+        if ($value === null || $value === '') {
+            return [];
+        }
+
+        $out = [];
+        foreach (Arr::wrap($value) as $item) {
+            if (is_string($item) && trim($item) !== '') {
+                $out[] = trim($item);
+            }
+        }
+
+        return array_values(array_unique($out));
     }
 
     protected function normalizeArray($value): ?array

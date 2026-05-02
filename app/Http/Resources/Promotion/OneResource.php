@@ -27,6 +27,7 @@ class OneResource extends JsonResource
             'discount_type' => $this->discount_type,
             'gift_description' => $this->getTranslations('gift_description'),
             'reward_points' => $this->reward_points,
+            'page_slugs' => $this->whenLoaded('pages', fn () => $this->pages->pluck('slug')->values()->all()),
         ];
     }
 }

@@ -7,6 +7,7 @@ use App\Traits\LogsActivity;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
@@ -349,6 +350,11 @@ class Product extends Model implements Sectionable
         return $this->belongsTo(Vendor::class);
     }
 
+    public function popupCampaigns(): MorphToMany
+    {
+        return $this->morphToMany(PopupCampaign::class, 'attachable', 'popup_campaign_attachables');
+    }
+
     public function brand()
     {
         return $this->belongsTo(Brand::class);
@@ -357,6 +363,11 @@ class Product extends Model implements Sectionable
     public function originCountry()
     {
         return $this->belongsTo(Country::class, 'country_id');
+    }
+
+    public function country()
+    {
+        return $this->originCountry();
     }
 
     public function saleCountry()

@@ -8,6 +8,7 @@ use Spatie\Translatable\HasTranslations;
 use App\Models\Favorite;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use App\Models\Media;
 
 class Recipe extends Model implements Sectionable
@@ -45,6 +46,12 @@ class Recipe extends Model implements Sectionable
     {
         return $this->morphMany(Favorite::class, 'favoriteable');
     }
+
+    public function popupCampaigns(): MorphToMany
+    {
+        return $this->morphToMany(PopupCampaign::class, 'attachable', 'popup_campaign_attachables');
+    }
+
     public function media()
     {
         return $this->morphMany(Media::class, 'mediable')

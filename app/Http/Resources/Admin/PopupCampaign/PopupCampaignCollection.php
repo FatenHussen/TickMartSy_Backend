@@ -17,7 +17,9 @@ class PopupCampaignCollection extends JsonResource
             'priority' => $this->priority,
             'headline' => $this->headline,
             'audience_type' => $this->audience_type,
-            'show_on_pages' => $this->show_on_pages,
+            'show_on_pages' => $this->relationLoaded('pages')
+                ? $this->pages->pluck('slug')->values()->all()
+                : [],
             'created_at' => $this->created_at?->toIsoString(),
         ];
     }

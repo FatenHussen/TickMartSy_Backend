@@ -26,12 +26,18 @@ class PopupCampaignResource extends JsonResource
             'media_path' => $this->media_path,
             'form_enabled' => $this->form_enabled,
             'form_fields' => $this->form_fields,
-            'show_on_pages' => $this->show_on_pages,
+            'show_on_pages' => $this->relationLoaded('pages')
+                ? $this->pages->pluck('slug')->values()->all()
+                : [],
             'audience_type' => $this->audience_type,
             'trigger_type' => $this->trigger_type,
             'trigger_value' => $this->trigger_value,
             'show_every' => $this->show_every,
             'max_impressions' => $this->max_impressions,
+            'product_ids' => $this->whenLoaded('products', fn () => $this->products->pluck('id')->values()->all()),
+            'shop_ids' => $this->whenLoaded('shops', fn () => $this->shops->pluck('id')->values()->all()),
+            'recipe_ids' => $this->whenLoaded('recipes', fn () => $this->recipes->pluck('id')->values()->all()),
+            'basket_ids' => $this->whenLoaded('baskets', fn () => $this->baskets->pluck('id')->values()->all()),
             'created_at' => $this->created_at?->toIsoString(),
             'updated_at' => $this->updated_at?->toIsoString(),
         ];

@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\Translatable\HasTranslations;
 
 class Promotion extends Model
@@ -43,6 +44,11 @@ class Promotion extends Model
     |--------------------------------------------------------------------------
     */
 
+    public function pages(): BelongsToMany
+    {
+        return $this->belongsToMany(Page::class)->withTimestamps();
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true)
@@ -54,5 +60,16 @@ class Promotion extends Model
                 $q->whereNull('ends_at')
                     ->orWhere('ends_at', '>=', now());
             });
+    }
+
+    /**
+     * Promotions visible on a given page slug: linked to that page, or not restricted to any page.
+     */
+    public function scopeForPageSlug($query, string $pageSlug)
+    {
+        return $query->where(function ($q) use ($pageSlug) {
+            $q->whereHas('pages', fn ($p) => $p->where('pages.slug', $pageSlug))
+                ->orWhereDoesntHave('pages');
+        });
     }
 }

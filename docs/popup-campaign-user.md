@@ -1,165 +1,124 @@
-## Popup Campaign User API
+# Popup Campaign — واجهة المستخدم (User API)
 
-توثيق APIs الخاصة بالـ user في الكنترولر:
-`app/Http/Controllers/User/PopupCampaignController.php`
+اختيار الحملة: `app/Services/PopupCampaignSelector.php` — الكنترولر: `app/Http/Controllers/User/PopupCampaignController.php`.
 
-## Base URL
+**Base URL (افتراضي Laravel `/api`):** المسارات أدناه بدون بادئة `user` (معرفة في `routes/api.php`).
 
-`/api`
+---
 
-## Endpoints
+## المصادقة
 
-- `GET /api/popups/active`
-- `POST /api/popups/{popupCampaign}/track-view`
-- `POST /api/popups/{popupCampaign}/track-click`
+- `GET /api/popups/active` ومسارات التتبع **عامة** (لا تتطلب `auth:user` في المسارات الحالية).
 
-## 1) Get Active Popup
+---
 
-### Endpoint
+## 1) جلب البوب‑أب النشط
 
-`GET /api/popups/active`
+### `GET /api/popups/active`
 
-### Description
+يعيد **أول حملة** مطابقة لـ: الحالة النشطة، الجمهور، **صفحات مربوطة من جدول `pages`** (عبر pivot)، **ربط اختياري بمنتجات/متاجر/وصفات/سلال**، والأولوية.
 
-يرجع أول حملة Popup فعالة ومطابقة للسياق الحالي (نوع الزائر + الصفحة الحالية + أولوية الحملة).
+### Query parameters (اختياري)
 
-### Query Params (اختيارية)
+| المعامل | الوصف |
+|---------|--------|
+| `page_type` | نوع الصفحة المنطقي، مثل `home`, `products`, `product_details`. الافتراضي: `home`. يُقارَن مع `slug` الصفحات المربوطة بالحملة (بعد تطبيع: أحرف صغيرة، مسافات → `_`). |
+| `current_url` | مسار أو URL للسياق؛ إن لم يُرسل يُستخدم طلب HTTP الحالي. |
+| `product_id` | رقم منتج؛ يُستخدم عندما تكون الحملة مربوطة بمنتجات (pivot). |
+| `shop_id` | رقم متجر (`shops`). |
+| `recipe_id` | رقم وصفة. |
+| `basket_id` | رقم سلة. |
 
-- `page_type` (string): مثال `home`, `product`, `cart`. لو مش موجود، القيمة الافتراضية `home`.
-- `current_url` (string): رابط الصفحة الحالية. لو مش موجود، يتم استخدام رابط الطلب الحالي تلقائيا.
+**سلوك الربط بالكيانات:** إذا وُجدت روابط في `popup_campaign_attachables`، يجب أن يطابق الطلب أحد المعرفات أعلاه حتى تُعتبر الحملة مطابقة. إذا لم يوجد أي ربط، تُطبَّق باقي القواعد فقط (صفحات + جمهور).
 
-### Success Response (عند وجود حملة مطابقة)
+### استجابة ناجحة — يوجد بوب‑أب
 
-Status: `200 OK`
+`200 OK` — جسم الاستجابة من `PopupCampaignResource` (مثال تقريبي):
 
 ```json
 {
   "data": {
     "id": 1,
-    "title": {
-      "ar": "عرض الربيع",
-      "en": "Spring Offer"
-    },
+    "title": { "ar": "…", "en": "…" },
     "slug": "spring-offer-popup",
     "type": "modal",
     "status": "active",
     "priority": 90,
     "content": {
-      "headline": {
-        "ar": "خصم 20%",
-        "en": "20% Discount"
-      },
-      "subheadline": {
-        "ar": "لفترة محدودة",
-        "en": "Limited Time"
-      },
-      "description": {
-        "ar": "استفد من الخصم اليوم.",
-        "en": "Get your discount today."
-      }
+      "headline": { "ar": "…", "en": "…" },
+      "subheadline": { "ar": "…", "en": "…" },
+      "description": { "ar": "…", "en": "…" }
     },
     "buttons": {
       "primary": "Shop Now",
-      "secondary": "Learn More",
+      "secondary": null,
       "url": "https://example.com/sale"
     },
-    "media": {
-      "type": "image",
-      "path": "https://your-domain.com/storage/popups/spring.jpg"
-    },
-    "form": {
-      "enabled": false,
-      "fields": [
-        "name",
-        "email"
-      ]
-    },
+    "media": { "type": "image", "path": "https://…" },
+    "form": { "enabled": false, "fields": null },
     "display": {
-      "pages": [
-        "home",
-        "category"
-      ],
+      "pages": ["home", "products"],
       "audience_type": "all_visitors"
     },
-    "trigger": {
-      "type": "delay",
-      "value": 5
-    },
+    "trigger": { "type": "delay", "value": 5 },
     "frequency": {
-      "show_every": 60,
-      "max_impressions": 3
-    }
+      "show_every": 0,
+      "max_impressions": 1
+    },
+    "scoped_to_entities": false,
+    "products": [],
+    "shops": [],
+    "recipes": [],
+    "baskets": []
   }
 }
 ```
 
-### Success Response (عند عدم وجود حملة مطابقة)
+- **`display.pages`:** مصفوفة **`slug`** من جدول `pages` (لا يوجد عمود JSON على الحملة).
+- **`frequency`:** القيم تُضبط من السيرفر (سياسة التكرار الافتراضية).
+- **`scoped_to_entities`:** `true` إذا وُجدت روابط في `popup_campaign_attachables`.
+- **`products` / `shops` / `recipes` / `baskets`:** مصفوفات بصيغة `AllResource` لكل نموذج عند وجود ربط.
 
-Status: `200 OK`
+### استجابة — لا يوجد بوب‑أب
 
-```json
-{
-  "data": null
-}
-```
-
-## 2) Track Popup View
-
-### Endpoint
-
-`POST /api/popups/{popupCampaign}/track-view`
-
-### Path Param
-
-- `popupCampaign` (integer): ID الحملة.
-
-### Request Body (اختياري)
+`200 OK`
 
 ```json
-{
-  "page_type": "home",
-  "current_url": "https://example.com",
-  "referrer": "https://google.com"
-}
+{ "data": null }
 ```
 
-### Success Response
+> ملاحظة: إذا كان المشروع يلفّ الاستجابة بـ `sendResponse`، قد يظهر الهيكل `status`, `message`, `data` بدل الجذر `data` فقط — راجع `App\Http\Controllers\Controller`.
 
-Status: `204 No Content`
+---
 
-Body: فارغ.
+## 2) تتبع عرض البوب‑أب
 
-## 3) Track Popup Click
+### `POST /api/popups/{popupCampaign}/track-view`
 
-### Endpoint
+- **`popupCampaign`:** معرف الحملة (route model binding).
+- **Body (اختياري):** `page_type`, `current_url`, `referrer` — تُحفظ في `payload` للحدث.
 
-`POST /api/popups/{popupCampaign}/track-click`
+**استجابة:** `204 No Content`
 
-### Path Param
+---
 
-- `popupCampaign` (integer): ID الحملة.
+## 3) تتبع ضغطة البوب‑أب
 
-### Request Body (اختياري)
+### `POST /api/popups/{popupCampaign}/track-click`
 
-```json
-{
-  "page_type": "home",
-  "current_url": "https://example.com",
-  "referrer": "https://google.com"
-}
-```
+نفس فكرة `track-view` مع نوع حدث `click`.
 
-### Success Response
+**استجابة:** `204 No Content`
 
-Status: `204 No Content`
+---
 
-Body: فارغ.
+## أحداث قاعدة البيانات
 
-## Notes
+- `view` — عند `track-view`
+- `click` — عند `track-click`
 
-- endpoints دي حاليا بدون middleware auth في `routes/api.php`، فممكن استخدامها للزائر غير المسجل.
-- في `track-view` و `track-click` يتم حفظ فقط الحقول التالية في `payload`: `page_type`, `current_url`, `referrer`.
-- قيم event type المحفوظة في قاعدة البيانات:
-  - `view` عند `track-view`
-  - `click` عند `track-click`
-- لو `popupCampaign` غير موجود، Laravel route model binding بيرجع `404 Not Found`.
+---
+
+## الواجهة الأمامية (تكرار الظهور)
+
+يُنصح بتطبيق حد التكرار في المتصفح باستخدام `frequency.max_impressions` و`frequency.show_every` مع مفاتيح `localStorage` حسب `slug` (انظر `resources/views/components/popup-campaign.blade.php` إن وُجد).

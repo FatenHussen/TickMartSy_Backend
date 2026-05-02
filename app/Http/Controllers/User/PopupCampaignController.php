@@ -21,6 +21,8 @@ class PopupCampaignController extends Controller
             return response()->json(['data' => null]);
         }
 
+        $campaign->loadAttachablesForUserApi();
+
         return response()->json(['data' => new PopupCampaignResource($campaign)]);
     }
 

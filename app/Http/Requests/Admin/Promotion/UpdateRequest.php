@@ -59,6 +59,8 @@ class UpdateRequest extends FormRequest
                 'min:1',
                 Rule::requiredIf(fn () => $this->input('type') === 'spend_x_get_points'),
             ],
+            'page_slugs' => ['nullable', 'array'],
+            'page_slugs.*' => ['string', 'max:255', 'exists:pages,slug'],
         ];
     }
 }
