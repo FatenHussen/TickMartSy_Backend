@@ -13,6 +13,7 @@ class AllResource extends JsonResource
             'id' => $this->id,
             'seller_name' => $this->seller_name,
             'email' => $this->email,
+            'phone' => $this->phone ?? null,
             'store_name' => $this->store_name,
             'country_id' => $this->country_id,
             'country' => $this->country?->name,
