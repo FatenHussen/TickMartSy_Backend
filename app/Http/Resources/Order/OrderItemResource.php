@@ -31,6 +31,7 @@ class OrderItemResource extends JsonResource
                     'detail_key' => $extra->extraDetail->detail_key,
                     'detail_value' => $extra->extraDetail->detail_value,
                     'price' => $extra->price,
+                    'quantity' => $extra->quantity,
                     'price_currencies' => $this->dualCurrency($extra->price),
                 ] ?? [];
             }),

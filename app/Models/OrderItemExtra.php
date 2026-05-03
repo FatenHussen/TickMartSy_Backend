@@ -11,10 +11,12 @@ class OrderItemExtra extends Model
         'order_item_id',
         'product_extra_detail_id',
         'price',
+        'quantity',
     ];
 
     protected $casts = [
         'price' => 'integer',
+        'quantity' => 'integer',
     ];
 
     public function orderItem(): BelongsTo
