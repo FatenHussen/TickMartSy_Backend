@@ -38,8 +38,6 @@ class PageSectionSeeder extends Seeder
             'image' => 'images/display/shop.png',
         ]);
 
-
-
         $basketsDisplayType = DisplayType::create([
             'manual_model' => 'basket',
             'image' => 'images/display/basket.png',
@@ -48,24 +46,19 @@ class PageSectionSeeder extends Seeder
             'manual_model' => 'schedule-basket',
             'image' => 'images/display/schedule-basket.png',
         ]);
-
-
         $brandsDisplayType = DisplayType::create([
             'manual_model' => 'brand',
             'image' => 'images/display/brand.png',
         ]);
-
         $recipeDisplayType = DisplayType::create([
             'manual_model' => 'recipe',
             'image' => 'images/display/recipe.png',
         ]);
-
         $bannerDisplayType2 = DisplayType::create([
             'manual_model' => 'banner',
             'image' => 'images/display/banner.png',
             'allowed_page_slugs' => ['welcome'],
         ]);
-
         $introBannerDisplayType = DisplayType::create([
             'manual_model' => 'banner',
             'image' => 'images/display/banner.png',
@@ -150,8 +143,6 @@ class PageSectionSeeder extends Seeder
             ['title' => 'brand_details', 'slug' => 'brand_details'],
             ['title' => 'Orders', 'slug' => 'orders'],
             ['title' => 'Order details', 'slug' => 'order_details'],
-            ['title' => 'intro', 'slug' => 'intro'],
-            ['title' => 'cart', 'slug' => 'cart'],
 
         ];
 
@@ -243,6 +234,11 @@ class PageSectionSeeder extends Seeder
             'variant' => $defaultVariant,
         ]));
 
+
+        $introPage = Page::firstOrCreate(
+            ['slug' => 'cart'],
+            ['title' => 'cart']
+        );
 
         /*
         |--------------------------------------------------------------------------
