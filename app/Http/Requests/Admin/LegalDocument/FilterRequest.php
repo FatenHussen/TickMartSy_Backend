@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Admin\LegalDocument;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class FilterRequest extends FormRequest
 {
@@ -15,7 +14,7 @@ class FilterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type'  => 'nullable|in:all,driver,user,vendor'
+            'key' => 'nullable|string|max:255',
         ];
     }
 }
