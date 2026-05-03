@@ -15,6 +15,10 @@ class SellerRegistrationResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $isServiceProvider = (bool) $this->is_service_provider;
+        $isRestaurant = (bool) $this->is_restaurant;
+        $type = $isServiceProvider ? 'service_provider' : ($isRestaurant ? 'restaurant' : 'shop');
+
         return [
             'id' => $this->id,
             'email' => $this->email,
@@ -32,6 +36,9 @@ class SellerRegistrationResource extends JsonResource
 
             'logo' => $this->logo,
             'status' => $this->status ?? 'pending',
+            'is_service_provider' => $isServiceProvider,
+            'is_restaurant' => $isRestaurant,
+            'seller_type' => $type,
             'registered_at' => $this->registered_at,
         ];
     }
