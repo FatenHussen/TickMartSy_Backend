@@ -14,6 +14,7 @@ class AllResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->getTranslation('title', $locale),
+            'button_text' => $this->getTranslation('button_text', $locale),
             'page' => [
                 'id' => $this->page?->id,
                 'title' => $this->page?->title,

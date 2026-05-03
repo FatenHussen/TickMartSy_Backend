@@ -12,6 +12,7 @@ class QuickAction extends Model
 
     protected $fillable = [
         'title',
+        'button_text',
         'page_id',
         'icon',
         'order',
@@ -20,11 +21,12 @@ class QuickAction extends Model
 
     protected $casts = [
         'title' => 'array',
+        'button_text' => 'array',
         'order' => 'integer',
         'is_active' => 'boolean',
     ];
 
-    public array $translatable = ['title'];
+    public array $translatable = ['title', 'button_text'];
 
     public function page()
     {
