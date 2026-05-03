@@ -66,6 +66,12 @@ class PageSectionSeeder extends Seeder
             'allowed_page_slugs' => ['welcome'],
         ]);
 
+        $introBannerDisplayType = DisplayType::create([
+            'manual_model' => 'banner',
+            'image' => 'images/display/banner.png',
+            'allowed_page_slugs' => ['intro'],
+        ]);
+
         $defaultVariant = VariantSection::Horizontal->value;
         $defaultPageSectionColors = [
             'background_color' => '#f8f9ff',
@@ -144,6 +150,9 @@ class PageSectionSeeder extends Seeder
             ['title' => 'brand_details', 'slug' => 'brand_details'],
             ['title' => 'Orders', 'slug' => 'orders'],
             ['title' => 'Order details', 'slug' => 'order_details'],
+            ['title' => 'intro', 'slug' => 'intro'],
+            ['title' => 'cart', 'slug' => 'cart'],
+
         ];
 
         /*
@@ -216,6 +225,20 @@ class PageSectionSeeder extends Seeder
             'section_id' => $bannerSection->id,
         ], $fillPageSectionColors([
             'display_type_id' => $bannerDisplayType2->id,
+            'position' => 'after',
+            'variant' => $defaultVariant,
+        ]));
+
+
+        $introPage = Page::firstOrCreate(
+            ['slug' => 'intro'],
+            ['title' => 'intro']
+        );
+        PageSection::firstOrCreate([
+            'page_id' => $introPage->id,
+            'section_id' => $bannerSection->id,
+        ], $fillPageSectionColors([
+            'display_type_id' => $introBannerDisplayType->id,
             'position' => 'after',
             'variant' => $defaultVariant,
         ]));
