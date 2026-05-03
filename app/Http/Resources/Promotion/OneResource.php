@@ -20,6 +20,7 @@ class OneResource extends JsonResource
             'description' => $this->getTranslations('description'),
             'type' => $this->type,
             'is_active' => $this->is_active,
+            'position' => $this->position,
             'starts_at' => $this->starts_at,
             'ends_at' => $this->ends_at,
             'min_spend' => $this->min_spend,

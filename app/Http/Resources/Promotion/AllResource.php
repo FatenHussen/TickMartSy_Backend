@@ -20,6 +20,7 @@ class AllResource extends JsonResource
             'description' => $this->description,
             'type' => $this->type,
             'is_active' => $this->is_active,
+            'position' => $this->position,
             'created_at' => $this->created_at?->format('Y-m-d H:i'),
             'page_slugs' => $this->whenLoaded('pages', fn () => $this->pages->pluck('slug')->values()->all()),
         ];

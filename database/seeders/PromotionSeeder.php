@@ -133,26 +133,18 @@ class PromotionSeeder extends Seeder
             PromotionService::AUTOMATIC_TYPES,
         )));
 
-        $pageSlugsByType = [
-            'simple_discount' => ['home', 'products', 'product_details'],
-            'spend_x_discount' => ['home', 'products', 'shops'],
-            'spend_x_get_gift' => ['home', 'orders', 'order_details'],
-            'spend_x_get_points' => ['home', 'products'],
-            'free_shipping' => ['home', 'shops', 'shop_details'],
-            'spend_x_get_free_shipping' => ['home', 'baskets', 'basket_details'],
-        ];
+        $slugs = ['cart'];
 
-        foreach ($expectedTypes as $type) {
+        foreach (array_values($expectedTypes) as $index => $type) {
             if (! isset($definitions[$type])) {
                 throw new \RuntimeException("PromotionSeeder missing definition for type: {$type}");
             }
 
             $promotion = Promotion::updateOrCreate(
                 ['type' => $type],
-                $definitions[$type]
+                [...$definitions[$type], 'position' => $index % 2 === 0 ? 'top' : 'bottom']
             );
 
-            $slugs = $pageSlugsByType[$type] ?? ['home'];
             $ids = Page::query()->whereIn('slug', $slugs)->pluck('id')->all();
             $promotion->pages()->sync($ids);
         }

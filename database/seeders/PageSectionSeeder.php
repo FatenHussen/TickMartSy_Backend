@@ -239,6 +239,14 @@ class PageSectionSeeder extends Seeder
             ['slug' => 'cart'],
             ['title' => 'cart']
         );
+        $ordersPage = Page::firstOrCreate(
+            ['slug' => 'orders'],
+            ['title' => 'orders']
+        );
+        $orderDetailsPage = Page::firstOrCreate(
+            ['slug' => 'order_details'],
+            ['title' => 'order_details']
+        );
 
         /*
         |--------------------------------------------------------------------------
