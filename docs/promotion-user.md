@@ -1,5 +1,7 @@
 # Promotion — واجهة المستخدم (User API)
 
+> مرجع API المحدّث: [`USER_PROMOTIONS_API.md`](USER_PROMOTIONS_API.md)
+
 الكنترولر: `app\Http\Controllers\User\PromotionController.php`  
 المورد: `app\Http\Resources\Promotion\AllResource.php`
 
