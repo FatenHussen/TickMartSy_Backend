@@ -17,26 +17,31 @@ class QuickActionSeeder extends Seeder
             [
                 'slug' => 'home',
                 'title' => ['en' => 'Home', 'ar' => 'الرئيسية'],
+                'button_text' => ['en' => 'Open', 'ar' => 'فتح'],
                 'order' => 1,
             ],
             [
                 'slug' => 'products',
                 'title' => ['en' => 'Products', 'ar' => 'المنتجات'],
+                'button_text' => ['en' => 'Open', 'ar' => 'فتح'],
                 'order' => 2,
             ],
             [
                 'slug' => 'shops',
                 'title' => ['en' => 'Shops', 'ar' => 'المتاجر'],
+                'button_text' => ['en' => 'Open', 'ar' => 'فتح'],
                 'order' => 3,
             ],
             [
                 'slug' => 'baskets',
                 'title' => ['en' => 'Baskets', 'ar' => 'السلال'],
+                'button_text' => ['en' => 'Open', 'ar' => 'فتح'],
                 'order' => 4,
             ],
             [
                 'slug' => 'recipes',
                 'title' => ['en' => 'Recipes', 'ar' => 'الوصفات'],
+                'button_text' => ['en' => 'Open', 'ar' => 'فتح'],
                 'order' => 5,
             ],
         ];
@@ -53,6 +58,7 @@ class QuickActionSeeder extends Seeder
                 ['page_id' => $page->id],
                 [
                     'title' => $data['title'],
+                    'button_text' => $data['button_text'],
                     'icon' => 'icons/icon.png',
                     'order' => $data['order'],
                     'is_active' => true,

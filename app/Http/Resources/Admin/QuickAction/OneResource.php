@@ -12,6 +12,7 @@ class OneResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->getTranslations('title'),
+            'button_text' => $this->getTranslations('button_text'),
             'page_id' => $this->page_id,
             'page' => [
                 'id' => $this->page?->id,

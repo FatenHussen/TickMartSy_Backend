@@ -14,6 +14,7 @@ class QuickActionResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->getTranslation('title', $locale),
+            'button_text' => $this->getTranslation('button_text', $locale),
             'page_id' => $this->page_id,
             'page_slug' => $this->page?->slug,
             'page_title' => $this->page?->title,
