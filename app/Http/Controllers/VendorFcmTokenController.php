@@ -20,6 +20,7 @@ class VendorFcmTokenController extends Controller
 
         $validated = $request->validate([
             'token' => 'required|string',
+            'device_id' => 'nullable|string',
         ]);
 
         $user = Auth::guard('vendor-user')->user();
@@ -42,6 +43,7 @@ class VendorFcmTokenController extends Controller
         if (!$existingToken) {
             $token = $user->fcmTokens()->create([
                 'fcm_token' => $validated['token'],
+                'device_id' => $validated['device_id'] ?? 'web',
             ]);
 
             Log::info('FCM token saved successfully', [

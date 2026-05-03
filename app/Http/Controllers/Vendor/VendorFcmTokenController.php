@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
-use App\Models\VendorFcmToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,27 +15,23 @@ class VendorFcmTokenController extends Controller
     {
         $validated = $request->validate([
             'fcm_token' => 'required|string',
-            'device_name' => 'nullable|string',
-            'device_type' => 'nullable|string|in:web,mobile,tablet',
+            'device_id' => 'nullable|string',
         ]);
 
         $user = Auth::guard('vendor-user')->user();
 
-        if (!$user || !$user->vendor_id) {
+        if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        // تحقق إذا كانت موجودة
-        $token = VendorFcmToken::where('vendor_id', $user->vendor_id)
+        $token = $user->fcmTokens()
             ->where('fcm_token', $validated['fcm_token'])
             ->first();
 
         if (!$token) {
-            VendorFcmToken::create([
-                'vendor_id' => $user->vendor_id,
+            $user->fcmTokens()->create([
                 'fcm_token' => $validated['fcm_token'],
-                'device_name' => $validated['device_name'] ?? null,
-                'device_type' => $validated['device_type'] ?? 'web',
+                'device_id' => $validated['device_id'] ?? 'web',
             ]);
         }
 
@@ -54,11 +49,11 @@ class VendorFcmTokenController extends Controller
 
         $user = Auth::guard('vendor-user')->user();
 
-        if (!$user || !$user->vendor_id) {
+        if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        VendorFcmToken::where('vendor_id', $user->vendor_id)
+        $user->fcmTokens()
             ->where('fcm_token', $validated['fcm_token'])
             ->delete();
 
