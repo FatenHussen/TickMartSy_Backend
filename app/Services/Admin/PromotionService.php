@@ -18,6 +18,8 @@ class PromotionService extends BaseService
         $this->collection = AllResource::class;
         $this->pagination = true;
         $this->relations = ['pages'];
+        $this->searchableFields = ['id', 'type'];
+        $this->sortableFields = ['id', 'created_at', 'type'];
     }
 
     public function create($data)
@@ -90,7 +92,7 @@ class PromotionService extends BaseService
 
     public function fieldsForType(string $type): array
     {
-        $pages = ['page_slugs'];
+        $pages = ['page_slugs', 'position'];
 
         return match ($type) {
             'simple_discount' => [

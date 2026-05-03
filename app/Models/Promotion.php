@@ -16,6 +16,7 @@ class Promotion extends Model
         'description',
         'type',
         'is_active',
+        'position',
         'starts_at',
         'ends_at',
         'min_spend',
