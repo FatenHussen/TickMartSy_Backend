@@ -13,6 +13,7 @@ class OrderItem extends Model
         'product_name',           // snapshot
         'product_image',          // snapshot
         'variant_attributes',     // snapshot JSON
+        'note',
         'quantity',
         'price',                  // legacy alias of unit_price
         'unit_price',
