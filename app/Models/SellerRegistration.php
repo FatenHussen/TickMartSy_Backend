@@ -27,6 +27,7 @@ class SellerRegistration extends Model
         'governorate_id',
         'logo',
         'is_service_provider',
+        'is_restaurant',
         'service_type_ids',
         'status',
         'is_active',
@@ -41,6 +42,7 @@ class SellerRegistration extends Model
         'commercial_register_date' => 'date',
         'is_active'                => 'boolean',
         'is_service_provider'      => 'boolean',
+        'is_restaurant'            => 'boolean',
         'service_type_ids'         => 'array',
     ];
     public function governorate()

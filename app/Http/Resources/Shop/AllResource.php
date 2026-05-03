@@ -48,7 +48,85 @@ class AllResource extends JsonResource
             'bottom_badges' => BadgeOneResource::collection(
                 $this->badges->where('position', 'bottom')->values()
             ),
+           'restaurant_meta'        => $this->when($this->is_restaurant, function () use ($request) {
+                $deliveryTimeRange = $this->resolveDeliveryTimeRange();
+                $distanceKm = $this->resolveDistanceKm($request);
+
+                return [
+                    'delivery_time_range' => $deliveryTimeRange,
+                    'location_label' => $this->resolveLocationLabel(),
+                    'distance_km' => $distanceKm,
+                    'delivery_fee' => $this->resolveDeliveryFee(),
+                    'is_free_delivery' => (bool) $this->is_free_delivery,
+                ];
+            }),
 
         ];
+    }
+    private function resolveDeliveryTimeRange(): ?string
+    {
+        if (!$this->relationLoaded('productVariants')) {
+            return null;
+        }
+
+        return $this->productVariants
+            ->map(fn($variant) => $variant->productVariant?->product?->effective_delivery_time)
+            ->filter()
+            ->unique()
+            ->first();
+    }
+
+    private function resolveLocationLabel(): ?string
+    {
+        $city = $this->area?->city?->name;
+        $area = $this->area?->name;
+
+        if ($city && $area) {
+            return "{$city}, {$area}";
+        }
+
+        return $area ?: $this->address;
+    }
+
+    private function resolveDistanceKm(Request $request): ?float
+    {
+        $lat = $request->query('lat');
+        $lng = $request->query('lng');
+
+        if (!$lat || !$lng || !$this->lat || !$this->lng) {
+            return null;
+        }
+
+        $distance = $this->calculateDistanceKm((float) $lat, (float) $lng, (float) $this->lat, (float) $this->lng);
+
+        return round($distance, 2);
+    }
+
+    private function resolveDeliveryFee(): ?float
+    {
+        if ($this->is_free_delivery) {
+            return 0.0;
+        }
+
+        return $this->area?->base_fee;
+    }
+
+    private function calculateDistanceKm(float $lat1, float $lng1, float $lat2, float $lng2): float
+    {
+        $earthRadius = 6371;
+        $latFrom = deg2rad($lat1);
+        $lonFrom = deg2rad($lng1);
+        $latTo = deg2rad($lat2);
+        $lonTo = deg2rad($lng2);
+
+        $latDelta = $latTo - $latFrom;
+        $lonDelta = $lonTo - $lonFrom;
+
+        $angle = 2 * asin(sqrt(
+            pow(sin($latDelta / 2), 2) +
+            cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)
+        ));
+
+        return $angle * $earthRadius;
     }
 }

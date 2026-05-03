@@ -30,6 +30,7 @@ class StoreRequest extends FormRequest
             'whatsapp' => 'nullable|string|max:20',
             'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'is_service_provider'  => 'nullable|boolean',
+            'is_restaurant'        => 'nullable|boolean',
             'service_type_ids'     => 'required_if:is_service_provider,true|nullable|array',
             'service_type_ids.*'   => 'integer|exists:vendor_service_types,id',
         ];
