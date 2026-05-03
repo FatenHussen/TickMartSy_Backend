@@ -20,6 +20,7 @@ class OneResource extends JsonResource
             'title' => $this->getTranslations('title'),
             'content' => $this->getTranslations('content'),
             'created_at' => $this->created_at?->format('Y-m-d H:i'),
+            'updated_at' => $this->updated_at?->format('Y-m-d H:i'),
         ];
     }
 }
