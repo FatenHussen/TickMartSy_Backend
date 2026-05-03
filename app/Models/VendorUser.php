@@ -62,7 +62,7 @@ class VendorUser extends Authenticatable
 
     public function fcmTokens()
     {
-        return $this->hasMany(VendorFcmToken::class, 'vendor_user_id');
+        return $this->morphMany(UserToken::class, 'tokenable');
     }
     // public function fcmTokens(): MorphMany
     // {

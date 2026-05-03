@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\VendorFcmToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -36,15 +35,13 @@ class VendorFcmTokenController extends Controller
         ]);
 
         // تحقق إذا كان التوكن موجود
-        $existingToken = VendorFcmToken::where('vendor_user_id', $user->id)
+        $existingToken = $user->fcmTokens()
             ->where('fcm_token', $validated['token'])
             ->first();
 
         if (!$existingToken) {
-            $token = VendorFcmToken::create([
-                'vendor_user_id' => $user->id,
+            $token = $user->fcmTokens()->create([
                 'fcm_token' => $validated['token'],
-                'device_type' => 'web',
             ]);
 
             Log::info('FCM token saved successfully', [
@@ -75,7 +72,7 @@ class VendorFcmTokenController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        VendorFcmToken::where('vendor_user_id', $user->id)
+        $user->fcmTokens()
             ->where('fcm_token', $validated['token'])
             ->delete();
 
