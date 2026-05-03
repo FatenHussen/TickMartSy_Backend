@@ -474,7 +474,30 @@ class Product extends Model implements Sectionable
 
         return $breakdown;
     }
+    public function getFinalPriceAttribute(): float
+    {
+        // 1. Base price (shop overrides product price)
+        $price = (float)$this->price;
 
+
+        // 2. Get product final discount
+        $discount = $this->final_discount;
+
+        if (!$discount || !$discount['type'] || $discount['value'] <= 0) {
+            return round($price, 2);
+        }
+
+        // 3. Apply discount
+        if ($discount['type'] === 'percentage') {
+            $price -= ($price * ($discount['value'] / 100));
+        }
+
+        if ($discount['type'] === 'fixed') {
+            $price -= $discount['value'];
+        }
+
+        return (float) round(max(0, $price), 2);
+    }
     public function totalSoldQuantity()
     {
         return $this->completedOrderItems()->sum('quantity');
