@@ -67,7 +67,8 @@ class AdminRolePermissionSeeder extends Seeder
             'VendorWithdrawRequest',
             'SystemSetting',
             'VendorAccounting',
-            'Unit'
+            'Unit',
+            'ProductExtraDetail'
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];
