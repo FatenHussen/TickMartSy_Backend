@@ -13,4 +13,11 @@ class ScheduleService extends BaseService
         $this->model = $model;
         $this->collection = ScheduleResource::class;
     }
+    public function query(array $filters = [])
+    {
+        $query = $this->model::query();
+        $query = $this->queryBuilder($query, $filters);
+
+        return $query->where('is_active', true);
+    }
 }

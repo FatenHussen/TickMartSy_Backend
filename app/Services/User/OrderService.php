@@ -676,8 +676,22 @@ class OrderService extends BaseService
                     ])
                     ->all();
 
-                $extraDetails = \App\Models\ProductExtraDetail::whereIn('id', array_keys($extrasMap))
-                    ->where('product_id', $product->id)
+                $extraDetails = DB::table('product_extra_detail_options')
+                    ->join(
+                        'product_extra_details',
+                        'product_extra_detail_options.product_extra_detail_id',
+                        '=',
+                        'product_extra_details.id'
+                    )
+                    ->where('product_extra_detail_options.product_id', $product->id)
+                    ->whereIn('product_extra_detail_options.product_extra_detail_id', array_keys($extrasMap))
+                    ->select([
+                        'product_extra_details.id',
+                        'product_extra_details.detail_key',
+                        'product_extra_details.detail_value',
+                        'product_extra_detail_options.price',
+                        'product_extra_detail_options.quantity as max_quantity',
+                    ])
                     ->get();
 
                 foreach ($extraDetails as $extra) {
@@ -718,6 +732,7 @@ class OrderService extends BaseService
                     'product_name' => $product->name,
                     'variant_attributes' => $shopVariant->productVariant->getAttributesValuesAttribute(),
                     'product_image' => $product->image_url,
+                    'note' => $item['note'] ?? null,
                     'quantity' => $quantity,
                     'price' => $unitPrice,
                     'unit_price' => $unitPrice,
@@ -758,6 +773,7 @@ class OrderService extends BaseService
                 'shop_id' => $shopVariant->shop_id,
                 'product_name' => $product->name,
                 'product_image' => $product->image_url,
+                'note' => $item['note'] ?? null,
                 'quantity' => $quantity,
                 'unit_price' => $unitPrice,
                 'final_price' => $finalPrice,
