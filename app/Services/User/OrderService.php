@@ -676,8 +676,22 @@ class OrderService extends BaseService
                     ])
                     ->all();
 
-                $extraDetails = \App\Models\ProductExtraDetail::whereIn('id', array_keys($extrasMap))
-                    ->where('product_id', $product->id)
+                $extraDetails = DB::table('product_extra_detail_options')
+                    ->join(
+                        'product_extra_details',
+                        'product_extra_detail_options.product_extra_detail_id',
+                        '=',
+                        'product_extra_details.id'
+                    )
+                    ->where('product_extra_detail_options.product_id', $product->id)
+                    ->whereIn('product_extra_detail_options.product_extra_detail_id', array_keys($extrasMap))
+                    ->select([
+                        'product_extra_details.id',
+                        'product_extra_details.detail_key',
+                        'product_extra_details.detail_value',
+                        'product_extra_detail_options.price',
+                        'product_extra_detail_options.quantity as max_quantity',
+                    ])
                     ->get();
 
                 foreach ($extraDetails as $extra) {
