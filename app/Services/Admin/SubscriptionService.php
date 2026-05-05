@@ -6,6 +6,7 @@ use App\Http\Resources\Admin\Subscription\AllResource;
 use App\Http\Resources\Admin\Subscription\OneResource;
 use App\Models\Subscription;
 use App\Services\BaseService;
+use Illuminate\Support\Facades\DB;
 
 class SubscriptionService extends BaseService
 {
@@ -16,6 +17,7 @@ class SubscriptionService extends BaseService
     protected $relations = [
         'user',
         'package',
+        'paymentMethod',
     ];
 
     protected $searchableFields = [
@@ -30,6 +32,53 @@ class SubscriptionService extends BaseService
         'created_at',
         'status',
     ];
+
+    public function update($id, array $data)
+    {
+        return DB::transaction(function () use ($id, $data) {
+            $subscription = $this->applyAdminCityRestriction(Subscription::query())
+                ->with('package')
+                ->findOrFail($id);
+
+            $originalStatus = $subscription->status;
+
+            if (($data['status'] ?? null) === 'active' && $originalStatus === 'pending') {
+                $package = $subscription->package;
+
+                if ($package) {
+                    $data['start_date'] = now()->toDateString();
+                    $data['end_date'] = now()->addDays($package->duration_days)->toDateString();
+                    $data['remaining_orders'] = $package->monthly_orders_limit;
+                    $data['remaining_free_deliveries'] = $package->free_delivery_count;
+                }
+            }
+
+            $subscription->update($data);
+            $subscription->refresh();
+
+            if ($originalStatus === 'pending' && $subscription->status === 'active') {
+                $package = $subscription->package;
+
+                if ($package && $package->points_bonus > 0) {
+                    $pointService = app(\App\Services\PointService::class);
+
+                    $pointService->addPointsToWallet(
+                        userId: $subscription->user_id,
+                        points: $package->points_bonus,
+                        ruleId: null,
+                        source: 'subscription_package',
+                        status: 'earned',
+                        referenceType: 'subscription',
+                        referenceId: $subscription->id,
+                        expiresAfterDays: 365,
+                        reason: "Package subscription bonus: {$package->name}"
+                    );
+                }
+            }
+
+            return new $this->resource($subscription);
+        });
+    }
 
     public function queryBuilder($query, $filters = [], $config = [])
     {

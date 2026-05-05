@@ -23,6 +23,7 @@ class SubscribeRequest extends FormRequest
     {
         return [
             'package_id' => ['required', 'exists:packages,id'],
+            'payment_method_id' => ['required', 'integer', 'exists:payment_methods,id'],
         ];
     }
 }

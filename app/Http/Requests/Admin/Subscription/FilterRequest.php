@@ -16,7 +16,7 @@ class FilterRequest extends FormRequest
         return [
             'user_id' => ['nullable', 'integer', 'exists:users,id'],
             'package_id' => ['nullable', 'integer', 'exists:packages,id'],
-            'status' => ['nullable', 'string', 'in:active,expired,cancelled'],
+            'status' => ['nullable', 'string', 'in:pending,active,expired,cancelled'],
             'start_date_from' => ['nullable', 'date'],
             'start_date_to' => ['nullable', 'date', 'after_or_equal:start_date_from'],
             // 'search' => ['nullable', 'string', 'max:255'],

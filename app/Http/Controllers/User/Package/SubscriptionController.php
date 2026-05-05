@@ -28,7 +28,9 @@ class SubscriptionController extends Controller
 
         $subscription = $this->service->subscribe(
             auth('user')->user(),
-            $package
+            $package,
+            false,
+            $request->payment_method_id
         );
 
         return $this->sendResponse();
@@ -54,7 +56,8 @@ class SubscriptionController extends Controller
         $subscription = $this->service->subscribe(
             auth('user')->user(),
             $package,
-            true
+            true,
+            $request->payment_method_id
         );
 
         return $this->sendResponse();
@@ -69,7 +72,7 @@ class SubscriptionController extends Controller
 
         $subscription = \App\Models\Subscription::where('user_id', $userId)
             ->where('package_id', $packageId)
-            ->where('status', 'active')
+            ->whereIn('status', ['active', 'pending'])
             ->first();
 
         if (!$subscription) {

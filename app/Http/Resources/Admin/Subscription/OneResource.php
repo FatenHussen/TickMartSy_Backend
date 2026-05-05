@@ -26,6 +26,13 @@ class OneResource extends JsonResource
                 'discount_percentage' => $this->package?->discount_percentage,
                 'points_bonus' => $this->package?->points_bonus,
             ],
+            'payment_method' => $this->paymentMethod
+                ? [
+                    'id' => $this->paymentMethod->id,
+                    'name' => $this->paymentMethod->name,
+                    'code' => $this->paymentMethod->code,
+                ]
+                : null,
             'status' => $this->status,
             'start_date' => $this->start_date?->format('Y-m-d'),
             'end_date' => $this->end_date?->format('Y-m-d'),
