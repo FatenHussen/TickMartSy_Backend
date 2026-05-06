@@ -1,43 +1,272 @@
-# User Subscriptions API - Admin Panel
+# User Subscriptions API
 
-## نظرة عامة
+## Overview
 
-اشتراكات المستخدمين (User Subscriptions) تمثل اشتراكات المستخدمين في الباقات المختلفة التي توفر مزايا مثل:
-- خصومات على الطلبات
-- توصيل مجاني
-- نقاط إضافية
-- حد أقصى للطلبات الشهرية
+User subscriptions provide package benefits such as discounts, free delivery, points bonuses, and order limits.
 
 ---
 
-## Base URL
+## Base Response Envelope
+
+Success:
+
+```json
+{
+  "status": true,
+  "message": "Success",
+  "data": {}
+}
 ```
-/api/admin/subscriptions
+
+Error:
+
+```json
+{
+  "status": "error",
+  "message": "Error",
+  "errors": {}
+}
 ```
+
+---
 
 ## Authentication
+
+- User APIs: `Authorization: Bearer <token>` (Sanctum)
+- Admin APIs: `Authorization: Bearer <admin_token>`
+
+---
+
+## User APIs
+
+### List packages
+
+**GET** `/api/user/packages`
+
+Response (example):
+
+```json
+{
+  "status": true,
+  "message": "Success",
+  "data": [
+    {
+      "id": 1,
+      "name": {
+        "ar": "باقة شهرية",
+        "en": "Monthly"
+      },
+      "price": 10,
+      "price_currency": "USD",
+      "duration_days": 30,
+      "monthly_orders_limit": 20,
+      "free_delivery_count": 5,
+      "discount_percentage": 10,
+      "points_bonus": 100,
+      "is_active": true
+    }
+  ]
+}
 ```
-Authorization: Bearer {admin_token}
+
+### Subscribe
+
+**POST** `/api/user/subscribe`
+
+Request body:
+
+```json
+{
+  "package_id": 1,
+  "payment_method_id": 2
+}
+```
+
+Notes:
+
+- `payment_method_id` is required.
+- If the payment method code is `cash`, the subscription status becomes `pending`.
+- Otherwise, it becomes `active`.
+
+Response:
+
+```json
+{
+  "status": true,
+  "message": "Success",
+  "data": []
+}
+```
+
+### Renew
+
+**POST** `/api/user/renew`
+
+Request body:
+
+```json
+{
+  "package_id": 1,
+  "payment_method_id": 2
+}
+```
+
+Response:
+
+```json
+{
+  "status": true,
+  "message": "Success",
+  "data": []
+}
+```
+
+### My subscription
+
+**GET** `/api/user/my-subscription`
+
+Response (example):
+
+```json
+{
+  "status": true,
+  "message": "Success",
+  "data": {
+    "id": 10,
+    "package": {
+      "id": 1,
+      "name": {
+        "ar": "باقة شهرية",
+        "en": "Monthly"
+      },
+      "price": 10,
+      "price_currency": "USD",
+      "duration_days": 30,
+      "monthly_orders_limit": 20,
+      "free_delivery_count": 5,
+      "discount_percentage": 10,
+      "points_bonus": 100,
+      "is_active": true
+    },
+    "status": "pending",
+    "payment_method_id": 2,
+    "payment_method": {
+      "id": 2,
+      "name": "Cash",
+      "code": "cash",
+      "icon": null,
+      "is_active": true,
+      "is_default": false
+    },
+    "start_date": "2026-05-05",
+    "end_date": "2026-06-04",
+    "remaining_orders": 20,
+    "remaining_free_deliveries": 5
+  }
+}
+```
+
+If no subscription exists:
+
+```json
+{
+  "message": "No active subscription"
+}
+```
+
+### Cancel subscription
+
+**DELETE** `/api/user/cancel-subscription/{packageId}`
+
+Response:
+
+```json
+{
+  "status": true,
+  "message": "تم إلغاء الاشتراك بنجاح",
+  "data": []
+}
 ```
 
 ---
 
-## 1. List User Subscriptions
+## Admin APIs
+
+### List user subscriptions
+
 **GET** `/api/admin/subscriptions`
 
-### Query Parameters
-- `page` (int): Page number
-- `per_page` (int): Items per page (default: 10, max: 100)
-- `user_id` (int): Filter by user ID
-- `package_id` (int): Filter by package ID
-- `status` (string): Filter by status (active, expired, cancelled)
-- `start_date_from` (date): Filter subscriptions starting from this date
-- `start_date_to` (date): Filter subscriptions starting until this date
-- `search` (string): Search in subscription data
-- `sortField` (string): id, start_date, end_date, created_at, status
-- `sortOrder` (string): asc, desc
+Query parameters:
 
-### Response
+- `page` (int)
+- `per_page` (int)
+- `user_id` (int)
+- `package_id` (int)
+- `status` (string): `pending`, `active`, `expired`, `cancelled`
+- `start_date_from` (date)
+- `start_date_to` (date)
+- `search` (string)
+- `sort_field` (string): `id`, `start_date`, `end_date`, `created_at`, `status`
+- `sort_order` (string): `asc`, `desc`
+
+### Approve cash subscription
+
+**PATCH** `/api/admin/subscriptions/{id}`
+
+Request body:
+
+```json
+{
+  "status": "active"
+}
+```
+
+Behavior:
+
+- If the subscription was `pending`, the system sets `start_date`, `end_date`, and quota fields from the package.
+- If the package has `points_bonus`, it is awarded on approval.
+
+Response (example):
+
+```json
+{
+  "status": true,
+  "message": "Success",
+  "data": {
+    "id": 10,
+    "user": {
+      "id": 7,
+      "name": "User Name",
+      "email": "user@example.com",
+      "phone": "+963900000000"
+    },
+    "package": {
+      "id": 1,
+      "name": "Monthly",
+      "price": 10,
+      "duration_days": 30,
+      "monthly_orders_limit": 20,
+      "free_delivery_count": 5,
+      "discount_percentage": 10,
+      "points_bonus": 100
+    },
+    "payment_method": {
+      "id": 2,
+      "name": "Cash",
+      "code": "cash"
+    },
+    "status": "active",
+    "start_date": "2026-05-05",
+    "end_date": "2026-06-04",
+    "remaining_orders": 20,
+    "remaining_free_deliveries": 5,
+    "is_active": true,
+    "days_remaining": 30,
+    "created_at": "2026-05-05 12:00:00",
+    "updated_at": "2026-05-05 12:00:00"
+  }
+}
+```
 ```json
 {
   "success": true,
