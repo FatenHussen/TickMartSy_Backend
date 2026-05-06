@@ -229,8 +229,9 @@ class PopupCampaign extends Model
 
     /**
      * When no attachables are linked, the campaign applies everywhere (subject to pages/audience).
-     * When attachables exist, pass one of: product_id, shop_id, recipe_id, basket_id on the request
-     * so the campaign matches a linked entity.
+     * When attachables exist and no context IDs are provided, allow a generic match so
+     * APIs like /popups/active?page_type=home can still return seeded entity payloads.
+     * If IDs are provided, require a strict attachable match.
      */
     public function matchesAttachableContext(Request $request): bool
     {
@@ -247,7 +248,7 @@ class PopupCampaign extends Model
         ]);
 
         if ($pairs === []) {
-            return false;
+            return true;
         }
 
         return $this->attachableLinks()

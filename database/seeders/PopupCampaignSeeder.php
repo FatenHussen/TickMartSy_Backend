@@ -81,6 +81,62 @@ class PopupCampaignSeeder extends Seeder
 
             $this->syncPagesForCampaign($campaign, $display['show_on_pages'] ?? null);
         }
+
+        $this->createGuaranteedHomeCampaign($productId, $shopId, $recipeId, $basketId);
+    }
+
+    /**
+     * Ensures user API returns at least one home popup with entity payloads.
+     */
+    private function createGuaranteedHomeCampaign(
+        ?int $productId,
+        ?int $shopId,
+        ?int $recipeId,
+        ?int $basketId
+    ): void
+    {
+        $campaign = PopupCampaign::updateOrCreate(
+            ['slug' => 'popup-home-default'],
+            [
+                'title' => [
+                    'en' => 'Welcome offer is available now.',
+                    'ar' => 'عرض ترحيبي متاح الآن.',
+                ],
+                'headline' => [
+                    'en' => 'Welcome offer is available now.',
+                    'ar' => 'عرض ترحيبي متاح الآن.',
+                ],
+                'subheadline' => [
+                    'en' => 'Check today\'s highlighted deals.',
+                    'ar' => 'تعرّف على العروض المميزة اليوم.',
+                ],
+                'description' => [
+                    'en' => 'This popup is seeded as a guaranteed home campaign for API testing.',
+                    'ar' => 'تمت إضافة هذه النافذة كحملة مضمونة للصفحة الرئيسية لاختبار الـ API.',
+                ],
+                'type' => PopupCampaign::TYPE_MODAL,
+                'status' => PopupCampaign::STATUS_ACTIVE,
+                'priority' => 1000,
+                'button_text' => PopupCampaign::BUTTON_SHOP_NOW,
+                'button_url' => '/home',
+                'secondary_button_text' => null,
+                'media_type' => PopupCampaign::MEDIA_IMAGE,
+                'media_path' => 'images/display/banner.png',
+                'form_enabled' => false,
+                'form_fields' => null,
+                'audience_type' => PopupCampaign::AUDIENCE_ALL,
+                'trigger_type' => PopupCampaign::TRIGGER_ON_LOAD,
+                'trigger_value' => null,
+                'show_every' => PopupCampaign::DEFAULT_SHOW_EVERY,
+                'max_impressions' => PopupCampaign::DEFAULT_MAX_IMPRESSIONS,
+            ]
+        );
+
+        $campaign->products()->sync($productId !== null ? [$productId] : []);
+        $campaign->shops()->sync($shopId !== null ? [$shopId] : []);
+        $campaign->recipes()->sync($recipeId !== null ? [$recipeId] : []);
+        $campaign->baskets()->sync($basketId !== null ? [$basketId] : []);
+        $this->syncPagesForCampaign($campaign, ['home']);
     }
 
     private function syncPagesForCampaign(PopupCampaign $campaign, ?array $slugs): void
