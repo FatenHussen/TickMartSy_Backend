@@ -301,6 +301,7 @@ Route::prefix('user')->group(
             Route::post('/store', [ComplaintController::class, 'store']);
         });
         Route::prefix('legal-documents')->group(function () {
+            Route::get('/', [LegalDocumentController::class, 'index']);
             Route::get('/{key}', [LegalDocumentController::class, 'show']);
         });
 
