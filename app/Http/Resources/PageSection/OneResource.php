@@ -29,7 +29,7 @@ class OneResource extends JsonResource
             'variant' => $this->variant ?? VariantSection::Horizontal->value,
             'background_color' => $this->background_color,
             'background_card_color' => $this->background_card_color,
-            'end_date' => $this->resolveFlashSaleEndDate(),
+            ...$this->resolveFlashSaleFields(),
             'see_more' => $this->section->see_more
                 ? [
                     'page_slug' => $this->section->see_more_slug,
@@ -79,23 +79,42 @@ class OneResource extends JsonResource
         return true;
     }
 
-    private function resolveFlashSaleEndDate(): ?string
+    /**
+     * @return array{end_date: mixed, discount: mixed, discount_type: mixed}
+     */
+    private function resolveFlashSaleFields(): array
     {
         if (($this->filters['type'] ?? null) !== 'latest_flash_sale') {
-            return null;
+            return [
+                'end_date' => null,
+                'discount' => null,
+                'discount_type' => null,
+            ];
         }
 
-        static $latestActiveFlashSaleEndDate = null;
+        static $cached = null;
         static $loaded = false;
 
         if (!$loaded) {
-            $latestActiveFlashSaleEndDate = FlashSale::query()
+            $flashSale = FlashSale::query()
                 ->active()
                 ->latest('id')
-                ->value('end_date');
+                ->first(['end_date', 'discount', 'discount_type']);
+
+            $cached = $flashSale
+                ? [
+                    'end_date' => $flashSale->end_date,
+                    'discount' => $flashSale->discount,
+                    'discount_type' => $flashSale->discount_type,
+                ]
+                : [
+                    'end_date' => null,
+                    'discount' => null,
+                    'discount_type' => null,
+                ];
             $loaded = true;
         }
 
-        return $latestActiveFlashSaleEndDate;
+        return $cached;
     }
 }
