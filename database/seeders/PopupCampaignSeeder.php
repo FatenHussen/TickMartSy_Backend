@@ -111,7 +111,7 @@ class PopupCampaignSeeder extends Seeder
                 'trigger_value' => null,
                 'media_type' => PopupCampaign::MEDIA_GIF,
                 'media_path' => 'images/display/banner.png',
-                'show_on_pages' => null,
+                'show_on_pages' => ['home', 'products'],
             ],
             'simple_discount' => [
                 'type' => PopupCampaign::TYPE_MODAL,
@@ -180,8 +180,8 @@ class PopupCampaignSeeder extends Seeder
     ): void {
         $payload = match ($promotionType) {
             'free_shipping' => [
-                'products' => [],
-                'shops' => [],
+                'products' => $productId !== null ? [$productId] : [],
+                'shops' => $shopId !== null ? [$shopId] : [],
                 'recipes' => [],
                 'baskets' => [],
             ],
