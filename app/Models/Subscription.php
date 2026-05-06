@@ -9,6 +9,7 @@ class Subscription extends Model
     protected $fillable = [
         'user_id',
         'package_id',
+        'payment_method_id',
         'start_date',
         'end_date',
         'status',
@@ -31,6 +32,11 @@ class Subscription extends Model
     public function package()
     {
         return $this->belongsTo(Package::class);
+    }
+
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
     }
 
     public function isActive()
