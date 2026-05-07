@@ -17,30 +17,6 @@ class LegalDocumentSeeder extends Seeder
 
         Data we collect:
 
-            $driverPrivacyEn = <<<'TEXT'
-            Driver Privacy Policy
-
-            This policy explains how Tikmool handles driver data needed to operate the delivery service, including location tracking during active orders, contact details, and performance metrics. Data is used to assign orders, provide support, improve service quality, and comply with legal requirements.
-            TEXT;
-
-            $driverPrivacyAr = <<<'TEXT'
-            سياسة خصوصية المندوب
-
-            توضح هذه السياسة كيفية تعامل تيك مول مع بيانات المندوب اللازمة لتشغيل خدمة التوصيل، بما في ذلك تتبع الموقع أثناء الطلبات النشطة، وبيانات التواصل، ومؤشرات الأداء. تُستخدم البيانات لتوزيع الطلبات، وتقديم الدعم، وتحسين جودة الخدمة، والامتثال للمتطلبات القانونية.
-            TEXT;
-
-            $driverTermsEn = <<<'TEXT'
-            Driver Terms & Conditions
-
-            By using the driver app, you agree to comply with delivery procedures, communicate respectfully with customers and support, and follow all safety requirements. Violations may result in suspension or account termination.
-            TEXT;
-
-            $driverTermsAr = <<<'TEXT'
-            شروط وأحكام المندوب
-
-            باستخدامك لتطبيق المندوب، فإنك توافق على الالتزام بإجراءات التوصيل، والتواصل باحترام مع العملاء والدعم، واتباع متطلبات السلامة. المخالفات قد تؤدي إلى إيقاف الحساب أو إنهائه.
-            TEXT;
-
         - Information provided when filling out forms during account registration, social logins, subscriptions, content publication, or additional service requests.
         - Device-specific data when you install or use the tikmool app, such as location details and your device ID.
         - Technical information about your computer or device (IP address, operating system, browser type).
@@ -1116,6 +1092,30 @@ class LegalDocumentSeeder extends Seeder
         8- تبقى شروط وأحكام البيع هذه سارية حتى بعد تعليق أو إلغاء عضويتك في الموقع والتطبيق.
         TEXT;
 
+        $driverPrivacyEn = <<<'TEXT'
+        Driver Privacy Policy
+
+        This policy explains how Tikmool handles driver data needed to operate the delivery service, including location tracking during active orders, contact details, and performance metrics. Data is used to assign orders, provide support, improve service quality, and comply with legal requirements.
+        TEXT;
+
+        $driverPrivacyAr = <<<'TEXT'
+        سياسة خصوصية المندوب
+
+        توضح هذه السياسة كيفية تعامل تيك مول مع بيانات المندوب اللازمة لتشغيل خدمة التوصيل، بما في ذلك تتبع الموقع أثناء الطلبات النشطة، وبيانات التواصل، ومؤشرات الأداء. تُستخدم البيانات لتوزيع الطلبات، وتقديم الدعم، وتحسين جودة الخدمة، والامتثال للمتطلبات القانونية.
+        TEXT;
+
+        $driverTermsEn = <<<'TEXT'
+        Driver Terms & Conditions
+
+        By using the driver app, you agree to comply with delivery procedures, communicate respectfully with customers and support, and follow all safety requirements. Violations may result in suspension or account termination.
+        TEXT;
+
+        $driverTermsAr = <<<'TEXT'
+        شروط وأحكام المندوب
+
+        باستخدامك لتطبيق المندوب، فإنك توافق على الالتزام بإجراءات التوصيل، والتواصل باحترام مع العملاء والدعم، واتباع متطلبات السلامة. المخالفات قد تؤدي إلى إيقاف الحساب أو إنهائه.
+        TEXT;
+
         LegalDocument::create([
             'key' => 'privacy_policy',
             'title' => [
@@ -1188,32 +1188,32 @@ class LegalDocumentSeeder extends Seeder
             ],
         ]);
 
-            LegalDocument::updateOrCreate(
-                ['key' => 'privacy_policy_driver'],
-                [
-                    'title' => [
-                        'en' => 'Driver Privacy Policy',
-                        'ar' => 'سياسة خصوصية المندوب',
-                    ],
-                    'content' => [
-                        'en' => $driverPrivacyEn,
-                        'ar' => $driverPrivacyAr,
-                    ],
-                ]
-            );
+        LegalDocument::updateOrCreate(
+            ['key' => 'privacy_policy_driver'],
+            [
+                'title' => [
+                    'en' => 'Driver Privacy Policy',
+                    'ar' => 'سياسة خصوصية المندوب',
+                ],
+                'content' => [
+                    'en' => $driverPrivacyEn,
+                    'ar' => $driverPrivacyAr,
+                ],
+            ]
+        );
 
-            LegalDocument::updateOrCreate(
-                ['key' => 'terms_conditions_driver'],
-                [
-                    'title' => [
-                        'en' => 'Driver Terms & Conditions',
-                        'ar' => 'شروط وأحكام المندوب',
-                    ],
-                    'content' => [
-                        'en' => $driverTermsEn,
-                        'ar' => $driverTermsAr,
-                    ],
-                ]
-            );
+        LegalDocument::updateOrCreate(
+            ['key' => 'terms_conditions_driver'],
+            [
+                'title' => [
+                    'en' => 'Driver Terms & Conditions',
+                    'ar' => 'شروط وأحكام المندوب',
+                ],
+                'content' => [
+                    'en' => $driverTermsEn,
+                    'ar' => $driverTermsAr,
+                ],
+            ]
+        );
     }
 }
