@@ -18,7 +18,7 @@ class OrderController extends Controller
     public function orders(Request $request)
     {
         $data = $request->validate([
-            'status' => 'required|in:pending,preparing,out_delivery,delivered,returned_by_user',
+            'status' => 'required|in:pending,preparing,out_delivery,delivered,cancelled,cancelled_by_admin,rejected_by_delivery,faild_deliver,returned_by_user',
             'assigned_by' => 'nullable|in:admin,driver',
         ]);
 
@@ -167,9 +167,18 @@ class OrderController extends Controller
     /* =======================
        📊 STATISTICS
     ======================= */
-    public function statistics()
+    public function statistics(Request $request)
     {
-        $data = $this->service->statistics();
+        $filters = $request->validate([
+            'period' => 'nullable|in:day,month,custom',
+            'date' => 'nullable|date_format:Y-m-d',
+            'month' => 'nullable|integer|min:1|max:12',
+            'year' => 'nullable|integer|min:2000|max:2100',
+            'start_date' => 'nullable|date_format:Y-m-d',
+            'end_date' => 'nullable|date_format:Y-m-d|after_or_equal:start_date',
+        ]);
+
+        $data = $this->service->statistics($filters);
 
         return $this->sendResponse(
             data: $data,
