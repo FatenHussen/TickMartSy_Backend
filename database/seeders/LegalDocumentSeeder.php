@@ -1116,77 +1116,89 @@ class LegalDocumentSeeder extends Seeder
         باستخدامك لتطبيق المندوب، فإنك توافق على الالتزام بإجراءات التوصيل، والتواصل باحترام مع العملاء والدعم، واتباع متطلبات السلامة. المخالفات قد تؤدي إلى إيقاف الحساب أو إنهائه.
         TEXT;
 
-        LegalDocument::create([
-            'key' => 'privacy_policy',
-            'title' => [
-                'en' => 'Privacy Policy',
-                'ar' => 'سياسة الخصوصية',
-            ],
-            'content' => [
-                'en' => $englishText,
-                'ar' => $arabicText,
-            ],
-        ]);
+        LegalDocument::updateOrCreate(
+            ['key' => 'privacy_policy'],
+            [
+                'title' => [
+                    'en' => 'Privacy Policy',
+                    'ar' => 'سياسة الخصوصية',
+                ],
+                'content' => [
+                    'en' => $englishText,
+                    'ar' => $arabicText,
+                ],
+            ]
+        );
 
-        LegalDocument::create([
-            'key' => 'terms_conditions',
-            'title' => [
-                'en' => 'Terms of Use',
-                'ar' => 'شروط الاستخدام',
-            ],
-            'content' => [
-                'en' => $termsOfUseEn,
-                'ar' => $termsOfUseAr,
-            ],
-        ]);
+        LegalDocument::updateOrCreate(
+            ['key' => 'terms_conditions'],
+            [
+                'title' => [
+                    'en' => 'Terms of Use',
+                    'ar' => 'شروط الاستخدام',
+                ],
+                'content' => [
+                    'en' => $termsOfUseEn,
+                    'ar' => $termsOfUseAr,
+                ],
+            ]
+        );
 
-        LegalDocument::create([
-            'key' => 'return_policy',
-            'title' => [
-                'en' => 'Return Policy',
-                'ar' => 'سياسة الإرجاع',
-            ],
-            'content' => [
-                'en' => $returnPolicyEn,
-                'ar' => $returnPolicyAr,
-            ],
-        ]);
+        LegalDocument::updateOrCreate(
+            ['key' => 'return_policy'],
+            [
+                'title' => [
+                    'en' => 'Return Policy',
+                    'ar' => 'سياسة الإرجاع',
+                ],
+                'content' => [
+                    'en' => $returnPolicyEn,
+                    'ar' => $returnPolicyAr,
+                ],
+            ]
+        );
 
-        LegalDocument::create([
-            'key' => 'warranty_policy',
-            'title' => [
-                'en' => 'Warranty Policy',
-                'ar' => 'سياسة الضمان',
-            ],
-            'content' => [
-                'en' => $warrantyPolicyEn,
-                'ar' => $warrantyPolicyAr,
-            ],
-        ]);
+        LegalDocument::updateOrCreate(
+            ['key' => 'warranty_policy'],
+            [
+                'title' => [
+                    'en' => 'Warranty Policy',
+                    'ar' => 'سياسة الضمان',
+                ],
+                'content' => [
+                    'en' => $warrantyPolicyEn,
+                    'ar' => $warrantyPolicyAr,
+                ],
+            ]
+        );
 
-        LegalDocument::create([
-            'key' => 'termsOfSale',
-            'title' => [
-                'en' => 'Terms of Sale',
-                'ar' => 'شروط البيع',
-            ],
-            'content' => [
-                'en' => $termsOfSaleEn,
-                'ar' => $termsOfSaleAr,
-            ],
-        ]);
+        LegalDocument::updateOrCreate(
+            ['key' => 'termsOfSale'],
+            [
+                'title' => [
+                    'en' => 'Terms of Sale',
+                    'ar' => 'شروط البيع',
+                ],
+                'content' => [
+                    'en' => $termsOfSaleEn,
+                    'ar' => $termsOfSaleAr,
+                ],
+            ]
+        );
 
-        LegalDocument::create([
-            'key' => 'marketer_terms_conditions',
-            'title' => [
-                'en' => 'Marketer Terms & Conditions',
-                'ar' => 'شروط وأحكام المسوقين',
-            ],
-            'content' => [
-                'en' => $marketerTermsEn,
-                'ar' => $marketerTermsAr,
-            ],
-        ]);
+        LegalDocument::updateOrCreate(
+            ['key' => 'marketer_terms_conditions'],
+            [
+                'title' => [
+                    'en' => 'Marketer Terms & Conditions',
+                    'ar' => 'شروط وأحكام المسوقين',
+                ],
+                'content' => [
+                    'en' => $marketerTermsEn,
+                    'ar' => $marketerTermsAr,
+                ],
+            ]
+        );
 
         LegalDocument::updateOrCreate(
             ['key' => 'privacy_policy_driver'],
