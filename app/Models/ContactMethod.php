@@ -10,6 +10,7 @@ class ContactMethod extends Model
     use HasFactory;
 
     protected $fillable = [
+        'key',
         'type',
         'value',
         'icon',

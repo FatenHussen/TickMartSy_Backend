@@ -117,6 +117,7 @@ class DatabaseSeeder extends Seeder
 
             // Legal & FAQ
             LegalDocumentSeeder::class,
+            DriverContactMethodSeeder::class,
             FaqSeeder::class,
             IconSeeder::class,
 

@@ -9,6 +9,8 @@ All routes are under:
 - `GET /driver/orders/statistics`
 - `GET /driver/orders`
 
+Driver-specific APIs are available for legal documents and contact methods. See the sections below.
+
 Authentication: `auth:driver` (Bearer token).
 
 ## Driver statistics (earnings/performance)
@@ -107,3 +109,48 @@ Returned by user:
 - The performance screen should show the average delivery time from `filtered.average_delivery_time_minutes` for the selected period.
 - The orders screen should offer filters/tabs for all statuses listed above, including failed delivery and cancelled statuses.
 - If you need a failure reason, confirm the API field used for it (not specified in this doc).
+
+## Driver legal documents (policies)
+
+Driver API:
+
+- `GET /driver/legal-documents`
+- `GET /driver/legal-documents/{key}`
+
+Notes:
+
+- The response is a list of legal documents with a `key`, `title`, and `content`.
+- The driver API only returns documents where the `key` contains `driver`.
+
+### Example
+
+`GET /user/legal-documents/privacy_policy_driver`
+
+## Driver contact methods (support numbers/links)
+
+Driver API:
+
+- `GET /driver/contact-methods`
+- `GET /driver/contact-methods?type=number|email|url|whts`
+- `GET /driver/contact-methods?key=support_driver_whatsapp`
+
+Notes:
+
+- The driver API only returns contact methods where the `key` contains `driver`.
+
+### Example
+
+`GET /user/contact-methods?type=whts`
+
+## Share and external messaging actions (driver app requirement)
+
+The driver app should provide clear buttons/links that open external messaging apps for:
+
+- Contact support/admin (WhatsApp, Telegram)
+- Message the customer (pre-filled text or share tracking link)
+- Share the app (invite another driver)
+
+API notes:
+
+- Support/admin contact URLs or numbers should come from contact methods (see above).
+- If the backend does not provide driver-specific contacts, agree with the backend team on driver-specific keys or scope.
