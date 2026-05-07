@@ -39,6 +39,21 @@ class OrderService
             ->get();
     }
 
+    public function assignedOrders(array $data)
+    {
+        $driverId = auth('driver')->id();
+
+        return Order::query()
+            ->where('driver_id', $driverId)
+            ->where('assigned_by', 'admin')
+            ->when(
+                isset($data['status']),
+                fn($q) => $q->where('status', $data['status'])
+            )
+            ->latest()
+            ->get();
+    }
+
     public function order($orderId)
     {
         $driverId = auth('driver')->id();

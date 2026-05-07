@@ -29,6 +29,19 @@ class OrderController extends Controller
         );
     }
 
+    public function assignedOrders(Request $request)
+    {
+        $data = $request->validate([
+            'status' => 'nullable|in:pending,preparing,out_delivery,delivered,cancelled,cancelled_by_admin,rejected_by_delivery,faild_deliver,returned_by_user',
+        ]);
+
+        $res = $this->service->assignedOrders($data);
+
+        return $this->sendResponse(
+            data: AllResource::collection($res)
+        );
+    }
+
     public function order($orderId)
     {
         $res = $this->service->order($orderId);

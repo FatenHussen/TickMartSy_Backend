@@ -1,75 +1,40 @@
-# Driver Earnings & Performance - Frontend Notes
+# Driver App API - Frontend Reference
 
-This document describes the driver-facing earnings/performance and orders filters from the API.
+This document consolidates the driver-facing API for the mobile app UI.
 
-## Base route
+Authentication: `auth:driver` (Bearer token) unless noted.
 
-All routes are under:
+## Auth
 
-- `GET /driver/orders/statistics`
-- `GET /driver/orders`
+- `POST /driver/auth/login`
+- `POST /driver/auth/send-password`
+- `POST /driver/auth/verify-password`
+- `GET /driver/auth/logout`
+- `POST /driver/auth/store-token`
+- `GET /driver/auth/notifications`
+- `DELETE /driver/auth/delete-account`
+- `POST /driver/auth/reset-password` (requires `abilities:reset-password`)
 
-Driver-specific APIs are available for legal documents and contact methods. See the sections below.
-
-Authentication: `auth:driver` (Bearer token).
-
-## Driver statistics (earnings/performance)
-
-Endpoint:
-
-- `GET /driver/orders/statistics`
-
-### Query parameters
-
-- `period` (optional): `day` | `month` | `custom`
-- `date` (optional, for `day`): `YYYY-MM-DD`
-- `month` (optional, for `month`): `1-12`
-- `year` (optional, for `month`): `YYYY`
-- `start_date` (optional, for `custom`): `YYYY-MM-DD`
-- `end_date` (optional, for `custom`): `YYYY-MM-DD`
-
-If `period` is not provided, the API defaults to `day` using today.
-
-### Response fields
-
-Top-level (existing):
-
-- `average_rating`
-- `rate_percent`
-- `total_orders`
-- `total_delivered`
-- `today_delivered`
-- `total_earnings`
-- `today_earnings`
-- `average_delivery_time_minutes`
-- `cancellation_rate_percent`
-
-Filtered (new):
-
-- `filtered.period` (echoes `day`, `month`, or `custom`)
-- `filtered.start` (start date, `YYYY-MM-DD`)
-- `filtered.end` (end date, `YYYY-MM-DD`)
-- `filtered.delivered_orders`
-- `filtered.earnings`
-- `filtered.average_delivery_time_minutes`
-
-### Examples
-
-Daily (specific date):
-
-`GET /driver/orders/statistics?period=day&date=2026-05-07`
-
-Monthly:
-
-`GET /driver/orders/statistics?period=month&month=5&year=2026`
-
-Custom range:
-
-`GET /driver/orders/statistics?period=custom&start_date=2026-05-01&end_date=2026-05-07`
-
-## Driver orders list (by status)
+## Driver profile and coverage
 
 Endpoint:
+
+- `GET /driver/profile`
+
+Includes:
+
+- `cities`: list of assigned cities
+- `areas`: list of areas derived from assigned cities
+- `shops`: list of assigned shops
+- `vendors`: list of assigned vendors
+
+## Driver status
+
+- `POST /driver/update-status`
+
+## Orders
+
+### Orders list (by status)
 
 - `GET /driver/orders`
 
@@ -90,45 +55,96 @@ Optional query params:
 
 - `assigned_by`: `admin` | `driver`
 
-### Examples
+### Assigned orders (directly assigned)
 
-Failed delivery:
+- `GET /driver/orders/assigned`
+- Optional: `status` (same values as above)
 
-`GET /driver/orders?status=faild_deliver`
+### Available nearby orders
 
-Cancelled by admin:
+- `GET /driver/orders/to-assigned`
 
-`GET /driver/orders?status=cancelled_by_admin`
+### Order details
 
-Returned by user:
+- `GET /driver/orders/show/{orderId}`
 
-`GET /driver/orders?status=returned_by_user`
+### Order actions
 
-## Notes for UI
+- `POST /driver/orders/accept/{orderId}`
+- `POST /driver/orders/reject/{orderId}`
+- `POST /driver/orders/item-out-delivery/{itemId}`
+- `POST /driver/orders/order-out-delivery/{orderId}`
+- `POST /driver/orders/shop-out-delivery/{orderId}`
+- `POST /driver/orders/deliver/{orderId}`
+- `POST /driver/orders/faild-deliver/{orderId}`
+- `POST /driver/orders/returned-by-user/{orderId}`
+- `POST /driver/orders/start-to-outdelivery/{orderId}`
 
-- The performance screen should show the average delivery time from `filtered.average_delivery_time_minutes` for the selected period.
-- The orders screen should offer filters/tabs for all statuses listed above, including failed delivery and cancelled statuses.
-- If you need a failure reason, confirm the API field used for it (not specified in this doc).
+### Current active order
+
+- `GET /driver/orders/current`
+
+### Driver location update
+
+- `POST /driver/orders/update-location`
+- `POST /driver/driver/update-location`
+
+## Driver statistics (earnings/performance)
+
+- `GET /driver/orders/statistics`
+
+Query parameters:
+
+- `period` (optional): `day` | `month` | `custom`
+- `date` (optional, for `day`): `YYYY-MM-DD`
+- `month` (optional, for `month`): `1-12`
+- `year` (optional, for `month`): `YYYY`
+- `start_date` (optional, for `custom`): `YYYY-MM-DD`
+- `end_date` (optional, for `custom`): `YYYY-MM-DD`
+
+If `period` is not provided, the API defaults to `day` using today.
+
+Response fields (top-level):
+
+- `average_rating`
+- `rate_percent`
+- `total_orders`
+- `total_delivered`
+- `today_delivered`
+- `total_earnings`
+- `today_earnings`
+- `average_delivery_time_minutes`
+- `cancellation_rate_percent`
+
+Filtered fields:
+
+- `filtered.period`
+- `filtered.start`
+- `filtered.end`
+- `filtered.delivered_orders`
+- `filtered.earnings`
+- `filtered.average_delivery_time_minutes`
+
+Examples:
+
+- `GET /driver/orders/statistics?period=day&date=2026-05-07`
+- `GET /driver/orders/statistics?period=month&month=5&year=2026`
+- `GET /driver/orders/statistics?period=custom&start_date=2026-05-01&end_date=2026-05-07`
 
 ## Driver legal documents (policies)
-
-Driver API:
 
 - `GET /driver/legal-documents`
 - `GET /driver/legal-documents/{key}`
 
 Notes:
 
-- The response is a list of legal documents with a `key`, `title`, and `content`.
-- The driver API only returns documents where the `key` contains `driver`.
+- Only documents with `key` containing `driver` are returned.
 
-### Example
+Example:
 
-`GET /user/legal-documents/privacy_policy_driver`
+- `GET /driver/legal-documents/privacy_policy_driver`
 
 ## Driver contact methods (support numbers/links)
-
-Driver API:
 
 - `GET /driver/contact-methods`
 - `GET /driver/contact-methods?type=number|email|url|whts`
@@ -136,13 +152,9 @@ Driver API:
 
 Notes:
 
-- The driver API only returns contact methods where the `key` contains `driver`.
+- Only contact methods with `key` containing `driver` are returned.
 
-### Example
-
-`GET /user/contact-methods?type=whts`
-
-## Share and external messaging actions (driver app requirement)
+## Share and external messaging actions
 
 The driver app should provide clear buttons/links that open external messaging apps for:
 
@@ -150,7 +162,4 @@ The driver app should provide clear buttons/links that open external messaging a
 - Message the customer (pre-filled text or share tracking link)
 - Share the app (invite another driver)
 
-API notes:
-
-- Support/admin contact URLs or numbers should come from contact methods (see above).
-- If the backend does not provide driver-specific contacts, agree with the backend team on driver-specific keys or scope.
+Support/admin contact URLs or numbers should come from contact methods.

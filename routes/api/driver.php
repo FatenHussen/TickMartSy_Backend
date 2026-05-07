@@ -79,6 +79,7 @@ Route::prefix('driver')->group(
         Route::prefix('orders')->group(function () {
             Route::middleware(['auth:driver'])->group(function () {
                 Route::get('/', [OrderController::class, 'orders']);
+                Route::get('/assigned', [OrderController::class, 'assignedOrders']);
                 Route::get('/show/{orderId}', [OrderController::class, 'order']);
                 Route::get('/to-assigned', [OrderController::class, 'ordersToAssigned']);
                 Route::get('statistics', [OrderController::class, 'statistics']);
