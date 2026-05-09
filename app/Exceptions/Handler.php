@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -29,6 +30,19 @@ class Handler
                 'message' => __('custom.ValidationError'),
                 'errors' => $e->errors(),
             ], 422);
+        });
+
+        // 409 Foreign key constraint (delete restricted)
+        $exceptions->render(function (QueryException $e, $request) {
+            $errorCode = $e->errorInfo[1] ?? null;
+
+            if ($errorCode === 1451) {
+                return response()->json([
+                    'status' => false,
+                    'message' => __('custom.cannot_delete_category_related'),
+                    'errors' => [],
+                ], 409);
+            }
         });
 
         // 404 Model

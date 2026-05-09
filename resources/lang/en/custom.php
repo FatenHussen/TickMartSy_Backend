@@ -66,6 +66,7 @@ return [
     'user_currency_updated_successfully' => 'User currency updated successfully.',
     'cannot_deactivate_default_currency' => 'Cannot deactivate the default currency.',
     'cannot_delete_category_attribute_in_use' => 'Cannot delete category attribute because it is used in :count product variant(s).',
+    'cannot_delete_category_related' => 'Cannot delete this category because it is linked to other records.',
     'type_required' => 'The type field is required.',
     'invalid_type' => 'Invalid type.',
     'id_required' => 'The ID field is required.',

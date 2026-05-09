@@ -73,6 +73,7 @@ return [
     'cannot_deactivate_default_currency' => 'لا يمكن تعطيل العملة الافتراضية.',
     'cannot_delete_package_with_active_subscriptions' => 'لا يمكن حذف الباقة لوجود اشتراكات نشطة.',
     'cannot_delete_category_attribute_in_use' => 'لا يمكن حذف خاصية الصنف لأنها مستخدمة في :count متغير من المنتجات.',
+    'cannot_delete_category_related' => 'لا يمكن حذف هذا التصنيف لأنه مرتبط بعناصر أخرى.',
     'type_required' => 'حقل النوع مطلوب.',
     'invalid_type' => 'نوع غير صالح.',
     'id_required' => 'حقل المعرف مطلوب.',
