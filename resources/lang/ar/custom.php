@@ -919,6 +919,7 @@ return [
     'cancel' => 'إلغاء',
     'subscription_error_login' => 'يجب تسجيل الدخول أولاً',
     'subscription_error_no_shop' => 'لا يوجد متجر مرتبط بحسابك',
+    'subscription_blocked_existing' => 'لديك اشتراك قيد المراجعة أو نشط بالفعل',
     'subscription_warning_active' => 'لديك اشتراك نشط بالفعل. سينتهي في :date',
     'subscription_success' => 'تم الاشتراك بنجاح',
     'subscription_success_body' => 'تم الاشتراك في باقة :package. ينتهي الاشتراك في :date',

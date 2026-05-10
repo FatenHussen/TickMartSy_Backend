@@ -885,6 +885,7 @@ return [
     'cancel' => 'Cancel',
     'subscription_error_login' => 'You must be logged in first',
     'subscription_error_no_shop' => 'No shop is linked to your account',
+    'subscription_blocked_existing' => 'You already have a pending or active subscription.',
     'subscription_warning_active' => 'You already have an active subscription. Ends on :date',
     'subscription_success' => 'Subscription Successful',
     'subscription_success_body' => 'Subscribed to :package. Subscription ends on :date',

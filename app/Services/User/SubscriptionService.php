@@ -2,6 +2,7 @@
 
 namespace App\Services\User;
 
+use App\Exceptions\CustomExceptionWithMessage;
 use App\Models\Package;
 use App\Models\PaymentMethod;
 use App\Models\Subscription;
@@ -25,8 +26,15 @@ class SubscriptionService
                 ]);
             }
 
-            $isCash = $paymentMethod->code === 'cash';
-            $status = $isCash ? 'pending' : 'active';
+            $status = 'pending';
+
+            $existing = Subscription::where('user_id', $user->id)
+                ->whereIn('status', ['active', 'pending'])
+                ->first();
+
+            if (!$isRenew && $existing) {
+                throw new CustomExceptionWithMessage('custom.subscription_blocked_existing', 409);
+            }
 
             $current = Subscription::where('user_id', $user->id)
                 ->where('status', 'active')

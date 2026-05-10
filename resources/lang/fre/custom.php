@@ -31,6 +31,8 @@ return [
 
     'wrong_credential' => 'Invalid login credentials.',
 
+    'subscription_blocked_existing' => 'Vous avez deja un abonnement en attente ou actif.',
+
     'wrong_password' => 'The current password is incorrect.',
 
     'otp_invalid' => 'The verification code is invalid or expired.',
