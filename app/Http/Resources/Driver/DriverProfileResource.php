@@ -43,6 +43,33 @@ class DriverProfileResource extends JsonResource
                 ];
             })->values(),
 
+            'areas' => ($this->cities ?? collect())
+                ->flatMap(fn($city) => $city->areas ?? collect())
+                ->unique('id')
+                ->values()
+                ->map(function ($area) {
+                    return [
+                        'id' => $area->id,
+                        'name' => $area->name,
+                        'city_id' => $area->city_id,
+                        'city_name' => $area->city?->name,
+                    ];
+                }),
+
+            'shops' => ($this->shops ?? collect())->map(function ($shop) {
+                return [
+                    'id' => $shop->id,
+                    'name' => $shop->name,
+                ];
+            })->values(),
+
+            'vendors' => ($this->vendors ?? collect())->map(function ($vendor) {
+                return [
+                    'id' => $vendor->id,
+                    'name' => $vendor->name,
+                ];
+            })->values(),
+
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

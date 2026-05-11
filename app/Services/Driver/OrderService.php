@@ -11,6 +11,7 @@ use App\Models\Driver;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\Shared\DriverCoverageService;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -33,6 +34,21 @@ class OrderService
             ->when(
                 isset($data['assigned_by']),
                 fn($q) => $q->where('assigned_by', $data['assigned_by'])
+            )
+            ->latest()
+            ->get();
+    }
+
+    public function assignedOrders(array $data)
+    {
+        $driverId = auth('driver')->id();
+
+        return Order::query()
+            ->where('driver_id', $driverId)
+            ->where('assigned_by', 'admin')
+            ->when(
+                isset($data['status']),
+                fn($q) => $q->where('status', $data['status'])
             )
             ->latest()
             ->get();
@@ -251,7 +267,7 @@ class OrderService
             // ✅ تحقق أن الحالة صحيحة للتحويل
             $allowedStatuses = [
                 OrderStatus::PREPARING->value,
-                // OrderStatus::PENDING->value 
+                // OrderStatus::PENDING->value
             ];
 
             if (!in_array($order->status, $allowedStatuses)) {
@@ -506,9 +522,24 @@ class OrderService
     /* =======================
        📊 STATISTICS
     ======================= */
-    public function statistics()
+    public function statistics(array $filters = [])
     {
         $driver = auth('driver')->user();
+
+        $period = $filters['period'] ?? 'day';
+        [$start, $end] = $this->resolveStatisticsPeriod($period, $filters);
+
+        $filteredQuery = $driver->completedOrders()
+            ->whereBetween('delivered_at', [$start, $end]);
+
+        $filteredDelivered = (clone $filteredQuery)->count();
+        $deliverySum = (float) (clone $filteredQuery)->sum('delivery_price');
+        $filteredEarnings = $this->calculateDriverEarnings($driver, $deliverySum);
+        $filteredAvgSeconds = (clone $filteredQuery)
+            ->whereNotNull('out_delivery_at')
+            ->whereNotNull('delivered_at')
+            ->avg(DB::raw('TIMESTAMPDIFF(SECOND, out_delivery_at, delivered_at)'));
+        $filteredAvgMinutes = $filteredAvgSeconds ? round($filteredAvgSeconds / 60, 2) : 0.0;
 
         return [
             'average_rating' => $driver->average_rating,
@@ -520,7 +551,52 @@ class OrderService
             'today_earnings' => $driver->today_earnings,
             'average_delivery_time_minutes' => $driver->average_delivery_time,
             'cancellation_rate_percent' => $driver->cancellation_rate,
+            'filtered' => [
+                'period' => $period,
+                'start' => $start->toDateString(),
+                'end' => $end->toDateString(),
+                'delivered_orders' => $filteredDelivered,
+                'earnings' => $filteredEarnings,
+                'average_delivery_time_minutes' => $filteredAvgMinutes,
+            ],
         ];
+    }
+
+    private function resolveStatisticsPeriod(string $period, array $filters): array
+    {
+        $period = strtolower($period);
+
+        if ($period === 'month') {
+            $year = (int) ($filters['year'] ?? now()->year);
+            $month = (int) ($filters['month'] ?? now()->month);
+            $start = now()->setDate($year, $month, 1)->startOfDay();
+            $end = $start->copy()->endOfMonth();
+
+            return [$start, $end];
+        }
+
+        if ($period === 'custom') {
+            $startDate = $filters['start_date'] ?? now()->toDateString();
+            $endDate = $filters['end_date'] ?? $startDate;
+            $start = Carbon::parse($startDate)->startOfDay();
+            $end = Carbon::parse($endDate)->endOfDay();
+
+            return [$start, $end];
+        }
+
+        $date = $filters['date'] ?? now()->toDateString();
+        $start = Carbon::parse($date)->startOfDay();
+        $end = $start->copy()->endOfDay();
+
+        return [$start, $end];
+    }
+
+    private function calculateDriverEarnings(Driver $driver, float $deliverySum): float
+    {
+        $rate = (float) $driver->rate_per_order;
+        $multiplier = $rate > 0 ? $rate / 100 : 0.0;
+
+        return round($deliverySum * $multiplier, 2);
     }
     public function currentOrder()
     {

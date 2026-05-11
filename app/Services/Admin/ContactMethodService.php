@@ -16,7 +16,7 @@ class ContactMethodService extends BaseService
         $this->collection = AllResource::class;
         $this->singleImages = ['icon'];
         $this->pagination = true;
-        $this->searchableFields = ['id', 'type', 'value'];
-        $this->sortableFields = ['id', 'type', 'created_at'];
+        $this->searchableFields = ['id', 'key', 'type', 'value'];
+        $this->sortableFields = ['id', 'key', 'type', 'created_at'];
     }
 }

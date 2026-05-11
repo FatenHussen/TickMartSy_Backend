@@ -11,6 +11,7 @@ class AllResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'key' => $this->key,
             'type' => $this->type,
             'value' => $this->value,
             'icon' => $this->icon_url,

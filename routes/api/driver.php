@@ -2,8 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Driver\Auth\AuthController;
+use App\Http\Controllers\Driver\ContactMethodController;
 use App\Http\Controllers\Driver\DriverController;
 use App\Http\Controllers\Driver\DriverTrackingController;
+use App\Http\Controllers\Driver\LegalDocumentController;
 use App\Http\Controllers\Driver\ProfileController;
 use App\Http\Controllers\Driver\OrderController;
 
@@ -28,9 +30,18 @@ Route::prefix('driver')->group(
                         Route::post('/reset-password', [AuthController::class, 'resetPassword']);
                     });
                     });
-               
+
             }
         );
+
+        Route::prefix('legal-documents')->group(function () {
+            Route::get('/', [LegalDocumentController::class, 'index']);
+            Route::get('/{key}', [LegalDocumentController::class, 'show']);
+        });
+
+        Route::prefix('contact-methods')->group(function () {
+            Route::get('/', [ContactMethodController::class, 'index']);
+        });
 
         // Driver management routes
         Route::middleware(['auth:driver'])->group(function () {
@@ -68,6 +79,7 @@ Route::prefix('driver')->group(
         Route::prefix('orders')->group(function () {
             Route::middleware(['auth:driver'])->group(function () {
                 Route::get('/', [OrderController::class, 'orders']);
+                Route::get('/assigned', [OrderController::class, 'assignedOrders']);
                 Route::get('/show/{orderId}', [OrderController::class, 'order']);
                 Route::get('/to-assigned', [OrderController::class, 'ordersToAssigned']);
                 Route::get('statistics', [OrderController::class, 'statistics']);
