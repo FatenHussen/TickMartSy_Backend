@@ -382,13 +382,13 @@ Route::prefix('admin')->group(function () {
             ->middleware('admin.permission:serviceorder.update');
     });
     Route::middleware('auth:admin')->group(function () {
-    Route::prefix('points')->group(function () {
-        Route::post('add', [PointController::class, 'addPoints']);
-        Route::post('deduct', [PointController::class, 'deductPoints']);
-        Route::get('user-summary', [PointController::class, 'getUserSummary']);
-        Route::get('user-transactions', [PointController::class, 'getUserTransactions']);
+        Route::prefix('points')->group(function () {
+            Route::post('add', [PointController::class, 'addPoints']);
+            Route::post('deduct', [PointController::class, 'deductPoints']);
+            Route::get('user-summary', [PointController::class, 'getUserSummary']);
+            Route::get('user-transactions', [PointController::class, 'getUserTransactions']);
+        });
     });
-});
 });
 
 // Protected routes
