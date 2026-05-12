@@ -6,10 +6,10 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Resources\PageSection\OneResource;
 use App\Models\Page;
-use App\Models\Section;
-use App\Services\Base\Section\SectionApiService;
+use App\Models\PageSection;
 use App\Services\User\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class SectionController extends Controller
 {
@@ -29,6 +29,8 @@ class SectionController extends Controller
             ->filter(fn ($pageSection) => $this->matchesShowWhen($pageSection->show_when ?? [], $request))
             ->values();
 
+        $sections = $this->mergeBannerPageSections($sections);
+
         return $this->sendResponse(data: OneResource::collection($sections));
     }
 
@@ -45,5 +47,53 @@ class SectionController extends Controller
         }
 
         return true;
+    }
+
+    /**
+     * Collapse multiple manual banner page sections into one block (the first in order)
+     * with all banner section items concatenated.
+     */
+    private function mergeBannerPageSections(Collection $pageSections): Collection
+    {
+        $bannerKeys = [];
+        foreach ($pageSections as $key => $pageSection) {
+            if ($this->isBannerPageSection($pageSection)) {
+                $bannerKeys[] = $key;
+            }
+        }
+
+        if (count($bannerKeys) <= 1) {
+            return $pageSections;
+        }
+
+        $firstKey = $bannerKeys[0];
+        $firstPageSection = $pageSections[$firstKey];
+
+        $mergedItems = collect($bannerKeys)
+            ->flatMap(fn ($key) => $pageSections[$key]->section->sectionItems ?? collect())
+            ->values();
+
+        $sectionWithMergedItems = clone $firstPageSection->section;
+        $sectionWithMergedItems->setRelation('sectionItems', $mergedItems);
+        $firstPageSection->setRelation('section', $sectionWithMergedItems);
+
+        return $pageSections
+            ->filter(function ($pageSection, $key) use ($firstKey) {
+                if (!$this->isBannerPageSection($pageSection)) {
+                    return true;
+                }
+
+                return $key === $firstKey;
+            })
+            ->values();
+    }
+
+    private function isBannerPageSection(PageSection $pageSection): bool
+    {
+        $section = $pageSection->section;
+
+        return $section !== null
+            && $section->type === 'manual'
+            && ($section->manual_model ?? null) === 'banner';
     }
 }

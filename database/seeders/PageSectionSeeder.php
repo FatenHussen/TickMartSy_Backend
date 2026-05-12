@@ -172,15 +172,22 @@ class PageSectionSeeder extends Seeder
         | Manual Banners Section
         |--------------------------------------------------------------------------
         */
+        $banner3 = Banner::create([
+            'title' => ['en' => 'Banner for category 5 ', 'ar' => 'بنر خاص للتصنيف 5'],
+            'description' => ['en' => 'Banner for category 5', 'ar' => 'بنر خاص للتصنيف المختار'],
+            'image' => 'banner/image.png',
+            'link'  => 'https://tickmartsy.com/categories?category=13',
+            'expires_at' => now()->addMonth(2),
+        ]);
         $bannerSection2 = Section::Create(
             [
                 'type' => 'manual',
                 'manual_model' => 'banner',
-                'name' => ['en' => 'Banners 2', 'ar' => '2إعلانات']
+                'name' => ['en' => 'Banner for category ', 'ar' => 'بنر خاص للتصنيف المختار']
             ]
         );
 
-        foreach ([$banner2] as $index => $banner) {
+        foreach ([$banner3] as $index => $banner) {
             SectionItem::firstOrCreate([
                 'section_id' => $bannerSection2->id,
                 'item_type'  => Banner::class,
