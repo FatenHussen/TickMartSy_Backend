@@ -166,6 +166,37 @@ class PageSectionSeeder extends Seeder
             ]);
         }
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | Manual Banners Section
+        |--------------------------------------------------------------------------
+        */
+        $banner3 = Banner::create([
+            'title' => ['en' => 'Banner for category 5 ', 'ar' => 'بنر خاص للتصنيف 5'],
+            'description' => ['en' => 'Banner for category 5', 'ar' => 'بنر خاص للتصنيف المختار'],
+            'image' => 'banner/image.png',
+            'link'  => 'https://tickmartsy.com/categories?category=13',
+            'expires_at' => now()->addMonth(2),
+        ]);
+        $bannerSection2 = Section::Create(
+            [
+                'type' => 'manual',
+                'manual_model' => 'banner',
+                'name' => ['en' => 'Banner for category ', 'ar' => 'بنر خاص للتصنيف المختار']
+            ]
+        );
+
+        foreach ([$banner3] as $index => $banner) {
+            SectionItem::firstOrCreate([
+                'section_id' => $bannerSection2->id,
+                'item_type'  => Banner::class,
+                'item_id'    => $banner->id,
+            ], [
+                'order' => $index + 1
+            ]);
+        }
+
         /*
         |--------------------------------------------------------------------------
         | Pages Banner Placement
@@ -480,23 +511,37 @@ class PageSectionSeeder extends Seeder
             ]
         ]));
 
-        $productsPage = Page::firstOrCreate(
+        $productsPage = Page::updateOrCreate(
             ['slug' => 'products'],
-            ['title' => 'products']
+            [
+                'title' => 'products',
+                'filters' => [
+                    'category_id' => ['type' => 'select', 'url' => 'admin/categories'],
+                    'type' => [
+                        'type' => 'select',
+                        'items' => [
+                            'new',
+                            'trend',
+                            'top_rated',
+                            'offers',
+                            'latest_flash_sale',
+                            'recommended',
+                            'for_you',
+                            'search_based',
+                        ],
+                    ],
+                ],
+            ]
         );
 
-        // Example: this section appears in products page only when category_id=5 is selected.
         PageSection::create($fillPageSectionColors([
-            'name' => ['en' => 'Category 5 Products', 'ar' => 'منتجات التصنيف 5'],
+            'name' => ['en' => 'Banner for category 5', 'ar' => ' اعلان للتصنيف 5'],
             'page_id' => $productsPage->id,
-            'section_id' => $productsSection->id,
-            'display_type_id' => $productDisplayType->id,
-            'position' => 'after',
-            'variant' => VariantSection::Vertical->value,
-            'order' => 12,
-            'filters' => [
-                'type' => 'new',
-            ],
+            'section_id' => $bannerSection2->id,
+            'display_type_id' => $bannerDisplayType->id,
+            'position' => 'before',
+            'variant' =>  VariantSection::Horizontal->value,
+            'order' => 1,
             'show_when' => [
                 'category_id' => 5,
             ],

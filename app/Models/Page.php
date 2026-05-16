@@ -7,7 +7,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Page extends Model
 {
-    protected $fillable = ['title', 'slug'];
+    protected $casts = [
+        'filters' => 'array',
+    ];
+
+    protected $fillable = ['title', 'slug', 'filters'];
 
     public function pageSections()
     {
