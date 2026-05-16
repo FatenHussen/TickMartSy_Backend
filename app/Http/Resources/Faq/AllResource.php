@@ -18,7 +18,8 @@ class AllResource extends JsonResource
             'id' => $this->id,
             'question' => $this->question,
             'answer' => $this->answer,
-            'type' =>  $this->type
+            'type' => $this->type,
+            'is_active' => (bool) $this->is_active,
         ];
     }
 }
