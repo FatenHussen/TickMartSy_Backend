@@ -21,6 +21,7 @@ class OneResource extends JsonResource
             'type' => $this->type,
             'image' => $this->image_url,
             'position' => $this->position,
+            'is_active' => (bool) $this->is_active,
         ];
     }
 }
