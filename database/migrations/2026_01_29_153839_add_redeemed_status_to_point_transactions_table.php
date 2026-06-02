@@ -12,8 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Add 'redeemed' to the status enum
-        DB::statement("ALTER TABLE point_transactions MODIFY COLUMN status ENUM('pending', 'earned', 'expired', 'redeemed') DEFAULT 'earned'");
+        // SQLite does not support modifying ENUM columns this way.
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE point_transactions MODIFY COLUMN status ENUM('pending', 'earned', 'expired', 'redeemed') DEFAULT 'earned'");
+        }
     }
 
     /**
@@ -21,7 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Remove 'redeemed' from the status enum
-        DB::statement("ALTER TABLE point_transactions MODIFY COLUMN status ENUM('pending', 'earned', 'expired') DEFAULT 'earned'");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE point_transactions MODIFY COLUMN status ENUM('pending', 'earned', 'expired') DEFAULT 'earned'");
+        }
     }
 };

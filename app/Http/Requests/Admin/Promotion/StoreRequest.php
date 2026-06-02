@@ -61,6 +61,14 @@ class StoreRequest extends FormRequest
             ],
             'page_slugs' => ['nullable', 'array'],
             'page_slugs.*' => ['string', 'max:255', 'exists:pages,slug'],
+            'product_ids' => ['nullable', 'array'],
+            'product_ids.*' => ['integer', 'exists:products,id'],
+            'category_ids' => ['nullable', 'array'],
+            'category_ids.*' => ['integer', 'exists:categories,id'],
+            'shop_ids' => ['nullable', 'array'],
+            'shop_ids.*' => ['integer', 'exists:shops,id'],
+            'vendor_ids' => ['nullable', 'array'],
+            'vendor_ids.*' => ['integer', 'exists:vendors,id'],
         ];
     }
 }

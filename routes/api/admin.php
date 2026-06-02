@@ -301,6 +301,8 @@ Route::prefix('admin')->group(function () {
         Route::apiResource('faqs', FaqController::class)->middleware('crud.permission:faq');
         Route::apiResource('popup-campaigns', PopupCampaignController::class)->middleware('crud.permission:popupcampaign');
         Route::apiResource('badges', BadgeController::class)->middleware('crud.permission:badge');
+        Route::get('promotions/fields-for-type/{type}', [PromotionController::class, 'fieldsForType'])
+            ->middleware('crud.permission:promotion');
         Route::apiResource('promotions', PromotionController::class)->middleware('crud.permission:promotion');
         Route::apiResource('contact-methods', ContactMethodController::class);
         Route::apiResource('flash-sales', FlashSaleController::class)

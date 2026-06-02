@@ -17,7 +17,13 @@ class PromotionService extends BaseService
         $this->resource = OneResource::class;
         $this->collection = AllResource::class;
         $this->pagination = true;
-        $this->relations = ['pages'];
+        $this->relations = ['pages', 'products:id', 'categories:id', 'shops:id', 'vendors:id'];
+        $this->syncRelations = [
+            'products' => 'product_ids',
+            'categories' => 'category_ids',
+            'shops' => 'shop_ids',
+            'vendors' => 'vendor_ids',
+        ];
         $this->searchableFields = ['id', 'type'];
         $this->sortableFields = ['id', 'created_at', 'type'];
     }
@@ -35,7 +41,7 @@ class PromotionService extends BaseService
             $this->syncPagesForPromotion($object, $pageSlugs);
         }
 
-        $object->refresh()->load('pages');
+        $object->refresh()->load(['pages', 'products:id', 'categories:id', 'shops:id', 'vendors:id']);
 
         return new $this->resource($object);
     }
@@ -44,17 +50,17 @@ class PromotionService extends BaseService
     {
         $pageSlugs = $this->extractPageSlugs($data);
 
-        $resource = parent::update($id, $data);
+        parent::update($id, $data);
+
+        $model = Promotion::query()->findOrFail($id);
 
         if ($pageSlugs !== null) {
-            $model = Promotion::query()->findOrFail($id);
             $this->syncPagesForPromotion($model, $pageSlugs);
-            $model->refresh()->load('pages');
-
-            return new $this->resource($model);
         }
 
-        return $resource;
+        $model->refresh()->load(['pages', 'products:id', 'categories:id', 'shops:id', 'vendors:id']);
+
+        return new $this->resource($model);
     }
 
     /**
@@ -93,6 +99,7 @@ class PromotionService extends BaseService
     public function fieldsForType(string $type): array
     {
         $pages = ['page_slugs', 'position'];
+        $targeting = ['product_ids', 'category_ids', 'shop_ids', 'vendor_ids'];
 
         return match ($type) {
             'simple_discount' => [
@@ -104,6 +111,7 @@ class PromotionService extends BaseService
                 'starts_at',
                 'ends_at',
                 ...$pages,
+                ...$targeting,
             ],
             'spend_x_discount' => [
                 'name',
@@ -115,6 +123,7 @@ class PromotionService extends BaseService
                 'starts_at',
                 'ends_at',
                 ...$pages,
+                ...$targeting,
             ],
             'spend_x_get_gift' => [
                 'name',
@@ -125,6 +134,7 @@ class PromotionService extends BaseService
                 'starts_at',
                 'ends_at',
                 ...$pages,
+                ...$targeting,
             ],
             'spend_x_get_points' => [
                 'name',
@@ -135,6 +145,7 @@ class PromotionService extends BaseService
                 'starts_at',
                 'ends_at',
                 ...$pages,
+                ...$targeting,
             ],
             'free_shipping' => [
                 'name',
@@ -143,6 +154,7 @@ class PromotionService extends BaseService
                 'starts_at',
                 'ends_at',
                 ...$pages,
+                ...$targeting,
             ],
             'spend_x_get_free_shipping' => [
                 'name',
@@ -152,8 +164,9 @@ class PromotionService extends BaseService
                 'starts_at',
                 'ends_at',
                 ...$pages,
+                ...$targeting,
             ],
-            default => ['name', 'description', 'is_active', 'starts_at', 'ends_at', ...$pages],
+            default => ['name', 'description', 'is_active', 'starts_at', 'ends_at', ...$pages, ...$targeting],
         };
     }
 }

@@ -141,7 +141,8 @@ class OrderService extends BaseService
             $deliveryBeforeAutomaticFreeShipping = $deliveryPrice;
             $deliveryPrice = $promotionService->resolveAutomaticFreeShippingDeliveryPrice(
                 $deliveryPrice,
-                $subtotalBeforeDiscount
+                $subtotalBeforeDiscount,
+                $orderItems
             );
             $discounts['delivery_price'] = $deliveryPrice;
 
@@ -182,14 +183,16 @@ class OrderService extends BaseService
                 $order,
                 $user->id,
                 $subtotalBeforeDiscount,
-                false
+                false,
+                $orderItems
             );
 
             $automaticSnapshot = $promotionService->compileAutomaticPromotionsSnapshot(
                 $deliveryBeforeAutomaticFreeShipping,
                 $deliveryPrice,
                 $automaticPromotionsResult,
-                $subtotalBeforeDiscount
+                $subtotalBeforeDiscount,
+                $orderItems
             );
             if ($automaticSnapshot !== null) {
                 $order->update(['automatic_promotions_snapshot' => $automaticSnapshot]);
@@ -238,7 +241,8 @@ class OrderService extends BaseService
 
         $deliveryPrice = $promotionService->resolveAutomaticFreeShippingDeliveryPrice(
             $deliveryPrice,
-            $subtotalBeforeDiscount
+            $subtotalBeforeDiscount,
+            $orderItems
         );
         $discounts['delivery_price'] = $deliveryPrice;
 
@@ -261,7 +265,8 @@ class OrderService extends BaseService
             null,
             $user->id,
             $subtotalBeforeDiscount,
-            true
+            true,
+            $orderItems
         );
 
         $discounts['basketDiscount'] = $basketDiscount;
@@ -296,8 +301,9 @@ class OrderService extends BaseService
             'total' => $this->convertFormattedPrice($finalTotal),
             'available_promotions' => $availablePromotions,
             'automatic_promotions' => array_merge($automaticPromotions, [
-                'free_shipping_applies' => $promotionService->hasActiveAutomaticFreeShipping($subtotalBeforeDiscount),
+                'free_shipping_applies' => $promotionService->hasActiveAutomaticFreeShipping($subtotalBeforeDiscount, $orderItems),
             ]),
+            'promotion' => $discounts['promotion'] ?? null,
             'excluded_items' => $discounts['excluded_items'] ?? [],
             'orderItems' => $formattedItems
         ];
@@ -366,6 +372,7 @@ class OrderService extends BaseService
         $subscriptionDiscount = 0;
         $useSubscriptionFreeDelivery = false;
         $promotionDiscount = 0;
+        $promotionPreview = null;
         $freeDeliveryFromPoints = false;
         $totalDiscount = 0;
 
@@ -430,12 +437,13 @@ class OrderService extends BaseService
          * PROMOTION
          */
         if (!empty($data['promotion_id'])) {
-
-            $promotionDiscount = $promotionService->applyDiscountPromotion(
-                $order,
-                $data['promotion_id'],
-                $subtotal
+            $promotionPreview = $promotionService->evaluateDiscountPromotion(
+                (int) $data['promotion_id'],
+                $subtotal,
+                collect($orderItems)
             );
+
+            $promotionDiscount = (float) ($promotionPreview['discount'] ?? 0);
 
             $totalDiscount += $promotionDiscount;
         }
@@ -450,6 +458,7 @@ class OrderService extends BaseService
             'useSubscriptionFreeDelivery' => $useSubscriptionFreeDelivery,
             'free_delivery_from_points' => $freeDeliveryFromPoints,
             'coupon' => $couponModel,
+            'promotion' => $promotionPreview,
 
             'excluded_items' => $excludedItems, // <--- ترجع الآن بالـ preview
         ];

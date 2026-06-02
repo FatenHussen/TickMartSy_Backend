@@ -29,6 +29,10 @@ class OneResource extends JsonResource
             'gift_description' => $this->getTranslations('gift_description'),
             'reward_points' => $this->reward_points,
             'page_slugs' => $this->whenLoaded('pages', fn () => $this->pages->pluck('slug')->values()->all()),
+            'product_ids' => $this->whenLoaded('products', fn () => $this->products->pluck('id')->values()->all()),
+            'category_ids' => $this->whenLoaded('categories', fn () => $this->categories->pluck('id')->values()->all()),
+            'shop_ids' => $this->whenLoaded('shops', fn () => $this->shops->pluck('id')->values()->all()),
+            'vendor_ids' => $this->whenLoaded('vendors', fn () => $this->vendors->pluck('id')->values()->all()),
         ];
     }
 }

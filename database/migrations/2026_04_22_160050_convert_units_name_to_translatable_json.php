@@ -41,7 +41,11 @@ return new class extends Migration
         }
 
         try {
-            DB::statement('ALTER TABLE units DROP INDEX units_name_unique');
+            if (DB::getDriverName() === 'sqlite') {
+                DB::statement('DROP INDEX units_name_unique');
+            } else {
+                DB::statement('ALTER TABLE units DROP INDEX units_name_unique');
+            }
         } catch (\Throwable $e) {
             // Ignore when index does not exist.
         }
@@ -89,7 +93,11 @@ return new class extends Migration
         });
 
         try {
-            DB::statement('ALTER TABLE units ADD UNIQUE units_name_unique (name)');
+            if (DB::getDriverName() === 'sqlite') {
+                DB::statement('CREATE UNIQUE INDEX units_name_unique ON units (name)');
+            } else {
+                DB::statement('ALTER TABLE units ADD UNIQUE units_name_unique (name)');
+            }
         } catch (\Throwable $e) {
             // Ignore when duplicate legacy names exist.
         }

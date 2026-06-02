@@ -50,6 +50,36 @@ class Promotion extends Model
         return $this->belongsToMany(Page::class)->withTimestamps();
     }
 
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'promotion_products');
+    }
+
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'promotion_categories');
+    }
+
+    public function shops(): BelongsToMany
+    {
+        return $this->belongsToMany(Shop::class, 'promotion_shops');
+    }
+
+    public function vendors(): BelongsToMany
+    {
+        return $this->belongsToMany(Vendor::class, 'promotion_vendors');
+    }
+
+    public function hasTargeting(): bool
+    {
+        $this->loadMissing(['products:id', 'categories:id', 'shops:id', 'vendors:id']);
+
+        return $this->products->isNotEmpty()
+            || $this->categories->isNotEmpty()
+            || $this->shops->isNotEmpty()
+            || $this->vendors->isNotEmpty();
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true)
