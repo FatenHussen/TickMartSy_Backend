@@ -4,11 +4,15 @@ namespace App\Services\Admin;
 
 use App\Http\Resources\PageSection\AdminOneResource;
 use App\Http\Resources\PageSection\AllResource;
+use App\Http\Resources\PageSection\OneResource;
 use App\Models\DisplayType;
 use App\Models\Page;
 use App\Models\PageSection;
 use App\Models\Section;
+use App\Services\Base\PageSection\PageSectionPresentationService;
 use App\Services\BaseService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class PageSectionService extends BaseService
@@ -29,6 +33,58 @@ class PageSectionService extends BaseService
     public function displayTypes($manual_model)
     {
         return DisplayType::where('manual_model', $manual_model)->select('id', 'image')->get();
+    }
+
+    /**
+     * Preview page sections exactly as the user/mobile API renders them.
+     */
+    public function previewForPage(int $pageId, Request $request): array
+    {
+        $page = Page::query()->findOrFail($pageId);
+
+        $sections = app(PageSectionPresentationService::class)
+            ->getSectionsForUserView($page, $request);
+
+        return [
+            'page' => [
+                'id' => $page->id,
+                'slug' => $page->slug,
+                'title' => $page->title,
+            ],
+            'sections' => OneResource::collection($sections),
+        ];
+    }
+
+    public function reorderForPage(int $pageId, array $sections): int
+    {
+        return DB::transaction(function () use ($pageId, $sections) {
+            $ids = array_column($sections, 'id');
+
+            $existingIds = PageSection::query()
+                ->where('page_id', $pageId)
+                ->whereIn('id', $ids)
+                ->pluck('id')
+                ->all();
+
+            if (count($existingIds) !== count($ids)) {
+                throw ValidationException::withMessages([
+                    'sections' => __('Some page sections do not belong to this page.'),
+                ]);
+            }
+
+            $updated = 0;
+            foreach ($sections as $item) {
+                $updated += PageSection::query()
+                    ->where('id', $item['id'])
+                    ->where('page_id', $pageId)
+                    ->update([
+                        'order' => $item['order'],
+                        'position' => $item['position'],
+                    ]);
+            }
+
+            return $updated;
+        });
     }
 
     public function create($data)

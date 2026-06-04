@@ -294,6 +294,10 @@ Route::prefix('admin')->group(function () {
         Route::apiResource('shop-vendor-services', ShopVendorServiceCrudController::class)
             ->middleware('crud.permission:shopvendorservice');
         Route::apiResource('sections', SectionCrudController::class)->middleware('crud.permission:section');
+        Route::get('page-sections/pages/{page}/preview', [PageSectionCrudController::class, 'preview'])
+            ->middleware('admin.permission:pagesection.view');
+        Route::post('page-sections/pages/{page}/reorder', [PageSectionCrudController::class, 'reorder'])
+            ->middleware('admin.permission:pagesection.update');
         Route::apiResource('page-sections', PageSectionCrudController::class)->middleware('crud.permission:pagesection');
         Route::apiResource('coupons', CouponCrudController::class)->middleware('crud.permission:coupon');
         Route::apiResource('complaints', ComplaintController::class)->middleware('crud.permission:complaint');
