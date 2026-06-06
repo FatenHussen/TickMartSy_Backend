@@ -50,6 +50,7 @@ class PageSectionService extends BaseService
                 'id' => $page->id,
                 'slug' => $page->slug,
                 'title' => $page->title,
+                'filters' => $page->filters,
             ],
             'sections' => OneResource::collection($sections),
         ];
