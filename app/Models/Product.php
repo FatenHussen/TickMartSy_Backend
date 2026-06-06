@@ -48,6 +48,7 @@ class Product extends Model implements Sectionable
         'rejection_reason',
         'is_visible',
         'is_active',
+        'is_restaurant',
         'thumbnail',
         'seo_title',
         'seo_description',
@@ -72,6 +73,9 @@ class Product extends Model implements Sectionable
         'approval_status' => \App\Enums\ProductApprovalStatus::class,
         'is_visible' => 'boolean',
         'is_active' => 'boolean',
+        'price' => 'float',
+        'cost_price' => 'float',
+        'is_restaurant' => 'boolean',
         'flash_sale_id' => 'integer',
         'unit_id' => 'integer',
         'expiry_date' => 'date',
@@ -131,6 +135,8 @@ class Product extends Model implements Sectionable
             $isRestaurant = Category::query()
                 ->whereKey($product->category_id)
                 ->value('is_restaurant');
+
+            $product->is_restaurant = (bool) $isRestaurant;
 
             if (!$isRestaurant) {
                 return;

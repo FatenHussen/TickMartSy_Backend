@@ -69,6 +69,9 @@ class UpdateRequest extends FormRequest
             'service_ids'          => 'nullable|array',
             'service_ids.*'        => 'exists:services,id',
 
+            'category_ids'          => 'nullable|array',
+            'category_ids.*'        => 'integer|exists:categories,id',
+
             'badges'          => 'nullable|array',
             'badges.*' => 'integer|exists:badges,id',
             'coupon_ids'      => 'nullable|array',

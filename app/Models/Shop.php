@@ -230,6 +230,11 @@ class Shop extends Model implements Sectionable
         return $this->belongsToMany(Service::class, 'shop_service');
     }
 
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'category_shop');
+    }
+
     public function coupons()
     {
         return $this->morphToMany(Coupon::class, 'couponable');
@@ -308,6 +313,17 @@ class Shop extends Model implements Sectionable
      */
     public function getShopCategories()
     {
+        if ($this->relationLoaded('categories')) {
+            return $this->categories
+                ->map(function ($category) {
+                    return [
+                        'id' => $category->id,
+                        'name' => $category->name,
+                    ];
+                })
+                ->values();
+        }
+
         return Category::whereHas('products.variants.shopVariants', function ($query) {
             $query->where('shop_id', $this->id);
         })

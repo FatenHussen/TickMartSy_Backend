@@ -39,6 +39,7 @@ class AdminOneResource extends JsonResource
             'logo_url'                => $this->logo_url,
             'area'                 =>  AreaOneResource::make($this->area),
             'services'              => $this->whenLoaded('services', fn() => $this->services),
+            'categories'           => $this->getShopCategories(),
             'coupons'               => $this->whenLoaded('coupons', fn() => $this->coupons->map(function ($coupon) {
                 return [
                     'id' => $coupon->id,

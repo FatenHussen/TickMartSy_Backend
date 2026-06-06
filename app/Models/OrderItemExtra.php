@@ -15,7 +15,7 @@ class OrderItemExtra extends Model
     ];
 
     protected $casts = [
-        'price' => 'integer',
+        'price' => 'float',
         'quantity' => 'integer',
     ];
 

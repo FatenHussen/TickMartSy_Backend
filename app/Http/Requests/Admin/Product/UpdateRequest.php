@@ -143,7 +143,7 @@ class UpdateRequest extends FormRequest
             'model'                 => 'nullable|string|unique:products,model,' . $productId,
             'country_id'            => 'nullable|exists:countries,id',
             'sale_country_id'       => 'nullable|exists:sale_countries,id',
-            'price'                 => 'nullable|integer|min:0',
+            'price'                 => 'nullable|numeric|min:0',
             'cost_price'            => 'nullable|numeric|min:0',
             'discount'              => 'nullable|integer|min:0|max:100',
             'discount_type'         => 'nullable|in:none,percentage,fixed',

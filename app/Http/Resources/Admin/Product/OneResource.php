@@ -38,6 +38,7 @@ class OneResource extends JsonResource
             'max_purchase_quantity' => $this->max_purchase_quantity,
             'is_visible' => $this->is_visible,
             'is_active' => (bool) $this->is_active,
+            'is_restaurant' => (bool) ($this->is_restaurant ?? $this->category?->is_restaurant ?? false),
 
             'sku' => $this->sku,
             'model' => $this->model,

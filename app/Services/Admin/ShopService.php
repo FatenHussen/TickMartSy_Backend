@@ -23,13 +23,14 @@ class ShopService extends BaseService
         $this->collection = AllResource::class;
         $this->searchableFields = ['name', 'description'];
         $this->sortableFields   = ['id'];
-        $this->relations = ['vendor', 'services', 'area', 'coupons'];
+        $this->relations = ['vendor', 'services', 'area', 'coupons', 'categories'];
         $this->pagination = true;
 
         $this->syncRelations = [
             'services'   => 'service_ids',
             'badges'   => 'badges',
             'coupons'  => 'coupon_ids',
+            'categories' => 'category_ids',
         ];
 
         $this->mediaCollections = [

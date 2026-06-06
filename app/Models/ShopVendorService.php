@@ -22,7 +22,7 @@ class ShopVendorService extends Model
     protected $casts = [
         'extra_details' => 'array',
         'schedule'      => 'array',
-        'price'         => 'decimal:2',
+        'price'         => 'float',
         'is_active'     => 'boolean',
     ];
 

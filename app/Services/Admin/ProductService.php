@@ -104,8 +104,15 @@ class ProductService extends BaseService
                 ?? $unit?->getTranslation('name', 'ar', false);
         }
 
-        $resource = parent::create($data);
-        return $resource;
+        $object = $this->model::create($data);
+        $this->handleSingleImages($object, $data);
+        $this->handleRelations($object, $data);
+        $this->handleMedia($object, $data);
+        $this->ensureRestaurantVariant($object);
+
+        $object->refresh();
+
+        return new $this->resource($object);
     }
 
     public function update($id, array $data)
@@ -117,8 +124,51 @@ class ProductService extends BaseService
                 ?? $unit?->getTranslation('name', 'ar', false);
         }
 
-        $resource = parent::update($id, $data);
-        return $resource;
+        DB::beginTransaction();
+
+        $object = $this->applyAdminCityRestriction($this->model::query())->findOrFail($id);
+        if (property_exists($object, 'translatable')) {
+            foreach ($object->translatable as $field) {
+                if (isset($data[$field])) {
+                    $incomingTranslations = is_array($data[$field]) ? $data[$field] : [];
+                    $existingTranslations = method_exists($object, 'getTranslations')
+                        ? $object->getTranslations($field)
+                        : [];
+
+                    $object->setTranslations($field, array_merge($existingTranslations, $incomingTranslations));
+                    unset($data[$field]);
+                }
+            }
+        }
+
+        $this->handleSingleImages($object, $data);
+
+        $object->update($data);
+        $this->handleRelations($object, $data);
+        $this->handleMedia($object, $data);
+        $this->ensureRestaurantVariant($object);
+
+        $object->refresh();
+
+        DB::commit();
+
+        return new $this->resource($object);
+    }
+
+    private function ensureRestaurantVariant(Product $product): void
+    {
+        if (!$product->is_restaurant) {
+            return;
+        }
+
+        if ($product->variants()->exists()) {
+            return;
+        }
+
+        $product->variants()->create([
+            'attributes_values_ids' => [],
+            'is_active' => true,
+        ]);
     }
 
     public function queryBuilder($query, $filters = [], $config = [])
