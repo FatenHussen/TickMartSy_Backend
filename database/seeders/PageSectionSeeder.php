@@ -136,6 +136,7 @@ class PageSectionSeeder extends Seeder
             ['title' => 'baskets', 'slug' => 'baskets'],
             ['title' => 'basket details', 'slug' => 'basket_details'],
             ['title' => 'products', 'slug' => 'products'],
+            ['title' => 'categories', 'slug' => 'categories'],
             ['title' => 'product details', 'slug' => 'product_details'],
             ['title' => 'shops', 'slug' => 'shops'],
             ['title' => 'shop_details', 'slug' => 'shop_details'],
@@ -205,6 +206,8 @@ class PageSectionSeeder extends Seeder
         $bannerPositions = [
             'store-details'   => 'before',
             'category'        => 'before',
+            'categories'      => 'before',
+            'products'        => 'before',
             'brand-products'  => 'after',
             'cooking-recipes' => 'before',
             'subscription-packages' => 'after',
@@ -517,6 +520,9 @@ class PageSectionSeeder extends Seeder
                 'title' => 'products',
                 'filters' => [
                     'category_id' => ['type' => 'select', 'url' => 'admin/categories'],
+                    'shop_id' => ['type' => 'select', 'url' => 'admin/shops'],
+                    'brand_id' => ['type' => 'select', 'url' => 'admin/brands'],
+
                     'type' => [
                         'type' => 'select',
                         'items' => [
@@ -541,6 +547,42 @@ class PageSectionSeeder extends Seeder
             'display_type_id' => $bannerDisplayType->id,
             'position' => 'before',
             'variant' =>  VariantSection::Horizontal->value,
+            'order' => 1,
+            'show_when' => [
+                'category_id' => 5,
+            ],
+        ]));
+
+        $categoriesPage = Page::updateOrCreate(
+            ['slug' => 'categories'],
+            [
+                'title' => 'categories',
+                'filters' => [
+                    'category_id' => ['type' => 'select', 'url' => 'admin/categories'],
+                    'type' => [
+                        'type' => 'select',
+                        'items' => [
+                            'new',
+                            'trend',
+                            'top_rated',
+                            'offers',
+                            'latest_flash_sale',
+                            'recommended',
+                            'for_you',
+                            'search_based',
+                        ],
+                    ],
+                ],
+            ]
+        );
+
+        PageSection::create($fillPageSectionColors([
+            'name' => ['en' => 'Banner for category 5', 'ar' => ' اعلان للتصنيف 5'],
+            'page_id' => $categoriesPage->id,
+            'section_id' => $bannerSection2->id,
+            'display_type_id' => $bannerDisplayType->id,
+            'position' => 'before',
+            'variant' => VariantSection::Horizontal->value,
             'order' => 1,
             'show_when' => [
                 'category_id' => 5,
