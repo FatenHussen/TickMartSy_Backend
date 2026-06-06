@@ -19,6 +19,7 @@ class ShopService extends BaseService
         'vendor',
         'badges',
         'services',
+        'categories',
         'productVariants.productVariant.product',
         'media',
         'favorites'
@@ -116,14 +117,22 @@ class ShopService extends BaseService
         $brandId = $this->normalizeFilterId($filters['brand_id'] ?? null);
 
         if ($categoryId !== null || $brandId !== null) {
-            $query->whereHas('productVariants.productVariant.product', function ($q) use ($categoryId, $brandId) {
+            $query->where(function (Builder $q) use ($categoryId, $brandId) {
                 if ($categoryId !== null) {
-                    $q->where('category_id', $categoryId);
+                    $q->whereHas('categories', function (Builder $catQuery) use ($categoryId) {
+                        $catQuery->where('categories.id', $categoryId);
+                    });
                 }
 
-                if ($brandId !== null) {
-                    $q->where('brand_id', $brandId);
-                }
+                $q->orWhereHas('productVariants.productVariant.product', function (Builder $productQuery) use ($categoryId, $brandId) {
+                    if ($categoryId !== null) {
+                        $productQuery->where('category_id', $categoryId);
+                    }
+
+                    if ($brandId !== null) {
+                        $productQuery->where('brand_id', $brandId);
+                    }
+                });
             });
         }
 

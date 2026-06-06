@@ -36,7 +36,7 @@ class VendorPackage extends Model
     ];
 
     protected $casts = [
-        'price' => 'decimal:2',
+        'price' => 'float',
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
         'has_premium_badge' => 'boolean',
@@ -48,7 +48,7 @@ class VendorPackage extends Model
         'has_vendor_delivery' => 'boolean',
         'activation_fee_waived' => 'boolean',
         'commission_rate' => 'decimal:2',
-        'commission_per_order' => 'decimal:2',
+        'commission_per_order' => 'float',
     ];
 
     public function subscriptions()

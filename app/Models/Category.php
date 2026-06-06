@@ -98,6 +98,11 @@ class Category extends Model implements Sectionable
         return $this->hasMany(Product::class);
     }
 
+    public function shops()
+    {
+        return $this->belongsToMany(Shop::class, 'category_shop');
+    }
+
     public function baskets()
     {
         return $this->hasMany(Basket::class);

@@ -61,6 +61,9 @@ class StoreRequest extends FormRequest
             'service_ids'          => 'nullable|array',
             'service_ids.*.id'  => 'required|integer|exists:services,id',
 
+            'category_ids'          => 'nullable|array',
+            'category_ids.*'        => 'integer|exists:categories,id',
+
 
             'badges'          => 'nullable|array',
             'badges.*' => 'integer|exists:badges,id',

@@ -35,6 +35,7 @@ class OneResource extends JsonResource
             'max_purchase_quantity' => $this->max_purchase_quantity,
             'is_visible' => $this->is_visible,
             'discount_type' => $this->discount_type,
+            'is_restaurant' => (bool) ($this->is_restaurant ?? $this->category?->is_restaurant ?? false),
 
             'sku' => $this->sku,
             'model' => $this->model,
@@ -51,6 +52,7 @@ class OneResource extends JsonResource
             'category' => [
                 'id' => $this->category?->id,
                 'name' => $this->category?->name,
+                'is_restaurant' => (bool) ($this->category?->is_restaurant ?? false),
             ],
             'attributes_map' => new AttributeMapResource($this->variants),
 

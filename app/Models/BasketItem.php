@@ -28,7 +28,7 @@ class BasketItem extends Model
     protected $casts = [
         'is_required' => 'boolean',
         'is_extra' => 'boolean',
-        'price'       => 'decimal:2',
+        'price'       => 'float',
         'shop_product_variant_ids' => 'array',
 
     ];

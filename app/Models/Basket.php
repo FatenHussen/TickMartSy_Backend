@@ -50,6 +50,9 @@ class Basket extends Model implements Sectionable
         'offer_ends_at' => 'date',
         'is_schedule' => 'boolean',
         'is_active' => 'boolean',
+        'price' => 'float',
+        'discount' => 'float',
+        'delivery_price' => 'float',
     ];
 
     public function category()
