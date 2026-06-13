@@ -38,6 +38,7 @@ class PopupCampaignResource extends JsonResource
             'shop_ids' => $this->whenLoaded('shops', fn () => $this->shops->pluck('id')->values()->all()),
             'recipe_ids' => $this->whenLoaded('recipes', fn () => $this->recipes->pluck('id')->values()->all()),
             'basket_ids' => $this->whenLoaded('baskets', fn () => $this->baskets->pluck('id')->values()->all()),
+            'promotion_ids' => $this->whenLoaded('promotions', fn () => $this->promotions->pluck('id')->values()->all()),
             'created_at' => $this->created_at?->toIsoString(),
             'updated_at' => $this->updated_at?->toIsoString(),
         ];

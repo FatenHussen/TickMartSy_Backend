@@ -98,4 +98,14 @@ class PaymentMethod extends Model
     {
         return $this->id === static::resolvedDefaultId();
     }
+
+    public function isCash(): bool
+    {
+        return $this->code === 'cash';
+    }
+
+    public function isPaidOnPlacement(): bool
+    {
+        return !$this->isCash();
+    }
 }

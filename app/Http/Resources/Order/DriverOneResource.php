@@ -59,6 +59,8 @@ class DriverOneResource extends JsonResource
             'user' => AllResource::make($this->user),
             'driver' => DriverAllResource::make($this->driver),
             'user_address' => AddressOneResource::make($this->address),
+            'payment_method_id' => $this->payment_method_id,
+            'is_paid' => (bool) $this->is_paid,
             'payment_method' => $this->paymentMethod ? [
                 'id' => $this->paymentMethod->id,
                 'name' => $this->paymentMethod->name,

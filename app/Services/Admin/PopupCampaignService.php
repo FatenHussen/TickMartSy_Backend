@@ -19,13 +19,14 @@ class PopupCampaignService extends BaseService
         $this->sortableFields = ['priority', 'created_at', 'updated_at', 'status'];
         $this->searchableFields = ['title', 'headline', 'description'];
         $this->singleImages = ['media_path'];
-        $this->relations = ['products', 'shops', 'recipes', 'baskets', 'pages'];
+        $this->relations = ['products', 'shops', 'recipes', 'baskets', 'pages', 'promotions'];
     }
 
     public function create($data)
     {
         $attachables = $this->extractAttachablesFromPayload($data);
         $pageSlugs = $this->extractShowOnPagesSlugs($data);
+        $promotionIds = $this->extractPromotionIds($data);
         $data = $this->withFixedFrequency($data);
 
         $object = $this->model::create($data);
@@ -38,7 +39,11 @@ class PopupCampaignService extends BaseService
             $this->syncPagesForPopup($object, $pageSlugs);
         }
 
-        $object->refresh()->load('pages');
+        if ($promotionIds !== null) {
+            $this->syncPromotionsForPopup($object, $promotionIds);
+        }
+
+        $object->refresh()->load(['pages', 'promotions']);
 
         return new $this->resource($object);
     }
@@ -47,6 +52,7 @@ class PopupCampaignService extends BaseService
     {
         $attachables = $this->extractAttachablesFromPayload($data);
         $pageSlugs = $this->extractShowOnPagesSlugs($data);
+        $promotionIds = $this->extractPromotionIds($data);
         $data = $this->withFixedFrequency($data);
         parent::update($id, $data);
         $model = PopupCampaign::query()->findOrFail($id);
@@ -56,7 +62,11 @@ class PopupCampaignService extends BaseService
             $this->syncPagesForPopup($model, $pageSlugs);
         }
 
-        return new $this->resource($model->refresh()->load('pages'));
+        if ($promotionIds !== null) {
+            $this->syncPromotionsForPopup($model, $promotionIds);
+        }
+
+        return new $this->resource($model->refresh()->load(['pages', 'promotions']));
     }
 
     protected function withFixedFrequency(array $data): array
@@ -107,6 +117,28 @@ class PopupCampaignService extends BaseService
     }
 
     /**
+     * @return list<int>|null null when the client omitted `promotion_ids`
+     */
+    protected function extractPromotionIds(array &$data): ?array
+    {
+        if (!array_key_exists('promotion_ids', $data)) {
+            return null;
+        }
+
+        $raw = $data['promotion_ids'];
+        unset($data['promotion_ids']);
+
+        if (!is_array($raw)) {
+            return [];
+        }
+
+        return array_values(array_unique(array_filter(array_map(
+            'intval',
+            $raw
+        ), static fn (int $id) => $id > 0)));
+    }
+
+    /**
      * @param  list<string>  $slugs
      */
     protected function syncPagesForPopup(PopupCampaign $campaign, array $slugs): void
@@ -119,6 +151,14 @@ class PopupCampaignService extends BaseService
 
         $ids = Page::query()->whereIn('slug', $slugs)->pluck('id')->all();
         $campaign->pages()->sync($ids);
+    }
+
+    /**
+     * @param  list<int>  $ids
+     */
+    protected function syncPromotionsForPopup(PopupCampaign $campaign, array $ids): void
+    {
+        $campaign->promotions()->sync($ids);
     }
 
     protected function performAttachableSync(PopupCampaign $campaign, array $instructions): void

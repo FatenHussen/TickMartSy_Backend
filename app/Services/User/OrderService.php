@@ -324,17 +324,20 @@ class OrderService extends BaseService
 
     private function createOrder(User $user, $address, array $data): Order
     {
+        $paymentMethod = $this->resolvePaymentMethod($data);
+
         return Order::create([
             'user_id' => $user->id,
             'user_address_id' => $address->id,
             'cart_type' => $data['cart_type'] ?? CartType::DEFAULT->value,
             'is_instant_delivery' => $data['is_instant_delivery'] ?? false,
             'status' => OrderStatus::PENDING->value,
-            'payment_method_id' => $this->resolvePaymentMethodId($data),
+            'payment_method_id' => $paymentMethod->id,
+            'is_paid' => $paymentMethod->isPaidOnPlacement(),
         ]);
     }
 
-    private function resolvePaymentMethodId(array $data): int
+    private function resolvePaymentMethod(array $data): PaymentMethod
     {
         if (!empty($data['payment_method_id'])) {
             $paymentMethod = PaymentMethod::query()
@@ -345,7 +348,7 @@ class OrderService extends BaseService
                 throw new CustomExceptionWithMessage('طريقة الدفع المختارة غير متاحة حالياً', 422);
             }
 
-            return (int) $paymentMethod->id;
+            return $paymentMethod;
         }
 
         $defaultPaymentMethod = PaymentMethod::resolveDefault();
@@ -354,7 +357,7 @@ class OrderService extends BaseService
             throw new CustomExceptionWithMessage('لا توجد بوابة دفع افتراضية مفعلة في النظام', 422);
         }
 
-        return (int) $defaultPaymentMethod->id;
+        return $defaultPaymentMethod;
     }
 
     private function applyExternalDiscounts(
@@ -1080,7 +1083,7 @@ class OrderService extends BaseService
     {
         $user = auth('user')->user();
 
-        $originalOrder = Order::with('items')->findOrFail($orderId);
+        $originalOrder = Order::with(['items', 'paymentMethod'])->findOrFail($orderId);
 
         // Ensure the order belongs to the user
         if ($originalOrder->user_id !== $user->id) {
@@ -1093,6 +1096,7 @@ class OrderService extends BaseService
                 'user_id' => $user->id,
                 'user_address_id' => $originalOrder->user_address_id,
                 'payment_method_id' => $originalOrder->payment_method_id,
+                'is_paid' => $originalOrder->paymentMethod?->isPaidOnPlacement() ?? false,
                 'basket_id' => $originalOrder->basket_id,
                 'basket_schedule_id' => $originalOrder->basket_schedule_id,
                 'is_instant_delivery' => $originalOrder->is_instant_delivery,

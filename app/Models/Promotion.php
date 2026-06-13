@@ -50,6 +50,11 @@ class Promotion extends Model
         return $this->belongsToMany(Page::class)->withTimestamps();
     }
 
+    public function popupCampaigns(): BelongsToMany
+    {
+        return $this->belongsToMany(PopupCampaign::class)->withTimestamps();
+    }
+
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'promotion_products');

@@ -66,6 +66,8 @@ class PopupCampaignRequest extends FormRequest
             'recipe_ids.*' => ['integer', 'exists:recipes,id'],
             'basket_ids' => ['sometimes', 'array'],
             'basket_ids.*' => ['integer', 'exists:baskets,id'],
+            'promotion_ids' => ['sometimes', 'array'],
+            'promotion_ids.*' => ['integer', 'exists:promotions,id'],
         ];
     }
 

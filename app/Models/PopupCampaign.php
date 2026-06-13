@@ -175,6 +175,11 @@ class PopupCampaign extends Model
         return $this->belongsToMany(Page::class)->withTimestamps();
     }
 
+    public function promotions(): BelongsToMany
+    {
+        return $this->belongsToMany(Promotion::class)->withTimestamps();
+    }
+
     public function attachableLinks(): HasMany
     {
         return $this->hasMany(PopupCampaignAttachable::class);
@@ -204,6 +209,7 @@ class PopupCampaign extends Model
     {
         $this->loadMissing([
             'pages',
+            'promotions' => fn ($q) => $q->active(),
             'products' => fn ($q) => $q->with([
                 'category',
                 'vendor',

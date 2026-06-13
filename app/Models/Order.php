@@ -20,6 +20,7 @@ class Order extends Model
         'driver_id',
         'user_address_id',
         'payment_method_id',
+        'is_paid',
         'basket_id',
         'basket_schedule_id',
         'is_instant_delivery',
@@ -58,6 +59,7 @@ class Order extends Model
     protected $casts = [
         'automatic_promotions_snapshot' => 'array',
         'is_instant_delivery' => 'boolean',
+        'is_paid' => 'boolean',
         'start_todelivery' => 'boolean',
         'subscription_free_delivery' => 'boolean',
         'pause_at' => 'datetime',
@@ -222,6 +224,17 @@ class Order extends Model
 
                 if ($field && is_null($order->$field)) {
                     $order->$field = now();
+                }
+
+                if (
+                    $order->status === OrderStatus::DELIVERED->value
+                    && !$order->is_paid
+                ) {
+                    $order->loadMissing('paymentMethod');
+
+                    if ($order->paymentMethod?->isCash()) {
+                        $order->is_paid = true;
+                    }
                 }
             }
         });

@@ -79,6 +79,8 @@ class PopupCampaignSeeder extends Seeder
                 $basketId
             );
 
+            $campaign->promotions()->sync([$promotion->id]);
+
             $this->syncPagesForCampaign($campaign, $display['show_on_pages'] ?? null);
         }
 
