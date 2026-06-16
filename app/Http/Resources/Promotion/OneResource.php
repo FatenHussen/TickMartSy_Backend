@@ -33,6 +33,10 @@ class OneResource extends JsonResource
             'category_ids' => $this->whenLoaded('categories', fn () => $this->categories->pluck('id')->values()->all()),
             'shop_ids' => $this->whenLoaded('shops', fn () => $this->shops->pluck('id')->values()->all()),
             'vendor_ids' => $this->whenLoaded('vendors', fn () => $this->vendors->pluck('id')->values()->all()),
+            'shop_vendor_service_ids' => $this->whenLoaded(
+                'shopVendorServices',
+                fn () => $this->shopVendorServices->pluck('id')->values()->all()
+            ),
         ];
     }
 }

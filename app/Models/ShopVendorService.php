@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class ShopVendorService extends Model
 {
@@ -55,5 +57,15 @@ class ShopVendorService extends Model
     public function serviceOrders()
     {
         return $this->hasMany(ServiceOrder::class);
+    }
+
+    public function promotions(): BelongsToMany
+    {
+        return $this->belongsToMany(Promotion::class, 'promotion_shop_vendor_services');
+    }
+
+    public function popupCampaigns(): MorphToMany
+    {
+        return $this->morphToMany(PopupCampaign::class, 'attachable', 'popup_campaign_attachables');
     }
 }

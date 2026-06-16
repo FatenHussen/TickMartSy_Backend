@@ -75,14 +75,26 @@ class Promotion extends Model
         return $this->belongsToMany(Vendor::class, 'promotion_vendors');
     }
 
+    public function shopVendorServices(): BelongsToMany
+    {
+        return $this->belongsToMany(ShopVendorService::class, 'promotion_shop_vendor_services');
+    }
+
     public function hasTargeting(): bool
     {
-        $this->loadMissing(['products:id', 'categories:id', 'shops:id', 'vendors:id']);
+        $this->loadMissing([
+            'products:id',
+            'categories:id',
+            'shops:id',
+            'vendors:id',
+            'shopVendorServices:id',
+        ]);
 
         return $this->products->isNotEmpty()
             || $this->categories->isNotEmpty()
             || $this->shops->isNotEmpty()
-            || $this->vendors->isNotEmpty();
+            || $this->vendors->isNotEmpty()
+            || $this->shopVendorServices->isNotEmpty();
     }
 
     public function scopeActive($query)

@@ -205,6 +205,11 @@ class PopupCampaign extends Model
         return $this->morphedByMany(Basket::class, 'attachable', 'popup_campaign_attachables');
     }
 
+    public function shopVendorServices(): MorphToMany
+    {
+        return $this->morphedByMany(ShopVendorService::class, 'attachable', 'popup_campaign_attachables');
+    }
+
     public function loadAttachablesForUserApi(): self
     {
         $this->loadMissing([
@@ -228,6 +233,7 @@ class PopupCampaign extends Model
                 'basketImages',
                 'defaultSchedule',
             ]),
+            'shopVendorServices' => fn ($q) => $q->with(['shop', 'vendorService.type']),
         ]);
 
         return $this;
@@ -251,6 +257,7 @@ class PopupCampaign extends Model
             $this->morphPair(Shop::class, self::positiveIntOrNull($request->query('shop_id'))),
             $this->morphPair(Recipe::class, self::positiveIntOrNull($request->query('recipe_id'))),
             $this->morphPair(Basket::class, self::positiveIntOrNull($request->query('basket_id'))),
+            $this->morphPair(ShopVendorService::class, self::positiveIntOrNull($request->query('shop_vendor_service_id'))),
         ]);
 
         if ($pairs === []) {

@@ -69,6 +69,8 @@ class StoreRequest extends FormRequest
             'shop_ids.*' => ['integer', 'exists:shops,id'],
             'vendor_ids' => ['nullable', 'array'],
             'vendor_ids.*' => ['integer', 'exists:vendors,id'],
+            'shop_vendor_service_ids' => ['nullable', 'array'],
+            'shop_vendor_service_ids.*' => ['integer', 'exists:shop_vendor_services,id'],
         ];
     }
 }

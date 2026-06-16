@@ -34,11 +34,16 @@ class PopupCampaignResource extends JsonResource
             'trigger_value' => $this->trigger_value,
             'show_every' => $this->show_every,
             'max_impressions' => $this->max_impressions,
-            'product_ids' => $this->whenLoaded('products', fn () => $this->products->pluck('id')->values()->all()),
-            'shop_ids' => $this->whenLoaded('shops', fn () => $this->shops->pluck('id')->values()->all()),
-            'recipe_ids' => $this->whenLoaded('recipes', fn () => $this->recipes->pluck('id')->values()->all()),
-            'basket_ids' => $this->whenLoaded('baskets', fn () => $this->baskets->pluck('id')->values()->all()),
-            'promotion_ids' => $this->whenLoaded('promotions', fn () => $this->promotions->pluck('id')->values()->all()),
+            'product_ids' => $this->whenLoaded('products', fn() => $this->products->pluck('id')->values()->all()),
+            'shop_ids' => $this->whenLoaded('shops', fn() => $this->shops->pluck('id')->values()->all()),
+            'recipe_ids' => $this->whenLoaded('recipes', fn() => $this->recipes->pluck('id')->values()->all()),
+            'basket_ids' => $this->whenLoaded('baskets', fn() => $this->baskets->pluck('id')->values()->all()),
+            'shop_vendor_service_ids' => $this->whenLoaded(
+                'shopVendorServices',
+                fn() => $this->shopVendorServices->pluck('id')->values()->all()
+            ),
+
+            'promotion_ids' => $this->whenLoaded('promotions', fn() => $this->promotions->pluck('id')->values()->all()),
             'created_at' => $this->created_at?->toIsoString(),
             'updated_at' => $this->updated_at?->toIsoString(),
         ];

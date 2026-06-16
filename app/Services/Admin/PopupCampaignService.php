@@ -19,7 +19,7 @@ class PopupCampaignService extends BaseService
         $this->sortableFields = ['priority', 'created_at', 'updated_at', 'status'];
         $this->searchableFields = ['title', 'headline', 'description'];
         $this->singleImages = ['media_path'];
-        $this->relations = ['products', 'shops', 'recipes', 'baskets', 'pages', 'promotions'];
+        $this->relations = ['products', 'shops', 'recipes', 'baskets', 'shopVendorServices', 'pages', 'promotions'];
     }
 
     public function create($data)
@@ -82,7 +82,7 @@ class PopupCampaignService extends BaseService
      */
     protected function extractAttachablesFromPayload(array &$data): array
     {
-        $keys = ['product_ids', 'shop_ids', 'recipe_ids', 'basket_ids'];
+        $keys = ['product_ids', 'shop_ids', 'recipe_ids', 'basket_ids', 'shop_vendor_service_ids'];
         $instructions = [];
         foreach ($keys as $key) {
             if (array_key_exists($key, $data)) {
@@ -168,6 +168,7 @@ class PopupCampaignService extends BaseService
             'shop_ids' => 'shops',
             'recipe_ids' => 'recipes',
             'basket_ids' => 'baskets',
+            'shop_vendor_service_ids' => 'shopVendorServices',
         ];
 
         foreach ($map as $payloadKey => $relation) {

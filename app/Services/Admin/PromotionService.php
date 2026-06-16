@@ -17,12 +17,13 @@ class PromotionService extends BaseService
         $this->resource = OneResource::class;
         $this->collection = AllResource::class;
         $this->pagination = true;
-        $this->relations = ['pages', 'products:id', 'categories:id', 'shops:id', 'vendors:id'];
+        $this->relations = ['pages', 'products:id', 'categories:id', 'shops:id', 'vendors:id', 'shopVendorServices:id'];
         $this->syncRelations = [
             'products' => 'product_ids',
             'categories' => 'category_ids',
             'shops' => 'shop_ids',
             'vendors' => 'vendor_ids',
+            'shopVendorServices' => 'shop_vendor_service_ids',
         ];
         $this->searchableFields = ['id', 'type'];
         $this->sortableFields = ['id', 'created_at', 'type'];
@@ -41,7 +42,7 @@ class PromotionService extends BaseService
             $this->syncPagesForPromotion($object, $pageSlugs);
         }
 
-        $object->refresh()->load(['pages', 'products:id', 'categories:id', 'shops:id', 'vendors:id']);
+        $object->refresh()->load(['pages', 'products:id', 'categories:id', 'shops:id', 'vendors:id', 'shopVendorServices:id']);
 
         return new $this->resource($object);
     }
@@ -58,7 +59,7 @@ class PromotionService extends BaseService
             $this->syncPagesForPromotion($model, $pageSlugs);
         }
 
-        $model->refresh()->load(['pages', 'products:id', 'categories:id', 'shops:id', 'vendors:id']);
+        $model->refresh()->load(['pages', 'products:id', 'categories:id', 'shops:id', 'vendors:id', 'shopVendorServices:id']);
 
         return new $this->resource($model);
     }
@@ -99,7 +100,7 @@ class PromotionService extends BaseService
     public function fieldsForType(string $type): array
     {
         $pages = ['page_slugs', 'position'];
-        $targeting = ['product_ids', 'category_ids', 'shop_ids', 'vendor_ids'];
+        $targeting = ['product_ids', 'category_ids', 'shop_ids', 'vendor_ids', 'shop_vendor_service_ids'];
 
         return match ($type) {
             'simple_discount' => [

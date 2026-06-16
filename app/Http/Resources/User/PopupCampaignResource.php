@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\User;
 
+use App\Http\Resources\Admin\ShopVendorService\AllResource as ShopVendorServiceAllResource;
 use App\Http\Resources\Basket\AllResource as BasketAllResource;
 use App\Http\Resources\Product\AllResource as ProductAllResource;
 use App\Http\Resources\Promotion\AllResource as PromotionAllResource;
@@ -58,6 +59,9 @@ class PopupCampaignResource extends JsonResource
             'shops' => ShopAllResource::collection($this->relationLoaded('shops') ? $this->shops : collect()),
             'recipes' => RecipeAllResource::collection($this->relationLoaded('recipes') ? $this->recipes : collect()),
             'baskets' => BasketAllResource::collection($this->relationLoaded('baskets') ? $this->baskets : collect()),
+            'shop_vendor_services' => ShopVendorServiceAllResource::collection(
+                $this->relationLoaded('shopVendorServices') ? $this->shopVendorServices : collect()
+            ),
             'promotions' => PromotionAllResource::collection($this->relationLoaded('promotions') ? $this->promotions : collect()),
         ];
     }
