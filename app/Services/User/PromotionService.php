@@ -50,7 +50,7 @@ class PromotionService
                 return false;
             })
             ->values()
-            ->map(fn (Promotion $promotion) => [
+            ->map(fn(Promotion $promotion) => [
                 'id' => $promotion->id,
                 'name' => $promotion->name,
                 'description' => $promotion->description,
@@ -139,7 +139,7 @@ class PromotionService
             $shopIds = $promotion->shops->pluck('id')->all();
 
             $existsInTargetedShops = $product->variants()
-                ->whereHas('shopVariants', fn ($q) => $q->whereIn('shop_id', $shopIds))
+                ->whereHas('shopVariants', fn($q) => $q->whereIn('shop_id', $shopIds))
                 ->exists();
 
             if (! $existsInTargetedShops) {
@@ -419,7 +419,7 @@ class PromotionService
                     'subtotal' => isset($row['subtotal']) ? (float) $row['subtotal'] : null,
                 ];
             })
-            ->filter(fn (array $row) => ! empty($row['product_id']))
+            ->filter(fn(array $row) => ! empty($row['product_id']))
             ->values();
     }
 

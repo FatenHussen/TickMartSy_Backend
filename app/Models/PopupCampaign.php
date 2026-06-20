@@ -194,6 +194,22 @@ class PopupCampaign extends Model
     {
         return $this->morphedByMany(Shop::class, 'attachable', 'popup_campaign_attachables');
     }
+    public function restaurants(): MorphToMany
+    {
+        return $this->morphedByMany(Shop::class, 'attachable', 'popup_campaign_attachables')
+            ->where('shops.is_restaurant', true);
+    }
+    public function serviceProviders(): MorphToMany
+    {
+        return $this->morphedByMany(Shop::class, 'attachable', 'popup_campaign_attachables')
+            ->where('shops.is_service_provider', true);
+    }
+    public function stores(): MorphToMany
+    {
+        return $this->morphedByMany(Shop::class, 'attachable', 'popup_campaign_attachables')
+            ->where('shops.is_restaurant', false)
+            ->where('shops.is_service_provider', false);
+    }
 
     public function recipes(): MorphToMany
     {
@@ -214,8 +230,24 @@ class PopupCampaign extends Model
     {
         $this->loadMissing([
             'pages',
-            'promotions' => fn ($q) => $q->active(),
-            'products' => fn ($q) => $q->with([
+            'promotions' => fn($q) => $q->active()->with([
+                'pages',
+                'products' => fn($q) => $q->with([
+                    'category',
+                    'vendor',
+                    'media',
+                    'badges',
+                    'country',
+                    'variants.shopVariants',
+                ]),
+                'categories',
+                'stores' => fn($q) => $q->with(['vendor', 'badges']),
+                'restaurants' => fn($q) => $q->with(['vendor', 'badges']),
+                'serviceProviders' => fn($q) => $q->with(['vendor', 'badges']),
+                'vendors' => fn($q) => $q->with(['badges']),
+                'shopVendorServices' => fn($q) => $q->with(['shop', 'vendorService.type']),
+            ]),
+            'products' => fn($q) => $q->with([
                 'category',
                 'vendor',
                 'media',
@@ -223,9 +255,11 @@ class PopupCampaign extends Model
                 'country',
                 'variants.shopVariants',
             ]),
-            'shops' => fn ($q) => $q->with(['vendor', 'badges']),
-            'recipes' => fn ($q) => $q->with(['items.shopProductVariant', 'badges', 'media']),
-            'baskets' => fn ($q) => $q->with([
+            'stores' => fn($q) => $q->with(['vendor', 'badges']),
+            'restaurants' => fn($q) => $q->with(['vendor', 'badges']),
+            'serviceProviders' => fn($q) => $q->with(['vendor', 'badges']),
+            'recipes' => fn($q) => $q->with(['items.shopProductVariant', 'badges', 'media']),
+            'baskets' => fn($q) => $q->with([
                 'category',
                 'categories',
                 'items',
@@ -233,7 +267,7 @@ class PopupCampaign extends Model
                 'basketImages',
                 'defaultSchedule',
             ]),
-            'shopVendorServices' => fn ($q) => $q->with(['shop', 'vendorService.type']),
+            'shopVendorServices' => fn($q) => $q->with(['shop', 'vendorService.type']),
         ]);
 
         return $this;

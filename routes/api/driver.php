@@ -29,8 +29,7 @@ Route::prefix('driver')->group(
                     Route::middleware(['auth:driver', 'abilities:reset-password'])->group(function () {
                         Route::post('/reset-password', [AuthController::class, 'resetPassword']);
                     });
-                    });
-
+                });
             }
         );
 

@@ -327,14 +327,14 @@ class Shop extends Model implements Sectionable
         return Category::whereHas('products.variants.shopVariants', function ($query) {
             $query->where('shop_id', $this->id);
         })
-        ->select('id', 'name')
-        ->distinct()
-        ->get()
-        ->map(function ($category) {
-            return [
-                'id' => $category->id,
-                'name' => $category->name,
-            ];
-        });
+            ->select('id', 'name')
+            ->distinct()
+            ->get()
+            ->map(function ($category) {
+                return [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                ];
+            });
     }
 }

@@ -70,6 +70,25 @@ class Promotion extends Model
         return $this->belongsToMany(Shop::class, 'promotion_shops');
     }
 
+    public function restaurants(): BelongsToMany
+    {
+        return $this->belongsToMany(Shop::class, 'promotion_shops')
+            ->where('shops.is_restaurant', true);
+    }
+    public function stores(): BelongsToMany
+    {
+        return $this->belongsToMany(Shop::class, 'promotion_shops')
+            ->where('shops.is_restaurant', false)
+            ->where('shops.is_service_provider', false);
+    }
+
+    public function serviceProviders(): BelongsToMany
+    {
+        return $this->belongsToMany(Shop::class, 'promotion_shops')
+            ->where('shops.is_service_provider', true);
+    }
+
+
     public function vendors(): BelongsToMany
     {
         return $this->belongsToMany(Vendor::class, 'promotion_vendors');
@@ -116,7 +135,7 @@ class Promotion extends Model
     public function scopeForPageSlug($query, string $pageSlug)
     {
         return $query->where(function ($q) use ($pageSlug) {
-            $q->whereHas('pages', fn ($p) => $p->where('pages.slug', $pageSlug))
+            $q->whereHas('pages', fn($p) => $p->where('pages.slug', $pageSlug))
                 ->orWhereDoesntHave('pages');
         });
     }

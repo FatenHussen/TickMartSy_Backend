@@ -9,6 +9,7 @@ use App\Http\Resources\Promotion\AllResource as PromotionAllResource;
 use App\Http\Resources\Recipe\AllResource as RecipeAllResource;
 use App\Http\Resources\Shop\AllResource as ShopAllResource;
 use Illuminate\Http\Request;
+use App\Http\Resources\Promotion\UserOneResource as PromotionUserOneResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class PopupCampaignResource extends JsonResource
@@ -56,13 +57,15 @@ class PopupCampaignResource extends JsonResource
             ],
             'scoped_to_entities' => (int) ($this->attachable_links_count ?? 0) > 0,
             'products' => ProductAllResource::collection($this->relationLoaded('products') ? $this->products : collect()),
-            'shops' => ShopAllResource::collection($this->relationLoaded('shops') ? $this->shops : collect()),
+            'restaurants' => ShopAllResource::collection($this->relationLoaded('restaurants') ? $this->restaurants : collect()),
+            'serviceProviders' => ShopAllResource::collection($this->relationLoaded('serviceProviders') ? $this->serviceProviders : collect()),
+            'shops' => ShopAllResource::collection($this->relationLoaded('stores') ? $this->stores : collect()),
             'recipes' => RecipeAllResource::collection($this->relationLoaded('recipes') ? $this->recipes : collect()),
             'baskets' => BasketAllResource::collection($this->relationLoaded('baskets') ? $this->baskets : collect()),
             'shop_vendor_services' => ShopVendorServiceAllResource::collection(
                 $this->relationLoaded('shopVendorServices') ? $this->shopVendorServices : collect()
             ),
-            'promotions' => PromotionAllResource::collection($this->relationLoaded('promotions') ? $this->promotions : collect()),
+            'promotions' => PromotionUserOneResource::collection($this->relationLoaded('promotions') ? $this->promotions : collect()),
         ];
     }
 }
