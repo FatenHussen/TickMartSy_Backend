@@ -53,23 +53,26 @@ class BasketItemSeeder extends Seeder
 
             foreach ($items as $itemData) {
 
-                // Get price from shop_product_variants table
-                $shopProductVariant = ShopProductVariant::find($itemData['shop_product_variant_id']);
+                // Get price from the product variant
+                $shopProductVariant = ShopProductVariant::with('productVariant')
+                    ->find($itemData['shop_product_variant_id']);
 
                 if (!$shopProductVariant) {
                     $this->command->warn("ShopProductVariant {$itemData['shop_product_variant_id']} not found, skipping item.");
                     continue;
                 }
 
-                // Use the actual price from shop_product_variants
-                $price = $shopProductVariant->final_price ?? $shopProductVariant->price ?? 0;
+                // Use the actual price from product_variants
+                $price = $shopProductVariant->productVariant?->final_price
+                    ?? $shopProductVariant->productVariant?->price
+                    ?? 0;
 
                 $basketItem = BasketItem::create([
                     'basket_id'  => $basketId,
                     'product_id' => $itemData['product_id'],
                     'variant_id' => $itemData['variant_id'],
                     'quantity'   => $itemData['quantity'],
-                    'price'      => $price, // ✅ السعر من shop_product_variants
+                    'price'      => $price, // ✅ السعر من product_variants
 
                     'is_required' => true,
 
@@ -85,6 +88,6 @@ class BasketItemSeeder extends Seeder
             }
         }
 
-        $this->command->info('Basket items created with prices from shop_product_variants table.');
+        $this->command->info('Basket items created with prices from product_variants table.');
     }
 }

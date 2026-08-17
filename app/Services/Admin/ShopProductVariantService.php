@@ -24,7 +24,7 @@ class ShopProductVariantService extends BaseService
     ];
 
     protected $searchableFields = [];
-    protected $sortableFields = ['id', 'price', 'cost_price', 'quantity', 'created_at'];
+    protected $sortableFields = ['id', 'cost_price', 'created_at'];
 
     public function queryBuilder($query, $filters = [], $config = [])
     {

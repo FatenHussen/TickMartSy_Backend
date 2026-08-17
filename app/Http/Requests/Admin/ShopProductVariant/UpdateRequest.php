@@ -9,9 +9,7 @@ class UpdateRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'price'    => 'sometimes|numeric|min:0',
             'cost_price' => 'sometimes|numeric|min:0',
-            'quantity' => 'sometimes|integer|min:0',
         ];
     }
 }

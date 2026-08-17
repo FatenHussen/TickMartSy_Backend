@@ -129,6 +129,8 @@ class StoreRequest extends FormRequest
             'variants.*.sku'                => 'nullable|string|unique:product_variants,sku',
             'variants.*.model'              => 'nullable|string|max:255',
             'variants.*.barcode'            => 'nullable|string|max:255',
+            'variants.*.price'              => 'nullable|numeric|min:0',
+            'variants.*.quantity'           => 'nullable|integer|min:0',
             'variants.*.is_trend'           => 'nullable|boolean',
             'variants.*.is_active'          => 'nullable|boolean',
             'variants.*.attributes_values_ids' => 'nullable|array',
@@ -156,9 +158,7 @@ class StoreRequest extends FormRequest
             'shop_variants'                     => 'nullable|array',
             'shop_variants.*.shop_id'           => 'required|exists:shops,id',
             'shop_variants.*.variant_index'     => 'required|integer|min:0',
-            'shop_variants.*.price'             => 'nullable|numeric|min:0',
             'shop_variants.*.cost_price'        => 'nullable|numeric|min:0',
-            'shop_variants.*.quantity'          => 'nullable|integer|min:0',
             'brand_id' => 'nullable|integer|exists:brands,id',
 
 

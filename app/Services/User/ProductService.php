@@ -10,7 +10,6 @@ use App\Models\FlashSale;
 use App\Services\BaseService;
 use App\Http\Resources\Product\OneResource;
 use App\Http\Resources\Product\AllResource;
-use Illuminate\Support\Facades\Log as FacadesLog;
 
 class ProductService extends BaseService
 {
@@ -31,18 +30,6 @@ class ProductService extends BaseService
     protected $searchableFields = ['name', 'description', 'country'];
     protected $sortableFields   = ['id', 'price', 'created_at', 'name'];
 
-    /**
-     * Recursively collect all descendant category IDs
-     */
-    private function collectDescendantIds($categories, &$categoryIds)
-    {
-        foreach ($categories as $category) {
-            $categoryIds->push($category->id);
-            if ($category->descendants && $category->descendants->count() > 0) {
-                $this->collectDescendantIds($category->descendants, $categoryIds);
-            }
-        }
-    }
     protected function applyTypeFilters($query, $filters)
     {
         if (empty($filters['type'])) {
@@ -166,38 +153,8 @@ class ProductService extends BaseService
         if (!empty($filters['category_id'])) {
             $category = Category::find($filters['category_id']);
             if ($category) {
-                // // Get all descendant category IDs
-                // $categoryIds = collect([$category->id]);
-                // $descendants = $category->descendants()->get();
-
-                // // Recursively collect all descendant IDs
-                // $this->collectDescendantIds($descendants, $categoryIds);
-
-                $categoryIds = $category
-                    ->leafDescendants()
-                    ->pluck('id')
-                    ->toArray();
-
-                if ($category->children()->count() === 0) {
-                    $categoryIds[] = $category->id;
-                }
-                FacadesLog::info($categoryIds);
-
-                $query->whereIn('category_id', $categoryIds);
-                FacadesLog::info($query->get());
+                $query->whereIn('category_id', $category->idsInSubtree());
             }
-
-            // $category = Category::find($filters['category_id']);
-            // if ($category) {
-            //     // Get all descendant category IDs
-            //     $categoryIds = collect([$category->id]);
-            //     $descendants = $category->descendants()->get();
-
-            //     // Recursively collect all descendant IDs
-            //     $this->collectDescendantIds($descendants, $categoryIds);
-
-            //     $query->whereIn('category_id', $categoryIds->toArray());
-            // }
         }
         if (!empty($filters['brand_id'])) {
             $query->where('brand_id', $filters['brand_id']);
@@ -216,7 +173,7 @@ class ProductService extends BaseService
                 $filters['price_max'] ?? null
             );
 
-            $query->whereHas('variants.shopVariants', function (Builder $q) use ($priceRange) {
+            $query->whereHas('variants', function (Builder $q) use ($priceRange) {
                 if ($priceRange['min']) {
                     $q->where('price', '>=', $priceRange['min']);
                 }
@@ -266,7 +223,7 @@ class ProductService extends BaseService
         if (isset($filters['in_stock_only'])) {
             $inStockOnly = filter_var($filters['in_stock_only'], FILTER_VALIDATE_BOOLEAN);
             if ($inStockOnly) {
-                $query->whereHas('variants.shopVariants', function (Builder $q) {
+                $query->whereHas('variants', function (Builder $q) {
                     $q->where('quantity', '>', 0);
                 });
             }

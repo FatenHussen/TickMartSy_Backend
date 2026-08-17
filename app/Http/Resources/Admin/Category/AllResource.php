@@ -13,12 +13,14 @@ class AllResource extends JsonResource
     public function toArray(Request $request): array
     {
         $locale = app()->getLocale();
+        $childrenCount = $this->children()->count();
 
         return [
             'id' => $this->id,
             'name' => $this->getTranslation('name', $locale),
             'icon' => $this->image_url,
             'parent_id' => $this->parent_id,
+            'is_root' => $this->parent_id === null,
             'order' => $this->order,
             'is_active' => $this->is_active,
             'is_restaurant' => (bool) $this->is_restaurant,
@@ -29,7 +31,8 @@ class AllResource extends JsonResource
                     'name' => $this->parent?->getTranslation('name', $locale),
                 ];
             }),
-            'children_count' => $this->children()->count(),
+            'children_count' => $childrenCount,
+            'has_children' => $childrenCount > 0,
             // 'stores_count' => $this->stores()->count(),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),

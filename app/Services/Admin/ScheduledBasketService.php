@@ -337,7 +337,7 @@ class ScheduledBasketService extends BaseService
                     'variant_id' => $primaryVariant->product_variant_id,
                     'primary_variant_id' => $primaryVariantId,
                     'alternative_ids' => $alternativeIds,
-                    'price' => $primaryVariant->price,
+                    'price' => $primaryVariant->productVariant->price,
                 ]);
 
                 $createdItem = $basket->items()->create([
@@ -350,7 +350,7 @@ class ScheduledBasketService extends BaseService
                     'is_extra' => $item['is_extra'] ?? false,
                     'min_quantity' => $item['min_quantity'] ?? 1,
                     'max_quantity' => $item['max_quantity'] ?? 10,
-                    'price' => $primaryVariant->price, // Price from primary variant only
+                    'price' => $primaryVariant->productVariant->price, // Price from primary variant only
                 ]);
 
                 Log::info("Created scheduled basket item", ['item_id' => $createdItem->id]);

@@ -104,13 +104,13 @@ class RecipeSeeder extends Seeder
         $shortVariant = ProductVariant::create([
             'product_id' => $shortRiceProduct->id,
             'attributes_values_ids' => [6],
+            'price' => 4,
+            'quantity' => 100,
         ]);
 
         $shortShopVariant = ShopProductVariant::create([
             'product_variant_id' => $shortVariant->id,
             'shop_id' => $shop->id,
-            'quantity' => 100,
-            'price' => 4,
         ]);
 
         // Long Rice
@@ -129,13 +129,13 @@ class RecipeSeeder extends Seeder
         $longVariant = ProductVariant::create([
             'product_id' => $longRiceProduct->id,
             'attributes_values_ids' => [6],
+            'price' => 6,
+            'quantity' => 80,
         ]);
 
         ShopProductVariant::create([
             'product_variant_id' => $longVariant->id,
             'shop_id' => $shop->id,
-            'quantity' => 80,
-            'price' => 6,
         ]);
 
         // Ghee
@@ -159,13 +159,13 @@ class RecipeSeeder extends Seeder
         $gheeVariant = ProductVariant::create([
             'product_id' => $gheeProduct->id,
             'attributes_values_ids' => [6],
+            'price' => 5,
+            'quantity' => 50,
         ]);
 
         $gheeShopVariant = ShopProductVariant::create([
             'product_variant_id' => $gheeVariant->id,
             'shop_id' => $shop->id,
-            'quantity' => 50,
-            'price' => 5,
         ]);
 
         /* =======================

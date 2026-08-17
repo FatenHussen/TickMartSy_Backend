@@ -16,6 +16,10 @@ class OneResource extends JsonResource
             'sku' => $this->sku,
             'model' => $this->model,
             'barcode' => $this->barcode,
+            'price' => $this->price,
+            'discount' => $this->discount,
+            'price_after_discount' => $this->price_after_discount,
+            'quantity' => $this->quantity,
             'product' => [
                 'id' => $this->product->id,
                 'product_number' => $this->product->product_number,
@@ -53,11 +57,7 @@ class OneResource extends JsonResource
                         'is_restaurant' => (bool) ($shopVariant->shop->is_restaurant ?? false),
                         'city_id' => $shopVariant->shop->city_id ?? $shopVariant->shop?->area?->city_id,
                     ],
-                    'price' => $shopVariant->price,
-                    'discount' => $shopVariant->discount,
-                    'price_after_discount' => $shopVariant->price_after_discount,
                     'cost_price' => $shopVariant->cost_price,
-                    'quantity' => $shopVariant->quantity,
                     'sku' => $shopVariant->sku,
                     'barcode' => $shopVariant->barcode,
                 ];

@@ -295,6 +295,18 @@ class ProductInfolist
                                                 ->view('filament.infolists.variant-attributes')
                                                 ->columnSpanFull(),
 
+                                            Infolists\Components\TextEntry::make('price')
+                                                ->label(__('custom.products.price'))
+                                                ->money('USD')
+                                                ->color('success')
+                                                ->icon('heroicon-o-banknotes'),
+
+                                            Infolists\Components\TextEntry::make('quantity')
+                                                ->label(__('custom.products.quantity'))
+                                                ->badge()
+                                                ->color(fn($state) => $state > 10 ? 'success' : ($state > 0 ? 'warning' : 'danger'))
+                                                ->icon(fn($state) => $state > 10 ? 'heroicon-o-check-circle' : ($state > 0 ? 'heroicon-o-exclamation-triangle' : 'heroicon-o-x-circle')),
+
                                             Infolists\Components\IconEntry::make('is_trend')
                                                 ->label(__('custom.products.trending'))
                                                 ->boolean()
@@ -332,18 +344,6 @@ class ProductInfolist
                                                                 ->icon('heroicon-o-building-storefront')
                                                                 ->color('info'),
 
-                                                            Infolists\Components\TextEntry::make('quantity')
-                                                                ->label(__('custom.products.quantity'))
-                                                                ->badge()
-                                                                ->color(fn($state) => $state > 10 ? 'success' : ($state > 0 ? 'warning' : 'danger'))
-                                                                ->icon(fn($state) => $state > 10 ? 'heroicon-o-check-circle' : ($state > 0 ? 'heroicon-o-exclamation-triangle' : 'heroicon-o-x-circle')),
-
-                                                            Infolists\Components\TextEntry::make('price')
-                                                                ->label(__('custom.products.price'))
-                                                                ->money('USD')
-                                                                ->color('success')
-                                                                ->icon('heroicon-o-banknotes'),
-
                                                             Infolists\Components\TextEntry::make('created_at')
                                                                 ->label(__('custom.products.date_added'))
                                                                 ->badge()
@@ -351,7 +351,7 @@ class ProductInfolist
                                                                 ->icon('heroicon-o-calendar')
                                                                 ->since(),
                                                         ])
-                                                        ->columns(4),
+                                                        ->columns(3),
                                                 ])
                                                 ->columnSpanFull()
                                                 ->collapsible(),

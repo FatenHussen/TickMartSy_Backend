@@ -100,7 +100,7 @@ class OrderPricingService
                 ->findOrFail($item['shop_product_variant_id']);
 
             $product = $variant->productVariant->product;
-            $price = $variant->price;
+            $price = (float) $variant->productVariant->price;
             $qty = $item['quantity'];
 
             $productDiscount =

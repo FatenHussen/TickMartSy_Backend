@@ -70,9 +70,14 @@ class AllResource extends JsonResource
             'product_number' => $this->productVariant?->product?->product_number,
             'variant_image' => $this->resolveVariantImage(),
             'shop_id' => $this->shop_id,
-            'price' => $this->price,
-            'discount' => $this->discount,
-            'price_after_discount' => $this->price_after_discount,
+            'product_variant_id' => $this->product_variant_id,
+            'variant' => [
+                'id' => $this->productVariant->id,
+                'price' => $this->productVariant->price,
+                'discount' => $this->productVariant->discount,
+                'price_after_discount' => $this->productVariant->price_after_discount,
+                'quantity' => $this->productVariant->quantity,
+            ],
             'is_restaurant' => (bool) ($this->shop?->is_restaurant ?? false),
             'city_id' => $this->shop?->city_id ?? $this->shop?->area?->city_id,
         ];

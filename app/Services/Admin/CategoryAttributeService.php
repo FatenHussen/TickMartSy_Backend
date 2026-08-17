@@ -18,6 +18,7 @@ class CategoryAttributeService extends BaseService
     protected $collection = AllResource::class;
     protected $pagination = true;
     protected $relations = [
+        'category',
         'values',
         'values.color',
     ];
@@ -85,7 +86,7 @@ class CategoryAttributeService extends BaseService
         }
 
         if (!empty($filters['category_id'])) {
-            $query->where('category_id', $filters['category_id']);
+            $query->forCategoryTree((int) $filters['category_id']);
             unset($filters['category_id']);
         }
 

@@ -218,7 +218,7 @@ class BasketService extends BaseService
                     'shop_variant_id' => $shopVariant->id,
                     'product_id' => $shopVariant->productVariant->product_id,
                     'variant_id' => $shopVariant->product_variant_id,
-                    'price' => $shopVariant->price,
+                    'price' => $shopVariant->productVariant->price,
                 ]);
 
                 $createdItem = $basket->items()->create([
@@ -231,7 +231,7 @@ class BasketService extends BaseService
                     'is_extra' => false, // Never extra for regular items
                     'min_quantity' => 1, // Default
                     'max_quantity' => 10, // Default
-                    'price' => $shopVariant->price, // Get price from shop variant
+                    'price' => $shopVariant->productVariant->price, // Get price from product variant
                 ]);
 
                 Log::info("Created basket item", ['item_id' => $createdItem->id]);

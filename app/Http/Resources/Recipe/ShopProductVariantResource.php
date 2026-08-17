@@ -27,9 +27,10 @@ class ShopProductVariantResource extends JsonResource
             'model' => $this->productVariant->model,
             'barcode' => $this->productVariant->barcode,
             'image_url' => $this->productVariant->product->image_url,
-            ...$this->withCurrency($this->price, 'price'),
-            ...$this->withCurrency($this->discount, 'discount'),
-            ...$this->withCurrency($this->price_after_discount, 'price_after_discount'),
+            ...$this->withCurrency($this->productVariant->price, 'price'),
+            ...$this->withCurrency($this->productVariant->discount, 'discount'),
+            ...$this->withCurrency($this->productVariant->price_after_discount, 'price_after_discount'),
+            'quantity' => $this->productVariant->quantity,
             'variant' =>  $this->productVariant->attributes_values->pluck('name')->toArray(),
 
         ];

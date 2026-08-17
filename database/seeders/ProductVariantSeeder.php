@@ -17,7 +17,9 @@ class ProductVariantSeeder extends Seeder
 
         foreach ($products as $product) {
             // Get category attributes for this product's category
-            $categoryAttributes = \App\Models\CategoryAttribute::where('category_id', $product->category_id)->get();
+            $categoryAttributes = \App\Models\CategoryAttribute::query()
+                ->forCategoryTree($product->category_id)
+                ->get();
 
             if ($categoryAttributes->isEmpty()) {
                 continue;
@@ -60,6 +62,8 @@ class ProductVariantSeeder extends Seeder
                         'en' => implode(' - ', array_filter($nameEn)) ?: null,
                     ],
                     'sku'                   => 'VAR-' . $product->id . '-' . ($index + 1) . '-' . strtoupper(substr(md5(uniqid()), 0, 6)),
+                    'price'                 => $product->price ?? 100,
+                    'quantity'              => $product->quantity ?? rand(20, 150),
                     'attributes_values_ids' => $combination,
                     'is_trend'              => $index < 2 ? 1 : 0,
                     'is_active'             => true,

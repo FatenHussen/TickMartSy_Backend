@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\Category\CategoryAttribute;
 
 use App\Models\Language;
+use App\Rules\RootCategory;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
@@ -53,7 +54,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => ['required', 'exists:categories,id', new RootCategory()],
             'type' => 'required|in:square,circle,color',
             'values'      => 'nullable|array',
             'values.*.name' => 'required|array',

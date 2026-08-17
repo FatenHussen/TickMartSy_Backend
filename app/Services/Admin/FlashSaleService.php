@@ -70,10 +70,7 @@ class FlashSaleService extends BaseService
         if (!empty($data['category_id'])) {
             $category = Category::find($data['category_id']);
             if ($category) {
-                $categoryIds = collect([$category->id])
-                    ->merge($category->leafDescendants()->pluck('id'))
-                    ->filter()
-                    ->unique();
+                $categoryIds = $category->idsInSubtree();
 
                 $productIds = $productIds->merge(
                     Product::whereIn('category_id', $categoryIds)->pluck('id')

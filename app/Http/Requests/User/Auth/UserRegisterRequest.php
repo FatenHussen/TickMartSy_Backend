@@ -11,9 +11,9 @@ class UserRegisterRequest extends BaseRequest
         return [
             'name' => 'required|string',
 
-            'phone' => 'nullable|string|required_without:email|regex:/^\d+$/',
+            'phone' => 'required|string|regex:/^\d+$/',
 
-            'email' => 'nullable|string|required_without:phone|email',
+            'email' => 'nullable|string|email',
 
             'password' => [
                 'required',

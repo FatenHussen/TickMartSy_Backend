@@ -80,7 +80,7 @@ class Recipe extends Model implements Sectionable
     public function getTotalItemsPrice(): float
     {
         return round($this->items->sum(function ($item) {
-            return $item->shopProductVariant->price * $item->quantity;
+            return (float) $item->shopProductVariant?->productVariant?->price * $item->quantity;
         }), 2);
     }
 

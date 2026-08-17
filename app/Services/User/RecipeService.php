@@ -4,6 +4,7 @@ namespace App\Services\User;
 
 use App\Http\Resources\Recipe\AllResource;
 use App\Http\Resources\Recipe\OneResource;
+use App\Models\ProductVariant;
 use App\Models\Recipe;
 use App\Services\BaseService;
 use Illuminate\Database\Eloquent\Builder;
@@ -114,8 +115,14 @@ class RecipeService extends BaseService
     {
         $query->with($this->relations);
 
-        // نحسب أقل سعر مكون داخل الوصفة
-        $query->withMin('variants', 'price');
+        // نحسب أقل سعر مكون داخل الوصفة (السعر صار على product_variants)
+        $query->addSelect(['variants_min_price' => ProductVariant::query()
+            ->selectRaw('MIN(product_variants.price)')
+            ->join('shop_product_variants', 'shop_product_variants.product_variant_id', '=', 'product_variants.id')
+            ->join('recipe_items', 'recipe_items.shop_product_variant_id', '=', 'shop_product_variants.id')
+            ->whereNull('shop_product_variants.deleted_at')
+            ->whereColumn('recipe_items.recipe_id', 'recipes.id'),
+        ]);
 
         $query->where('is_active', true);
         /* ================= SEARCH ================= */

@@ -72,7 +72,7 @@ class ScheduledBasketAvailabilityService
             'status' => $status,
             'is_available' => !in_array($status, self::ISSUE_STATUSES, true),
             'resolved_shop_product_variant_id' => $variant?->id,
-            'resolved_shop_product_variant_price' => $variant?->price,
+            'resolved_shop_product_variant_price' => $variant?->productVariant?->price,
         ];
     }
 
@@ -93,7 +93,7 @@ class ScheduledBasketAvailabilityService
                 'status' => 'available',
                 'is_available' => true,
                 'resolved_shop_product_variant_id' => $primaryVariant?->id,
-                'resolved_shop_product_variant_price' => $primaryVariant?->price,
+                'resolved_shop_product_variant_price' => $primaryVariant?->productVariant?->price,
             ];
         }
 
@@ -109,16 +109,16 @@ class ScheduledBasketAvailabilityService
                 'product_id' => $item->product_id,
                 'product_name' => $item->product?->name,
                 'required_quantity' => $requiredQuantity,
-                'available_quantity' => $resolvedAlternative->quantity,
+                'available_quantity' => $resolvedAlternative->productVariant?->quantity,
                 'status' => 'available_with_alternative',
                 'is_available' => true,
                 'resolved_shop_product_variant_id' => $resolvedAlternative->id,
-                'resolved_shop_product_variant_price' => $resolvedAlternative->price,
+                'resolved_shop_product_variant_price' => $resolvedAlternative->productVariant?->price,
             ];
         }
 
         $availableQuantities = $alternatives
-            ->map(fn(ShopProductVariant $variant) => $variant->quantity)
+            ->map(fn(ShopProductVariant $variant) => $variant->productVariant?->quantity)
             ->filter(fn($quantity) => $quantity !== null)
             ->push($primaryAvailableQuantity)
             ->filter(fn($quantity) => $quantity !== null)
@@ -147,7 +147,7 @@ class ScheduledBasketAvailabilityService
             'status' => $fallbackStatus,
             'is_available' => false,
             'resolved_shop_product_variant_id' => $primaryVariant?->id,
-            'resolved_shop_product_variant_price' => $primaryVariant?->price,
+            'resolved_shop_product_variant_price' => $primaryVariant?->productVariant?->price,
         ];
     }
 
@@ -158,6 +158,7 @@ class ScheduledBasketAvailabilityService
         }
 
         return ShopProductVariant::query()
+            ->with('productVariant')
             ->whereIn('id', $item->shop_product_variant_ids)
             ->get();
     }
@@ -168,16 +169,18 @@ class ScheduledBasketAvailabilityService
             return ['variant_deleted', null];
         }
 
-        if ($variant->quantity === null) {
+        $availableQty = $variant->productVariant?->quantity;
+
+        if ($availableQty === null) {
             return ['available', null];
         }
 
-        if ($variant->quantity >= $requiredQuantity) {
-            return ['available', (int) $variant->quantity];
+        if ($availableQty >= $requiredQuantity) {
+            return ['available', (int) $availableQty];
         }
 
-        if ($variant->quantity > 0) {
-            return ['insufficient_quantity', (int) $variant->quantity];
+        if ($availableQty > 0) {
+            return ['insufficient_quantity', (int) $availableQty];
         }
 
         return ['out_of_stock', 0];

@@ -4,7 +4,6 @@ namespace App\Services\User;
 
 use App\Enums\CartType;
 use App\Enums\OrderStatus;
-use App\Events\LowStockDetected;
 use App\Events\OrderCreated;
 use App\Events\OrderStatusChanged;
 use App\Exceptions\CustomExceptionWithMessage;
@@ -16,6 +15,7 @@ use App\Models\Order;
 use App\Models\PaymentMethod;
 use App\Models\Recipe;
 use App\Models\ShopProductVariant;
+use App\Models\ProductVariant;
 use App\Models\User;
 use App\Models\Coupon;
 use App\Models\PointExchange;
@@ -661,19 +661,29 @@ class OrderService extends BaseService
         foreach ($data['items'] as $item) {
 
             $shopVariant = ShopProductVariant::with('productVariant.product')
-                ->when(!$isPreview, fn($q) => $q->lockForUpdate())
                 ->findOrFail($item['shop_product_variant_id']);
 
-            if (!is_null($shopVariant->quantity) && $shopVariant->quantity < $item['quantity']) {
+            $productVariant = $shopVariant->productVariant;
+
+            if (!$isPreview && $productVariant) {
+                $productVariant = ProductVariant::query()
+                    ->with('product')
+                    ->lockForUpdate()
+                    ->findOrFail($productVariant->id);
+            }
+
+            $availableQty = $productVariant?->quantity;
+
+            if (!is_null($availableQty) && $availableQty < $item['quantity']) {
                 throw new CustomExceptionWithMessage(
                     'custom.orders.insufficient_stock',
                     400,
-                    ['product' => $shopVariant->productVariant->product->name]
+                    ['product' => $productVariant->product->name]
                 );
             }
 
-            $product = $shopVariant->productVariant->product;
-            $unitPrice = $shopVariant->price;
+            $product = $productVariant->product;
+            $unitPrice = (float) $productVariant->price;
             $quantity = $item['quantity'];
 
             // حساب سعر الـ extras
@@ -742,7 +752,7 @@ class OrderService extends BaseService
                 $orderItem = $order->items()->create([
                     'shop_product_variant_id' => $shopVariant->id,
                     'product_name' => $product->name,
-                    'variant_attributes' => $shopVariant->productVariant->getAttributesValuesAttribute(),
+                    'variant_attributes' => $productVariant->getAttributesValuesAttribute(),
                     'product_image' => $product->image_url,
                     'note' => $item['note'] ?? null,
                     'quantity' => $quantity,
@@ -796,7 +806,7 @@ class OrderService extends BaseService
                 'vendor_id' => $product->vendor_id,
                 'category_id' => $product->category_id,
                 'product_id' => $product->id,
-                'variant' => $shopVariant->productVariant->attributes_values->pluck('name')->toArray()
+                'variant' => $productVariant->attributes_values->pluck('name')->toArray()
 
             ]);
         }

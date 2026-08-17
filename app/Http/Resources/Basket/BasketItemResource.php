@@ -64,7 +64,9 @@ class BasketItemResource extends JsonResource
             $product = optional($variant->productVariant)->product;
             $brand   = optional($product)->brand;
 
-            $priceData = $this->convertPrice($variant->price, $currencyId);
+            $productVariant = $variant->productVariant;
+
+            $priceData = $this->convertPrice($productVariant?->price, $currencyId);
 
             $media = $product ? ($product->media ?? collect()) : collect();
 
@@ -90,14 +92,14 @@ class BasketItemResource extends JsonResource
                 'price_formatted' => $priceData['formatted'],
                 'currency' => $priceData['currency'],
                 'currency_symbol' => $priceData['symbol'],
-                'price_currencies' => $this->dualCurrency($variant->price),
-                'discount' => $variant->discount,
-                'discount_currencies' => $this->dualCurrency($variant->discount),
-                'price_after_discount' => $variant->price_after_discount,
-                'price_after_discount_currencies' => $this->dualCurrency($variant->price_after_discount),
-                'sku' => $variant->productVariant?->sku,
-                'model' => $variant->productVariant?->model,
-                'barcode' => $variant->productVariant?->barcode,
+                'price_currencies' => $this->dualCurrency($productVariant?->price),
+                'discount' => $productVariant?->discount,
+                'discount_currencies' => $this->dualCurrency($productVariant?->discount),
+                'price_after_discount' => $productVariant?->price_after_discount,
+                'price_after_discount_currencies' => $this->dualCurrency($productVariant?->price_after_discount),
+                'sku' => $productVariant?->sku,
+                'model' => $productVariant?->model,
+                'barcode' => $productVariant?->barcode,
             ];
         })->values();
     }

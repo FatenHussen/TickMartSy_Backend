@@ -20,6 +20,8 @@ class ProductVariant extends Model
         'sku',
         'model',
         'barcode',
+        'price',
+        'quantity',
         'attributes_values_ids',
         'is_trend',
         'is_active',
@@ -28,6 +30,8 @@ class ProductVariant extends Model
     protected $casts = [
         'attributes_values_ids' => 'array',
         'is_active' => 'boolean',
+        'price' => 'float',
+        'quantity' => 'integer',
     ];
 
     /**
@@ -50,6 +54,14 @@ class ProductVariant extends Model
             $productVariant->media()->each(function ($media) {
                 (new \App\Services\Base\MediaService())->delete($media);
             });
+        });
+
+        static::saved(function ($productVariant) {
+            $productVariant->product?->syncQuantityFromVariants();
+        });
+
+        static::deleted(function ($productVariant) {
+            $productVariant->product?->syncQuantityFromVariants();
         });
     }
 
@@ -171,5 +183,39 @@ class ProductVariant extends Model
     public function getAverageRatingAttribute(): float
     {
         return round((float) $this->ratings()->avg('rating'), 1);
+    }
+
+    public function getFinalPriceAttribute(): float
+    {
+        // 1. Base price (سعر المتغير هو المصدر الوحيد للسعر)
+        $price = (float) $this->price;
+
+        // 2. Get product final discount
+        $discount = $this->product?->final_discount;
+
+        if (!$discount || !$discount['type'] || $discount['value'] <= 0) {
+            return round($price, 2);
+        }
+
+        // 3. Apply discount
+        if ($discount['type'] === 'percentage') {
+            $price -= ($price * ($discount['value'] / 100));
+        }
+
+        if ($discount['type'] === 'fixed') {
+            $price -= $discount['value'];
+        }
+
+        return (float) round(max(0, $price), 2);
+    }
+
+    public function getDiscountAttribute(): float
+    {
+        return (float) round(max(0, ((float) $this->price) - $this->final_price), 2);
+    }
+
+    public function getPriceAfterDiscountAttribute(): float
+    {
+        return $this->final_price;
     }
 }

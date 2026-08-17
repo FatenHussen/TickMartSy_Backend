@@ -43,4 +43,15 @@ class CategoryAttribute extends Model
     {
         return $this->hasMany(AttributeValue::class);
     }
+
+    public function scopeForCategoryTree($query, ?int $categoryId)
+    {
+        $rootId = Category::resolveRootId($categoryId);
+
+        if (!$rootId) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->where('category_id', $rootId);
+    }
 }

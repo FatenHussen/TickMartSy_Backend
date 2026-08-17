@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\ShopProductVariant;
+use App\Models\ProductVariant;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -19,7 +19,7 @@ class LowStockDetected
      * Create a new event instance.
      */
     public function __construct(
-        public ShopProductVariant $variant
+        public ProductVariant $variant
     ) {}
 
     /**

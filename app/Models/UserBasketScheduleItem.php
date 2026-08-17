@@ -40,7 +40,7 @@ class UserBasketScheduleItem extends Model
     public function getPriceAttribute()
     {
         if ($this->variant) {
-            return $this->variant->price;
+            return $this->variant->productVariant?->price;
         }
 
         return $this->product?->price;

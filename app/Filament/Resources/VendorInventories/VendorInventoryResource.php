@@ -5,7 +5,7 @@ namespace App\Filament\Resources\VendorInventories;
 use App\Filament\Resources\VendorInventories\Pages\ListVendorInventories;
 use App\Filament\Resources\VendorInventories\Tables\VendorInventoriesTable;
 use App\Models\Product;
-use App\Models\ShopProductVariant;
+use App\Models\ProductVariant;
 use App\Models\VendorUser;
 use BackedEnum;
 use Filament\Facades\Filament;
@@ -63,17 +63,15 @@ class VendorInventoryResource extends Resource
             return parent::getEloquentQuery()->whereRaw('1 = 0');
         }
 
-        $inventorySubQuery = ShopProductVariant::query()
-            ->join('product_variants as pv', 'pv.id', '=', 'shop_product_variants.product_variant_id')
-            ->whereColumn('pv.product_id', 'products.id')
-            ->whereNull('shop_product_variants.deleted_at')
-            ->selectRaw('COALESCE(SUM(shop_product_variants.quantity), 0)');
+        $inventorySubQuery = ProductVariant::query()
+            ->whereColumn('product_variants.product_id', 'products.id')
+            ->selectRaw('COALESCE(SUM(product_variants.quantity), 0)');
 
         return parent::getEloquentQuery()
             ->where('vendor_id', $user->vendor_id)
             ->addSelect(['inventory_total_qty' => $inventorySubQuery])
             ->withCount('variants')
-            ->with(['media', 'variants.media', 'variants.shopVariants.shop'])
+            ->with(['media', 'variants.media'])
             ->orderBy('inventory_total_qty');
     }
 

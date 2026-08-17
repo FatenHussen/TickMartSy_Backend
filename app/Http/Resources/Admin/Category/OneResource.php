@@ -19,6 +19,10 @@ class OneResource extends JsonResource
             'name' => $this->getTranslations('name'),
             'icon' => $this->image_url,
             'parent_id' => $this->parent_id,
+            'is_root' => $this->parent_id === null,
+            'has_children' => $this->relationLoaded('children')
+                ? $this->children->isNotEmpty()
+                : $this->children()->exists(),
             'order' => $this->order,
             'is_active' => $this->is_active,
             'is_restaurant' => (bool) $this->is_restaurant,
@@ -33,6 +37,9 @@ class OneResource extends JsonResource
                     return [
                         'id' => $child->id,
                         'name' => $child->getTranslation('name', $locale),
+                        'parent_id' => $child->parent_id,
+                        'is_root' => false,
+                        'has_children' => $child->children()->exists(),
                         'is_restaurant' => (bool) $child->is_restaurant,
                     ];
                 });

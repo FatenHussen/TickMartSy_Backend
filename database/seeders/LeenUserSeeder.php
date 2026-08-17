@@ -299,7 +299,7 @@ class LeenUserSeeder extends Seeder
 
         foreach ($variants as $variant) {
             $qty = rand(1, 2);
-            $price = (int) ($variant->price ?? 10000);
+            $price = (int) ($variant->productVariant?->price ?? 10000);
             $totalQty += $qty;
             $subtotal += $price * $qty;
             $items[] = [

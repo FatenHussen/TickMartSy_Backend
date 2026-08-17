@@ -81,14 +81,13 @@ class UserService
 
     public function register(array $data): bool
     {
-        $field = $this->resolveField($data);
-
-        if ($this->model->where($field, $data[$field])->where('is_active', true)->exists()) {
+        if ($this->model->where('phone', $data['phone'])->where('is_active', true)->exists()) {
             throw new AccountAlreadyExistsException();
         }
 
         $user = $this->model->create([
-            $field           => $data[$field],
+            'phone'          => $data['phone'],
+            'email'          => $data['email'] ?? null,
             'password'       => $data['password'],
             'name'           => $data['name'],
             'city_id'        => $data['city_id'],
@@ -98,7 +97,7 @@ class UserService
 
         try {
             $verification = $this->createOtp($user, 'verification');
-            $this->sendOtp($user, $verification, $field);
+            $this->sendOtp($user, $verification, 'phone');
         } catch (\Throwable $e) {
         }
 

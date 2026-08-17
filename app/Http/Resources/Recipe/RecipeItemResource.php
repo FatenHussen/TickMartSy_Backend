@@ -9,7 +9,6 @@ use App\Models\ShopProductVariant;
 use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Log;
 
 class RecipeItemResource extends JsonResource
 {
@@ -27,15 +26,7 @@ class RecipeItemResource extends JsonResource
             $parentCategory = Category::find($this->switchable_category_id);
 
             if ($parentCategory) {
-
-                $categoryIds = $parentCategory
-                    ->leafDescendants()
-                    ->pluck('id')
-                    ->toArray();
-
-                if ($parentCategory->children()->count() === 0) {
-                    $categoryIds[] = $parentCategory->id;
-                }
+                $categoryIds = $parentCategory->idsInSubtree();
 
                 $variants = ShopProductVariant::with([
                     'productVariant.product',
@@ -79,9 +70,9 @@ class RecipeItemResource extends JsonResource
                     'barcode' => $this->shopProductVariant->productVariant->barcode,
                     'variant' =>  $this->shopProductVariant->productVariant->attributes_values->pluck('name')->toArray(),
                 ],
-                $this->withCurrency($this->shopProductVariant->price, 'price') +
-                $this->withCurrency($this->shopProductVariant->discount, 'discount') +
-                $this->withCurrency($this->shopProductVariant->price_after_discount, 'price_after_discount')
+                $this->withCurrency($this->shopProductVariant->productVariant->price, 'price') +
+                $this->withCurrency($this->shopProductVariant->productVariant->discount, 'discount') +
+                $this->withCurrency($this->shopProductVariant->productVariant->price_after_discount, 'price_after_discount')
             ),
             'alternatives' => $same_shop,
             'other_shops' => $other_shops

@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\VendorInventories\Tables;
 
 use App\Models\Product;
-use App\Models\ShopProductVariant;
+use App\Models\ProductVariant;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\TextInput;
@@ -63,19 +63,19 @@ class VendorInventoriesTable
                                     continue;
                                 }
 
-                                $shopVariantId = (int) str_replace('qty_', '', (string) $key);
+                                $variantId = (int) str_replace('qty_', '', (string) $key);
                                 $quantity = max(0, (int) $value);
 
-                                $shopVariant = ShopProductVariant::query()
-                                    ->where('id', $shopVariantId)
-                                    ->whereHas('productVariant', fn ($q) => $q->where('product_id', $record->id))
+                                $variant = ProductVariant::query()
+                                    ->where('id', $variantId)
+                                    ->where('product_id', $record->id)
                                     ->first();
 
-                                if (!$shopVariant) {
+                                if (!$variant) {
                                     continue;
                                 }
 
-                                $shopVariant->update(['quantity' => $quantity]);
+                                $variant->update(['quantity' => $quantity]);
                                 $total += $quantity;
                             }
 
@@ -92,34 +92,16 @@ class VendorInventoriesTable
 
     private static function buildFormSchema(Product $record): array
     {
-        $record->loadMissing(['variants.shopVariants.shop']);
+        $record->loadMissing(['variants.media']);
 
         $components = [];
 
         foreach ($record->variants as $variant) {
-            if ($variant->shopVariants->isEmpty()) {
-                continue;
-            }
-
-            $fields = [];
-            foreach ($variant->shopVariants as $shopVariant) {
-                $shopName = self::resolvedShopName($shopVariant->shop);
-                $variantName = self::resolvedVariantName($variant->name);
-
-                $fields[] = TextInput::make('qty_' . $shopVariant->id)
-                    ->label(__('custom.inventory.shop_variant_quantity_label', [
-                        'shop' => $shopName,
-                        'variant' => $variantName,
-                    ]))
-                    ->numeric()
-                    ->integer()
-                    ->minValue(0)
-                    ->required();
-            }
+            $variantName = self::resolvedVariantName($variant->name);
 
             $components[] = Placeholder::make('variant_label_' . $variant->id)
                 ->label(__('custom.inventory.variant_section_title', [
-                    'variant' => self::resolvedVariantName($variant->name),
+                    'variant' => $variantName,
                 ]))
                 ->content(function () use ($variant, $record): HtmlString {
                     $imageUrl = self::resolveVariantImageUrl($variant, $record);
@@ -131,9 +113,14 @@ class VendorInventoriesTable
                     return new HtmlString('<img src="' . e($imageUrl) . '" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;" />');
                 });
 
-            foreach ($fields as $field) {
-                $components[] = $field;
-            }
+            $components[] = TextInput::make('qty_' . $variant->id)
+                ->label(__('custom.inventory.variant_quantity_label', [
+                    'variant' => $variantName,
+                ]))
+                ->numeric()
+                ->integer()
+                ->minValue(0)
+                ->required();
         }
 
         if (empty($components)) {
@@ -147,14 +134,12 @@ class VendorInventoriesTable
 
     private static function buildFormData(Product $record): array
     {
-        $record->loadMissing(['variants.shopVariants']);
+        $record->loadMissing(['variants']);
 
         $data = [];
 
         foreach ($record->variants as $variant) {
-            foreach ($variant->shopVariants as $shopVariant) {
-                $data['qty_' . $shopVariant->id] = (int) $shopVariant->quantity;
-            }
+            $data['qty_' . $variant->id] = (int) $variant->quantity;
         }
 
         return $data;
@@ -162,25 +147,6 @@ class VendorInventoriesTable
 
     private static function resolvedVariantName(mixed $name): string
     {
-        if (is_array($name)) {
-            return (string) ($name[app()->getLocale()] ?? $name['ar'] ?? $name['en'] ?? '-');
-        }
-
-        if (is_string($name) && $name !== '') {
-            return $name;
-        }
-
-        return '-';
-    }
-
-    private static function resolvedShopName(mixed $shop): string
-    {
-        if (!$shop) {
-            return '-';
-        }
-
-        $name = $shop->name ?? null;
-
         if (is_array($name)) {
             return (string) ($name[app()->getLocale()] ?? $name['ar'] ?? $name['en'] ?? '-');
         }

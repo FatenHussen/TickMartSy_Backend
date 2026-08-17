@@ -16,8 +16,10 @@ class AllResource extends JsonResource
     {
         return [
             'id'       => $this->id,
+            'category_id' => $this->category_id,
+            'root_category_id' => $this->category_id,
             'name'     => $this->name,
-            'category' => $this->category->name,
+            'category' => $this->category?->name,
             'type' => $this->type,
             'values'   => $this->values->map(fn($value) => [
                 'id'   => $value->id,

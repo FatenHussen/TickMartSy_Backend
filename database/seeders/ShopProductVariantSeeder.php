@@ -20,7 +20,8 @@ class ShopProductVariantSeeder extends Seeder
         $variants = ProductVariant::with('product')->get();
 
         foreach ($variants as $variant) {
-            $basePrice = $variant->product->price ?? 100;
+            // السعر صار على المتغير نفسه، المحل بيحمل التكلفة والكمية بس
+            $basePrice = $variant->price ?? $variant->product->price ?? 100;
 
             // Assign variant to 1-3 random shops (not all shops)
             $assignedShops = $shops->random(min(rand(1, 3), $shops->count()));
@@ -32,16 +33,10 @@ class ShopProductVariantSeeder extends Seeder
                     continue;
                 }
 
-                // Price variation ±15%
-                $variation = rand(-15, 15);
-                $shopPrice = round($basePrice + ($basePrice * $variation / 100));
-
                 ShopProductVariant::create([
                     'product_variant_id' => $variant->id,
                     'shop_id'            => $shop->id,
-                    'quantity'           => rand(10, 200),
-                    'price'              => max(1, $shopPrice),
-                    'cost_price'         => max(1, (int) round($shopPrice * 0.75)),
+                    'cost_price'         => max(1, (int) round($basePrice * 0.75)),
                 ]);
             }
         }

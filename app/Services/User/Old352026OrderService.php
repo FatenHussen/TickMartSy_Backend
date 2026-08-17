@@ -4,7 +4,6 @@ namespace App\Services\User;
 
 use App\Enums\CartType;
 use App\Enums\OrderStatus;
-use App\Events\LowStockDetected;
 use App\Events\OrderCreated;
 use App\Events\OrderStatusChanged;
 use App\Exceptions\CustomExceptionWithMessage;
@@ -15,6 +14,7 @@ use App\Models\Basket;
 use App\Models\Order;
 use App\Models\Recipe;
 use App\Models\ShopProductVariant;
+use App\Models\ProductVariant;
 use App\Models\User;
 use App\Models\Coupon;
 use App\Services\BaseService;
@@ -166,15 +166,8 @@ class Old352026OrderService extends BaseService
             ]);
 
             foreach ($order->items as $item) {
-
-                $variant = ShopProductVariant::find($item->shop_product_variant_id);
-
-                $variant->decrement('quantity', $item->quantity);
-
-                if ($variant->quantity <= 5) {
-
-                    event(new LowStockDetected($variant));
-                }
+                app(\App\Services\InventoryService::class)
+                    ->decreaseStock($item->shop_product_variant_id, $item->quantity);
             }
 
 
@@ -332,7 +325,7 @@ class Old352026OrderService extends BaseService
         foreach ($data['items'] as $item) {
             $shopVariant = ShopProductVariant::with('productVariant.product')->findOrFail($item['shop_product_variant_id']);
             $product = $shopVariant->productVariant->product;
-            $price = $shopVariant->price;
+            $price = (float) $shopVariant->productVariant->price;
             $quantity = $item['quantity'];
 
             $priceAfterDiscount = ($data['cart_type'] ?? 'default') === CartType::DEFAULT->value
@@ -489,19 +482,25 @@ class Old352026OrderService extends BaseService
 
         foreach ($data['items'] as $item) {
             $shopVariant = ShopProductVariant::with('productVariant.product')
-                ->lockForUpdate()
                 ->findOrFail($item['shop_product_variant_id']);
 
-            if (!is_null($shopVariant->quantity) && $shopVariant->quantity < $item['quantity']) {
+            $productVariant = ProductVariant::query()
+                ->with('product')
+                ->lockForUpdate()
+                ->findOrFail($shopVariant->product_variant_id);
+
+            $availableQty = $productVariant->quantity;
+
+            if (!is_null($availableQty) && $availableQty < $item['quantity']) {
                 throw new CustomExceptionWithMessage(
                     'custom.orders.insufficient_stock',
                     400,
-                    ['product' => $shopVariant->productVariant->product->name]
+                    ['product' => $productVariant->product->name]
                 );
             }
 
-            $product = $shopVariant->productVariant->product;
-            $price = $shopVariant->price;
+            $product = $productVariant->product;
+            $price = (float) $productVariant->price;
             $quantity = $item['quantity'];
             $productDiscount = ($data['cart_type'] ?? 'default') === CartType::DEFAULT->value ? $product->discount : 0;
             $priceAfterDiscount = $price * (1 - ($productDiscount / 100));
@@ -510,13 +509,14 @@ class Old352026OrderService extends BaseService
                 $order->items()->create([
                     'shop_product_variant_id' => $shopVariant->id,
                     'product_name' => $product->name,
-                    'variant_attributes' => $shopVariant->productVariant->getAttributesValuesAttribute(),
+                    'variant_attributes' => $productVariant->getAttributesValuesAttribute(),
                     'quantity' => $quantity,
                     'price' => $price,
                     'discount' => $productDiscount,
                 ]);
-                if (!is_null($shopVariant->quantity)) {
-                    $shopVariant->decrement('quantity', $quantity);
+                if (!is_null($shopVariant->productVariant?->quantity)) {
+                    app(\App\Services\InventoryService::class)
+                        ->decreaseStock($shopVariant->id, $quantity);
                 }
             }
 

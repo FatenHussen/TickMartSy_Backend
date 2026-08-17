@@ -27,6 +27,64 @@ class Category extends Model implements Sectionable
         'is_restaurant' => 'boolean',
     ];
 
+    /** Root + up to 5 nested subcategory levels. */
+    public const MAX_TREE_DEPTH = 6;
+
+    public function isRoot(): bool
+    {
+        return $this->parent_id === null;
+    }
+
+    public function root(): self
+    {
+        return static::findRoot($this) ?? $this;
+    }
+
+    public static function resolveRootId(?int $categoryId): ?int
+    {
+        if (!$categoryId) {
+            return null;
+        }
+
+        $current = static::query()->select('id', 'parent_id')->find($categoryId);
+
+        return static::findRoot($current)?->id;
+    }
+
+    public static function findRoot(?self $current): ?self
+    {
+        if (!$current) {
+            return null;
+        }
+
+        $guard = 0;
+
+        while ($current->parent_id && $guard < self::MAX_TREE_DEPTH) {
+            $parent = static::query()->select('id', 'parent_id')->find($current->parent_id);
+
+            if (!$parent) {
+                break;
+            }
+
+            $current = $parent;
+            $guard++;
+        }
+
+        return $current;
+    }
+
+    public function attributes()
+    {
+        return $this->hasMany(CategoryAttribute::class);
+    }
+
+    public function inheritedAttributes()
+    {
+        $rootId = $this->isRoot() ? $this->id : static::resolveRootId($this->id);
+
+        return CategoryAttribute::query()->where('category_id', $rootId);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
@@ -86,6 +144,27 @@ class Category extends Model implements Sectionable
         }
 
         return $leaves;
+    }
+
+    /**
+     * This category id plus every descendant at any depth (parent, intermediate, or leaf).
+     */
+    public function idsInSubtree(): array
+    {
+        $ids = [$this->id];
+        $frontier = [$this->id];
+
+        while ($frontier) {
+            $children = static::query()
+                ->whereIn('parent_id', $frontier)
+                ->pluck('id')
+                ->all();
+
+            $ids = array_merge($ids, $children);
+            $frontier = $children;
+        }
+
+        return array_values(array_unique($ids));
     }
 
     public function stores()

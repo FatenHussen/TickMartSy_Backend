@@ -13,16 +13,12 @@ class ShopProductVariant extends Model
 
     protected $fillable = [
         'shop_id',
-        'quantity',
-        'price',
         'cost_price',
         'product_variant_id'
     ];
 
     protected $casts = [
-        'price' => 'float',
         'cost_price' => 'float',
-        'quantity' => 'integer',
     ];
 
     protected static function boot()
@@ -73,40 +69,5 @@ class ShopProductVariant extends Model
     public function getAverageRatingAttribute(): float
     {
         return round((float) $this->ratings()->avg('rating'), 1);
-    }
-
-    public function getFinalPriceAttribute(): float
-    {
-        // 1. Base price (shop overrides product price)
-        $price = (float)$this->price;
-
-
-        // 2. Get product final discount
-        $discount = $this->productVariant?->product?->final_discount;
-
-        if (!$discount || !$discount['type'] || $discount['value'] <= 0) {
-            return round($price, 2);
-        }
-
-        // 3. Apply discount
-        if ($discount['type'] === 'percentage') {
-            $price -= ($price * ($discount['value'] / 100));
-        }
-
-        if ($discount['type'] === 'fixed') {
-            $price -= $discount['value'];
-        }
-
-        return (float) round(max(0, $price), 2);
-    }
-
-    public function getDiscountAttribute(): float
-    {
-        return (float) round(max(0, ((float) $this->price) - $this->final_price), 2);
-    }
-
-    public function getPriceAfterDiscountAttribute(): float
-    {
-        return $this->final_price;
     }
 }

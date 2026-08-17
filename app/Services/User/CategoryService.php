@@ -16,7 +16,7 @@ class CategoryService extends BaseService
         $this->model      = $model;
         $this->resource   = OneResource::class;
         $this->collection = AllResource::class;
-        $this->relations = ['parent', 'activeChildren'];
+        $this->relations = ['parent', 'activeChildren.activeChildren'];
         $this->pagination = true;
     }
 

@@ -504,6 +504,19 @@ class Product extends Model implements Sectionable
 
         return (float) round(max(0, $price), 2);
     }
+    public function syncQuantityFromVariants(): void
+    {
+        $total = (int) $this->variants()->sum('quantity');
+
+        if ((int) $this->quantity === $total) {
+            return;
+        }
+
+        $this->update([
+            'quantity' => $total,
+        ]);
+    }
+
     public function totalSoldQuantity()
     {
         return $this->completedOrderItems()->sum('quantity');

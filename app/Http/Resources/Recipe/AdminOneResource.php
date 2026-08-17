@@ -47,7 +47,7 @@ class AdminOneResource extends JsonResource
 
             'totals' => $this->whenLoaded('items', function () {
                 $total_before_discount = $this->items->sum(function ($item) {
-                    return $item->shopProductVariant->price * $item->quantity;
+                    return (float) $item->shopProductVariant?->productVariant?->price * $item->quantity;
                 });
 
                 $discount_percentage = $this->discount ?? 0;

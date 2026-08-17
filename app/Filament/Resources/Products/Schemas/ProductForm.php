@@ -593,22 +593,12 @@ class ProductForm
                                                             Forms\Components\Select::make('attribute_id')
                                                                 ->label(__('custom.products.form.attribute_label'))
                                                                 ->options(function (callable $get) {
-                                                                    $categoryId = $get('../../../../category_id');
+                                                                    $categoryId = $get('../../../../category_id')
+                                                                        ?: $get('../../../../category_level_1');
 
-                                                                    if (!$categoryId) {
-                                                                        return ['_placeholder' => __('custom.products.form.select_category_first')];
-                                                                    }
-
-                                                                    $options = \App\Models\CategoryAttribute::where('category_id', $categoryId)
-                                                                        ->get()
-                                                                        ->pluck('name', 'id')
-                                                                        ->toArray();
-
-                                                                    if (empty($options)) {
-                                                                        return ['_placeholder' => __('custom.products.form.no_attributes')];
-                                                                    }
-
-                                                                    return $options;
+                                                                    return static::getInheritedAttributeOptions(
+                                                                        $categoryId ? (int) $categoryId : null
+                                                                    );
                                                                 })
                                                                 ->live(onBlur: true)
                                                                 ->required()
@@ -680,6 +670,20 @@ class ProductForm
                                                 ->columnSpanFull()
                                                 ->collapsible(),
 
+                                            Forms\Components\TextInput::make('price')
+                                                ->label(__('custom.products.form.price_label'))
+                                                ->numeric()
+                                                ->prefix('$')
+                                                ->minValue(0)
+                                                ->helperText(__('custom.products.form.price_help')),
+
+                                            Forms\Components\TextInput::make('quantity')
+                                                ->label(__('custom.products.form.available_quantity'))
+                                                ->numeric()
+                                                ->integer()
+                                                ->minValue(0)
+                                                ->helperText(__('custom.products.form.quantity_help')),
+
                                             Forms\Components\Toggle::make('is_trend')
                                                 ->label(__('custom.products.form.trending_product'))
                                                 ->helperText(__('custom.products.form.trending_help')),
@@ -712,34 +716,15 @@ class ProductForm
                                                                 ->required()
                                                                 ->searchable()
                                                                 ->distinct()
-                                                                ->columnSpan(2),
-
-                                                            Forms\Components\TextInput::make('quantity')
-                                                                ->label(__('custom.products.form.available_quantity'))
-                                                                ->numeric()
-                                                                ->minValue(0)
-                                                                ->required()
-                                                                ->suffix(__('custom.products.form.unit'))
-                                                                ->helperText(__('custom.products.form.quantity_help')),
-
-                                                            Forms\Components\TextInput::make('price')
-                                                                ->label(__('custom.products.form.price_in_shop'))
-                                                                ->numeric()
-                                                                ->prefix('$')
-                                                                ->minValue(0)
-                                                                ->required()
-                                                                ->helperText(__('custom.products.form.price_help')),
+                                                                ->columnSpanFull(),
                                                         ])
-                                                        ->columns(4)
+                                                        ->columns(1)
                                                         ->collapsible()
                                                         ->cloneable()
                                                         ->itemLabel(
                                                             fn(array $state): ?string =>
                                                             isset($state['shop_id']) && $state['shop_id']
-                                                                ? __('custom.products.form.shop_with_quantity', [
-                                                                    'shop' => \App\Models\Shop::find($state['shop_id'])?->name,
-                                                                    'quantity' => $state['quantity'] ?? 0
-                                                                ])
+                                                                ? (\App\Models\Shop::find($state['shop_id'])?->name ?? __('custom.products.form.new_shop'))
                                                                 : __('custom.products.form.new_shop')
                                                         )
                                                         ->defaultItems(0)
@@ -853,12 +838,16 @@ class ProductForm
         foreach (range(1, 6) as $level) {
             $field = 'category_level_' . $level;
 
-            $components[] = Forms\Components\Select::make($field)
+            $select = Forms\Components\Select::make($field)
                 ->label(__('custom.products.form.category_level_label', ['level' => $level]))
                 ->options(fn (callable $get): array => static::categoryOptionsForLevel($get, $level))
                 ->searchable()
                 ->preload()
-                ->live(onBlur: true)
+                ->live()
+                ->required($level === 1)
+                ->helperText($level === 1
+                    ? __('custom.products.form.category_level_hint')
+                    : __('custom.products.form.category_level_optional_hint'))
                 ->dehydrated(false)
                 ->visible(fn (callable $get): bool => static::isCategoryLevelVisible($get, $level))
                 ->afterStateHydrated(function ($state, callable $get, callable $set) use ($level): void {
@@ -870,10 +859,16 @@ class ProductForm
                 })
                 ->afterStateUpdated(function ($state, callable $get, callable $set) use ($level): void {
                     static::resetCategoryLevelsAfter($set, $level);
-                    static::syncLeafCategorySelection($get, $set);
+                    static::syncSelectedCategory($get, $set);
                     static::applyRestaurantFieldReset($get, $set);
                 })
                 ->columnSpan(1);
+
+            if ($level > 1) {
+                $select->placeholder(__('custom.products.form.category_level_optional'));
+            }
+
+            $components[] = $select;
         }
 
         return $components;
@@ -928,7 +923,7 @@ class ProductForm
         }
     }
 
-    private static function syncLeafCategorySelection(callable $get, callable $set): void
+    private static function syncSelectedCategory(callable $get, callable $set): void
     {
         $selectedCategoryId = null;
 
@@ -990,6 +985,25 @@ class ProductForm
         $set('country.en', null);
         $set('country_id', null);
         $set('sale_country_id', null);
+    }
+
+    private static function getInheritedAttributeOptions(?int $categoryId): array
+    {
+        if (!$categoryId) {
+            return ['_placeholder' => __('custom.products.form.select_category_first')];
+        }
+
+        $options = \App\Models\CategoryAttribute::query()
+            ->forCategoryTree($categoryId)
+            ->get()
+            ->pluck('name', 'id')
+            ->toArray();
+
+        if (empty($options)) {
+            return ['_placeholder' => __('custom.products.form.no_attributes')];
+        }
+
+        return $options;
     }
 
     private static function isColorAttribute($attributeId): bool

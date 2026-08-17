@@ -233,6 +233,8 @@ class PromotionTargetingTest extends TestCase
             'model' => null,
             'barcode' => null,
             'attributes_values_ids' => [],
+            'price' => 100,
+            'quantity' => 100,
             'is_trend' => false,
             'is_active' => true,
         ]);
@@ -240,8 +242,6 @@ class PromotionTargetingTest extends TestCase
         $shopVariant = ShopProductVariant::create([
             'product_variant_id' => $variant->id,
             'shop_id' => $shop->id,
-            'quantity' => 100,
-            'price' => 100,
         ]);
 
         return [$variant, $shopVariant];

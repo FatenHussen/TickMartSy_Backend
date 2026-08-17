@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Products\Tables;
 
 use App\Models\Product;
-use App\Models\ShopProductVariant;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -119,23 +118,22 @@ class ProductsTable
                             $record->update(['price' => round($basePrice, 2)]);
 
                             foreach ($data as $key => $value) {
-                                if (!str_starts_with((string) $key, 'price_')) {
+                                if (!str_starts_with((string) $key, 'price_variant_')) {
                                     continue;
                                 }
 
-                                $shopVariantId = (int) str_replace('price_', '', (string) $key);
+                                $variantId = (int) str_replace('price_variant_', '', (string) $key);
                                 $price = max(0, (float) $value);
 
-                                $shopVariant = ShopProductVariant::query()
-                                    ->where('id', $shopVariantId)
-                                    ->whereHas('productVariant', fn ($q) => $q->where('product_id', $record->id))
+                                $variant = $record->variants()
+                                    ->whereKey($variantId)
                                     ->first();
 
-                                if (!$shopVariant) {
+                                if (!$variant) {
                                     continue;
                                 }
 
-                                $shopVariant->update(['price' => round($price, 2)]);
+                                $variant->update(['price' => round($price, 2)]);
                             }
                         });
 
@@ -150,7 +148,7 @@ class ProductsTable
 
     private static function buildPriceFormSchema(Product $record): array
     {
-        $record->loadMissing(['media', 'variants.media', 'variants.shopVariants.shop']);
+        $record->loadMissing(['media', 'variants.media']);
 
         $components = [
             TextInput::make('product_price')
@@ -161,10 +159,6 @@ class ProductsTable
         ];
 
         foreach ($record->variants as $variant) {
-            if ($variant->shopVariants->isEmpty()) {
-                continue;
-            }
-
             $components[] = Placeholder::make('price_variant_label_' . $variant->id)
                 ->label(__('custom.products.actions.variant_prices_section', [
                     'variant' => self::resolvedVariantName($variant->name),
@@ -179,16 +173,13 @@ class ProductsTable
                     return new HtmlString('<img src="' . e($imageUrl) . '" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;" />');
                 });
 
-            foreach ($variant->shopVariants as $shopVariant) {
-                $components[] = TextInput::make('price_' . $shopVariant->id)
-                    ->label(__('custom.products.actions.shop_variant_price_label', [
-                        'shop' => self::resolvedShopName($shopVariant->shop),
-                        'variant' => self::resolvedVariantName($variant->name),
-                    ]))
-                    ->numeric()
-                    ->minValue(0)
-                    ->required();
-            }
+            $components[] = TextInput::make('price_variant_' . $variant->id)
+                ->label(__('custom.products.actions.variant_price_label', [
+                    'variant' => self::resolvedVariantName($variant->name),
+                ]))
+                ->numeric()
+                ->minValue(0)
+                ->required();
         }
 
         return $components;
@@ -196,16 +187,14 @@ class ProductsTable
 
     private static function buildPriceFormData(Product $record): array
     {
-        $record->loadMissing(['variants.shopVariants']);
+        $record->loadMissing(['variants']);
 
         $data = [
             'product_price' => (float) $record->price,
         ];
 
         foreach ($record->variants as $variant) {
-            foreach ($variant->shopVariants as $shopVariant) {
-                $data['price_' . $shopVariant->id] = (float) $shopVariant->price;
-            }
+            $data['price_variant_' . $variant->id] = (float) $variant->price;
         }
 
         return $data;
@@ -213,25 +202,6 @@ class ProductsTable
 
     private static function resolvedVariantName(mixed $name): string
     {
-        if (is_array($name)) {
-            return (string) ($name[app()->getLocale()] ?? $name['ar'] ?? $name['en'] ?? '-');
-        }
-
-        if (is_string($name) && $name !== '') {
-            return $name;
-        }
-
-        return '-';
-    }
-
-    private static function resolvedShopName(mixed $shop): string
-    {
-        if (!$shop) {
-            return '-';
-        }
-
-        $name = $shop->name ?? null;
-
         if (is_array($name)) {
             return (string) ($name[app()->getLocale()] ?? $name['ar'] ?? $name['en'] ?? '-');
         }

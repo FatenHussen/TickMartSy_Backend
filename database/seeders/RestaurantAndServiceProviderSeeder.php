@@ -234,6 +234,8 @@ class RestaurantAndServiceProviderSeeder extends Seeder
             );
 
             foreach ($data['variants'] as $variantIndex => $variantData) {
+                $basePrice = $data['price'] + (int) ($variantData['price_delta'] ?? 0);
+
                 $variant = ProductVariant::query()->updateOrCreate(
                     [
                         'product_id' => $product->id,
@@ -242,23 +244,21 @@ class RestaurantAndServiceProviderSeeder extends Seeder
                     [
                         'name' => $variantData['name'],
                         'attributes_values_ids' => [],
+                        'price' => $basePrice,
+                        'quantity' => 70 + ($variantIndex * 10),
                         'is_trend' => $variantIndex === 0,
                         'is_active' => true,
                     ]
                 );
 
-                foreach ($restaurantEntities as $shopIndex => $restaurantShop) {
-                    $basePrice = $data['price'] + (int) ($variantData['price_delta'] ?? 0);
-
+                foreach ($restaurantEntities as $restaurantShop) {
                     ShopProductVariant::query()->updateOrCreate(
                         [
                             'shop_id' => $restaurantShop->id,
                             'product_variant_id' => $variant->id,
                         ],
                         [
-                            'quantity' => 70 + ($shopIndex * 20) + ($variantIndex * 10),
-                            'price' => $basePrice + ($shopIndex * 1000),
-                            'cost_price' => max(1, (int) floor(($basePrice + ($shopIndex * 1000)) * 0.72)),
+                            'cost_price' => max(1, (int) floor($basePrice * 0.72)),
                         ]
                     );
                 }

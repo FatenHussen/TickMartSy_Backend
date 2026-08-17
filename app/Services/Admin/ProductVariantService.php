@@ -23,7 +23,7 @@ class ProductVariantService extends BaseService
     ];
 
     protected $searchableFields = [];
-    protected $sortableFields = ['id', 'created_at'];
+    protected $sortableFields = ['id', 'price', 'quantity', 'created_at'];
 
     public function queryBuilder($query, $filters = [], $config = [])
     {
@@ -57,6 +57,23 @@ class ProductVariantService extends BaseService
             $query->whereHas('product', function (Builder $q) use ($filters, $locale) {
                 $q->where("name->{$locale}", 'like', '%' . $filters['search'] . '%');
             });
+        }
+
+        // Filter by price range
+        if (array_key_exists('price_min', $filters) && $filters['price_min'] !== null) {
+            $query->where('price', '>=', $filters['price_min']);
+        }
+
+        if (array_key_exists('price_max', $filters) && $filters['price_max'] !== null) {
+            $query->where('price', '<=', $filters['price_max']);
+        }
+
+        if (array_key_exists('quantity_min', $filters) && $filters['quantity_min'] !== null) {
+            $query->where('quantity', '>=', $filters['quantity_min']);
+        }
+
+        if (array_key_exists('quantity_max', $filters) && $filters['quantity_max'] !== null) {
+            $query->where('quantity', '<=', $filters['quantity_max']);
         }
 
         return $query;

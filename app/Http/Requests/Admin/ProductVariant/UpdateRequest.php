@@ -15,6 +15,8 @@ class UpdateRequest extends BaseRequest
             'sku'                     => 'sometimes|nullable|string|unique:product_variants,sku,' . $this->route('product_variant'),
             'model'                   => 'sometimes|nullable|string|max:255',
             'barcode'                 => 'sometimes|nullable|string|max:255',
+            'price'                   => 'sometimes|nullable|numeric|min:0',
+            'quantity'                => 'sometimes|nullable|integer|min:0',
             'attributes_values_ids'   => 'sometimes|array',
             'attributes_values_ids.*' => 'integer|exists:attribute_values,id',
             'is_trend'                => 'sometimes|boolean',
