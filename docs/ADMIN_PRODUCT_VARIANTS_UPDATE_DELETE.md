@@ -169,27 +169,46 @@ Validation error (422):
 
 ### Delete
 
-Endpoint:
-- DELETE /product-variants/{product_variant}
+Deletion is never blocked anymore. When the variant is linked to other data the API
+returns 409 with the full impact so the dashboard can show a warning, then the same
+request is resent with `confirm=true`.
+
+See `docs/FRONTEND_DASHBOARD_VARIANT_DELETE_CONFIRM.md` for the full contract.
+
+Endpoints:
+- GET /product-variants/{id}/delete-impact (preview only, deletes nothing)
+- DELETE /product-variants/{product_variant}?confirm=true
 
 Permissions:
-- crud.permission:productvariant
+- crud.permission:productvariant (delete-impact uses productvariant.delete)
 
-Success response (200):
+Confirmation required (409):
+
+```json
+{
+  "status": false,
+  "message": "Deleting this variant affects related data. Review the details and resend the request with confirm=true.",
+  "requires_confirmation": true,
+  "data": {
+    "type": "product_variant",
+    "id": 12,
+    "requires_confirmation": true,
+    "counts": { "active_orders": 2, "past_orders": 5, "shop_variants": 3, "basket_items": 4, "recipe_items": 0, "scheduled_items": 1, "gifts": 0, "images": 2 },
+    "warnings": [
+      { "key": "active_orders", "count": 2, "message": "Linked to 2 active order(s). Order history is preserved and will not be affected." }
+    ],
+    "active_orders": [ { "id": 1, "order_code": "ORD-260816-00001", "status": "pending" } ]
+  }
+}
+```
+
+Success response (200) — same `data` shape, reporting what was deleted/affected:
 
 ```json
 {
   "status": true,
-  "message": "Success",
-  "data": true
-}
-```
-
-Active orders error (422):
-
-```json
-{
-  "message": "Cannot delete product variant with active orders."
+  "message": "Variant deleted successfully.",
+  "data": { "type": "product_variant", "id": 12, "counts": {}, "warnings": [], "active_orders": [] }
 }
 ```
 
@@ -334,26 +353,14 @@ Validation error (422):
 
 ### Delete
 
-Endpoint:
-- DELETE /shop-product-variants/{shop_product_variant}
+Same confirm-based flow as product variants.
+
+Endpoints:
+- GET /shop-product-variants/{id}/delete-impact (preview only, deletes nothing)
+- DELETE /shop-product-variants/{shop_product_variant}?confirm=true
 
 Permissions:
-- crud.permission:shopproductvariant
+- crud.permission:shopproductvariant (delete-impact uses shopproductvariant.delete)
 
-Success response (200):
-
-```json
-{
-  "status": true,
-  "message": "Success",
-  "data": true
-}
-```
-
-Active orders error (422):
-
-```json
-{
-  "message": "Cannot delete shop product variant with active orders."
-}
-```
+Confirmation required (409) / success (200) payloads are identical to the product
+variant ones, with `"type": "shop_product_variant"`.

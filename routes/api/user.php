@@ -16,6 +16,7 @@ use App\Http\Controllers\User\MyBasket\ScheduledBasketAlertController;
 use App\Http\Controllers\User\MyBasket\MyBasketController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\Category\CategoryController;
+use App\Http\Controllers\User\Category\CategoryPageController;
 use App\Http\Controllers\User\SectionController;
 use App\Http\Controllers\User\CityController;
 use App\Http\Controllers\User\ComplaintController;
@@ -143,6 +144,7 @@ Route::prefix('user')->group(
             // Public routes
             Route::get('/', [CategoryController::class, 'index']);
             Route::get('/{categoryId}/attributes', [CategoryController::class, 'attributes']);
+            Route::get('/{categoryId}/page', [CategoryPageController::class, 'show']);
         });
         Route::prefix('payment-methods')->group(function () {
             // Public routes

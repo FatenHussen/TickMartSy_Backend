@@ -19,6 +19,27 @@ class ProductVariantController extends BaseCRUDController
         $this->updateRequest = UpdateRequest::class;
     }
 
+    /**
+     * معاينة ما سيُحذف أو يتأثر قبل تنفيذ الحذف.
+     */
+    public function deleteImpact($id): JsonResponse
+    {
+        return $this->sendResponse(data: $this->service->deleteImpact($id));
+    }
+
+    /**
+     * الحذف: يعيد 409 مع تفاصيل التأثير إن لم يُرسل confirm=true.
+     */
+    public function destroy($id): JsonResponse
+    {
+        $impact = $this->service->deleteWithConfirmation($id, request()->boolean('confirm'));
+
+        return $this->sendResponse(
+            data: $impact,
+            message: __('custom.products.delete_impact.deleted_success')
+        );
+    }
+
     public function byProduct(Request $request, int $productId): JsonResponse
     {
         if (!Product::query()->whereKey($productId)->exists()) {

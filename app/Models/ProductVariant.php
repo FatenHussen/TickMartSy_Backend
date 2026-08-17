@@ -6,11 +6,12 @@ use App\Http\Resources\Product\VariantAttributeResource;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 
 class ProductVariant extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory, HasTranslations, SoftDeletes;
 
     public array $translatable = ['name'];
 
@@ -50,10 +51,12 @@ class ProductVariant extends Model
                 $shopVariant->delete();
             });
 
-            // Delete media
-            $productVariant->media()->each(function ($media) {
-                (new \App\Services\Base\MediaService())->delete($media);
-            });
+            // Media is kept on soft delete so a restore keeps its images
+            if ($productVariant->isForceDeleting()) {
+                $productVariant->media()->each(function ($media) {
+                    (new \App\Services\Base\MediaService())->delete($media);
+                });
+            }
         });
 
         static::saved(function ($productVariant) {

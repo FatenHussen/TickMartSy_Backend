@@ -2,10 +2,12 @@
 
 namespace App\Services\Admin;
 
+use App\Exceptions\DeleteConfirmationRequiredException;
 use App\Http\Resources\Admin\ProductVariant\AllResource;
 use App\Http\Resources\Admin\ProductVariant\OneResource;
 use App\Models\ProductVariant;
 use App\Services\Base\MediaService;
+use App\Services\Base\VariantDeleteImpactService;
 use App\Services\BaseService;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -127,27 +129,37 @@ class ProductVariantService extends BaseService
         return new ($this->resource)($variant);
     }
 
-    public function delete($id): bool
+    /**
+     * معاينة أثر الحذف دون تنفيذه.
+     */
+    public function deleteImpact($id): array
     {
-        $variant = ProductVariant::with('shopVariants')->findOrFail($id);
+        $variant = ProductVariant::findOrFail($id);
 
-        $activeStatuses = [
-            \App\Enums\OrderStatus::PENDING->value,
-            \App\Enums\OrderStatus::PREPARING->value,
-            \App\Enums\OrderStatus::OUT_DELIVERY->value,
-        ];
+        return (new VariantDeleteImpactService())->forProductVariant($variant);
+    }
 
-        $shopVariantIds = $variant->shopVariants->pluck('id');
+    /**
+     * الحذف مسموح دائماً، لكنه يتطلب تأكيداً صريحاً إذا كان يؤثر على بيانات مرتبطة.
+     */
+    public function deleteWithConfirmation($id, bool $confirmed = false): array
+    {
+        $variant = ProductVariant::findOrFail($id);
 
-        $hasActiveOrders = \App\Models\OrderItem::whereIn('shop_product_variant_id', $shopVariantIds)
-            ->whereHas('order', fn($q) => $q->whereIn('status', $activeStatuses))
-            ->exists();
+        $impact = (new VariantDeleteImpactService())->forProductVariant($variant);
 
-        if ($hasActiveOrders) {
-            throw new \App\Exceptions\CustomExceptionWithMessage('custom.products.cannot_delete_has_active_orders', 422);
+        if ($impact['requires_confirmation'] && !$confirmed) {
+            throw new DeleteConfirmationRequiredException($impact);
         }
 
         $variant->delete();
+
+        return $impact;
+    }
+
+    public function delete($id): bool
+    {
+        $this->deleteWithConfirmation($id, (bool) request()->boolean('confirm'));
 
         return true;
     }

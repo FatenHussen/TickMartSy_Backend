@@ -6,6 +6,7 @@ use App\Models\Section;
 use App\Services\User\ScheduleBasketService;
 use App\Services\User\BasketService;
 use App\Services\User\BrandService;
+use App\Services\User\CategoryService;
 use App\Services\User\ProductService;
 use App\Services\User\RecipeService;
 use App\Services\User\ScheduleService;
@@ -44,6 +45,7 @@ class SectionApiService
         $map = [
             // 'trending_products' => TrendingProductsHandler::class,
             'brands' => BrandService::class,
+            'categories' => CategoryService::class,
             'recipes' => RecipeService::class,
             'baskets' => BasketService::class,
             'schedule-basket' => ScheduleBasketService::class,

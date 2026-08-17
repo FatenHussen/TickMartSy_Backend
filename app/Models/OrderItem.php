@@ -43,9 +43,10 @@ class OrderItem extends Model
     }
 
     // العلاقة مع الـ ShopProductVariant
+    // withTrashed: الطلب يجب أن يبقى قابلاً للعرض حتى لو حُذف المتغير لاحقاً
     public function shopProductVariant()
     {
-        return $this->belongsTo(ShopProductVariant::class);
+        return $this->belongsTo(ShopProductVariant::class)->withTrashed();
     }
 
     // العلاقة مع الـ extras

@@ -34,6 +34,7 @@ use App\Http\Controllers\Admin\LegalDocumentController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\Order\OrderController;
 use App\Http\Controllers\Admin\Package\PackageController;
+use App\Http\Controllers\Admin\Page\PageCrudController;
 use App\Http\Controllers\Admin\PageSection\PageSectionCrudController;
 use App\Http\Controllers\Admin\PointController;
 use App\Http\Controllers\Admin\PointExchange\PointExchangeController;
@@ -273,6 +274,16 @@ Route::prefix('admin')->group(function () {
         Route::get('products/{product}/variants', [ProductVariantController::class, 'byProduct'])
             ->middleware('admin.permission:productvariant.view');
 
+        // --- Delete impact preview (what will be deleted / affected) ---
+        Route::get('product-variants/{id}/delete-impact', [ProductVariantController::class, 'deleteImpact'])
+            ->middleware('admin.permission:productvariant.delete');
+        Route::get('shop-product-variants/{id}/delete-impact', [ShopProductVariantController::class, 'deleteImpact'])
+            ->middleware('admin.permission:shopproductvariant.delete');
+        Route::get('category-attributes/{id}/delete-impact', [CategoryAttributeController::class, 'deleteImpact'])
+            ->middleware('admin.permission:categoryattribute.delete');
+        Route::get('category-attributes/{id}/linked-items', [CategoryAttributeController::class, 'linkedItems'])
+            ->middleware('admin.permission:categoryattribute.view');
+
         Route::apiResource('shops', ShopCrudController::class)->middleware('crud.permission:shops');
         Route::apiResource('stores', StoreCrudController::class)->middleware('crud.permission:store');
         Route::apiResource('vendors', VendorCrudController::class)->middleware('crud.permission:vendor');
@@ -294,6 +305,9 @@ Route::prefix('admin')->group(function () {
         Route::apiResource('shop-vendor-services', ShopVendorServiceCrudController::class)
             ->middleware('crud.permission:shopvendorservice');
         Route::apiResource('sections', SectionCrudController::class)->middleware('crud.permission:section');
+        Route::apiResource('pages', PageCrudController::class)->middleware('crud.permission:page');
+        Route::post('pages/{page}/sections', [PageCrudController::class, 'addSection'])
+            ->middleware('admin.permission:pagesection.create');
         Route::get('page-sections/pages/{page}/preview', [PageSectionCrudController::class, 'preview'])
             ->middleware('admin.permission:pagesection.view');
         Route::post('page-sections/pages/{page}/reorder', [PageSectionCrudController::class, 'reorder'])

@@ -29,6 +29,7 @@ class RolePermissionSeeder extends Seeder
             'Service',
             'Section',
             'PageSection',
+            'Page',
             'Brand',
             'Driver',
             'Language',

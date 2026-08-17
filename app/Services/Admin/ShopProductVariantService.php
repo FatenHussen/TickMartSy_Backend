@@ -2,11 +2,12 @@
 
 namespace App\Services\Admin;
 
+use App\Exceptions\DeleteConfirmationRequiredException;
 use App\Http\Resources\Admin\ShopProductVariant\AllResource;
 use App\Http\Resources\Admin\ShopProductVariant\OneResource;
 use App\Models\ShopProductVariant;
+use App\Services\Base\VariantDeleteImpactService;
 use App\Services\BaseService;
-use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Builder;
 
 class ShopProductVariantService extends BaseService
@@ -130,30 +131,39 @@ class ShopProductVariantService extends BaseService
         return $query;
     }
 
-    public function delete($id): bool
+    /**
+     * معاينة أثر الحذف دون تنفيذه.
+     */
+    public function deleteImpact($id): array
     {
         $shopVariant = ShopProductVariant::findOrFail($id);
 
-        $activeStatuses = [
-            \App\Enums\OrderStatus::PENDING->value,
-            \App\Enums\OrderStatus::PREPARING->value,
-            \App\Enums\OrderStatus::OUT_DELIVERY->value,
-        ];
+        return (new VariantDeleteImpactService())->forShopProductVariant($shopVariant);
+    }
 
-        $hasActiveOrders = \App\Models\OrderItem::where('shop_product_variant_id', $id)
-            ->whereHas('order', fn($q) => $q->whereIn('status', $activeStatuses))
-            ->exists();
+    /**
+     * الحذف مسموح دائماً، لكنه يتطلب تأكيداً صريحاً إذا كان يؤثر على بيانات مرتبطة.
+     */
+    public function deleteWithConfirmation($id, bool $confirmed = false): array
+    {
+        $shopVariant = ShopProductVariant::findOrFail($id);
 
-        if ($hasActiveOrders) {
-            throw new \App\Exceptions\CustomExceptionWithMessage(
-                'custom.products.cannot_delete_has_active_orders',
-                422
-            );
+        $impact = (new VariantDeleteImpactService())->forShopProductVariant($shopVariant);
+
+        if ($impact['requires_confirmation'] && !$confirmed) {
+            throw new DeleteConfirmationRequiredException($impact);
         }
 
         // The ShopProductVariant::deleted event in the model handles
         // removing this ID from basket_items.shop_product_variant_ids JSON
         $shopVariant->delete();
+
+        return $impact;
+    }
+
+    public function delete($id): bool
+    {
+        $this->deleteWithConfirmation($id, (bool) request()->boolean('confirm'));
 
         return true;
     }

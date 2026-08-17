@@ -73,6 +73,14 @@ return [
     'cannot_deactivate_default_currency' => 'لا يمكن تعطيل العملة الافتراضية.',
     'cannot_delete_package_with_active_subscriptions' => 'لا يمكن حذف الباقة لوجود اشتراكات نشطة.',
     'cannot_delete_category_attribute_in_use' => 'لا يمكن حذف خاصية الصنف لأنها مستخدمة في :count متغير من المنتجات.',
+    'category_attribute_delete_impact' => [
+        'requires_confirmation' => 'حذف هذه الخاصية سيؤثر على عناصر مرتبطة. راجع التفاصيل ثم أعد إرسال الطلب مع confirm=true للتأكيد.',
+        'deleted_success' => 'تم حذف خاصية الصنف بنجاح.',
+        'attribute_values' => 'سيتم حذف :count قيمة تابعة لهذه الخاصية.',
+        'product_variants' => 'مستخدمة في :count متغير من المنتجات، وسيتم إزالة قيم هذه الخاصية منها دون حذف المتغيرات.',
+        'products' => 'تتأثر :count منتج.',
+        'active_orders' => 'يوجد :count طلب نشط يحتوي على هذه المتغيرات. سجل الطلبات سيبقى محفوظاً ولن يتأثر.',
+    ],
     'category_attribute_must_be_root' => 'يمكن إسناد المتغيرات (الصفات) للفئة الرئيسية فقط. الفئات الفرعية ترث نفس الصفات والقيم.',
     'cannot_delete_category_related' => 'لا يمكن حذف هذا التصنيف لأنه مرتبط بعناصر أخرى.',
     'type_required' => 'حقل النوع مطلوب.',
@@ -162,6 +170,17 @@ return [
     // Products
     'products' => [
         'cannot_delete_has_active_orders' => 'لا يمكن حذف هذا المتغير لأنه مرتبط بطلبات نشطة',
+        'delete_impact' => [
+            'requires_confirmation' => 'حذف هذا المتغير سيؤثر على بيانات مرتبطة. راجع التفاصيل ثم أعد إرسال الطلب مع confirm=true للتأكيد.',
+            'deleted_success' => 'تم حذف المتغير بنجاح.',
+            'active_orders' => 'مرتبط بـ :count طلب نشط. سجل الطلبات سيبقى محفوظاً ولن يتأثر.',
+            'past_orders' => 'مرتبط بـ :count طلب سابق. سجل الطلبات سيبقى محفوظاً ولن يتأثر.',
+            'shop_variants' => 'سيتم حذف :count ربط مع المتاجر.',
+            'basket_items' => 'سيتم حذف :count عنصر من سلات المستخدمين.',
+            'recipe_items' => 'سيتم حذف :count عنصر من الوصفات.',
+            'scheduled_items' => 'سيتم إلغاء ربط :count عنصر من السلات المجدولة.',
+            'gifts' => 'سيتم إلغاء ربط :count هدية.',
+        ],
         'title' => 'المنتجات',
         'singular' => 'منتج',
         'image' => 'الصورة',

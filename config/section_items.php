@@ -24,6 +24,10 @@ return [
         'item_type' => 'App\Models\Basket',
         'url'   => 'admin/baskets',
     ],
+    'category' => [
+        'item_type' => 'App\Models\Category',
+        'url'   => 'admin/categories',
+    ],
     // 'vendor' => [
     //     'item_type' => 'App\Models\Vendor',
     //     'url'   => 'admin/shop',

@@ -20,6 +20,17 @@ class CategoryService extends BaseService
         $this->pagination = true;
     }
 
+    /**
+     * Builder used by section API rendering (SectionApiService).
+     * Supports `parent_id` to fetch direct children of a category.
+     */
+    public function query(array $filters = [])
+    {
+        $query = Category::query();
+
+        return $this->queryBuilder($query, $filters);
+    }
+
     public function queryBuilder($query, $filters = [], $config = [])
     {
         // Filter only active categories for users

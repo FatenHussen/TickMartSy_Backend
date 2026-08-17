@@ -66,6 +66,14 @@ return [
     'user_currency_updated_successfully' => 'User currency updated successfully.',
     'cannot_deactivate_default_currency' => 'Cannot deactivate the default currency.',
     'cannot_delete_category_attribute_in_use' => 'Cannot delete category attribute because it is used in :count product variant(s).',
+    'category_attribute_delete_impact' => [
+        'requires_confirmation' => 'Deleting this attribute affects linked items. Review the details and resend the request with confirm=true.',
+        'deleted_success' => 'Category attribute deleted successfully.',
+        'attribute_values' => ':count value(s) of this attribute will be deleted.',
+        'product_variants' => 'Used by :count product variant(s); these values will be removed from them without deleting the variants.',
+        'products' => ':count product(s) will be affected.',
+        'active_orders' => ':count active order(s) contain these variants. Order history is preserved and will not be affected.',
+    ],
     'category_attribute_must_be_root' => 'Attributes can only be assigned to a main (root) category. Subcategories inherit the same attributes and values.',
     'cannot_delete_category_related' => 'Cannot delete this category because it is linked to other records.',
     'type_required' => 'The type field is required.',
@@ -154,6 +162,18 @@ return [
 
     // Products
     'products' => [
+        'cannot_delete_has_active_orders' => 'Cannot delete this variant because it is linked to active orders.',
+        'delete_impact' => [
+            'requires_confirmation' => 'Deleting this variant affects related data. Review the details and resend the request with confirm=true.',
+            'deleted_success' => 'Variant deleted successfully.',
+            'active_orders' => 'Linked to :count active order(s). Order history is preserved and will not be affected.',
+            'past_orders' => 'Linked to :count past order(s). Order history is preserved and will not be affected.',
+            'shop_variants' => ':count shop link(s) will be deleted.',
+            'basket_items' => ':count user basket item(s) will be deleted.',
+            'recipe_items' => ':count recipe item(s) will be deleted.',
+            'scheduled_items' => ':count scheduled basket item(s) will be unlinked.',
+            'gifts' => ':count gift(s) will be unlinked.',
+        ],
         'title' => 'Products',
         'singular' => 'Product',
         'image' => 'Image',

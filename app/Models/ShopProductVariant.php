@@ -42,13 +42,21 @@ class ShopProductVariant extends Model
 
             // 3. Delete recipe_items linked to this variant
             RecipeItem::where('shop_product_variant_id', $shopVariant->id)->delete();
+
+            // 4. Unlink scheduled basket items (FK is nullable)
+            UserBasketScheduleItem::where('shop_product_variant_id', $shopVariant->id)
+                ->update(['shop_product_variant_id' => null]);
+
+            // 5. Unlink gifts (FK is nullable)
+            Gift::where('shop_product_variant_id', $shopVariant->id)
+                ->update(['shop_product_variant_id' => null]);
         });
     }
 
 
     public function productVariant()
     {
-        return $this->belongsTo(ProductVariant::class, 'product_variant_id');
+        return $this->belongsTo(ProductVariant::class, 'product_variant_id')->withTrashed();
     }
 
     public function shop()

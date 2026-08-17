@@ -3,13 +3,14 @@
 namespace App\Services\Admin;
 
 use App\Models\CategoryAttribute;
-use App\Models\ProductVariant;
 use App\Models\AttributeValue;
 use App\Models\Color;
 use App\Http\Resources\Admin\Category\CategoryAttribute\OneResource;
 use App\Http\Resources\Admin\Category\CategoryAttribute\AllResource;
+use App\Services\Base\CategoryAttributeDeleteImpactService;
 use App\Services\BaseService;
-use App\Exceptions\CustomExceptionWithMessage;
+use App\Exceptions\DeleteConfirmationRequiredException;
+use Illuminate\Support\Facades\DB;
 
 class CategoryAttributeService extends BaseService
 {
@@ -123,33 +124,59 @@ class CategoryAttributeService extends BaseService
     }
 
     /**
-     * Delete a category attribute
-     * Prevents deletion if any product variants are using its attribute values
+     * معاينة أثر الحذف دون تنفيذه.
      */
-    public function delete($id): bool
+    public function deleteImpact($id): array
     {
         $categoryAttribute = CategoryAttribute::findOrFail($id);
 
-        // Get all attribute value IDs for this category attribute
-        $attributeValueIds = $categoryAttribute->values()->pluck('id')->toArray();
+        return (new CategoryAttributeDeleteImpactService())->impact($categoryAttribute);
+    }
 
-        if (!empty($attributeValueIds)) {
-            // Check if any product variants are using these attribute values
-            $variantsCount = ProductVariant::where(function ($query) use ($attributeValueIds) {
-                foreach ($attributeValueIds as $valueId) {
-                    $query->orWhereJsonContains('attributes_values_ids', $valueId);
-                }
-            })->count();
+    /**
+     * قائمة مفصّلة بكل ما هو مرتبط بالخاصية (تبويب "العناصر المرتبطة").
+     */
+    public function linkedItems($id, int $page = 1, int $perPage = 10): array
+    {
+        $categoryAttribute = CategoryAttribute::findOrFail($id);
 
-            if ($variantsCount > 0) {
-                throw new CustomExceptionWithMessage(
-                    __('custom.cannot_delete_category_attribute_in_use', [
-                        'count' => $variantsCount
-                    ])
-                );
-            }
+        return (new CategoryAttributeDeleteImpactService())->linkedItems($categoryAttribute, $page, $perPage);
+    }
+
+    /**
+     * الحذف مسموح دائماً، لكنه يتطلب تأكيداً صريحاً إذا كانت الخاصية مستخدمة.
+     * عند التأكيد تُزال قيم الخاصية من متغيّرات المنتجات بدل حذف المتغيّرات نفسها.
+     */
+    public function deleteWithConfirmation($id, bool $confirmed = false): array
+    {
+        $categoryAttribute = CategoryAttribute::findOrFail($id);
+        $impactService = new CategoryAttributeDeleteImpactService();
+
+        $impact = $impactService->impact($categoryAttribute);
+
+        if ($impact['requires_confirmation'] && !$confirmed) {
+            throw new DeleteConfirmationRequiredException(
+                $impact,
+                'custom.category_attribute_delete_impact.requires_confirmation'
+            );
         }
 
-        return parent::delete($id);
+        $valueIds = $categoryAttribute->values()->pluck('id')->all();
+
+        DB::transaction(function () use ($categoryAttribute, $impactService, $valueIds) {
+            $impactService->detachValuesFromVariants($valueIds);
+
+            // attribute_values تُحذف تلقائياً عبر cascade على مستوى قاعدة البيانات
+            $categoryAttribute->delete();
+        });
+
+        return $impact;
+    }
+
+    public function delete($id): bool
+    {
+        $this->deleteWithConfirmation($id, request()->boolean('confirm'));
+
+        return true;
     }
 }

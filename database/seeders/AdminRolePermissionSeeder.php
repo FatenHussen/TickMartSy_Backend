@@ -33,6 +33,7 @@ class AdminRolePermissionSeeder extends Seeder
             'Language',
             'Section',
             'PageSection',
+            'Page',
             'Coupon',
             'Package',
             'Gift',

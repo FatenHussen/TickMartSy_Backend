@@ -39,11 +39,14 @@ class InventoryService
 
     private function lockProductVariant(int $shopProductVariantId): ProductVariant
     {
+        // withTrashed: الطلبات الجارية يجب أن تُكمل تحديث المخزون حتى لو حُذف المتغير
         $shopVariant = ShopProductVariant::query()
+            ->withTrashed()
             ->lockForUpdate()
             ->findOrFail($shopProductVariantId);
 
         return ProductVariant::query()
+            ->withTrashed()
             ->lockForUpdate()
             ->findOrFail($shopVariant->product_variant_id);
     }
