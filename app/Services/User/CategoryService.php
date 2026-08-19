@@ -26,7 +26,9 @@ class CategoryService extends BaseService
      */
     public function query(array $filters = [])
     {
-        $query = Category::query();
+        $query = Category::query()->withCount([
+            'activeChildren as children_count',
+        ]);
 
         return $this->queryBuilder($query, $filters);
     }

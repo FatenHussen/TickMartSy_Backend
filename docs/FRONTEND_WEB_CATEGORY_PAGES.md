@@ -41,11 +41,23 @@
 
 قد تحتوي الصفحة على:
 
-1. **الأقسام الفرعية** (`variant: square`) — أبناء الفئة الحالية
-2. **المنتجات** (`variant: vertical`) — منتجات الفئة وكل التابعين لها
-3. **أقسام يضيفها الأدmin** — سلاiderات، بانرات، متاجر، ...
+1. **الأقسام الفرعية** (`manual_model: category`, `is_default: true`) — أبناء الفئة الحالية
+2. **المنتجات** (`manual_model: product`, `is_default: true`) — منتجات الفئة وكل التابعين لها
+3. **أقسام يضيفها الأدmin** (`is_default: false`) — سلاiderات، بانرات، متاجر، ...
 
-اعرض `sections` بالترتيب (`order`) كما يصل من API.
+### تمييز الأقسام المولّدة تلقائياً
+
+| الحقل | القيمة |
+|-------|--------|
+| `is_default` | `true` فقط للقسمين المولّدين؛ `false` لأي قسم أضافه الأدمن |
+| `content_type` | `category` \| `product` \| … — على كل قسم |
+| `manual_model` | مطلوب لـ `type=manual`، `null` لـ `type=api` |
+| `api_method` | مطلوب لـ `type=api` (`categories`, `products`, …)، `null` لـ manual |
+| `display_type_id` | رقم ثابت بين البيئات (مثلاً `category=8`, `product=2`, `banner=1`) |
+
+**الويب:** اسقط الأقسام حيث `is_default === true` واعرض البديل المخصّص (شريط التصفح + شبكة المنتجات). اعرض كل قسم حيث `is_default === false` — حتى لو تكرر `manual_model` مع قسم مولّد.
+
+اعرض `sections` بالترتيب (`order`) و`position` (`before` / `after`) كما يصل من API.
 
 ---
 

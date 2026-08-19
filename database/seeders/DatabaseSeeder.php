@@ -62,6 +62,7 @@ class DatabaseSeeder extends Seeder
             ShopProductVariantSeeder::class,
 
             // Pages & Services
+            DisplayTypeSeeder::class,
             PageSectionSeeder::class,
             CategoryDetailsPageSeeder::class,
             CategoryPagesBackfillSeeder::class,

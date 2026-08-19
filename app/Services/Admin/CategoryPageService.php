@@ -4,10 +4,10 @@ namespace App\Services\Admin;
 
 use App\Enums\VariantSection;
 use App\Models\Category;
-use App\Models\DisplayType;
 use App\Models\Page;
 use App\Models\PageSection;
 use App\Models\Section;
+use App\Support\DisplayTypeCatalog;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -70,15 +70,8 @@ class CategoryPageService
      */
     private function seedDefaultSections(Page $page, Category $category): void
     {
-        $categoryDisplayType = DisplayType::firstOrCreate(
-            ['manual_model' => 'category', 'allowed_page_slugs' => null],
-            ['image' => 'images/display/category.png']
-        );
-
-        $productDisplayType = DisplayType::firstOrCreate(
-            ['manual_model' => 'product', 'allowed_page_slugs' => null],
-            ['image' => 'images/display/product.png']
-        );
+        $categoryDisplayTypeId = DisplayTypeCatalog::idFor('category');
+        $productDisplayTypeId = DisplayTypeCatalog::idFor('product');
 
         $childrenSection = Section::create([
             'name'         => ['en' => 'Subcategories', 'ar' => 'الأقسام الفرعية'],
@@ -94,12 +87,13 @@ class CategoryPageService
             'name'            => ['en' => 'Subcategories', 'ar' => 'الأقسام الفرعية'],
             'page_id'         => $page->id,
             'section_id'      => $childrenSection->id,
-            'display_type_id' => $categoryDisplayType->id,
-            'position'        => 'after',
+            'display_type_id' => $categoryDisplayTypeId,
+            'position'        => 'before',
             'variant'         => VariantSection::Square->value,
             'order'           => 1,
             'filters'         => ['parent_id' => $category->id],
             'is_active'       => true,
+            'is_default'      => true,
         ]);
 
         $productsSection = Section::create([
@@ -118,12 +112,13 @@ class CategoryPageService
             'name'            => ['en' => 'Products', 'ar' => 'المنتجات'],
             'page_id'         => $page->id,
             'section_id'      => $productsSection->id,
-            'display_type_id' => $productDisplayType->id,
-            'position'        => 'after',
+            'display_type_id' => $productDisplayTypeId,
+            'position'        => 'before',
             'variant'         => VariantSection::Vertical->value,
             'order'           => 2,
             'filters'         => ['category_id' => $category->id],
             'is_active'       => true,
+            'is_default'      => true,
         ]);
     }
 

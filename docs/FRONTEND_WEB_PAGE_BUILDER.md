@@ -33,13 +33,18 @@
 {
   "id": 10,
   "name": { "ar": "سلايدر رئيسي", "en": "Main slider" },
-  "type": "manual",              // manual | api
-  "position": "main",
+  "type": "manual",
+  "content_type": "banner",
+  "manual_model": "banner",
+  "api_method": null,
+  "position": "before",
   "order": 1,
-  "variant": "horizontal",       // horizontal | vertical | square
+  "variant": "horizontal",
+  "display_type_id": 1,
+  "is_default": false,
   "background_color": "#F7F7F7",
   "background_card_color": "#FFFFFF",
-  "display_type_id": 3,           // شكل الكارد (اختياري)
+  "display_type_id": 1,
   "end_date": null,               // تاريخ انتهاء (flash sale فقط)
   "discount": null,               // خصم (flash sale فقط)
   "discount_type": null,          // نوع الخصم (flash sale فقط)
@@ -57,6 +62,22 @@
 - `square` → شبكة مربّعات (مناسبة للفئات).
 
 > شكل الكارد يُشتق من `display_type_id` إن رغبت بتوحيد الأشكال؛ وإلا اعتمد `variant`.
+
+### تمييز نوع القسم
+
+| `type` | `manual_model` | `content_type` | `api_method` |
+|--------|----------------|----------------|--------------|
+| `manual` | مطلوب | مطلوب | `null` |
+| `api` | `null` | مطلوب | مطلوب |
+
+### فلاتر URL
+
+- **`manual`**: `items` ثابتة — لا تتأثر بفلاتر URL.
+- **`api`**: `items` ديناميكية — `merge(section.filters, url_query)` (URL override).
+
+فلاتر `products`: `category_id`, `brand_id`, `shop_id`, `country_id`, `country`, `name`, `price_min`, `price_max`, `on_sale`, `in_stock_only`, `is_free_delivery`, `is_instant_delivery`, `attribute_values[]`, `type`, `search`, `sort_by` أو `sortField`+`sortOrder`.
+
+`display_type_id`: `1=banner`, `2=product`, `3=shop`, `4=basket`, `5=schedule-basket`, `6=brand`, `7=recipe`, `8=category`.
 
 ---
 

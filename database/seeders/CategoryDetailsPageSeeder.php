@@ -3,10 +3,10 @@
 namespace Database\Seeders;
 
 use App\Enums\VariantSection;
-use App\Models\DisplayType;
 use App\Models\Page;
 use App\Models\PageSection;
 use App\Models\Section;
+use App\Support\DisplayTypeCatalog;
 use Illuminate\Database\Seeder;
 
 /**
@@ -30,15 +30,8 @@ class CategoryDetailsPageSeeder extends Seeder
             return;
         }
 
-        $categoryDisplayType = DisplayType::firstOrCreate(
-            ['manual_model' => 'category', 'allowed_page_slugs' => null],
-            ['image' => 'images/display/category.png']
-        );
-
-        $productDisplayType = DisplayType::firstOrCreate(
-            ['manual_model' => 'product', 'allowed_page_slugs' => null],
-            ['image' => 'images/display/product.png']
-        );
+        $categoryDisplayTypeId = DisplayTypeCatalog::idFor('category');
+        $productDisplayTypeId = DisplayTypeCatalog::idFor('product');
 
         // 1) Subcategories block: children of the current category (parent_id).
         $childrenSection = Section::create([
@@ -54,12 +47,13 @@ class CategoryDetailsPageSeeder extends Seeder
             'name' => ['en' => 'Subcategories', 'ar' => 'الأقسام الفرعية'],
             'page_id' => $page->id,
             'section_id' => $childrenSection->id,
-            'display_type_id' => $categoryDisplayType->id,
-            'position' => 'after',
+            'display_type_id' => $categoryDisplayTypeId,
+            'position' => 'before',
             'variant' => VariantSection::Square->value,
             'order' => 1,
             'filters' => [],
             'is_active' => true,
+            'is_default' => true,
         ]);
 
         // 2) Products block: products of the current category subtree (category_id).
@@ -78,12 +72,13 @@ class CategoryDetailsPageSeeder extends Seeder
             'name' => ['en' => 'Products', 'ar' => 'المنتجات'],
             'page_id' => $page->id,
             'section_id' => $productsSection->id,
-            'display_type_id' => $productDisplayType->id,
-            'position' => 'after',
+            'display_type_id' => $productDisplayTypeId,
+            'position' => 'before',
             'variant' => VariantSection::Vertical->value,
             'order' => 2,
             'filters' => [],
             'is_active' => true,
+            'is_default' => true,
         ]);
     }
 }

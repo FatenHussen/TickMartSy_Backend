@@ -7,6 +7,7 @@ use App\Http\Resources\SectionItem\OneResource as SectionItemOneResource;
 use App\Http\Resources\Section\SectionApiItemResource;
 use App\Models\FlashSale;
 use App\Models\SectionItem;
+use App\Support\DisplayTypeCatalog;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -23,9 +24,17 @@ class OneResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name ?? $this->section->name,
             'type' => $this->section->type,
+            'content_type' => $this->section->contentType(),
+            'manual_model' => $this->section->type === 'manual'
+                ? ($this->section->manual_model ?? $this->section->contentType())
+                : null,
+            'api_method' => $this->section->type === 'api'
+                ? $this->section->api_method
+                : null,
             'position' => $this->position,
             'order' => $this->order,
-            'display_type_id' => $this->display_type_id,
+            'display_type_id' => $this->resolveDisplayTypeId(),
+            'is_default' => (bool) $this->is_default,
             'variant' => $this->variant ?? VariantSection::Horizontal->value,
             'background_color' => $this->background_color,
             'background_card_color' => $this->background_card_color,
@@ -54,6 +63,30 @@ class OneResource extends JsonResource
                 ),
 
         ];
+    }
+
+    private function resolveDisplayTypeId(): int
+    {
+        if ($this->display_type_id) {
+            return (int) $this->display_type_id;
+        }
+
+        $contentType = $this->section->contentType();
+
+        if ($contentType === 'restaurant') {
+            $contentType = 'shop';
+        }
+
+        if ($this->section->api_method === 'schedule-basket') {
+            $contentType = 'schedule-basket';
+        }
+
+        $resolved = DisplayTypeCatalog::idFor(
+            $contentType,
+            $this->relationLoaded('page') ? $this->page?->slug : null,
+        );
+
+        return $resolved ?? 0;
     }
 
     private function visibleSectionItems()

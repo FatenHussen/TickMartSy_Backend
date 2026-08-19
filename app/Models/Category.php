@@ -196,13 +196,18 @@ class Category extends Model implements Sectionable
 
     public function toSectionArray(): array
     {
+        $childrenCount = $this->children_count
+            ?? ($this->relationLoaded('activeChildren')
+                ? $this->activeChildren->count()
+                : $this->activeChildren()->count());
+
         return [
-            'id'       => $this->id,
-            'title'     => $this->name,
-            'desc'     => null,
-            'image'    => $this->icon,
-            'price' => null,
-            'discount' => null,
+            'id' => $this->id,
+            'name' => $this->getTranslations('name'),
+            'image' => $this->image_url,
+            'parent_id' => $this->parent_id,
+            'has_children' => $childrenCount > 0,
+            'children_count' => $childrenCount,
         ];
     }
 }

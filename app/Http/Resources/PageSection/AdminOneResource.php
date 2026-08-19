@@ -22,7 +22,15 @@ class AdminOneResource extends JsonResource
             'name' => $this->getTranslations('name') ?? null,
             'section_id' => $this->section->id,
             'section_name' => $this->section->name,
+            'type' => $this->section->type,
             'content_type' => $this->section->contentType(),
+            'manual_model' => $this->section->type === 'manual'
+                ? ($this->section->manual_model ?? $this->section->contentType())
+                : null,
+            'api_method' => $this->section->type === 'api'
+                ? $this->section->api_method
+                : null,
+            'is_default' => (bool) $this->is_default,
             'page_id' => $this->page->id,
             'page_name' => $this->page->title,
             'position' => $this->position,

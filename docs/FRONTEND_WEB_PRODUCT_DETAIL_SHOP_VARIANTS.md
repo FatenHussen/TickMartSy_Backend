@@ -238,13 +238,14 @@ function ProductPage() {
 
 ## 6) Checklist
 
-- [ ] ما في وصول مباشر لـ `shop_variants[0].*` بدون `?.` أو fallback
-- [ ] `shop_id === null` → زر السلة معطّل، والصفحة تضل تعرض
-- [ ] `country` يُعرض كنص، ولا يوجد `country.name`
-- [ ] `attributes_map` فاضي → قسم الخصائص مخفي
-- [ ] الصور: fallback من صور المنتج إذا صور المتغيّر فاضية
-- [ ] `errorElement` مخصص لمسار `/product/:id`
-- [ ] تجربة `/product/23` و `/product/24` (كلاهما بدون فروع حالياً) تفتح بشكل طبيعي
+- [x] ما في وصول مباشر لـ `shop_variants[0].*` بدون `?.` أو fallback
+- [x] `shop_id === null` → زر السلة معطّل، والصفحة تضل تعرض
+- [x] `country` يُعرض كنص، ولا يوجد `country.name`
+- [x] `attributes_map` فاضي → قسم الخصائص مخفي
+- [x] الصور: fallback من صور المنتج إذا صور المتغيّر فاضية
+- [x] `errorElement` مخصص لمسار `/product/:id`
+- [x] تجربة `/product/20` و `/product/22` تفتح بشكل طبيعي
+- [x] `AddProductModal.tsx` — إصلاح مسار السلة المجدولة للعقد الجديد
 
 ---
 
@@ -253,3 +254,34 @@ function ProductPage() {
 الـ fallback حل عرض فقط — يمنع كسر الصفحة، بس **ما بيخلي المنتج قابل للشراء**.
 حتى يصير الشراء ممكن، لازم الداشبورد يربط المنتج بمتغيّر + فرع.
 التفاصيل بـ `FRONTEND_DASHBOARD_PRODUCT_VARIANTS_SAVE.md`.
+
+---
+
+## 8) مشاكل `.env` والإعداد
+
+### 8.1 المتغيّر ميّت وقيمته غلط
+
+```
+VITE_SERVER_URL=https://tickmartsy.com/api/user
+```
+
+ما في سطر واحد بالكود يقرا `VITE_SERVER_URL`. والقيمة نفسها غلط: `tickmartsy.com` هو مضيف الواجهة (SPA) مو الـ API.
+
+### 8.2 المضيف الحقيقي مثبَّت بالكود بمكانين
+
+- `interceptor.ts:26` — `https://tickdash.tickmartsy.com/api/` للإنتاج
+- `vite.config.ts:27` — نفس المضيف كهدف للـ proxy بالتطوير
+
+### 8.3 `.env` مو ضمن `.gitignore`
+
+### الإصلاح المقترح
+
+| الملف | التغيير |
+|---|---|
+| `.gitignore` | ضيف `.env` و `.env.*` مع استثناء `!.env.example` |
+| `.env.example` | ملف جديد متتبَّع فيه `VITE_API_HOST=https://tickdash.tickmartsy.com` كتوثيق |
+| `.env` | استبدل السطر الميّت بـ `VITE_API_HOST=https://tickdash.tickmartsy.com` |
+| `interceptor.ts` | `DEV ? "/api" : \`${import.meta.env.VITE_API_HOST ?? "https://tickdash.tickmartsy.com"}/api\`` |
+| `vite.config.ts` | خُد هدف الـ proxy من `loadEnv` بنفس القيمة الافتراضية |
+
+**⚠️ يحتاج موافقة قبل التنفيذ** — التعديل بيلمس إعداد البناء والنشر.

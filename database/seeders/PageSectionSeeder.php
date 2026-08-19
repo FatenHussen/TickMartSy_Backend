@@ -8,11 +8,11 @@ use App\Models\{
     Page,
     Section,
     PageSection,
-    DisplayType,
     Banner,
     SectionItem,
     Product
 };
+use App\Support\DisplayTypeCatalog;
 
 class PageSectionSeeder extends Seeder
 {
@@ -20,50 +20,18 @@ class PageSectionSeeder extends Seeder
     {
         /*
         |--------------------------------------------------------------------------
-        | Display Types
+        | Display Types (fixed IDs — see DisplayTypeSeeder)
         |--------------------------------------------------------------------------
         */
-        $bannerDisplayType = DisplayType::create([
-            'manual_model' => 'banner',
-            'image' => 'images/display/banner.png',
-        ]);
-
-        $productDisplayType = DisplayType::create([
-            'manual_model' => 'product',
-            'image' => 'images/display/product.png',
-        ]);
-
-        $shopDisplayType = DisplayType::create([
-            'manual_model' => 'shop',
-            'image' => 'images/display/shop.png',
-        ]);
-
-        $basketsDisplayType = DisplayType::create([
-            'manual_model' => 'basket',
-            'image' => 'images/display/basket.png',
-        ]);
-        $scheduleBasketsDisplayType = DisplayType::create([
-            'manual_model' => 'schedule-basket',
-            'image' => 'images/display/schedule-basket.png',
-        ]);
-        $brandsDisplayType = DisplayType::create([
-            'manual_model' => 'brand',
-            'image' => 'images/display/brand.png',
-        ]);
-        $recipeDisplayType = DisplayType::create([
-            'manual_model' => 'recipe',
-            'image' => 'images/display/recipe.png',
-        ]);
-        $bannerDisplayType2 = DisplayType::create([
-            'manual_model' => 'banner',
-            'image' => 'images/display/banner.png',
-            'allowed_page_slugs' => ['welcome'],
-        ]);
-        $introBannerDisplayType = DisplayType::create([
-            'manual_model' => 'banner',
-            'image' => 'images/display/banner.png',
-            'allowed_page_slugs' => ['intro'],
-        ]);
+        $bannerDisplayTypeId = DisplayTypeCatalog::idFor('banner');
+        $productDisplayTypeId = DisplayTypeCatalog::idFor('product');
+        $shopDisplayTypeId = DisplayTypeCatalog::idFor('shop');
+        $basketsDisplayTypeId = DisplayTypeCatalog::idFor('basket');
+        $scheduleBasketsDisplayTypeId = DisplayTypeCatalog::idFor('schedule-basket');
+        $brandsDisplayTypeId = DisplayTypeCatalog::idFor('brand');
+        $recipeDisplayTypeId = DisplayTypeCatalog::idFor('recipe');
+        $bannerDisplayType2Id = DisplayTypeCatalog::idFor('banner', 'welcome');
+        $introBannerDisplayTypeId = DisplayTypeCatalog::idFor('banner', 'intro');
 
         $defaultVariant = VariantSection::Horizontal->value;
         $defaultPageSectionColors = [
@@ -228,7 +196,7 @@ class PageSectionSeeder extends Seeder
                 'page_id' => $page->id,
                 'section_id' => $bannerSection->id,
             ], $fillPageSectionColors([
-                'display_type_id' => $bannerDisplayType->id,
+                'display_type_id' => $bannerDisplayTypeId,
                 'position' => $bannerPositions[$page->slug] ?? 'before',
                 'variant' => $defaultVariant,
             ]));
@@ -249,7 +217,7 @@ class PageSectionSeeder extends Seeder
             'page_id' => $welcomePage->id,
             'section_id' => $bannerSection->id,
         ], $fillPageSectionColors([
-            'display_type_id' => $bannerDisplayType2->id,
+            'display_type_id' => $bannerDisplayType2Id,
             'position' => 'after',
             'variant' => $defaultVariant,
         ]));
@@ -263,7 +231,7 @@ class PageSectionSeeder extends Seeder
             'page_id' => $introPage->id,
             'section_id' => $bannerSection->id,
         ], $fillPageSectionColors([
-            'display_type_id' => $introBannerDisplayType->id,
+            'display_type_id' => $introBannerDisplayTypeId,
             'position' => 'after',
             'variant' => $defaultVariant,
         ]));
@@ -308,7 +276,7 @@ class PageSectionSeeder extends Seeder
         PageSection::create($fillPageSectionColors([
             'page_id' => $homePage->id,
             'section_id' => $brandsSection->id,
-            'display_type_id' => $brandsDisplayType->id,
+            'display_type_id' => $brandsDisplayTypeId,
             'position' => 'before',
             'variant' => VariantSection::Vertical->value,
             'order' => 4,
@@ -334,7 +302,7 @@ class PageSectionSeeder extends Seeder
         PageSection::create($fillPageSectionColors([
             'page_id' => $homePage->id,
             'section_id' => $recipeSection->id,
-            'display_type_id' => $recipeDisplayType->id,
+            'display_type_id' => $recipeDisplayTypeId,
             'position' => 'after',
             'variant' => VariantSection::Square->value,
             'order' => 5,
@@ -362,7 +330,7 @@ class PageSectionSeeder extends Seeder
         PageSection::create($fillPageSectionColors([
             'page_id' => $homePage->id,
             'section_id' => $basketSection->id,
-            'display_type_id' => $basketsDisplayType->id,
+            'display_type_id' => $basketsDisplayTypeId,
             'position' => 'after',
             'variant' => VariantSection::Horizontal->value,
             'order' => 6,
@@ -383,7 +351,7 @@ class PageSectionSeeder extends Seeder
             'name' => ['en' => 'Scheduled baskets for the week', 'ar' => 'قسم السلات المجدولة ل شهر'],
             'page_id' => $homePage->id,
             'section_id' => $schedulebasketSection->id,
-            'display_type_id' => $scheduleBasketsDisplayType->id,
+            'display_type_id' => $scheduleBasketsDisplayTypeId,
             'position' => 'after',
             'variant' => VariantSection::Square->value,
             'order' => 7,
@@ -395,7 +363,7 @@ class PageSectionSeeder extends Seeder
             'name' => ['en' => 'Baskets scheduled for two weeks', 'ar' => 'قسم السلات المجدولة ل أسبوعين'],
             'page_id' => $homePage->id,
             'section_id' => $schedulebasketSection->id,
-            'display_type_id' => $scheduleBasketsDisplayType->id,
+            'display_type_id' => $scheduleBasketsDisplayTypeId,
             'position' => 'after',
             'variant' => VariantSection::Vertical->value,
             'order' => 7,
@@ -407,7 +375,7 @@ class PageSectionSeeder extends Seeder
             'name' => ['en' => 'Scheduled baskets for the week ', 'ar' => ' السلات المجدولة ل أسبوع'],
             'page_id' => $homePage->id,
             'section_id' => $schedulebasketSection->id,
-            'display_type_id' => $scheduleBasketsDisplayType->id,
+            'display_type_id' => $scheduleBasketsDisplayTypeId,
             'position' => 'after',
             'variant' => VariantSection::Horizontal->value,
             'order' => 7,
@@ -455,7 +423,7 @@ class PageSectionSeeder extends Seeder
             'name' => ['en' => 'Trend Products', 'ar' => 'المنتجات التريند'],
             'page_id' => $homePage->id,
             'section_id' => $productsSection->id,
-            'display_type_id' => $productDisplayType->id,
+            'display_type_id' => $productDisplayTypeId,
             'position' => 'after',
             'variant' => VariantSection::Vertical->value,
             'order' => 5,
@@ -467,7 +435,7 @@ class PageSectionSeeder extends Seeder
             'name' => ['en' => 'New arrival products', 'ar' => 'منتجات وصلت حديثا'],
             'page_id' => $homePage->id,
             'section_id' => $productsSection->id,
-            'display_type_id' => $productDisplayType->id,
+            'display_type_id' => $productDisplayTypeId,
             'position' => 'after',
             'variant' => VariantSection::Horizontal->value,
             'order' => 6,
@@ -479,7 +447,7 @@ class PageSectionSeeder extends Seeder
             'name' => ['en' => 'Top rated products', 'ar' => 'منتجات اعلى تقييما'],
             'page_id' => $homePage->id,
             'section_id' => $productsSection->id,
-            'display_type_id' => $productDisplayType->id,
+            'display_type_id' => $productDisplayTypeId,
             'position' => 'after',
             'variant' => VariantSection::Square->value,
             'order' => 7,
@@ -492,7 +460,7 @@ class PageSectionSeeder extends Seeder
             'name' => ['en' => 'Offers', 'ar' => 'العروض'],
             'page_id' => $homePage->id,
             'section_id' => $productsSection->id,
-            'display_type_id' => $productDisplayType->id,
+            'display_type_id' => $productDisplayTypeId,
             'position' => 'after',
             'variant' => VariantSection::Vertical->value,
             'order' => 8,
@@ -505,7 +473,7 @@ class PageSectionSeeder extends Seeder
             'name' => ['en' => 'Summer Offers', 'ar' => 'عروض الصيف'],
             'page_id' => $homePage->id,
             'section_id' => $productsSection->id,
-            'display_type_id' => $productDisplayType->id,
+            'display_type_id' => $productDisplayTypeId,
             'position' => 'after',
             'variant' => VariantSection::Horizontal->value,
             'order' => 9,
@@ -544,7 +512,7 @@ class PageSectionSeeder extends Seeder
             'name' => ['en' => 'Banner for category 5', 'ar' => ' اعلان للتصنيف 5'],
             'page_id' => $productsPage->id,
             'section_id' => $bannerSection2->id,
-            'display_type_id' => $bannerDisplayType->id,
+            'display_type_id' => $bannerDisplayTypeId,
             'position' => 'before',
             'variant' =>  VariantSection::Horizontal->value,
             'order' => 1,
@@ -580,7 +548,7 @@ class PageSectionSeeder extends Seeder
             'name' => ['en' => 'Banner for category 5', 'ar' => ' اعلان للتصنيف 5'],
             'page_id' => $categoriesPage->id,
             'section_id' => $bannerSection2->id,
-            'display_type_id' => $bannerDisplayType->id,
+            'display_type_id' => $bannerDisplayTypeId,
             'position' => 'before',
             'variant' => VariantSection::Horizontal->value,
             'order' => 1,
@@ -644,7 +612,7 @@ class PageSectionSeeder extends Seeder
             'name' => ['en' => 'Nearby Shops', 'ar' => 'المتاجر القريبة'],
             'page_id' => $homePage->id,
             'section_id' => $shopSection->id,
-            'display_type_id' => $shopDisplayType->id,
+            'display_type_id' => $shopDisplayTypeId,
             'position' => 'after',
             'variant' => VariantSection::Square->value,
             'order' => 9,
@@ -657,7 +625,7 @@ class PageSectionSeeder extends Seeder
             'name' => ['en' => 'Restaurants', 'ar' => 'المطاعم'],
             'page_id' => $homePage->id,
             'section_id' => $shopSection->id,
-            'display_type_id' => $shopDisplayType->id,
+            'display_type_id' => $shopDisplayTypeId,
             'position' => 'after',
             'variant' => VariantSection::Horizontal->value,
             'order' => 10,
@@ -670,7 +638,7 @@ class PageSectionSeeder extends Seeder
             'name' => ['en' => 'Service Providers', 'ar' => 'مزودي الخدمات'],
             'page_id' => $homePage->id,
             'section_id' => $shopSection->id,
-            'display_type_id' => $shopDisplayType->id,
+            'display_type_id' => $shopDisplayTypeId,
             'position' => 'after',
             'variant' => VariantSection::Vertical->value,
             'order' => 11,
@@ -695,7 +663,7 @@ class PageSectionSeeder extends Seeder
             'name' => ['en' => 'Suggested Shops', 'ar' => 'المتاجر المقترحة لك'],
             'page_id' => $homePage->id,
             'section_id' => $suggestedShopSection->id,
-            'display_type_id' => $shopDisplayType->id,
+            'display_type_id' => $shopDisplayTypeId,
             'position' => 'after',
             'variant' => VariantSection::Horizontal->value,
             'order' => 9,
@@ -707,7 +675,7 @@ class PageSectionSeeder extends Seeder
             'name' => ['en' => 'Shops with free delivery', 'ar' => 'المتاجر ذات التوصيل المجاني'],
             'page_id' => $homePage->id,
             'section_id' => $shopSection->id,
-            'display_type_id' => $shopDisplayType->id,
+            'display_type_id' => $shopDisplayTypeId,
             'position' => 'after',
             'variant' => VariantSection::Vertical->value,
             'order' => 12,
@@ -731,7 +699,7 @@ class PageSectionSeeder extends Seeder
             'name' => ['en' => 'Suggested Products', 'ar' => 'المنتجات المقترحة لك'],
             'page_id' => $homePage->id,
             'section_id' => $suggestedProductSection->id,
-            'display_type_id' => $productDisplayType->id,
+            'display_type_id' => $productDisplayTypeId,
             'position' => 'after',
             'variant' => VariantSection::Square->value,
             'order' => 10,
@@ -753,7 +721,7 @@ class PageSectionSeeder extends Seeder
             'name' => ['en' => 'Suggested Baskets', 'ar' => 'السلات المقترحة لك'],
             'page_id' => $homePage->id,
             'section_id' => $suggestedBasketSection->id,
-            'display_type_id' => $basketsDisplayType->id,
+            'display_type_id' => $basketsDisplayTypeId,
             'position' => 'after',
             'variant' => VariantSection::Horizontal->value,
             'order' => 11,

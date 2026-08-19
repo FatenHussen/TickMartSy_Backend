@@ -201,6 +201,10 @@ class ProductService extends BaseService
             $query->where('country->' . app()->getLocale(), 'like', '%' . $filters['country'] . '%');
         }
 
+        if (!empty($filters['country_id'])) {
+            $query->where('country_id', $filters['country_id']);
+        }
+
         // Free delivery filter (filter by shops that offer free delivery)
         if (isset($filters['is_free_delivery'])) {
             $isFreeDelivery = filter_var($filters['is_free_delivery'], FILTER_VALIDATE_BOOLEAN);

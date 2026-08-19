@@ -8,10 +8,10 @@ use App\Http\Resources\Page\AllResource;
 use App\Http\Resources\Page\OneResource;
 use App\Http\Resources\PageSection\AdminOneResource;
 use App\Http\Resources\Section\AllResource as SectionAllResource;
-use App\Models\DisplayType;
 use App\Models\Page;
 use App\Models\PageSection;
 use App\Models\Section;
+use App\Support\DisplayTypeCatalog;
 use App\Services\BaseService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -184,6 +184,7 @@ class PageService extends BaseService
                 'show_when' => $data['show_when'] ?? null,
                 'display_type_id' => $this->resolveDisplayTypeId($section, $page),
                 'is_active' => true,
+                'is_default' => false,
             ]);
 
             $pageSection->load('section', 'page');
@@ -231,32 +232,12 @@ class PageService extends BaseService
 
     private function resolveDisplayTypeId(Section $section, Page $page): ?int
     {
-        if ($section->type !== 'manual' || !$section->manual_model) {
+        $manualModel = $section->displayModel() ?? $section->manual_model ?? $section->contentType();
+
+        if (!$manualModel) {
             return null;
         }
 
-        $manualModel = $section->displayModel() ?? $section->manual_model;
-
-        $displayTypes = DisplayType::query()
-            ->where('manual_model', $manualModel)
-            ->get();
-
-        if ($displayTypes->isEmpty()) {
-            return null;
-        }
-
-        $matched = $displayTypes->first(function (DisplayType $displayType) use ($page): bool {
-            $allowed = $displayType->allowed_page_slugs ?? [];
-
-            return !empty($allowed) && in_array($page->slug, $allowed, true);
-        });
-
-        if ($matched) {
-            return $matched->id;
-        }
-
-        $default = $displayTypes->first(fn (DisplayType $displayType) => empty($displayType->allowed_page_slugs ?? []));
-
-        return $default?->id ?? $displayTypes->first()?->id;
+        return DisplayTypeCatalog::idFor($manualModel, $page->slug);
     }
 }

@@ -5,10 +5,10 @@ namespace App\Services\Admin;
 use App\Http\Resources\PageSection\AdminOneResource;
 use App\Http\Resources\PageSection\AllResource;
 use App\Http\Resources\PageSection\OneResource;
-use App\Models\DisplayType;
 use App\Models\Page;
 use App\Models\PageSection;
 use App\Models\Section;
+use App\Support\DisplayTypeCatalog;
 use App\Services\Base\PageSection\PageSectionPresentationService;
 use App\Services\BaseService;
 use Illuminate\Http\Request;
@@ -139,28 +139,6 @@ class PageSectionService extends BaseService
 
         $manualModel = $section->displayModel() ?? $section->manual_model;
 
-        $displayTypes = DisplayType::query()
-            ->where('manual_model', $manualModel)
-            ->get();
-
-        if ($displayTypes->isEmpty()) {
-            return null;
-        }
-
-        $matchedDisplayType = $displayTypes->first(function (DisplayType $displayType) use ($page): bool {
-            $allowedPageSlugs = $displayType->allowed_page_slugs ?? [];
-
-            return !empty($allowedPageSlugs) && in_array($page->slug, $allowedPageSlugs, true);
-        });
-
-        if ($matchedDisplayType) {
-            return $matchedDisplayType->id;
-        }
-
-        $defaultDisplayType = $displayTypes->first(function (DisplayType $displayType): bool {
-            return empty($displayType->allowed_page_slugs ?? []);
-        });
-
-        return $defaultDisplayType?->id ?? $displayTypes->first()?->id;
+        return DisplayTypeCatalog::idFor($manualModel, $page->slug);
     }
 }

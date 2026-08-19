@@ -25,6 +25,7 @@ class PageSection extends Model
         'background_color',
         'display_type_id',
         'is_active',
+        'is_default',
         'variant',
     ];
     protected $attributes = [
@@ -34,6 +35,7 @@ class PageSection extends Model
         'filters' => 'array',
         'show_when' => 'array',
         'is_active' => 'boolean',
+        'is_default' => 'boolean',
     ];
 
     public function page()
