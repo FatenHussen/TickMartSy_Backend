@@ -15,6 +15,17 @@ class OneResource extends JsonResource
             'title' => $this->title,
             'slug' => $this->slug,
             'filters' => $this->filters,
+            'is_category_page' => $this->category_id !== null,
+            'category_id' => $this->category_id,
+            'can_delete_page' => $this->category_id === null,
+            'can_edit_metadata' => $this->category_id === null,
+            'delete_page_via' => $this->category_id
+                ? 'DELETE /api/admin/categories/' . $this->category_id
+                : null,
+            'category' => $this->whenLoaded('category', fn () => [
+                'id' => $this->category?->id,
+                'name' => $this->category?->getTranslations('name'),
+            ]),
             'sections' => AdminOneResource::collection(
                 $this->whenLoaded('pageSections')
             ),

@@ -36,7 +36,7 @@ class CategoryAttributeController extends BaseCRUDController
         $result = $this->service->linkedItems(
             $id,
             (int) $request->input('page', 1),
-            (int) $request->input('per_page', 10)
+            $this->resolvePerPage($request)
         );
 
         return $this->sendResponse(data: $result);

@@ -137,8 +137,10 @@ class PageSectionService extends BaseService
             return null;
         }
 
+        $manualModel = $section->displayModel() ?? $section->manual_model;
+
         $displayTypes = DisplayType::query()
-            ->where('manual_model', $section->manual_model)
+            ->where('manual_model', $manualModel)
             ->get();
 
         if ($displayTypes->isEmpty()) {

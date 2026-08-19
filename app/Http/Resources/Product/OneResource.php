@@ -24,7 +24,7 @@ class OneResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'full_description' => $this->full_description,
-            'country' => $this->country,
+            'country' => $this->country?->name,
             ...$this->withCurrency($this->price, 'price'),
             ...$this->withCurrency($this->cost_price, 'cost_price'),
             ...$this->withCurrency($this->price_after_discount, 'price_after_discount'),
@@ -56,10 +56,7 @@ class OneResource extends JsonResource
             ],
             'attributes_map' => new AttributeMapResource($this->variants),
 
-            'shop_variants' => $this->variants
-                ->map(fn($variant) => new ShopVariantResource($variant))
-                ->filter()
-                ->values(),
+            'shop_variants' => $this->shopVariantsPayload($request),
 
 
 
@@ -96,6 +93,40 @@ class OneResource extends JsonResource
                 $this->whenLoaded('icons', $this->icons ?? collect())
             ),
 
+        ];
+    }
+
+    private function shopVariantsPayload($request)
+    {
+        $variants = ($this->variants ?? collect())
+            ->map(fn ($variant) => (new ShopVariantResource($variant))->resolve($request))
+            ->filter()
+            ->values();
+
+        if ($variants->isNotEmpty()) {
+            return $variants;
+        }
+
+        return collect([$this->fallbackShopVariant()]);
+    }
+
+    private function fallbackShopVariant(): array
+    {
+        return [
+            'id' => null,
+            'variant_id' => null,
+            'sku' => $this->sku,
+            'model' => $this->model,
+            'barcode' => $this->barcode,
+            'attributes' => [],
+            ...$this->withCurrency($this->price, 'price'),
+            ...$this->withCurrency($this->price - $this->price_after_discount, 'discount'),
+            ...$this->withCurrency($this->price_after_discount, 'price_after_discount'),
+            'quantity' => $this->quantity,
+            'shop_id' => null,
+            'is_restaurant' => (bool) ($this->is_restaurant ?? $this->category?->is_restaurant ?? false),
+            'city_id' => null,
+            'images' => MediaResource::collection($this->media ?? collect()),
         ];
     }
 }

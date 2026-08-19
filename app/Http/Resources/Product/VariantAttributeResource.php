@@ -15,7 +15,7 @@ class VariantAttributeResource extends JsonResource
             'value'     => $isColorType
                 ? ($this->color?->name ?? $this->name)
                 : $this->name,
-            'type'      => $this->categoryAttribute->type,
+            'type'      => $this->categoryAttribute?->type,
         ];
     }
 }

@@ -7,12 +7,20 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\ProductMedia;
 use App\Models\ProductExtraDetail;
+use App\Models\Vendor;
 use Illuminate\Support\Facades\Storage;
 
 class ProductSeeder extends Seeder
 {
     public function run(): void
     {
+        $vendor = Vendor::first();
+        if (!$vendor) {
+            $this->command->warn('No vendors found. Skipping ProductSeeder.');
+            return;
+        }
+        $vendorId = $vendor->id;
+
         // Get product images
         $files = Storage::disk('public')->files('product');
 
@@ -33,7 +41,7 @@ class ProductSeeder extends Seeder
             // Rice Products
             [
                 'category_id' => $riceCategory?->id ?? 1,
-                'vendor_id' => 1,
+                'vendor_id' => $vendorId,
                 'brand_id' => 1,
                 'name' => ['en' => 'Premium Basmati Rice', 'ar' => 'أرز بسمتي فاخر'],
                 'description' => ['en' => 'Long grain aromatic basmati rice', 'ar' => 'أرز بسمتي طويل الحبة عطري'],
@@ -72,7 +80,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category_id' => $riceCategory?->id ?? 1,
-                'vendor_id' => 1,
+                'vendor_id' => $vendorId,
                 'brand_id' => 2,
                 'name' => ['en' => 'Egyptian Short Grain Rice', 'ar' => 'أرز مصري قصير الحبة'],
                 'description' => ['en' => 'High quality Egyptian short grain rice', 'ar' => 'أرز مصري قصير الحبة عالي الجودة'],
@@ -111,7 +119,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category_id' => $riceCategory?->id ?? 1,
-                'vendor_id' => 1,
+                'vendor_id' => $vendorId,
                 'brand_id' => 3,
                 'name' => ['en' => 'Jasmine Rice', 'ar' => 'أرز ياسمين'],
                 'description' => ['en' => 'Fragrant Thai jasmine rice', 'ar' => 'أرز ياسمين تايلندي عطري'],
@@ -145,7 +153,7 @@ class ProductSeeder extends Seeder
             // Short Grain Rice Products
             [
                 'category_id' => $shortGrainRiceCategory?->id ?? $riceCategory?->id ?? 1,
-                'vendor_id' => 1,
+                'vendor_id' => $vendorId,
                 'brand_id' => 2,
                 'name' => ['en' => 'Calrose Short Grain Rice', 'ar' => 'أرز كالروز قصير الحبة'],
                 'description' => ['en' => 'Premium Calrose short grain rice', 'ar' => 'أرز كالروز قصير الحبة فاخر'],
@@ -184,7 +192,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category_id' => $shortGrainRiceCategory?->id ?? $riceCategory?->id ?? 1,
-                'vendor_id' => 1,
+                'vendor_id' => $vendorId,
                 'brand_id' => 3,
                 'name' => ['en' => 'Arborio Rice', 'ar' => 'أرز أربوريو'],
                 'description' => ['en' => 'Italian Arborio rice for risotto', 'ar' => 'أرز أربوريو إيطالي للريزوتو'],
@@ -225,7 +233,7 @@ class ProductSeeder extends Seeder
             // Long Grain Rice Products
             [
                 'category_id' => $longGrainRiceCategory?->id ?? $riceCategory?->id ?? 1,
-                'vendor_id' => 1,
+                'vendor_id' => $vendorId,
                 'brand_id' => 1,
                 'name' => ['en' => 'Premium Long Grain White Rice', 'ar' => 'أرز أبيض طويل الحبة فاخر'],
                 'description' => ['en' => 'Premium long grain white rice', 'ar' => 'أرز أبيض طويل الحبة فاخر'],
@@ -264,7 +272,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category_id' => $longGrainRiceCategory?->id ?? $riceCategory?->id ?? 1,
-                'vendor_id' => 1,
+                'vendor_id' => $vendorId,
                 'brand_id' => 2,
                 'name' => ['en' => 'Brown Long Grain Rice', 'ar' => 'أرز بني طويل الحبة'],
                 'description' => ['en' => 'Healthy brown long grain rice', 'ar' => 'أرز بني طويل الحبة صحي'],
@@ -305,7 +313,7 @@ class ProductSeeder extends Seeder
             // Electronics Products
             [
                 'category_id' => $electronicsCategory?->id ?? 1,
-                'vendor_id' => 1,
+                'vendor_id' => $vendorId,
                 'brand_id' => 1,
                 'name' => ['en' => 'Wireless Bluetooth Headphones', 'ar' => 'سماعات بلوتوث لاسلكية'],
                 'description' => ['en' => 'Premium wireless headphones', 'ar' => 'سماعات لاسلكية فاخرة'],
@@ -344,7 +352,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category_id' => $electronicsCategory?->id ?? 1,
-                'vendor_id' => 1,
+                'vendor_id' => $vendorId,
                 'brand_id' => 2,
                 'name' => ['en' => 'Smart Watch Fitness Tracker', 'ar' => 'ساعة ذكية لتتبع اللياقة'],
                 'description' => ['en' => 'Advanced fitness tracking smartwatch', 'ar' => 'ساعة ذكية متقدمة لتتبع اللياقة'],
@@ -385,7 +393,7 @@ class ProductSeeder extends Seeder
             // Fashion Products
             [
                 'category_id' => $fashionCategory?->id ?? 2,
-                'vendor_id' => 1,
+                'vendor_id' => $vendorId,
                 'brand_id' => 3,
                 'name' => ['en' => 'Classic Cotton T-Shirt', 'ar' => 'تيشيرت قطني كلاسيكي'],
                 'description' => ['en' => 'Premium cotton t-shirt', 'ar' => 'تيشيرت قطني فاخر'],
@@ -424,7 +432,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category_id' => $fashionCategory?->id ?? 2,
-                'vendor_id' => 1,
+                'vendor_id' => $vendorId,
                 'brand_id' => 1,
                 'name' => ['en' => 'Denim Jeans - Slim Fit', 'ar' => 'جينز دينم - قصة ضيقة'],
                 'description' => ['en' => 'Premium slim fit denim jeans', 'ar' => 'جينز دينم قصة ضيقة فاخر'],
@@ -465,7 +473,7 @@ class ProductSeeder extends Seeder
             // Bulgur Products
             [
                 'category_id' => $bulgurCategory?->id ?? 2,
-                'vendor_id' => 1,
+                'vendor_id' => $vendorId,
                 'brand_id' => 1,
                 'name' => ['en' => 'Fine Bulgur', 'ar' => 'برغل ناعم'],
                 'description' => ['en' => 'Fine grade bulgur wheat', 'ar' => 'برغل قمح ناعم'],
@@ -497,7 +505,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category_id' => $bulgurCategory?->id ?? 2,
-                'vendor_id' => 1,
+                'vendor_id' => $vendorId,
                 'brand_id' => 2,
                 'name' => ['en' => 'Coarse Bulgur', 'ar' => 'برغل خشن'],
                 'description' => ['en' => 'Coarse grade bulgur wheat', 'ar' => 'برغل قمح خشن'],
@@ -531,7 +539,7 @@ class ProductSeeder extends Seeder
             // Lentils Products
             [
                 'category_id' => $lentilsCategory?->id ?? 3,
-                'vendor_id' => 1,
+                'vendor_id' => $vendorId,
                 'brand_id' => 3,
                 'name' => ['en' => 'Red Lentils', 'ar' => 'عدس أحمر'],
                 'description' => ['en' => 'Premium red lentils', 'ar' => 'عدس أحمر فاخر'],
@@ -563,7 +571,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category_id' => $lentilsCategory?->id ?? 3,
-                'vendor_id' => 1,
+                'vendor_id' => $vendorId,
                 'brand_id' => 1,
                 'name' => ['en' => 'Green Lentils', 'ar' => 'عدس أخضر'],
                 'description' => ['en' => 'Premium green lentils', 'ar' => 'عدس أخضر فاخر'],
@@ -595,7 +603,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category_id' => $lentilsCategory?->id ?? 3,
-                'vendor_id' => 1,
+                'vendor_id' => $vendorId,
                 'brand_id' => 2,
                 'name' => ['en' => 'Brown Lentils', 'ar' => 'عدس بني'],
                 'description' => ['en' => 'Versatile brown lentils', 'ar' => 'عدس بني متعدد الاستخدامات'],

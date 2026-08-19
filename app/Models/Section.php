@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\VariantSection;
 use App\Services\Base\Section\SectionApiService;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
@@ -11,12 +12,51 @@ class Section extends Model
 {
     use HasTranslations, LogsActivity;
     public array $translatable = ['name'];
+
+    public const API_METHODS = [
+        'brands',
+        'categories',
+        'recipes',
+        'baskets',
+        'schedule-basket',
+        'products',
+        'shops',
+        'restaurants',
+        'suggested_products',
+        'suggested_baskets',
+        'suggested_shops',
+    ];
+
+    public const CONTENT_TYPES = [
+        'banner',
+        'product',
+        'shop',
+        'restaurant',
+        'brand',
+        'category',
+        'recipe',
+        'basket',
+    ];
+
+    public const API_METHOD_BY_CONTENT = [
+        'product' => 'products',
+        'shop' => 'shops',
+        'restaurant' => 'restaurants',
+        'brand' => 'brands',
+        'category' => 'categories',
+        'recipe' => 'recipes',
+        'basket' => 'baskets',
+    ];
+
     protected $casts = [
         'filters' => 'array',
         'see_more_params' => 'array',
         'is_active' => 'boolean',
     ];
 
+    protected $attributes = [
+        'variant' => VariantSection::Horizontal->value,
+    ];
 
     protected $fillable = [
         'name',
@@ -24,11 +64,45 @@ class Section extends Model
         'api_method',
         'filters',
         'manual_model',
+        'variant',
+        'background_color',
+        'background_card_color',
         'see_more',
         'see_more_slug',
         'details_slug',
         'is_active',
     ];
+
+    /**
+     * Friendly content kind used by the dashboard (product, restaurant, shop, ...).
+     */
+    public function contentType(): ?string
+    {
+        if ($this->manual_model) {
+            return $this->manual_model;
+        }
+
+        if ($this->api_method === 'restaurants') {
+            return 'restaurant';
+        }
+
+        if (($this->filters['is_restaurant'] ?? false) && in_array($this->api_method, ['shops', 'suggested_shops'], true)) {
+            return 'restaurant';
+        }
+
+        $map = array_flip(self::API_METHOD_BY_CONTENT);
+
+        return $map[$this->api_method] ?? $this->api_method;
+    }
+
+    public function displayModel(): ?string
+    {
+        if ($this->manual_model === 'restaurant') {
+            return 'shop';
+        }
+
+        return $this->manual_model;
+    }
 
     public function apiData(?array $filters = null)
     {

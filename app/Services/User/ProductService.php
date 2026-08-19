@@ -19,13 +19,16 @@ class ProductService extends BaseService
 
     protected $relations = [
         'category',
+        'originCountry',
         'variants',
         'variants.shopVariants',
+        'variants.shopVariants.shop',
+        'variants.media',
         'categoryDetails.categoryDetail',
         'extraDetails.category',
-        'variants.shopVariants.shop',
         'favorites',
         'icons',
+        'badges',
     ];
     protected $searchableFields = ['name', 'description', 'country'];
     protected $sortableFields   = ['id', 'price', 'created_at', 'name'];
@@ -140,13 +143,16 @@ class ProductService extends BaseService
     {
         $query->with([
             'category',
+            'originCountry',
             'variants',
             'variants.shopVariants',
+            'variants.shopVariants.shop',
+            'variants.media',
             'categoryDetails.categoryDetail',
             'extraDetails',
-            'variants.shopVariants.shop',
             'media',
             'icons',
+            'badges',
         ]);
         $query->where('approval_status', \App\Enums\ProductApprovalStatus::APPROVED->value);
 

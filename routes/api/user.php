@@ -28,6 +28,7 @@ use App\Http\Controllers\User\GovernorateController;
 use App\Http\Controllers\User\HelpCenterController;
 use App\Http\Controllers\User\LegalDocumentController;
 use App\Http\Controllers\User\MarketController;
+use App\Http\Controllers\User\NavMenuController;
 use App\Http\Controllers\User\Order\OrderController;
 use App\Http\Controllers\User\Package\SubscriptionController;
 use App\Http\Controllers\User\PaymentMethodController;
@@ -230,6 +231,9 @@ Route::prefix('user')->group(
         });
 
         Route::get('/quick-actions', [QuickActionController::class, 'index']);
+
+        // Top navigation bar (main categories, brands, baskets, points ...)
+        Route::get('/nav-menu', [NavMenuController::class, 'index']);
 
 
         // User Gifts routes

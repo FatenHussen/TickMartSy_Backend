@@ -7,20 +7,21 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class AllResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'name' => $this->getTranslations('name'),
             'type' => $this->type,
+            'content_type' => $this->contentType(),
             'manual_model' => $this->manual_model,
+            'api_method' => $this->api_method,
             'filters' => $this->filters,
-
+            'variant' => $this->variant,
+            'background_color' => $this->background_color,
+            'background_card_color' => $this->background_card_color,
+            'is_active' => (bool) $this->is_active,
+            'pages_count' => $this->whenCounted('pages'),
         ];
     }
 }

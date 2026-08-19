@@ -23,7 +23,7 @@ class BaseCRUDController extends Controller
             'sortField'  => $request->input('sort_field') ?? 'id',
             'sortOrder'  => $request->input('sort_order') ?? 'desc',
             'page'       => (int) $request->input('page', 1),
-            'per_page'    => (int) $request->input('per_page', 10),
+            'per_page'    => $this->resolvePerPage($request),
         ];
 
         $res = $this->service->getAll($filters, $config);

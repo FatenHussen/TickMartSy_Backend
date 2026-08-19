@@ -32,9 +32,9 @@ class AllResource extends JsonResource
             'name'                  => $this->name,
             'is_restaurant'         => (bool) ($this->is_restaurant ?? $this->category?->is_restaurant ?? false),
 
-            'category'              => $this->category->name,
+            'category'              => $this->category?->name,
             'description'           => $this->description,
-            'country'               => $this->country,
+            'country'               => $this->country?->name,
             ...$this->withCurrency($this->price, 'price'),
             ...$this->withCurrency($this->final_price, 'price_after_discount'),
             ...$this->withCurrency($this->price - $this->final_price, 'amount_saved'),
@@ -47,7 +47,7 @@ class AllResource extends JsonResource
             'is_favorite' => (bool) ($this->is_favorite ?? false),
             'shop_product_variant_id' => $shopProductVariantId,
 
-            'vendor' => $this->vendor->name,
+            'vendor' => $this->vendor?->name,
             'top_badges' => BadgeOneResource::collection(
                 $this->badges->where('position', 'top')->values()
             ),

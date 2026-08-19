@@ -29,7 +29,11 @@ class SectionApiService
     {
         if ($section->type !== 'api') return null;
 
-        $finalFilters =  $pageFilters;
+        $finalFilters = $pageFilters;
+
+        if ($section->api_method === 'restaurants') {
+            $finalFilters['is_restaurant'] = true;
+        }
 
         $handlerClass = $this->resolveHandler($section->api_method);
 
@@ -51,6 +55,7 @@ class SectionApiService
             'schedule-basket' => ScheduleBasketService::class,
             'products' => ProductService::class,
             'shops' => ShopService::class,
+            'restaurants' => ShopService::class,
             'suggested_products' => SuggestedProductsService::class,
             'suggested_baskets' => SuggestedBasketsService::class,
             'suggested_shops' => SuggestedShopsService::class,

@@ -27,7 +27,7 @@ class CountrySeeder extends Seeder
         ];
 
         foreach ($countries as $country) {
-            \App\Models\Country::create($country);
+            \App\Models\Country::firstOrCreate(['code' => $country['code']], $country);
         }
     }
 }

@@ -34,6 +34,7 @@ class PageSectionPresentationService
         'suggested_products' => ['category_id', 'brand_id', 'shop_id', 'type'],
         'categories' => ['parent_id', 'brand_id', 'shop_id', 'type', 'sort_by'],
         'shops' => ['brand_id'],
+        'restaurants' => ['brand_id'],
         'suggested_shops' => ['brand_id'],
         'brands' => [],
         'recipes' => [],

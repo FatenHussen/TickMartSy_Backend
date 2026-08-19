@@ -31,6 +31,7 @@ class StoreRequest extends FormRequest
             'filters.category_id' => ['nullable', 'integer', 'exists:categories,id'],
             'filters.shop_id' => ['nullable', 'integer', 'exists:shops,id'],
             'filters.type' => ['nullable', 'string'],
+            'category_id' => ['prohibited'],
         ];
     }
 }

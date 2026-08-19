@@ -100,6 +100,12 @@ class Category extends Model implements Sectionable
         return $this->belongsTo(Category::class, 'parent_id');
     }
 
+    /** The auto-generated Page Builder page for this category. */
+    public function page()
+    {
+        return $this->hasOne(Page::class);
+    }
+
     public function children()
     {
         return $this->hasMany(Category::class, 'parent_id');

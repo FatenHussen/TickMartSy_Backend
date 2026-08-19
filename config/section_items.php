@@ -12,6 +12,10 @@ return [
         'item_type' => 'App\Models\Shop',
         'url'   => 'admin/shops',
     ],
+    'restaurant' => [
+        'item_type' => 'App\Models\Shop',
+        'url'   => 'admin/shops?is_restaurant=1',
+    ],
     'brand' => [
         'item_type' => 'App\Models\Brand',
         'url'   => 'admin/brands',

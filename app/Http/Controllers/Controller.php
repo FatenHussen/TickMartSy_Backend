@@ -2,8 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+
 abstract class Controller
 {
+    /** Upper bound for `per_page`; the admin pages picker legitimately asks for 500. */
+    protected const MAX_PER_PAGE = 500;
+
+    /**
+     * Reads `per_page` and clamps it before it reaches `paginate()`, which takes whatever it
+     * is handed: 0 or a negative value returns the whole table in one response, and an
+     * arbitrarily large value lets any client do the same.
+     */
+    protected function resolvePerPage(Request $request, int $default = 10, string $key = 'per_page'): int
+    {
+        $perPage = (int) $request->input($key, $default);
+
+        return $perPage < 1 ? $default : min($perPage, self::MAX_PER_PAGE);
+    }
 
     protected function sendResponse($data = [], $message = null, $code = 200, $meta = [])
     {

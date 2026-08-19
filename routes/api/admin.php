@@ -31,6 +31,7 @@ use App\Http\Controllers\Admin\Governorate\GovernorateCrudController;
 use App\Http\Controllers\Admin\IconController;
 use App\Http\Controllers\Admin\Language\LanguageController;
 use App\Http\Controllers\Admin\LegalDocumentController;
+use App\Http\Controllers\Admin\NavMenuItem\NavMenuItemController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\Order\OrderController;
 use App\Http\Controllers\Admin\Package\PackageController;
@@ -308,11 +309,19 @@ Route::prefix('admin')->group(function () {
         Route::apiResource('pages', PageCrudController::class)->middleware('crud.permission:page');
         Route::post('pages/{page}/sections', [PageCrudController::class, 'addSection'])
             ->middleware('admin.permission:pagesection.create');
+        Route::get('pages/{page}/sliders', [PageCrudController::class, 'slidersForPage'])
+            ->middleware('admin.permission:pagesection.view');
         Route::get('page-sections/pages/{page}/preview', [PageSectionCrudController::class, 'preview'])
             ->middleware('admin.permission:pagesection.view');
         Route::post('page-sections/pages/{page}/reorder', [PageSectionCrudController::class, 'reorder'])
             ->middleware('admin.permission:pagesection.update');
         Route::apiResource('page-sections', PageSectionCrudController::class)->middleware('crud.permission:pagesection');
+        // --- Navigation menu (top bar) ---
+        Route::post('nav-menu-items/reorder', [NavMenuItemController::class, 'sort'])
+            ->middleware('admin.permission:navmenuitem.update');
+        Route::apiResource('nav-menu-items', NavMenuItemController::class)
+            ->middleware('crud.permission:navmenuitem');
+
         Route::apiResource('coupons', CouponCrudController::class)->middleware('crud.permission:coupon');
         Route::apiResource('complaints', ComplaintController::class)->middleware('crud.permission:complaint');
         Route::apiResource('recipes', RecipeCrudController::class)->middleware('crud.permission:recipe');

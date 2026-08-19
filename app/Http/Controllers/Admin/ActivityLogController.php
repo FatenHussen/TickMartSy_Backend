@@ -18,7 +18,7 @@ class ActivityLogController extends Controller
                 $q->where('model_type', $request->model);
             })
             ->latest()
-            ->paginate($request->per_page ?? 10);
+            ->paginate($this->resolvePerPage($request));
 
         return [
             'items' => collect($result->items())->map(fn($log) => [

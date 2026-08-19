@@ -18,7 +18,7 @@ class FlashSaleController extends Controller
     {
         $config = [
             'page' => (int) $request->input('page', 1),
-            'per_page' => (int) $request->input('per_page', 10),
+            'per_page' => $this->resolvePerPage($request),
         ];
 
         return $this->sendResponse(data: $this->service->getAll([], $config));

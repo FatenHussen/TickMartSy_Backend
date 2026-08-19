@@ -108,7 +108,7 @@ class ProductService extends BaseService
         $this->handleSingleImages($object, $data);
         $this->handleRelations($object, $data);
         $this->handleMedia($object, $data);
-        $this->ensureRestaurantVariant($object);
+        $this->ensureDefaultVariant($object);
 
         $object->refresh();
 
@@ -146,7 +146,7 @@ class ProductService extends BaseService
         $object->update($data);
         $this->handleRelations($object, $data);
         $this->handleMedia($object, $data);
-        $this->ensureRestaurantVariant($object);
+        $this->ensureDefaultVariant($object);
 
         $object->refresh();
 
@@ -155,17 +155,18 @@ class ProductService extends BaseService
         return new $this->resource($object);
     }
 
-    private function ensureRestaurantVariant(Product $product): void
+    private function ensureDefaultVariant(Product $product): void
     {
-        if (!$product->is_restaurant) {
-            return;
-        }
-
         if ($product->variants()->exists()) {
             return;
         }
 
         $product->variants()->create([
+            'sku' => $product->sku,
+            'model' => $product->model,
+            'barcode' => $product->barcode,
+            'price' => $product->price ?? 0,
+            'quantity' => $product->quantity ?? 0,
             'attributes_values_ids' => [],
             'is_active' => true,
         ]);
@@ -399,97 +400,132 @@ class ProductService extends BaseService
             }
         }
 
-        // if (isset($data['variants']) && is_array($data['variants'])) {
-        //     $variantsData = $data['variants'];
-        //     unset($data['variants']);
+        $this->syncVariantsAndShopLinks($object, $data);
+    }
 
-        //     // Build map of existing variants keyed by sorted attributes_values_ids
-        //     $existingVariants = $object->variants()->get();
-        //     $existingVariantsMap = [];
-        //     foreach ($existingVariants as $existingVariant) {
-        //         $sortedIds = $existingVariant->attributes_values_ids ?? [];
-        //         sort($sortedIds);
-        //         $key = json_encode($sortedIds);
-        //         $existingVariantsMap[$key] = $existingVariant;
-        //     }
+    private function syncVariantsAndShopLinks(Product $product, array &$data): void
+    {
+        $hasVariantsPayload = array_key_exists('variants', $data) && is_array($data['variants']);
+        $hasShopVariantsPayload = array_key_exists('shop_variants', $data) && is_array($data['shop_variants']);
 
-        //     $mediaService = new \App\Services\Base\MediaService();
-        //     $variantIndexMap = [];
-        //     $matchedVariantIds = [];
+        if (!$hasVariantsPayload && !$hasShopVariantsPayload) {
+            return;
+        }
 
-        //     // Process incoming variants: update matched, create new
-        //     foreach ($variantsData as $index => $variantItem) {
-        //         $existingImagesIds = $variantItem['existing_images_ids'] ?? [];
-        //         $variantImages = $variantItem['images'] ?? [];
-        //         unset($variantItem['existing_images_ids'], $variantItem['images']);
+        $variantsData = $hasVariantsPayload ? $data['variants'] : [];
+        $shopVariantsData = $hasShopVariantsPayload ? $data['shop_variants'] : [];
+        unset($data['variants'], $data['shop_variants']);
 
-        //         // Create matching key for incoming variant
-        //         $incomingIds = $variantItem['attributes_values_ids'] ?? [];
-        //         sort($incomingIds);
-        //         $matchKey = json_encode($incomingIds);
+        $mediaService = new \App\Services\Base\MediaService();
+        $variantIndexMap = [];
+        $keptIds = [];
 
-        //         // Check if variant exists
-        //         if (isset($existingVariantsMap[$matchKey])) {
-        //             // Update existing variant
-        //             $variant = $existingVariantsMap[$matchKey];
-        //             $variant->update($variantItem);
-        //             $matchedVariantIds[] = $variant->id;
-        //         } else {
-        //             // Create new variant
-        //             $variant = $object->variants()->create($variantItem);
-        //         }
+        if ($hasVariantsPayload) {
+            foreach ($variantsData as $index => $variantItem) {
+                if (!is_array($variantItem)) {
+                    continue;
+                }
 
-        //         $variantIndexMap[$index] = $variant;
+                $existingImagesIds = $variantItem['existing_images_ids'] ?? [];
+                $variantImages = $variantItem['images'] ?? [];
+                $variantId = $variantItem['id'] ?? null;
+                unset(
+                    $variantItem['existing_images_ids'],
+                    $variantItem['images'],
+                    $variantItem['shops'],
+                    $variantItem['attributes'],
+                    $variantItem['id']
+                );
 
-        //         // Handle variant images with existing_images_ids
-        //         if (!empty($existingImagesIds)) {
-        //             // This is an update - delete images not in existing list
-        //             $currentMedia = $variant->media()->where('collection', 'variant_images')->get();
-        //             foreach ($currentMedia as $media) {
-        //                 if (!in_array($media->id, $existingImagesIds)) {
-        //                     $media->delete();
-        //                 }
-        //             }
-        //         }
+                $payload = array_intersect_key($variantItem, array_flip([
+                    'name',
+                    'sku',
+                    'model',
+                    'barcode',
+                    'price',
+                    'quantity',
+                    'attributes_values_ids',
+                    'is_trend',
+                    'is_active',
+                ]));
 
-        //         // Upload new images
-        //         if (!empty($variantImages)) {
-        //             foreach ($variantImages as $file) {
-        //                 if ($file instanceof \Illuminate\Http\UploadedFile) {
-        //                     $mediaService->upload($variant, $file, 'variant_images');
-        //                 }
-        //             }
-        //         }
-        //     }
+                if (!array_key_exists('price', $payload) || $payload['price'] === null) {
+                    $payload['price'] = $product->price ?? 0;
+                }
 
-        //     // Soft delete unmatched existing variants
-        //     foreach ($existingVariants as $existingVariant) {
-        //         if (!in_array($existingVariant->id, $matchedVariantIds)) {
-        //             $existingVariant->delete();
-        //         }
-        //     }
+                $variant = $variantId
+                    ? $product->variants()->whereKey($variantId)->first()
+                    : null;
 
-        //     if (isset($data['shop_variants']) && is_array($data['shop_variants'])) {
-        //         $shopVariantsData = $data['shop_variants'];
-        //         unset($data['shop_variants']);
+                if ($variant) {
+                    $variant->update($payload);
+                } else {
+                    $variant = $product->variants()->create($payload);
+                }
 
-        //         foreach ($shopVariantsData as $svItem) {
-        //             $variantIndex = $svItem['variant_index'] ?? null;
+                $variantIndexMap[(int) $index] = $variant;
+                $keptIds[] = $variant->id;
 
-        //             if ($variantIndex === null || !isset($variantIndexMap[$variantIndex])) {
-        //                 continue;
-        //             }
+                if (!empty($existingImagesIds) || $variantId) {
+                    $currentMedia = $variant->media()->get();
+                    foreach ($currentMedia as $media) {
+                        if (!in_array($media->id, $existingImagesIds)) {
+                            $media->delete();
+                        }
+                    }
+                }
 
-        //             $variant = $variantIndexMap[$variantIndex];
+                if (!empty($variantImages) && is_array($variantImages)) {
+                    foreach ($variantImages as $file) {
+                        if ($file instanceof \Illuminate\Http\UploadedFile) {
+                            $mediaService->upload($variant, $file, 'variant');
+                        }
+                    }
+                }
+            }
 
-        //             $variant->shopVariants()->create([
-        //                 'shop_id'  => $svItem['shop_id'],
-        //                 'price'    => $svItem['price'] ?? null,
-        //                 'quantity' => $svItem['quantity'] ?? null,
-        //             ]);
-        //         }
-        //     }
-        // }
+            if ($keptIds === []) {
+                $product->variants()->get()->each->delete();
+            } else {
+                $product->variants()
+                    ->whereNotIn('id', $keptIds)
+                    ->get()
+                    ->each
+                    ->delete();
+            }
+        } else {
+            foreach ($product->variants()->orderBy('id')->get() as $index => $variant) {
+                $variantIndexMap[$index] = $variant;
+            }
+        }
+
+        if (!$hasShopVariantsPayload) {
+            return;
+        }
+
+        foreach ($variantIndexMap as $variant) {
+            $variant->shopVariants()->delete();
+        }
+
+        foreach ($shopVariantsData as $svItem) {
+            if (!is_array($svItem)) {
+                continue;
+            }
+
+            $variantIndex = $svItem['variant_index'] ?? null;
+            if ($variantIndex === null || !isset($variantIndexMap[(int) $variantIndex])) {
+                continue;
+            }
+
+            if (empty($svItem['shop_id'])) {
+                continue;
+            }
+
+            $variantIndexMap[(int) $variantIndex]->shopVariants()->create([
+                'shop_id' => $svItem['shop_id'],
+                'cost_price' => $svItem['cost_price'] ?? null,
+            ]);
+        }
     }
 
     /**
@@ -509,7 +545,6 @@ class ProductService extends BaseService
                 'rejection_reason' => null,
             ]);
 
-            // إرسال إشعار للفيندور
             $this->sendApprovalNotification($product, 'approved');
 
             return $product->fresh(['vendor', 'category', 'brand']);
@@ -537,7 +572,6 @@ class ProductService extends BaseService
                 'rejection_reason' => $reason,
             ]);
 
-            // إرسال إشعار للفيندور
             $this->sendApprovalNotification($product, 'rejected');
 
             return $product->fresh(['vendor', 'category', 'brand']);

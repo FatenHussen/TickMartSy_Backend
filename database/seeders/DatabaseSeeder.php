@@ -64,10 +64,12 @@ class DatabaseSeeder extends Seeder
             // Pages & Services
             PageSectionSeeder::class,
             CategoryDetailsPageSeeder::class,
+            CategoryPagesBackfillSeeder::class,
             ServiceSeeder::class,
             RestaurantAndServiceProviderSeeder::class,
             VendorServiceCatalogSeeder::class,
             QuickActionSeeder::class,
+            NavMenuSeeder::class,
             VendorServiceSeeder::class,
 
             // Recipes & Baskets

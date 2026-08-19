@@ -23,7 +23,11 @@ class FilterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'is_active'            => 'nullable|boolean',
+            'is_active' => 'nullable|boolean',
+            'type' => 'nullable|in:manual,api',
+            'content_type' => 'nullable|string',
+            'manual_model' => 'nullable|string',
+            'api_method' => 'nullable|string',
         ];
     }
 }

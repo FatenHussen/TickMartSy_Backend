@@ -40,7 +40,10 @@ class CategoryPageController extends Controller
 
         $sections = collect();
 
-        $page = Page::query()->where('slug', self::TEMPLATE_SLUG)->first();
+        // Prefer the category's own page (created automatically per category);
+        // fall back to the shared "category-details" template for legacy data.
+        $page = Page::query()->where('category_id', $category->id)->first()
+            ?? Page::query()->where('slug', self::TEMPLATE_SLUG)->first();
 
         if ($page) {
             $sections = $this->pageSectionPresentation

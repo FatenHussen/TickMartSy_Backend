@@ -10,7 +10,9 @@ use App\Models\Driver;
 use App\Models\Product;
 use App\Models\Recipe;
 use App\Models\Shop;
+use App\Models\Category;
 use App\Models\VendorWithdrawRequest;
+use App\Observers\CategoryObserver;
 use App\Observers\VendorWithdrawRequestObserver;
 use App\Policies\AdminPolicy;
 use App\Policies\DriverPolicy;
@@ -69,6 +71,7 @@ class AppServiceProvider extends ServiceProvider
         );
 
         VendorWithdrawRequest::observe(VendorWithdrawRequestObserver::class);
+        Category::observe(CategoryObserver::class);
 
         LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
             $switch->locales(['ar', 'en']);

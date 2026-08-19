@@ -5,9 +5,12 @@
 1. **CRUD كامل للصفحات** (إنشاء أي صفحة من الداشبورد).
 2. **Endpoint موحّد** لإضافة قسم داخل صفحة بنداء واحد (بدل نداءين منفصلين).
 3. **نوع قسم `categories`** (يدوي واختيار من API).
-4. **صفحة تلقائية لكل فئة** بدون أي بيانات مكرّرة لكل فئة.
+4. **صفحة تلقائية لكل فئة (بأي مستوى)** — تُنشأ فور إنشاء الفئة، تظهر في قائمة الصفحات، ويمكن إضافة أقسام (سلايدرات/بانرات/شبكات...) لها.
+5. **قسم بانرات يختار من مكتبة البانرات الموجودة** (لا إنشاء بانر داخل الصفحة).
 
 > كل التعديلات **إضافية** ولا تكسر الـ endpoints القديمة (`sections`, `page-sections`, `banners`) — تبقى شغّالة كما هي.
+
+> **ملاحظة مهمة:** لا يوجد كيان "سلايدر" مستقل. **القسم (Section)** هو الكيان الوحيد. "السلايدر" = قسم بـ `variant: horizontal` (شريط أفقي فيه كاردات). انظر `FRONTEND_DASHBOARD_SLIDERS.md` لتفاصيل إدارة الأقسام.
 
 ---
 
@@ -50,9 +53,20 @@
 
 ### قائمة الصفحات — `GET /api/admin/pages`
 
-Query params: `search`, `page`, `per_page`, `sort_field`, `sort_order`.
+Query params: `search`, `page`, `per_page`, `sort_field`, `sort_order`, بالإضافة إلى فلاتر جديدة:
 
-كل عنصر يرجّع `sections_count` لعرض عدد الأقسام.
+| Param | القيم | الوصف |
+|-------|-------|--------|
+| `type` | `content` \| `category` | `content` = الصفحات العادية فقط (رئيسية/عروض...). `category` = صفحات الفئات فقط. بدون الباراميتر تُرجَّع الكل. |
+| `category_id` | عدد | ترجّع صفحة فئة محددة. |
+
+كل عنصر يرجّع:
+
+- `sections_count` — عدد الأقسام.
+- `is_category_page` — `true` إذا كانت الصفحة تخصّ فئة (مولّدة تلقائيًا).
+- `category_id` — مُعرّف الفئة المرتبطة (أو `null`).
+
+> اقتراح UX: ... صفحات الفئات: **لا** زر إنشاء/حذف صفحة — استخدم `can_delete_page` و `can_edit_metadata`. حذف الفئة من شاشة الفئات. **نعم** إدارة كاملة للأقسام داخل الصفحة. انظر `FRONTEND_DASHBOARD_CATEGORY_PAGES.md`.
 
 ### تفاصيل صفحة — `GET /api/admin/pages/{page}`
 
@@ -60,9 +74,22 @@ Query params: `search`, `page`, `per_page`, `sort_field`, `sort_order`.
 
 ---
 
-## 2) الـ Endpoint الموحّد: إضافة قسم داخل صفحة
+## 2) إضافة قسم داخل صفحة
 
-**`POST /api/admin/pages/{page}/sections`** — ينشئ `Section` ويربطه بالصفحة في transaction واحدة. يتطلب صلاحية `pagesection.create`.
+### أ) اختيار قسم موجود (المسار الموصى به)
+
+1. **`GET /api/admin/pages/{pageId}/sliders`** — يجلب **كل الأقسام** الموجودة (بحث + `content_type`).
+2. **`POST /api/admin/pages/{pageId}/sections`** مع `section_id` فقط:
+
+```json
+{ "section_id": 12 }
+```
+
+### ب) إنشاء قسم جديد وربطه (نداء واحد — اختياري)
+
+**`POST /api/admin/pages/{page}/sections`** — ينشئ `Section` ويربطه بالصفحة. يتطلب صلاحية `pagesection.create`.
+
+> للإنشاء المسبق بدون صفحة، استخدم `POST /api/admin/sections` — انظر `FRONTEND_DASHBOARD_SLIDERS.md`.
 
 ### الحقول
 
@@ -70,7 +97,8 @@ Query params: `search`, `page`, `per_page`, `sort_field`, `sort_order`.
 |-------|-------|-------|
 | `type` | نعم | `manual` \| `api` |
 | `name` | لا | `{ "ar": "...", "en": "..." }` |
-| `manual_model` | مطلوب إذا `type=manual` | `banner` \| `product` \| `shop` \| `brand` \| `recipe` \| `basket` \| `category` |
+| `manual_model` | مطلوب إذا `type=manual` | `banner` \| `product` \| `shop` \| `restaurant` \| `brand` \| `recipe` \| `basket` \| `category` |
+| `content_type` | لا (بديل أبسط) | نفس القيم أعلاه — يُحوَّل تلقائيًا إلى `manual_model` أو `api_method` |
 | `item_ids` | مطلوب إذا `type=manual` | `[{ "item_id": 1, "link": null, "order": 0 }]` |
 | `api_method` | مطلوب إذا `type=api` | انظر جدول أنواع API أدناه |
 | `filters` | لا | فلاتر العرض (`category_id`, `brand_id`, `shop_id`, `type`, ...) |
@@ -95,7 +123,16 @@ Query params: `search`, `page`, `per_page`, `sort_field`, `sort_order`.
 }
 ```
 
-### مثال — قسم يدوي بانرات (سلايدر)
+### مثال — قسم بانرات (اختيار من المكتبة)
+
+قسم البانرات **يدوي** ويختار من **البانرات الموجودة مسبقًا** — لا يُنشأ بانر جديد داخل الصفحة.
+
+**خطوات الواجهة:**
+
+1. جِب البانرات من `GET /api/admin/banners` (يدعم البحث والترقيم — استخدمه لفلترة القائمة عند كثرتها).
+2. البانر **صورة عرضية (wide)**؛ اعرض `image_url` بنسبة أفقية (≈ 16:6 أو 3:1) في شبكة الاختيار وفي المعاينة.
+3. الأدمن يختار بانرًا واحدًا أو أكثر ويرتّبهم (`order`).
+4. أرسل المعرّفات المختارة في `item_ids`.
 
 ```json
 {
@@ -109,6 +146,11 @@ Query params: `search`, `page`, `per_page`, `sort_field`, `sort_order`.
   "variant": "horizontal"
 }
 ```
+
+- **بانر واحد** = إعلان عريض ثابت.
+- **عدة بانرات** = سلايدر أفقي (تمرير يمين/يسار). يمرّرها الباك إند مدموجة في كتلة بانرات واحدة عند العرض.
+
+> `link` لكل بانر يؤخذ تلقائيًا من البانر نفسه في استجابة المستخدم، فلا حاجة لإرساله يدويًا.
 
 ### الاستجابة
 
@@ -137,6 +179,7 @@ Query params: `search`, `page`, `per_page`, `sort_field`, `sort_order`.
 | `products` | منتجات | `category_id` (شجرة), `brand_id`, `shop_id`, `type`, `sort_by`, `price_min`, `price_max` |
 | `categories` **(جديد)** | فئات | `parent_id` (الأبناء), `brand_id`, `shop_id`, `type`, `sort_by` |
 | `shops` | متاجر | `brand_id` |
+| `restaurants` | مطاعم | `brand_id` (+ `is_restaurant=true` تلقائيًا) |
 | `brands` | ماركات | — |
 | `recipes` | وصفات | — |
 | `baskets` | سلات | — |
@@ -149,15 +192,31 @@ Query params: `search`, `page`, `per_page`, `sort_field`, `sort_order`.
 
 ---
 
-## 4) صفحة الفئة التلقائية
+## 4) صفحة الفئة = صفحة كاملة (لكل فئة بأي مستوى)
 
-لا يُنشأ سجل صفحة لكل فئة. يوجد **قالب مشترك واحد** (`slug = category-details`) يُطبّق على أي فئة وقت الطلب.
+> **التوثيق الكامل:** `FRONTEND_DASHBOARD_CATEGORY_PAGES.md`
+
+عند إنشاء **أي فئة** (جذر أو فرعية بأي عمق) يُنشئ الباك إند لها **صفحة خاصة بها** تلقائيًا:
+
+- تظهر في قائمة الصفحات (`is_category_page: true`, `category_id`).
+- `slug = category-{categoryId}`.
+- تُبذَر بقسمين افتراضيين: **الأقسام الفرعية** + **منتجات الفئة (الشجرة كاملة)**.
+- يمكن للأدمن إضافة أقسام (سلايدرات/بانرات/شبكات...) فوقها، وترتيبها، وحذفها.
+- تعديل اسم الفئة يُحدّث عنوان الصفحة تلقائيًا.
+- حذف الفئة يحذف صفحتها وأقسامها تلقائيًا.
+
+> لا يوجد إنشاء/حذف يدوي لصفحة الفئة من الداشبورد — تتبع الفئة. الأدمن فقط **يحرّر أقسامها**.
+
+### كيف يصل الأدمن لصفحة الفئة؟
+
+- سجل الفئة (`GET /api/admin/categories` و `/categories/{id}`) صار يرجّع `page_id`.
+- من صفحة الفئات: زر "بناء الصفحة" → افتح `GET /api/admin/pages/{page_id}` وتعامل معها كأي صفحة (إضافة قسم / ترتيب / معاينة).
 
 ### Endpoint المستخدم (Flutter/Web)
 
 **`GET /api/user/categories/{categoryId}/page`**
 
-يرجّع:
+يرجّع صفحة تلك الفئة تحديدًا (وإن لم توجد لأي سبب يرجع القالب المشترك `category-details` كخطة بديلة):
 
 ```json
 {
@@ -172,34 +231,22 @@ Query params: `search`, `page`, `per_page`, `sort_field`, `sort_order`.
 }
 ```
 
-- قسم **الأقسام الفرعية**: أبناء الفئة الحالية (يستهلك `parent_id` تلقائيًا).
-- قسم **المنتجات**: منتجات الفئة وكل الفئات التابعة لها (يستهلك `category_id`).
 - `sections` بنفس شكل مصفوفة أقسام الصفحات العادية → يمكن إعادة استخدام نفس مُعرّض الأقسام في التطبيق.
-
-### التحكم من الداشبورد
-
-القالب `category-details` صفحة عادية في الـ Page Builder. يمكن للأدمن:
-
-- إضافة أقسام إضافية لها (بانر، نص، ...) عبر `POST /api/admin/pages/{page}/sections`.
-- استخدام `show_when: { "category_id": X }` على قسم لإظهاره لفئة معيّنة فقط.
-
-أي فئة جديدة تعمل مباشرةً دون أي إعداد إضافي.
 
 ---
 
 ## 5) تصميم شاشة Page Builder المقترحة
 
-1. قائمة **الصفحات** (`GET /pages`) مع زر "إنشاء صفحة".
+1. قائمة **الصفحات** (`GET /pages`) مع تبويبين: "صفحات المحتوى" (`type=content`) و"صفحات الفئات" (`type=category`)، وزر "إنشاء صفحة" في تبويب المحتوى فقط.
 2. عند فتح صفحة (`GET /pages/{id}`): اعرض أقسامها مرتّبة.
-3. زر واحد **"إضافة قسم"** يفتح مُعالجًا:
-   - اختيار النوع (بأسماء بلغة المستخدم).
-   - إن كان يدويًا: اختيار العناصر. إن كان API: اختيار الفلاتر.
-   - ضبط الشكل (variant / ألوان / ظهور شرطي).
-   - حفظ → نداء واحد `POST /pages/{id}/sections`.
+3. زر **"إضافة قسم"**:
+   - **`GET /pages/{id}/sliders`** — قائمة كل الأقسام الموجودة (بحث + فلترة).
+   - اختيار قسم → `POST /pages/{id}/sections` مع `section_id`.
+   - أو "إنشاء قسم جديد" → `POST /sections` ثم ربطه.
 4. سحب وإفلات لإعادة الترتيب → `POST /page-sections/pages/{id}/reorder`.
 5. معاينة مباشرة → `GET /page-sections/pages/{id}/preview`.
 
-> يُفضّل دمج "الأقسام" و"سلايدرات الصفحات" في تجربة واحدة داخل الصفحة، وإخفاء إنشاء الـ Section المستقل عن الأدمن العادي.
+> دُمجت "الأقسام" و"ربط الأقسام بالصفحات" في تجربة واحدة داخل الصفحة. أخفِ شاشات إنشاء الـ Section / Page Section المستقلة عن الأدمن العادي.
 
 ---
 
@@ -208,8 +255,12 @@ Query params: `search`, `page`, `per_page`, `sort_field`, `sort_order`.
 بعد سحب هذه التعديلات، شغّل:
 
 ```bash
-php artisan db:seed --class=RolePermissionSeeder      # يضيف صلاحيات page.*
-php artisan db:seed --class=CategoryDetailsPageSeeder # ينشئ قالب category-details (آمن للتكرار)
+php artisan migrate                                     # pages.category_id + sections.variant/colors
+php artisan db:seed --class=RolePermissionSeeder        # صلاحيات page.*
+php artisan db:seed --class=CategoryDetailsPageSeeder   # قالب category-details الاحتياطي (آمن للتكرار)
+php artisan db:seed --class=CategoryPagesBackfillSeeder # ينشئ صفحة لكل فئة قائمة (آمن للتكرار)
 ```
 
-(على الـ installs الجديدة، `DatabaseSeeder` يشغّلهما تلقائيًا.)
+- الفئات الجديدة تُنشئ صفحتها تلقائيًا عبر `CategoryObserver` (لا حاجة لأي نداء إضافي).
+- الفئات القديمة تُعالَج بـ `CategoryPagesBackfillSeeder`.
+- (على الـ installs الجديدة، `DatabaseSeeder` يشغّل هذه السيدرز تلقائيًا.)

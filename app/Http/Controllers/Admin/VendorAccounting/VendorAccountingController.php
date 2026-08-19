@@ -20,7 +20,7 @@ class VendorAccountingController extends Controller
     public function index(Request $request)
     {
         $filters = $this->extractFilters($request);
-        $perPage = (int) $request->input('per_page', 10);
+        $perPage = $this->resolvePerPage($request);
 
         return $this->sendResponse(data: $this->service->getVendorsAccounting($filters, $perPage));
     }
@@ -28,7 +28,7 @@ class VendorAccountingController extends Controller
     public function show(Request $request, int $vendorId)
     {
         $filters = $this->extractFilters($request);
-        $withdrawPerPage = (int) $request->input('withdraw_per_page', 10);
+        $withdrawPerPage = $this->resolvePerPage($request, 10, 'withdraw_per_page');
 
         return $this->sendResponse(data: $this->service->getVendorStatement($vendorId, $filters, $withdrawPerPage));
     }

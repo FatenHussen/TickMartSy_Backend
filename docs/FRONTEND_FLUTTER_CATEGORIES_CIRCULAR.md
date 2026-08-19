@@ -43,9 +43,11 @@ Added on each item **and** on each `children[]` entry:
 
 `children[]` entries also now include `parent_id`, `order`, `is_restaurant`, `children_count`, `has_children` (same card shape as a top-level item).
 
-### `GET /api/user/categories/{id}` (single)
+### `GET /api/user/categories?parent_id={id}` (children)
 
-Added: `children_count`, `has_children`. `children[]` uses the same card shape (with `icon`, `has_children`).
+Returns the children of the given parent. Same card shape as roots (with `icon`, `has_children`, `children_count`).
+
+> **ملاحظة:** لا يوجد endpoint `GET /api/user/categories/{id}` لفئة واحدة. للحصول على أبناء فئة استخدم `?parent_id=`. بيانات الفئة نفسها (الاسم والأيقونة) تأتي من الكارد الذي ضغطته في القائمة.
 
 ### `GET /api/user/products?category_id={id}` — behavior change
 

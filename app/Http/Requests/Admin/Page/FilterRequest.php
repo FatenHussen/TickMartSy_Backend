@@ -15,6 +15,9 @@ class FilterRequest extends FormRequest
     {
         return [
             'slug' => ['nullable', 'string', 'max:255'],
+            // content = standalone pages only, category = category pages only.
+            'type' => ['nullable', 'in:content,category'],
+            'category_id' => ['nullable', 'integer', 'exists:categories,id'],
         ];
     }
 }

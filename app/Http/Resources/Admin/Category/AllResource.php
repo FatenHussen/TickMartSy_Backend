@@ -24,6 +24,8 @@ class AllResource extends JsonResource
             'order' => $this->order,
             'is_active' => $this->is_active,
             'is_restaurant' => (bool) $this->is_restaurant,
+            'page_id' => $this->page?->id,
+            'page_is_auto' => true,
 
             'parent' => $this->whenLoaded('parent', function () use ($locale) {
                 return [
