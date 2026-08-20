@@ -2,6 +2,8 @@
 
 هذا المستند يجمع **كل التعديلات** التي تحتاج تنفيذ في الواجهة الويب.
 
+> **آخر تحديث للفلاتر:** 19 آب 2026 — التفصيل في `FRONTEND_WEB_FILTERS.md` (مطابق للكود الحالي، وليس `PRODUCTS_FILTERS_API.md`).
+
 ---
 
 ## الفهرس
@@ -12,6 +14,7 @@
 4. [منتجات شجرة الفئة (Category Subtree)](#4-منتجات-شجرة-الفئة)
 5. [صفحة المنتج (shop_variants + country)](#5-صفحة-المنتج)
 6. [التسجيل بدون إيميل](#6-التسجيل-بدون-إيميل)
+7. [فلاتر المنتجات](#7-فلاتر-المنتجات)
 
 ---
 
@@ -334,6 +337,46 @@ POST /api/user/auth/verify-otp
 
 ---
 
+## 7) فلاتر المنتجات
+
+> المرجع: `FRONTEND_WEB_FILTERS.md` — **هذا هو آخر تحديث؛ اعتمدوه للتنفيذ.**
+
+### التغيير
+
+نفس `GET /api/user/products` (عام، بدون توكن إلزامي). تغيّر السلوك + باراميترات:
+
+| الموضوع | بعد |
+|---------|-----|
+| `category_id` | الفئة + **كل الفروع** — ممنوع فلترة محلية |
+| الصفات | `GET /categories/{id}/attributes` لأي مستوى → صفات **الجذر** |
+| جديد | `is_instant_delivery` |
+| ترتيب يعمل | `sort_by`: `price_asc` \| `price_desc` \| `newest` \| `oldest` \| `rating` |
+| بحث | `search` (ليس `name`) |
+| بلد في القائمة | أرسل `country` كنص. لا ترسل `country_id` على `/products` |
+
+### مثال
+
+```http
+GET /api/user/products?category_id=2&attribute_values=31,40&in_stock_only=1&is_instant_delivery=1&sort_by=newest
+```
+
+```http
+GET /api/user/categories/2/attributes
+```
+
+كاش الصفات بـ `root_category_id`. لا تعيد الطلب داخل نفس الشجرة.
+
+### Checklist
+
+- [ ] chips من `/attributes` على الجذر والفرعية
+- [ ] كل الفلاتر في طلب المنتجات نفسه
+- [ ] `is_free_delivery` / `is_instant_delivery` / `on_sale` / `in_stock_only`
+- [ ] `price_min` / `price_max` بعملة العرض
+- [ ] تغيير فلتر يعيد `page=1`
+- [ ] أقسام API: query الـ URL يغلّب فلاتر القسم
+
+---
+
 ## أوامر التشغيل (Backend)
 
 ```bash
@@ -355,3 +398,4 @@ php artisan db:seed --class=NavMenuSeeder
 | `FRONTEND_WEB_CATEGORY_PRODUCT_SUBTREE.md` | منتجات شجرة الفئة |
 | `FRONTEND_WEB_PRODUCT_DETAIL_SHOP_VARIANTS.md` | صفحة المنتج |
 | `FRONTEND_WEB_REGISTER_EMAIL_OPTIONAL.md` | التسجيل بدون إيميل |
+| `FRONTEND_WEB_FILTERS.md` | فلاتر المنتجات (آخر تحديث 19 آب 2026) |

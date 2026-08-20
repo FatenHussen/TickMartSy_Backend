@@ -77,7 +77,9 @@ products.filter((product) => product.category === selectedCategoryName);
 
 ## 3) الفلاتر والترتيب
 
-كل الفلاتر الحالية تبقى كما هي، وتُطبّق على نتيجة الشجرة كاملة:
+القائمة الكاملة والمعتمدة: **`FRONTEND_WEB_FILTERS.md`** (آخر تحديث 19 آب 2026).
+
+كل الفلاتر تُطبَّق على نتيجة الشجرة كاملة:
 
 ```http
 GET /api/user/products

@@ -83,6 +83,8 @@
 
 فلاتر `products`: `category_id`, `brand_id`, `shop_id`, `country_id`, `country`, `name`, `price_min`, `price_max`, `on_sale`, `in_stock_only`, `is_free_delivery`, `is_instant_delivery`, `attribute_values[]`, `type`, `search`, `sort_by` أو `sortField`+`sortOrder`.
 
+> قائمة المنتجات المستقلة (`GET /api/user/products`) وجدول ما يعمل فعلياً: **`FRONTEND_WEB_FILTERS.md`**. ملاحظة: `country_id` يُقرأ هنا من query القسم، لكنه **غير مقبول** على FilterRequest الخاص بـ `/products` — هناك استخدم `country` كنص.
+
 `display_type_id`: `1=banner`, `2=product`, `3=shop`, `4=basket`, `5=schedule-basket`, `6=brand`, `7=recipe`, `8=category`.
 
 ---
