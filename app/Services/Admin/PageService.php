@@ -2,6 +2,7 @@
 
 namespace App\Services\Admin;
 
+use App\Enums\SectionLayout;
 use App\Enums\VariantSection;
 use App\Exceptions\NotFoundException;
 use App\Http\Resources\Page\AllResource;
@@ -171,18 +172,30 @@ class PageService extends BaseService
                 $section = $this->createSectionFromPayload($data);
             }
 
+            DisplayTypeCatalog::ensureSeeded();
+
+            // Ignore client display_type_id — always derive from section content type.
+            $displayTypeId = DisplayTypeCatalog::resolveForSection($section, $page);
+
+            if (!$displayTypeId || !\App\Models\DisplayType::query()->whereKey($displayTypeId)->exists()) {
+                throw ValidationException::withMessages([
+                    'display_type_id' => __('Display types are missing. Run: php artisan db:seed --class=DisplayTypeSeeder'),
+                ]);
+            }
+
             $pageSection = PageSection::create([
                 'page_id' => $page->id,
                 'section_id' => $section->id,
                 'name' => $data['name'] ?? $section->getTranslations('name'),
                 'position' => $data['position'] ?? 'after',
                 'order' => $data['order'] ?? $this->nextOrderForPage($page->id),
+                'layout' => $data['layout'] ?? $section->layout ?? SectionLayout::Slider->value,
                 'variant' => $data['variant'] ?? $section->variant ?? VariantSection::Horizontal->value,
                 'background_color' => $data['background_color'] ?? $section->background_color,
                 'background_card_color' => $data['background_card_color'] ?? $section->background_card_color,
                 'filters' => $data['filters'] ?? $section->filters,
                 'show_when' => $data['show_when'] ?? null,
-                'display_type_id' => $this->resolveDisplayTypeId($section, $page),
+                'display_type_id' => $displayTypeId,
                 'is_active' => true,
                 'is_default' => false,
             ]);
@@ -203,6 +216,7 @@ class PageService extends BaseService
             'manual_model' => $isManual ? ($data['manual_model'] ?? null) : null,
             'api_method' => $isManual ? null : ($data['api_method'] ?? null),
             'filters' => $data['filters'] ?? null,
+            'layout' => $data['layout'] ?? SectionLayout::Slider->value,
             'variant' => $data['variant'] ?? VariantSection::Horizontal->value,
             'background_color' => $data['background_color'] ?? null,
             'background_card_color' => $data['background_card_color'] ?? null,
@@ -228,16 +242,5 @@ class PageService extends BaseService
     private function nextOrderForPage(int $pageId): int
     {
         return (int) PageSection::query()->where('page_id', $pageId)->max('order') + 1;
-    }
-
-    private function resolveDisplayTypeId(Section $section, Page $page): ?int
-    {
-        $manualModel = $section->displayModel() ?? $section->manual_model ?? $section->contentType();
-
-        if (!$manualModel) {
-            return null;
-        }
-
-        return DisplayTypeCatalog::idFor($manualModel, $page->slug);
     }
 }

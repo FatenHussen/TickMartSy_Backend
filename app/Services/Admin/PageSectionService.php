@@ -5,6 +5,7 @@ namespace App\Services\Admin;
 use App\Http\Resources\PageSection\AdminOneResource;
 use App\Http\Resources\PageSection\AllResource;
 use App\Http\Resources\PageSection\OneResource;
+use App\Models\DisplayType;
 use App\Models\Page;
 use App\Models\PageSection;
 use App\Models\Section;
@@ -106,39 +107,43 @@ class PageSectionService extends BaseService
 
     private function injectDisplayTypeId(array $data, ?PageSection $pageSection = null): array
     {
+        // Client must not own this field — always resolve from section content type.
         unset($data['display_type_id']);
 
         $sectionId = (int) ($data['section_id'] ?? $pageSection?->section_id);
         $pageId = (int) ($data['page_id'] ?? $pageSection?->page_id);
 
-        $displayTypeId = $this->resolveDisplayTypeId($sectionId, $pageId);
+        if (!$sectionId || !$pageId) {
+            return $data;
+        }
 
-        if (!$displayTypeId) {
+        $section = Section::query()->find($sectionId);
+        $page = Page::query()->find($pageId);
+
+        if (!$section || !$page) {
+            return $data;
+        }
+
+        // Keep existing value on update unless section/page changed.
+        if ($pageSection?->display_type_id
+            && (int) $pageSection->section_id === $sectionId
+            && (int) $pageSection->page_id === $pageId
+        ) {
+            return $data;
+        }
+
+        DisplayTypeCatalog::ensureSeeded();
+
+        $displayTypeId = DisplayTypeCatalog::resolveForSection($section, $page);
+
+        if (!$displayTypeId || !DisplayType::query()->whereKey($displayTypeId)->exists()) {
             throw ValidationException::withMessages([
-                'display_type_id' => __('Could not resolve display type for the selected section/page.'),
+                'display_type_id' => __('Display types are missing. Run: php artisan db:seed --class=DisplayTypeSeeder'),
             ]);
         }
 
         $data['display_type_id'] = $displayTypeId;
 
         return $data;
-    }
-
-    private function resolveDisplayTypeId(int $sectionId, int $pageId): ?int
-    {
-        if (!$sectionId || !$pageId) {
-            return null;
-        }
-
-        $section = Section::query()->find($sectionId);
-        $page = Page::query()->find($pageId);
-
-        if (!$section || !$page || !$section->manual_model) {
-            return null;
-        }
-
-        $manualModel = $section->displayModel() ?? $section->manual_model;
-
-        return DisplayTypeCatalog::idFor($manualModel, $page->slug);
     }
 }

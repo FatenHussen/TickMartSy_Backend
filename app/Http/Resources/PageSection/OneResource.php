@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\PageSection;
 
+use App\Enums\SectionLayout;
 use App\Enums\VariantSection;
 use App\Http\Resources\SectionItem\OneResource as SectionItemOneResource;
 use App\Http\Resources\Section\SectionApiItemResource;
@@ -35,6 +36,7 @@ class OneResource extends JsonResource
             'order' => $this->order,
             'display_type_id' => $this->resolveDisplayTypeId(),
             'is_default' => (bool) $this->is_default,
+            'layout' => $this->layout ?? SectionLayout::Slider->value,
             'variant' => $this->variant ?? VariantSection::Horizontal->value,
             'background_color' => $this->background_color,
             'background_card_color' => $this->background_card_color,
@@ -65,7 +67,7 @@ class OneResource extends JsonResource
         ];
     }
 
-    private function resolveDisplayTypeId(): int
+    private function resolveDisplayTypeId(): ?int
     {
         if ($this->display_type_id) {
             return (int) $this->display_type_id;
@@ -81,12 +83,14 @@ class OneResource extends JsonResource
             $contentType = 'schedule-basket';
         }
 
-        $resolved = DisplayTypeCatalog::idFor(
+        if (!$contentType) {
+            return null;
+        }
+
+        return DisplayTypeCatalog::idFor(
             $contentType,
             $this->relationLoaded('page') ? $this->page?->slug : null,
         );
-
-        return $resolved ?? 0;
     }
 
     private function visibleSectionItems()

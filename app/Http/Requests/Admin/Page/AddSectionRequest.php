@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\Page;
 
+use App\Enums\SectionLayout;
 use App\Enums\VariantSection;
 use App\Models\Section;
 use Illuminate\Foundation\Http\FormRequest;
@@ -65,6 +66,9 @@ class AddSectionRequest extends FormRequest
             // --- Placement on the page ---
             'position' => ['nullable', 'in:before,after'],
             'order' => ['nullable', 'integer', 'min:1'],
+            // Section presentation: slider | list | grid
+            'layout' => ['nullable', Rule::in(SectionLayout::values())],
+            // Card shape inside the section: horizontal | vertical | square
             'variant' => ['nullable', Rule::in(VariantSection::values())],
             'background_color' => ['nullable', 'string', 'max:50'],
             'background_card_color' => ['nullable', 'string', 'max:50'],
@@ -79,6 +83,9 @@ class AddSectionRequest extends FormRequest
 
             'show_when' => ['nullable', 'array'],
             'show_when.*' => ['nullable'],
+
+            // Backend-owned content kind — ignored on write; clients should omit this.
+            'display_type_id' => ['nullable', 'integer', 'exists:display_types,id'],
         ];
     }
 

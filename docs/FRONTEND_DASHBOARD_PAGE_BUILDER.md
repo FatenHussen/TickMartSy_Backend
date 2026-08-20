@@ -10,7 +10,11 @@
 
 > كل التعديلات **إضافية** ولا تكسر الـ endpoints القديمة (`sections`, `page-sections`, `banners`) — تبقى شغّالة كما هي.
 
-> **ملاحظة مهمة:** لا يوجد كيان "سلايدر" مستقل. **القسم (Section)** هو الكيان الوحيد. "السلايدر" = قسم بـ `variant: horizontal` (شريط أفقي فيه كاردات). انظر `FRONTEND_DASHBOARD_SLIDERS.md` لتفاصيل إدارة الأقسام.
+> **ملاحظة مهمة:** لا يوجد كيان "سلايدر" مستقل. **القسم (Section)** هو الكيان الوحيد.
+> - **`layout`**: طريقة عرض القسم → `slider` \| `list` \| `grid`
+> - **`variant`**: شكل الكارد جوا القسم → `horizontal` \| `vertical` \| `square`
+>
+> التفاصيل وخطوات الفورم: **`FRONTEND_SECTION_LAYOUT_AND_CARD.md`**. إدارة الأقسام: `FRONTEND_DASHBOARD_SLIDERS.md`.
 
 ---
 
@@ -104,7 +108,8 @@ Query params: `search`, `page`, `per_page`, `sort_field`, `sort_order`, بالإ
 | `filters` | لا | فلاتر العرض (`category_id`, `brand_id`, `shop_id`, `type`, ...) |
 | `position` | لا (افتراضي `after`) | `before` \| `after` |
 | `order` | لا (افتراضي = آخر ترتيب + 1) | عدد ≥ 1 |
-| `variant` | لا (افتراضي `horizontal`) | `horizontal` \| `vertical` \| `square` |
+| `layout` | لا (افتراضي `slider`) | `slider` \| `list` \| `grid` — **طريقة عرض القسم** |
+| `variant` | لا (افتراضي `horizontal`) | `horizontal` \| `vertical` \| `square` — **شكل الكارد** |
 | `background_color` | لا | نص |
 | `background_card_color` | لا | نص |
 | `show_when` | لا | كائن ظهور شرطي (مثل `{ "category_id": 5 }`) |
@@ -119,6 +124,7 @@ Query params: `search`, `page`, `per_page`, `sort_field`, `sort_order`, بالإ
   "name": { "ar": "المنتجات الرائجة", "en": "Trending" },
   "api_method": "products",
   "filters": { "type": "trend" },
+  "layout": "slider",
   "variant": "vertical"
 }
 ```
@@ -143,12 +149,13 @@ Query params: `search`, `page`, `per_page`, `sort_field`, `sort_order`, بالإ
     { "item_id": 12, "order": 0 },
     { "item_id": 13, "order": 1 }
   ],
+  "layout": "slider",
   "variant": "horizontal"
 }
 ```
 
 - **بانر واحد** = إعلان عريض ثابت.
-- **عدة بانرات** = سلايدر أفقي (تمرير يمين/يسار). يمرّرها الباك إند مدموجة في كتلة بانرات واحدة عند العرض.
+- **عدة بانرات** + `layout: slider` = سلايدر أفقي (تمرير يمين/يسار).
 
 > `link` لكل بانر يؤخذ تلقائيًا من البانر نفسه في استجابة المستخدم، فلا حاجة لإرساله يدويًا.
 

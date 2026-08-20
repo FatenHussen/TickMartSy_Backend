@@ -32,10 +32,12 @@ class RecipeItemResource extends JsonResource
                     'productVariant.product',
                     'shop'
                 ])
-                    ->whereHas('productVariant.product', function ($q) use ($categoryIds) {
-                        $q->whereIn('category_id', $categoryIds);
+                    ->whereHas('productVariant', function ($q) use ($categoryIds) {
+                        $q->where('quantity', '>', 0)
+                            ->whereHas('product', function ($q) use ($categoryIds) {
+                                $q->whereIn('category_id', $categoryIds);
+                            });
                     })
-                    ->where('quantity', '>', 0)
                     ->where('id', '!=', $this->shop_product_variant_id)
                     ->get();
 

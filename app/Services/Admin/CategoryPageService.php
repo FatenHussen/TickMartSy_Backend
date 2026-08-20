@@ -2,6 +2,7 @@
 
 namespace App\Services\Admin;
 
+use App\Enums\SectionLayout;
 use App\Enums\VariantSection;
 use App\Models\Category;
 use App\Models\Page;
@@ -80,6 +81,7 @@ class CategoryPageService
             'filters'      => ['parent_id' => $category->id],
             'see_more'     => false,
             'manual_model' => 'category',
+            'layout'       => SectionLayout::Slider->value,
             'variant'      => VariantSection::Square->value,
         ]);
 
@@ -89,6 +91,7 @@ class CategoryPageService
             'section_id'      => $childrenSection->id,
             'display_type_id' => $categoryDisplayTypeId,
             'position'        => 'before',
+            'layout'          => SectionLayout::Slider->value,
             'variant'         => VariantSection::Square->value,
             'order'           => 1,
             'filters'         => ['parent_id' => $category->id],
@@ -105,6 +108,7 @@ class CategoryPageService
             'see_more_slug' => 'products',
             'details_slug' => 'product_details',
             'manual_model' => 'product',
+            'layout'       => SectionLayout::Slider->value,
             'variant'      => VariantSection::Vertical->value,
         ]);
 
@@ -114,6 +118,7 @@ class CategoryPageService
             'section_id'      => $productsSection->id,
             'display_type_id' => $productDisplayTypeId,
             'position'        => 'before',
+            'layout'          => SectionLayout::Slider->value,
             'variant'         => VariantSection::Vertical->value,
             'order'           => 2,
             'filters'         => ['category_id' => $category->id],

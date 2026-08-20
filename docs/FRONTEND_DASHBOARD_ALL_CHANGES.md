@@ -65,6 +65,7 @@
   "name": { "ar": "...", "en": "..." },
   "manual_model": "banner",
   "item_ids": [{ "item_id": 12, "order": 0 }],
+  "layout": "slider",
   "variant": "horizontal",
   "background_color": "#F5F5F5"
 }
@@ -77,8 +78,11 @@
 | `type` | `manual` \| `api` |
 | `manual_model` | `banner` \| `product` \| `shop` \| `restaurant` \| `brand` \| `recipe` \| `basket` \| `category` |
 | `api_method` | `products` \| `categories` \| `shops` \| `restaurants` \| `brands` \| `recipes` \| `baskets` \| `schedule-basket` \| `suggested_products` \| `suggested_shops` \| `suggested_baskets` |
-| `variant` | `horizontal` \| `vertical` \| `square` |
+| `layout` | `slider` \| `list` \| `grid` — طريقة عرض القسم |
+| `variant` | `horizontal` \| `vertical` \| `square` — شكل الكارد |
 | `content_type` | بديل أبسط يُحوَّل تلقائيًا |
+
+> انظر **`FRONTEND_SECTION_LAYOUT_AND_CARD.md`** لترتيب خطوات الفورم.
 
 ### إعادة الترتيب والمعاينة
 
@@ -96,7 +100,10 @@
 
 > المرجع: `FRONTEND_DASHBOARD_SLIDERS.md`
 
-> **ملاحظة:** لا يوجد كيان "سلايدر" مستقل. **القسم (Section)** هو الكيان الوحيد. "السلايدر" = قسم بـ `variant: horizontal` (شريط أفقي فيه كاردات).
+> **ملاحظة:** لا يوجد كيان "سلايدر" مستقل. **القسم (Section)** هو الكيان الوحيد.
+> - `layout: slider` = سلايدر أفقي
+> - `variant` = شكل الكارد داخل القسم
+> التفاصيل: `FRONTEND_SECTION_LAYOUT_AND_CARD.md`.
 
 ### الفكرة
 

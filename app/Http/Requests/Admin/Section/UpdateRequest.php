@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\Section;
 
+use App\Enums\SectionLayout;
 use App\Enums\VariantSection;
 use App\Models\Section;
 use Illuminate\Foundation\Http\FormRequest;
@@ -51,6 +52,7 @@ class UpdateRequest extends FormRequest
 
             'api_method' => ['required_if:type,api', 'nullable', Rule::in(Section::API_METHODS)],
 
+            'layout' => ['nullable', Rule::in(SectionLayout::values())],
             'variant' => ['nullable', Rule::in(VariantSection::values())],
             'background_color' => ['nullable', 'string', 'max:50'],
             'background_card_color' => ['nullable', 'string', 'max:50'],

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\SectionLayout;
 use App\Enums\VariantSection;
-use App\Services\Base\Section\SectionApiService;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
@@ -26,9 +26,11 @@ class PageSection extends Model
         'display_type_id',
         'is_active',
         'is_default',
+        'layout',
         'variant',
     ];
     protected $attributes = [
+        'layout' => SectionLayout::Slider->value,
         'variant' => VariantSection::Horizontal->value,
     ];
     protected $casts = [

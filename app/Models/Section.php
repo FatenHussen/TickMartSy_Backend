@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\SectionLayout;
 use App\Enums\VariantSection;
 use App\Services\Base\Section\SectionApiService;
 use App\Traits\LogsActivity;
@@ -55,6 +56,7 @@ class Section extends Model
     ];
 
     protected $attributes = [
+        'layout' => SectionLayout::Slider->value,
         'variant' => VariantSection::Horizontal->value,
     ];
 
@@ -64,6 +66,7 @@ class Section extends Model
         'api_method',
         'filters',
         'manual_model',
+        'layout',
         'variant',
         'background_color',
         'background_card_color',

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\PageSection;
 
+use App\Enums\SectionLayout;
 use App\Enums\VariantSection;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -24,10 +25,11 @@ class StoreRequest extends FormRequest
 
             'page_id' => ['required', 'integer', 'exists:pages,id'],
 
-            'display_type_id' => ['prohibited'],
+            'display_type_id' => ['nullable', 'integer', 'exists:display_types,id'],
 
             'position' => ['required', 'in:before,after'],
             'order' => ['required', 'integer', 'min:1'],
+            'layout' => ['nullable', Rule::in(SectionLayout::values())],
             'variant' => ['nullable', Rule::in(VariantSection::values())],
 
             'background_color' => ['nullable', 'string', 'max:50'],

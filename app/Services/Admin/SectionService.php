@@ -2,12 +2,13 @@
 
 namespace App\Services\Admin;
 
+use App\Enums\SectionLayout;
 use App\Enums\VariantSection;
 use App\Http\Resources\Section\AllResource;
 use App\Http\Resources\Section\OneResource;
-use App\Models\DisplayType;
 use App\Models\Page;
 use App\Models\Section;
+use App\Support\DisplayTypeCatalog;
 use Illuminate\Database\Eloquent\Collection;
 use App\Services\BaseService;
 
@@ -68,6 +69,7 @@ class SectionService extends BaseService
     {
         unset($data['content_type']);
 
+        $data['layout'] = $data['layout'] ?? SectionLayout::Slider->value;
         $data['variant'] = $data['variant'] ?? VariantSection::Horizontal->value;
 
         if (($data['api_method'] ?? null) === 'restaurants') {
@@ -87,14 +89,6 @@ class SectionService extends BaseService
             return new Collection();
         }
 
-        return DisplayType::query()
-            ->where('manual_model', $manualModel)
-            ->where(function ($builder) use ($page) {
-                $builder
-                    ->whereNull('allowed_page_slugs')
-                    ->orWhereJsonLength('allowed_page_slugs', 0)
-                    ->orWhereJsonContains('allowed_page_slugs', $page->slug);
-            })
-            ->get();
+        return DisplayTypeCatalog::allowedFor($manualModel, $page->slug);
     }
 }

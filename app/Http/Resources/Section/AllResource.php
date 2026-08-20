@@ -17,6 +17,7 @@ class AllResource extends JsonResource
             'manual_model' => $this->manual_model,
             'api_method' => $this->api_method,
             'filters' => $this->filters,
+            'layout' => $this->layout,
             'variant' => $this->variant,
             'background_color' => $this->background_color,
             'background_card_color' => $this->background_card_color,

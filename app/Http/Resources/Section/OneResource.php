@@ -15,6 +15,7 @@ class OneResource extends JsonResource
             'name' => $this->getTranslations('name'),
             'type' => $this->type,
             'content_type' => $this->contentType(),
+            'layout' => $this->layout,
             'variant' => $this->variant,
             'background_color' => $this->background_color,
             'background_card_color' => $this->background_card_color,

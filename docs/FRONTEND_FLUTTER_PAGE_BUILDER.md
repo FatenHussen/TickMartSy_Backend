@@ -34,7 +34,8 @@
   "id": 10,
   "name": { "ar": "...", "en": "..." },
   "type": "manual",              // manual | api
-  "variant": "horizontal",       // horizontal | vertical | square
+  "layout": "slider",            // slider | list | grid  → طريقة عرض القسم
+  "variant": "vertical",         // horizontal | vertical | square → شكل الكارد
   "background_color": "#F7F7F7",
   "background_card_color": "#FFFFFF",
   "display_type_id": 3,
@@ -44,13 +45,17 @@
 }
 ```
 
-### تعيين الـ `variant` لويدجت
+### `layout` ثم `variant`
 
-- `horizontal` → `ListView(scrollDirection: Axis.horizontal)` = **سلايدر أفقي** (شريط كاردات يتحرك يمين/يسار).
-- `vertical` → `GridView`/`Column` رأسي.
-- `square` → شبكة مربّعات (فئات).
+1. **`layout`** → ويدجت القسم:
+   - `slider` → `ListView(scrollDirection: Axis.horizontal)`
+   - `list` → قائمة عمودية
+   - `grid` → `GridView`
+2. **`variant`** → شكل كارد العنصر داخل التخطيط (`horizontal` / `vertical` / `square`).
 
-استخدم `background_color` لخلفية القسم و`background_card_color` لخلفية الكارد. `display_type_id` (اختياري) لتوحيد شكل الكارد.
+إذا غاب `layout`: اعتبروه `slider`. التفاصيل: `FRONTEND_SECTION_LAYOUT_AND_CARD.md`.
+
+استخدم `background_color` لخلفية القسم و`background_card_color` لخلفية الكارد. `display_type_id` لنوع المحتوى فقط.
 
 ---
 
