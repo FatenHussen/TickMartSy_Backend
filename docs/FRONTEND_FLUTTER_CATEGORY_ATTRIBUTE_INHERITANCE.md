@@ -1,5 +1,7 @@
 # Flutter — Category attributes (end-user app)
 
+> **⚠️ Merged into [`FRONTEND_FLUTTER_COMPLETE.md`](./FRONTEND_FLUTTER_COMPLETE.md)**
+
 Category attributes (color, size, weight, …) live on the **root category only**. Every subcategory down to 5 levels **inherits the same names and the same values**.
 
 This file is for the **customer Flutter app** (`/api/user`). Dashboard: `FRONTEND_DASHBOARD_CATEGORY_ATTRIBUTE_INHERITANCE.md`. Category circles: `FRONTEND_FLUTTER_CATEGORIES_CIRCULAR.md`.

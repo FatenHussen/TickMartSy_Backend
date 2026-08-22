@@ -1,5 +1,7 @@
 # Flutter — Dynamic Navigation Menu (Top Bar)
 
+> **⚠️ Merged into [`FRONTEND_FLUTTER_COMPLETE.md`](./FRONTEND_FLUTTER_COMPLETE.md)** — send that single file to the Flutter team.
+
 The top navigation bar (Main Categories, Brands, All shops, My baskets, Points & rewards, Help & support, Subscription packages...) is **no longer hardcoded**. It is fully managed from the dashboard and must be fetched from the API and rendered dynamically.
 
 > New public user route: `GET /api/user/nav-menu` (no token required).

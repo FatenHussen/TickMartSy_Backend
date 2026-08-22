@@ -1,5 +1,7 @@
 # صفحات الفئات (Flutter)
 
+> **⚠️ مدمج في [`FRONTEND_FLUTTER_COMPLETE.md`](./FRONTEND_FLUTTER_COMPLETE.md)**
+
 كل فئة (رئيسية أو فرعية بأي عمق) لها **صفحة محتوى** مبنية من **أقسام**. endpoint واحد لجميع المستويات.
 
 ---
@@ -45,22 +47,33 @@
 
 ## الأقسام
 
-- **افتراضي:** فرعية (`square`) + منتجات (`vertical`)
+- **افتراضي:** فرعية + منتجات (يضبطها الأدmin)
 - **اختياري:** سلاiderات/بانرات/... يضيفها الأدmin
 
-لا تفترض عددًا ثابتًا — رتّب حسب `order`.
+لا تفترض عددًا ثابتًا — رتّب حسب `order`. لا تعرض قسمًا `items` فارغة.
 
----
+### عرض الأقسام — `layout` ثم `variant`
 
-## Widgets
+> **مهم:** لا تربط `variant` بالتخطيط. التفاصيل: `FRONTEND_FLUTTER_SECTIONS_TODAY.md`
 
-| `variant` | Widget |
-|-----------|--------|
-| `horizontal` | `ListView` أفقي / `CarouselSlider` |
-| `vertical` | `GridView` / `Column` |
-| `square` | شبكة مربّعات للفئات |
+| `layout` | ويدجت القسم |
+|----------|-------------|
+| `slider` | `ListView` أفقي / carousel — **افتراضي** |
+| `list` | `ListView` / `Column` عمودي |
+| `grid` | `GridView` |
 
-تفاصيل البانرات والكروت: `FRONTEND_FLUTTER_PAGE_BUILDER.md`
+| `variant` | شكل الكارد داخل التخطيط |
+|-----------|-------------------------|
+| `horizontal` | كارد عرضي (بانرات) |
+| `vertical` | كارد رأسي (منتجات) |
+| `square` | كارد مربع (فئات) |
+
+```dart
+final layout = section.layout ?? 'slider';
+final cardVariant = section.variant ?? 'horizontal';
+```
+
+تفاصيل كاملة: `FRONTEND_FLUTTER_PAGE_BUILDER.md` · `FRONTEND_FLUTTER_SECTIONS_COMPLETE.md`
 
 ---
 

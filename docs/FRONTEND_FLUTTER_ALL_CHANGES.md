@@ -1,18 +1,23 @@
-# كل تعديلات Flutter — ملخّص شامل
+# كل تعديلات Flutter — ملخّص شامل (آخر تحديث)
 
-هذا المستند يجمع **كل التعديلات** التي تحتاج تنفيذ في تطبيق Flutter.
+> **⚠️ تم دمج كل ملفات Flutter في ملف واحد:** [`FRONTEND_FLUTTER_COMPLETE.md`](./FRONTEND_FLUTTER_COMPLETE.md)  
+> **ارسلوا هذا الملف فقط** لفريق Flutter (بناء من الصفر). هذا الملف أدناه للمرجع التفصيلي فقط.
+
+هذا المستند يجمع **كل التعديلات** المطلوبة في تطبيق Flutter، بما فيها آخر تحديث **فصل `layout` / `variant` / `display_type_id`** (آب 2026).
 
 ---
 
 ## الفهرس
 
 1. [شريط التنقّل الديناميكي (Nav Menu)](#1-شريط-التنقّل-الديناميكي)
-2. [عرض الصفحات (Page Builder)](#2-عرض-الصفحات-page-builder)
+2. [الصفحات والأقسام (Page Builder + layout)](#2-الصفحات-والأقسام)
 3. [صفحات الفئات](#3-صفحات-الفئات)
 4. [الفئات الدائرية (Circular Categories)](#4-الفئات-الدائرية)
-5. [وراثة صفات الفئة](#5-وراثة-صفات-الفئة)
-6. [صفحة المنتج (shop_variants + country)](#6-صفحة-المنتج)
-7. [التسجيل بدون إيميل](#7-التسجيل-بدون-إيميل)
+5. [منتجات شجرة الفئة (Category Subtree)](#5-منتجات-شجرة-الفئة)
+6. [وراثة صفات الفئة](#6-وراثة-صفات-الفئة)
+7. [صفحة المنتج (shop_variants + country)](#7-صفحة-المنتج)
+8. [التسجيل بدون إيميل](#8-التسجيل-بدون-إيميل)
+9. [فلاتر المنتجات](#9-فلاتر-المنتجات)
 
 ---
 
@@ -31,7 +36,7 @@ GET /api/user/nav-menu
 Accept-Language: ar
 ```
 
-عام (بدون توكن). يرجّع العناصر **المفعّلة فقط** مرتّبة.
+عام (بدون توكن). يرجّع العناصر **المفعّلة فقط** مرتّبة حسب `order`.
 
 ### Dart Model
 
@@ -56,69 +61,74 @@ class NavMenuItem {
 
 ### التنقّل
 
-```dart
-void openNavItem(BuildContext context, NavMenuItem item) {
-  switch (item.type) {
-    case 'route':
-      final key = item.target['route_key'] as String?;
-      switch (key) {
-        case 'home':          context.go('/');
-        case 'categories':    context.go('/categories');
-        case 'brands':        context.go('/brands');
-        case 'shops':         context.go('/shops');
-        case 'baskets':       context.go('/my-baskets');
-        case 'points':        context.go('/points');
-        case 'help':          context.go('/help');
-        case 'subscriptions': context.go('/subscription-packages');
-        default: break;
-      }
-    case 'category':
-      context.push('/category/${item.target['category_id']}');
-    case 'brand':
-      context.push('/brand/${item.target['brand_id']}');
-    case 'page':
-      context.push('/page/${item.target['slug'] ?? item.target['page_id']}');
-    case 'url':
-      final url = item.target['url'] as String?;
-      if (url != null) launchUrl(Uri.parse(url));
-  }
-}
-```
+| `type` | الوجهة |
+|--------|--------|
+| `route` | `target.route_key` → `home` \| `categories` \| `brands` \| `shops` \| `baskets` \| `points` \| `help` \| `subscriptions` |
+| `category` | `CategoryPageScreen(categoryId: target.category_id)` |
+| `brand` | شاشة الماركة |
+| `page` | شاشة Page Builder (`slug` أو `page_id`) |
+| `url` | فتح خارجي (`open_in_new_tab`) |
 
 ### Checklist
 
 - [ ] احذف القائمة الثابتة
 - [ ] `GET /api/user/nav-menu` واعرض بالترتيب
 - [ ] خريطة `route_key` → شاشات
-- [ ] `url` يفتح خارجيًا
 - [ ] fallback آمن لأي `route_key` غير معروف
 - [ ] أعد الجلب عند تغيير اللغة
 - [ ] إذا `data` فاضية → أخفِ الشريط
 
 ---
 
-## 2) عرض الصفحات (Page Builder)
+## 2) الصفحات والأقسام
 
-> المرجع: `FRONTEND_FLUTTER_PAGE_BUILDER.md`
+> المراجع: `FRONTEND_FLUTTER_PAGE_BUILDER.md` · `FRONTEND_FLUTTER_SECTIONS_TODAY.md` · `FRONTEND_FLUTTER_SECTIONS_COMPLETE.md`
 
 ### Endpoints
 
 | الغرض | Endpoint |
 |-------|----------|
-| أقسام الصفحة الرئيسية/عامة | `GET /api/user/sections?page_slug={slug}` |
-| صفحة فئة | `GET /api/user/categories/{categoryId}/page` |
+| صفحة عامة (رئيسية / عروض...) | `GET /api/user/sections?page_slug={slug}` |
+| صفحة فئة (أي مستوى) | `GET /api/user/categories/{categoryId}/page` |
 
-### شكل القسم
+**قاعدة ذهبية:** ويدجت **واحد** لعرض الأقسام — استخدمه في الرئيسية وصفحة الفئة وكل `page_slug`.
+
+### آخر تحديث: فصل 3 مفاهيم (مهم)
+
+| الحقل | المعنى | القيم |
+|-------|--------|-------|
+| **`layout`** | طريقة عرض **القسم كامل** | `slider` \| `list` \| `grid` |
+| **`variant`** | شكل **الكارد داخل** القسم | `horizontal` \| `vertical` \| `square` |
+| **`display_type_id`** | نوع **المحتوى** | 1=banner, 2=product, 3=shop, 4=basket, 5=schedule-basket, 6=brand, 7=recipe, 8=category |
+
+**غلط قديم (احذفوه):** `variant == horizontal` → سلايدر. **صار خطأ.**  
+السلايدر = `layout: slider`، شكل الكارد = `variant`.
+
+### Fallback
+
+```dart
+final layout = section.layout ?? 'slider';
+final cardVariant = section.variant ?? 'horizontal';
+```
+
+### شكل القسم الكامل
 
 ```json
 {
   "id": 10,
   "name": { "ar": "...", "en": "..." },
   "type": "manual",
-  "variant": "horizontal",
+  "content_type": "product",
+  "manual_model": "product",
+  "api_method": null,
+  "position": "before",
+  "order": 1,
+  "layout": "slider",
+  "variant": "vertical",
+  "display_type_id": 2,
+  "is_default": false,
   "background_color": "#F7F7F7",
   "background_card_color": "#FFFFFF",
-  "display_type_id": 3,
   "end_date": null,
   "discount": null,
   "discount_type": null,
@@ -129,24 +139,59 @@ void openNavItem(BuildContext context, NavMenuItem item) {
 }
 ```
 
-- `end_date` / `discount` / `discount_type`: تُملأ فقط عندما يكون القسم من نوع `latest_flash_sale` — خلاف ذلك `null`.
-- `show_when`: شروط عرض القسم (مثلاً `{ "category_id": 5 }`) — إذا فاضي يُعرض دائمًا.
+- `end_date` / `discount` / `discount_type`: لأقسام flash sale فقط — غير ذلك `null`.
+- `show_when`: فاضي/`{}` = اعرض دائمًا.
+- لا تعرض قسمًا `items` فارغة.
 
-### تعيين `variant` لـ Widget
+### `layout` → ويدجت القسم
 
-| `variant` | Widget |
-|-----------|--------|
-| `horizontal` | `ListView(scrollDirection: Axis.horizontal)` — سلايدر أفقي (شريط كاردات) |
-| `vertical` | `GridView` / `Column` |
-| `square` | شبكة مربّعات (فئات) |
+| `layout` | Widget |
+|----------|--------|
+| `slider` | `ListView(scrollDirection: Axis.horizontal)` — **افتراضي** |
+| `list` | `ListView` / `Column` عمودي |
+| `grid` | `GridView` |
+
+### `variant` → شكل الكارد فقط
+
+| `variant` | الشكل |
+|-----------|-------|
+| `horizontal` | كارد عرضي عريض (بانرات) |
+| `vertical` | كارد رأسي (منتجات) |
+| `square` | كارد مربع (فئات) |
+
+### مثال ويدجت موحّد
+
+```dart
+Widget buildSection(Section section) {
+  if (section.items.isEmpty) return const SizedBox.shrink();
+
+  final layout = section.layout ?? 'slider';
+  final cardVariant = section.variant ?? 'horizontal';
+
+  return switch (layout) {
+    'list' => SectionListView(items: section.items, cardVariant: cardVariant),
+    'grid' => SectionGridView(items: section.items, cardVariant: cardVariant),
+    _ => SectionSliderView(items: section.items, cardVariant: cardVariant),
+  };
+}
+```
 
 ### البانرات
 
-- `type: "manual"` مع بانرات
-- `item.image` **عرضية** → `AspectRatio` أفقي (≈ 16/6)
-- عنصر واحد → بانر ثابت، عدة عناصر → `PageView`/carousel
+- غالباً `layout: slider` + `variant: horizontal`
+- صورة **عرضية** → `AspectRatio` ≈ 16/6
+- عنصر واحد = بانر ثابت، عدة = `PageView`/carousel
 - الضغط → `item.link`
-- لا تعرض قسمًا `items` فارغ
+
+### Checklist
+
+- [ ] الموديل فيه `layout` + `variant` + `display_type_id`
+- [ ] فرّع على `layout` أولاً، ثم مرّر `variant` للكارد
+- [ ] احذف المنطق القديم (variant = تخطيط)
+- [ ] fallback: بدون `layout` → `slider`
+- [ ] نفس ويدجت الأقسام لـ `page_slug` و`categories/{id}/page`
+- [ ] `see_more` → شاشة قائمة مع `params`
+- [ ] `action.page_slug` → شاشة التفاصيل
 
 ---
 
@@ -163,7 +208,7 @@ GET /api/user/categories/{categoryId}/page
 ```json
 {
   "data": {
-    "category": { "id": 12, "name": {...}, "children": [...] },
+    "category": { "id": 12, "name": { "ar": "...", "en": "..." }, "children": [...] },
     "sections": [...]
   }
 }
@@ -173,7 +218,7 @@ GET /api/user/categories/{categoryId}/page
 
 1. نادِ `categories/{id}/page`
 2. AppBar: `category.name`
-3. `ListView`/`CustomScrollView` يبني `sections` عبر **مُعرّض الأقسام الموحّد**
+3. `ListView`/`CustomScrollView` يبني `sections` عبر **مُعرّض الأقسام الموحّد** (قسم 2)
 
 ### التنقّل
 
@@ -183,15 +228,15 @@ GET /api/user/categories/{categoryId}/page
 | كارد منتج | `ProductDetailScreen` |
 | `see_more` | شاشة القائمة مع `see_more.params` |
 
-### ملاحظات
+### Checklist
 
-- لا تفترض عددًا ثابتًا للأقسام
-- رتّب حسب `order` كما يصل
-- كاش per `categoryId` + `RefreshIndicator`
+- [ ] لا تفترض عددًا ثابتًا للأقسام
+- [ ] رتّب حسب `order`
+- [ ] كاش per `categoryId` + `RefreshIndicator`
 
 ---
 
-## 4) الفئات الدائرية (Circular Categories)
+## 4) الفئات الدائرية
 
 > المرجع: `FRONTEND_FLUTTER_CATEGORIES_CIRCULAR.md`
 
@@ -203,6 +248,18 @@ GET /api/user/categories/{categoryId}/page
 | دوائر للجذور فقط | **نفس الدائرة لكل مستوى** |
 | الأب بدون منتجات مباشرة | `category_id` يرجع المنتجات + كل الأحفاد |
 
+### APIs
+
+| الغرض | Endpoint |
+|-------|----------|
+| الجذور | `GET /api/user/categories` |
+| أبناء فئة | `GET /api/user/categories?parent_id={id}` |
+| منتجات | `GET /api/user/products?category_id={id}` |
+| صفات | `GET /api/user/categories/{id}/attributes` |
+
+> **ملاحظة:** لا يوجد `GET /api/user/categories/{id}` لفئة واحدة.  
+> للأبناء استخدم `?parent_id=`. بيانات الفئة (اسم/أيقونة) تأتي من الكارد اللي ضغطته.
+
 ### حقول جديدة على الفئة
 
 | الحقل | النوع |
@@ -212,41 +269,70 @@ GET /api/user/categories/{categoryId}/page
 | `has_children` | bool |
 | `children[].icon` | string (URL) |
 
-### APIs
-
-| الغرض | Endpoint |
-|-------|----------|
-| الجذور | `GET /api/user/categories` |
-| أبناء | `GET /api/user/categories?parent_id={id}` |
-| منتجات | `GET /api/user/products?category_id={id}` |
-| صفات | `GET /api/user/categories/{id}/attributes` |
-
-### UI المطلوب
+### UI
 
 ```
 ┌─────────────────────────────┐
 │  ← Food                     │
-│  (○) Grains  (○) Veg  (○)   │ ← دوائر (أبناء)
+│  (○) Grains  (○) Veg        │ ← دوائر (أبناء)
 │  ── Products ──              │
 │  [card] [card] [card]        │ ← منتجات
 └─────────────────────────────┘
 ```
 
-- `has_children = true` → نفس الشاشة مع `parent_id`
-- `has_children = false` → منتجات فقط
-- نفس `CategoryCircleTile` لكل مستوى
-- كل دائرة تستخدم `icon` (الأبناء صاروا يرجعون `icon`)
+- `has_children = true` → نفس الشاشة مع `?parent_id=`
+- منتجات للفئة الحالية **تحت الدوائر دائمًا**
+- نفس `CategoryCircleTile` لكل مستوى (حتى عمق 6)
 
 ### Checklist
 
 - [ ] نفس الدائرة للجذور والفرعيات
-- [ ] `has_children` → نفس الشاشة مع `?parent_id=`
-- [ ] منتجات للفئة الحالية تحت الدوائر دائمًا
+- [ ] `has_children` → `?parent_id=`
+- [ ] منتجات + دوائر معًا (لا تخفي المنتجات إذا في أبناء)
 - [ ] الصفات من `/categories/{id}/attributes` لأي مستوى
 
 ---
 
-## 5) وراثة صفات الفئة
+## 5) منتجات شجرة الفئة
+
+> المرجع: `FRONTEND_FLUTTER_CATEGORY_PRODUCT_SUBTREE.md`
+
+### السلوك
+
+```http
+GET /api/user/products?category_id={categoryId}&page=1&per_page=10
+```
+
+يرجع منتجات **الفئة الحالية + كل الفروع بأي عمق** — طلب واحد، بدون endpoint جديد.
+
+### ممنوع
+
+```dart
+// خطأ: يحذف منتجات الفروع
+final visible = products
+    .where((p) => p.categoryId == selectedCategoryId)
+    .toList();
+```
+
+الـ Backend طبّق فلتر الشجرة مسبقًا — **لا تفلتر محلياً**.
+
+### القواعد
+
+- طلب **واحد** بـ `category_id` للفئة المفتوحة
+- لا تشترط `has_children == false` لجلب المنتجات
+- عند تغيير الفئة: امسح القائمة، `page = 1`، أعد الطلب
+- load more: نفس `category_id` + الصفحة التالية
+- empty state فقط عند: `!isLoading && products.isEmpty && pagination.total == 0`
+
+### Checklist
+
+- [ ] جلب المنتجات لكل مستوى (مو leaf فقط)
+- [ ] لا requests منفصلة لكل child
+- [ ] pagination من السيرفر كما هي
+
+---
+
+## 6) وراثة صفات الفئة
 
 > المرجع: `FRONTEND_FLUTTER_CATEGORY_ATTRIBUTE_INHERITANCE.md`
 
@@ -268,26 +354,19 @@ GET /api/user/categories/{categoryId}/attributes
 ### القواعد
 
 - اجلب الصفات عند فتح **أي** فئة (حتى الجذر)
-- **لا** تعيد الطلب عند النزول لأبناء بنفس الشجرة
-- أعد الطلب فقط عند فتح شجرة مختلفة (جذر آخر)
-- استخدم `root_category_id` كمفتاح كاش
-
-### فلترة المنتجات
-
-```http
-GET /api/user/products?category_id={id}&attribute_values=31,40
-```
+- **لا** تعيد الطلب عند drill-down بنفس الشجرة — استخدم `root_category_id` ككاش
+- فلترة المنتجات: `GET /api/user/products?category_id={id}&attribute_values=31,40`
+- صفحة المنتج: بعدها `attributes_map` / `shop_variants` (بدون تغيير)
 
 ### Checklist
 
-- [ ] `/categories/{id}/attributes` عند فتح أي فئة
-- [ ] عرض chips حتى لو `has_children == true`
-- [ ] إعادة استخدام القائمة عند drill-down بنفس الشجرة
-- [ ] صفحة المنتج: بعدها `attributes_map` / `shop_variants`
+- [ ] chips حتى لو `has_children == true`
+- [ ] إعادة استخدام القائمة عند النزول لأبناء بنفس الجذر
+- [ ] قائمة فاضية = الجذر ما عنده صفات (مو خطأ)
 
 ---
 
-## 6) صفحة المنتج
+## 7) صفحة المنتج
 
 > المرجع: `FRONTEND_FLUTTER_PRODUCT_DETAIL_SHOP_VARIANTS.md`
 
@@ -304,67 +383,50 @@ GET /api/user/products/{id}
 | `shop_variants[].shop_id` | موجود دائمًا | ممكن **`null`** |
 | `shop_variants[].id` | موجود دائمًا | ممكن **`null`** |
 
+نفس تغيير `country` على `GET /api/user/products` (قائمة).
+
 ### Models
 
 ```dart
 class ProductDetail {
-  final String? country; // كان Country object
+  final String? country;
   final List<ShopVariant> shopVariants;
 }
 
 class ShopVariant {
-  final int? id;       // nullable
-  final int? shopId;   // nullable
+  final int? id;
+  final int? shopId;
   final num price;
   final int quantity;
-  final List<VariantAttribute> attributes;
-  final List<ProductImage> images;
 }
 ```
 
 ### قواعد
 
 ```dart
-// لا تقرأ بدون حماية
 final selected = variants.isNotEmpty ? variants.first : null;
 final price = selected?.price ?? product.price;
 
-// السلة
 bool canAddToCart(ShopVariant? v) =>
     v?.shopId != null && v?.id != null && (v?.quantity ?? 0) > 0;
 
 // country
 product.country // "تركيا" أو null — مو country.name.ar
-
-// images fallback
-List<String> galleryUrls(ProductDetail p, ShopVariant? v) {
-  final fromVariant = v?.images.map((e) => e.path).toList() ?? [];
-  if (fromVariant.isNotEmpty) return fromVariant;
-  return p.images.map((e) => e.path).toList();
-}
 ```
+
+- `shop_id` أو `id` = `null` → عطّل السلة، **الصفحة تضل تعرض**
+- `attributes_map` فاضي → إخفاء picker (مو خطأ)
 
 ### Checklist
 
-- [ ] `country` كـ `String?`
-- [ ] `ShopVariant.id` / `shopId` كـ `int?`
+- [ ] `country` كـ `String?` على detail **و** list
 - [ ] لا `shopVariants[0]` بدون حماية
-- [ ] السلة معطّلة إذا `shop_id` أو `id` null
-- [ ] `attributes_map` فاضي → إخفاء picker
-- [ ] fallback الصور
-- [ ] Error/retry UI بدلاً من red screen
-
-### نفس تغيير `country` على قائمة المنتجات
-
-```http
-GET /api/user/products
-```
-
-`country` صار string أو `null` (مو object).
+- [ ] fallback الصور: variant → product → thumbnail
+- [ ] Error/retry UI بدل red screen
 
 ---
 
-## 7) التسجيل بدون إيميل
+## 8) التسجيل بدون إيميل
 
 > المرجع: `FRONTEND_FLUTTER_REGISTER_EMAIL_OPTIONAL.md`
 
@@ -374,9 +436,9 @@ GET /api/user/products
 |-------|-----|-----|
 | `phone` | مطلوب إذا ما في إيميل | **مطلوب دائمًا** |
 | `email` | مطلوب إذا ما في هاتف | **اختياري** |
-| OTP | SMS أو إيميل | **SMS دائمًا** |
+| OTP | SMS أو إيميل | **SMS دائمًا** على `phone` |
 
-### Endpoint
+### Request
 
 ```http
 POST /api/user/auth/register
@@ -392,25 +454,8 @@ POST /api/user/auth/register
 }
 ```
 
-- **لا ترسل `email: ""`** — احذف المفتاح
-- `phone` أرقام فقط `digitsOnly`
-
-### بناء الـ payload
-
-```dart
-final body = <String, dynamic>{
-  'name': name.trim(),
-  'phone': phone.replaceAll(RegExp(r'[^\d]'), ''),
-  'password': password,
-  'city_id': cityId,
-  'governorate_id': governorateId,
-};
-
-final trimmedEmail = email?.trim() ?? '';
-if (trimmedEmail.isNotEmpty) {
-  body['email'] = trimmedEmail;
-}
-```
+- **لا ترسل `email: ""`** — احذف المفتاح إذا فاضي
+- `phone` أرقام فقط (`digitsOnly`)
 
 ### التحقق
 
@@ -419,23 +464,44 @@ POST /api/user/auth/verify-otp
 { "phone": "0501234567", "code": "12345" }
 ```
 
-### الفورم
-
-- حقل الهاتف: مطلوب + `digitsOnly`
-- حقل الإيميل: label "(اختياري)" — validator فقط إذا مش فاضي
-- احذف tabs/toggle "إيميل أو هاتف"
-- بعد التسجيل → OTP بالهاتف
-
 ### Checklist
 
 - [ ] حقل الهاتف مطلوب + `digitsOnly`
 - [ ] الإيميل "(اختياري)"
-- [ ] الـ payload بلا `email` عند الفراغ
-- [ ] حذف tabs/toggle
-- [ ] OTP بالهاتف + نص صحيح
+- [ ] حذف tabs/toggle "إيميل أو هاتف"
+- [ ] OTP بالهاتف
 - [ ] `email` nullable بكل الموديلات
-- [ ] عرض `error` من 422 مباشرة
 - [ ] الملف الشخصي يتعامل مع `email == null`
+
+---
+
+## 9) فلاتر المنتجات
+
+> المرجع الكامل: **`FRONTEND_FLUTTER_FILTERS.md`**
+
+### Endpoints
+
+| الغرض | Endpoint |
+|-------|----------|
+| منتجات + فلاتر | `GET /api/user/products` |
+| chips (لون/وزن/...) | `GET /api/user/categories/{id}/attributes` |
+
+### باراميترات رئيسية
+
+`category_id` · `brand_id` · `shop_id` · `price_min`/`price_max` · `search` · `country` (نص) · `is_free_delivery` · `is_instant_delivery` · `on_sale` · `in_stock_only` · `attribute_values` · `type` · `sort_by` · `page` · `per_page`
+
+### قواعد
+
+- `category_id` = الفئة الحالية + **كل الأحفاد** — لا تفلتر محلياً
+- `/attributes` على **أي** مستوى → صفات الجذر — كاش بـ `root_category_id`
+- أي تغيير فلتر → `page = 1`
+- `country` على البطاقة = string (مو object)
+
+### Checklist
+
+- [ ] chips من `/attributes` + منتجات من `/products` بنفس الطلب
+- [ ] toggles + سعر + ترتيب
+- [ ] empty state من `pagination.total === 0`
 
 ---
 
@@ -450,14 +516,47 @@ php artisan db:seed --class=NavMenuSeeder
 
 ---
 
-## مراجع تفصيلية
+## مراجع تفصيلية (كل الملفات)
 
-| الملف | الموضوع |
-|-------|---------|
-| `FRONTEND_FLUTTER_NAV_MENU.md` | شريط التنقّل |
-| `FRONTEND_FLUTTER_PAGE_BUILDER.md` | عرض الصفحات |
-| `FRONTEND_FLUTTER_CATEGORY_PAGES.md` | صفحات الفئات |
-| `FRONTEND_FLUTTER_CATEGORIES_CIRCULAR.md` | الفئات الدائرية |
-| `FRONTEND_FLUTTER_CATEGORY_ATTRIBUTE_INHERITANCE.md` | وراثة صفات الفئة |
-| `FRONTEND_FLUTTER_PRODUCT_DETAIL_SHOP_VARIANTS.md` | صفحة المنتج |
-| `FRONTEND_FLUTTER_REGISTER_EMAIL_OPTIONAL.md` | التسجيل بدون إيميل |
+| الملف | الموضوع | متى تقرأه |
+|-------|---------|-----------|
+| `FRONTEND_FLUTTER_NAV_MENU.md` | شريط التنقّل | تفاصيل Nav Menu |
+| `FRONTEND_FLUTTER_PAGE_BUILDER.md` | Page Builder | endpoints + شكل القسم |
+| `FRONTEND_FLUTTER_SECTIONS_TODAY.md` | **layout / variant** | آخر تعديل الأقسام (آب 2026) |
+| `FRONTEND_FLUTTER_SECTIONS_COMPLETE.md` | **دليل من الصفر** | بناء الصفحات والأقسام كامل |
+| `FRONTEND_FLUTTER_CATEGORY_PAGES.md` | صفحات الفئات | شاشة الفئة |
+| `FRONTEND_FLUTTER_CATEGORIES_CIRCULAR.md` | الفئات الدائرية | دوائر + drill-down |
+| `FRONTEND_FLUTTER_CATEGORY_PRODUCT_SUBTREE.md` | منتجات الشجرة | pagination + لا فلترة محلية |
+| `FRONTEND_FLUTTER_CATEGORY_ATTRIBUTE_INHERITANCE.md` | وراثة الصفات | فلاتر chips |
+| `FRONTEND_FLUTTER_PRODUCT_DETAIL_SHOP_VARIANTS.md` | صفحة المنتج | shop_variants + country |
+| `FRONTEND_FLUTTER_REGISTER_EMAIL_OPTIONAL.md` | التسجيل | phone مطلوب، email اختياري |
+| **`FRONTEND_FLUTTER_FILTERS.md`** | **فلاتر المنتجات** | **كل الفلاتر + Dart** |
+| `FRONTEND_SECTION_LAYOUT_AND_CARD.md` | layout / variant / display_type_id | مرجع مشترك (Web + Flutter) |
+
+---
+
+## Checklist شامل (كل التطبيق)
+
+### أقسام وصفحات
+- [ ] ويدجت أقسام موحّد
+- [ ] `layout` → slider/list/grid
+- [ ] `variant` → شكل الكارد فقط
+- [ ] fallback بدون `layout` → `slider`
+- [ ] صفحة فئة = نفس الويدجت
+
+### فئات
+- [ ] دوائر لكل مستوى (`?parent_id=` — **مو** `/categories/{id}`)
+- [ ] منتجات + أبناء معًا
+- [ ] subtree: لا فلترة محلية
+- [ ] صفات الجذر لأي مستوى
+
+### منتج + تسجيل
+- [ ] `country` string
+- [ ] `shop_variants` nullable ids
+- [ ] تسجيل: phone مطلوب، email اختياري
+
+### Nav
+- [ ] `GET /nav-menu` ديناميكي
+
+### فلاتر
+- [ ] `FRONTEND_FLUTTER_FILTERS.md` — chips + `/products` + toggles + ترتيب

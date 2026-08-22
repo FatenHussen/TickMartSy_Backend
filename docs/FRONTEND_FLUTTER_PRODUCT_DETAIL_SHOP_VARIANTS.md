@@ -1,5 +1,7 @@
 # Flutter — Product detail (`shop_variants` + `country`)
 
+> **⚠️ Merged into [`FRONTEND_FLUTTER_COMPLETE.md`](./FRONTEND_FLUTTER_COMPLETE.md)**
+
 ## What broke
 
 On the storefront, product detail crashed when the API returned:

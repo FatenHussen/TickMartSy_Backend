@@ -1,5 +1,7 @@
 # Flutter — Circular Categories (Root + Subcategories)
 
+> **⚠️ Merged into [`FRONTEND_FLUTTER_COMPLETE.md`](./FRONTEND_FLUTTER_COMPLETE.md)**
+
 A product can now be saved on **any level** of the category tree (parent or child). The user app must:
 
 1. Show **every level** with the same circular layout (not roots only).

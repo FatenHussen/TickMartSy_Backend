@@ -1,5 +1,7 @@
 # Flutter — Products of a Category Subtree
 
+> **⚠️ مدمج في [`FRONTEND_FLUTTER_COMPLETE.md`](./FRONTEND_FLUTTER_COMPLETE.md)**
+
 عند فتح أي فئة، User API يعيد منتجات الفئة نفسها مباشرة مع منتجات كل الفروع تحتها
 بأي عمق.
 
