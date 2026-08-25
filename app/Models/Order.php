@@ -21,6 +21,11 @@ class Order extends Model
         'user_address_id',
         'payment_method_id',
         'is_paid',
+        'custom_order_request_id',
+        'has_external_items',
+        'price_variance_type',
+        'price_variance_value',
+        'approximate_total',
         'basket_id',
         'basket_schedule_id',
         'is_instant_delivery',
@@ -60,15 +65,19 @@ class Order extends Model
         'automatic_promotions_snapshot' => 'array',
         'is_instant_delivery' => 'boolean',
         'is_paid' => 'boolean',
+        'has_external_items' => 'boolean',
         'start_todelivery' => 'boolean',
         'subscription_free_delivery' => 'boolean',
         'pause_at' => 'datetime',
+        'waiting_approval_at' => 'datetime',
         'delivery_price' => 'float',
         'original_delivery_price' => 'float',
         'subtotal' => 'float',
         'basket_discount' => 'float',
         'coupon_discount' => 'float',
         'total' => 'float',
+        'approximate_total' => 'float',
+        'price_variance_value' => 'float',
         'affiliate_rate' => 'decimal:2',
         'affiliate_fixed_commission' => 'decimal:2',
         'affiliate_commission_amount' => 'decimal:2',
@@ -121,6 +130,11 @@ class Order extends Model
     public function paymentMethod()
     {
         return $this->belongsTo(PaymentMethod::class);
+    }
+
+    public function customOrderRequest()
+    {
+        return $this->belongsTo(CustomOrderRequest::class);
     }
 
     public function driverWalletTransactions()
@@ -214,6 +228,7 @@ class Order extends Model
 
                 $timestampsMap = [
                     OrderStatus::PENDING->value      => 'pending_at',
+                    OrderStatus::WAITING_APPROVAL->value => 'waiting_approval_at',
                     OrderStatus::PREPARING->value    => 'preparing_at',
                     OrderStatus::OUT_DELIVERY->value => 'out_delivery_at',
                     OrderStatus::DELIVERED->value    => 'delivered_at',

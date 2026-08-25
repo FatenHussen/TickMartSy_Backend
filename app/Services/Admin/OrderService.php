@@ -43,6 +43,11 @@ class OrderService extends BaseService
                 OrderStatus::CANCELLED->value,
                 OrderStatus::CANCELLED_BY_ADMIN->value,
             ],
+            OrderStatus::WAITING_APPROVAL->value => [
+                OrderStatus::PREPARING->value,
+                OrderStatus::CANCELLED->value,
+                OrderStatus::CANCELLED_BY_ADMIN->value,
+            ],
             OrderStatus::PREPARING->value => [
                 OrderStatus::OUT_DELIVERY->value,
                 OrderStatus::CANCELLED->value,

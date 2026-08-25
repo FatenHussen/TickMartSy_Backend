@@ -58,6 +58,7 @@ use App\Http\Controllers\Admin\Section\SectionCrudController;
 use App\Http\Controllers\Admin\SellerRegistration\SellerRegistrationCrudController;
 use App\Http\Controllers\Admin\Service\ServiceCrudController;
 use App\Http\Controllers\Admin\ServiceOrder\ServiceOrderController;
+use App\Http\Controllers\Admin\CustomOrderRequest\CustomOrderRequestController;
 use App\Http\Controllers\Admin\Setting\SettingController;
 use App\Http\Controllers\Admin\Shop\ShopCrudController;
 use App\Http\Controllers\Admin\ShopProductVariant\ShopProductVariantController;
@@ -409,6 +410,17 @@ Route::prefix('admin')->group(function () {
         });
         Route::patch('{orderId}/change-status', [ServiceOrderController::class, 'changeStatus'])
             ->middleware('admin.permission:serviceorder.update');
+    });
+
+    Route::middleware('auth:admin')->prefix('custom-order-requests')->group(function () {
+        Route::middleware('admin.permission:customorderrequest.view')->group(function () {
+            Route::get('/', [CustomOrderRequestController::class, 'index']);
+            Route::get('{id}/get_one', [CustomOrderRequestController::class, 'get_one']);
+        });
+        Route::middleware('admin.permission:customorderrequest.update')->group(function () {
+            Route::post('{id}/convert', [CustomOrderRequestController::class, 'convert']);
+            Route::post('{id}/cancel', [CustomOrderRequestController::class, 'cancel']);
+        });
     });
     Route::middleware('auth:admin')->group(function () {
         Route::prefix('points')->group(function () {

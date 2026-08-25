@@ -10,8 +10,10 @@ class OrderItem extends Model
     protected $fillable = [
         'order_id',
         'shop_product_variant_id',
+        'is_external',
         'product_name',           // snapshot
         'product_image',          // snapshot
+        'invoice_image',
         'variant_attributes',     // snapshot JSON
         'note',
         'quantity',
@@ -58,6 +60,7 @@ class OrderItem extends Model
     // لو حاب تحوّل variant_attributes من JSON تلقائياً
     protected $casts = [
         'variant_attributes' => 'array',
+        'is_external' => 'boolean',
         'price' => 'float',
         'unit_price' => 'float',
         'final_price' => 'float',
@@ -68,6 +71,15 @@ class OrderItem extends Model
         'commission_snapshot_fixed' => 'float',
         'commission_snapshot_amount' => 'float',
     ];
+
+    public function getInvoiceImageUrlAttribute(): ?string
+    {
+        if (! $this->invoice_image) {
+            return null;
+        }
+
+        return asset('storage/' . ltrim($this->invoice_image, '/'));
+    }
 
     protected static function booted()
     {

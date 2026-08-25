@@ -1172,6 +1172,22 @@ return [
         'service_not_available' => 'The requested service is not available for the selected shop.',
     ],
 
+    'custom_order_requests' => [
+        'created_successfully' => 'Your quick order was submitted and is pending pricing.',
+        'approved_successfully' => 'Order approved. Preparation will start.',
+        'cancelled_successfully' => 'Custom order cancelled.',
+        'cancelled_by_admin_successfully' => 'Custom order cancelled by admin.',
+        'converted_successfully' => 'Custom order converted to a system order and is waiting for customer approval.',
+        'not_found' => 'Custom order request not found.',
+        'address_not_found' => 'Delivery address not found or does not belong to you.',
+        'payment_method_unavailable' => 'Payment method is unavailable.',
+        'cannot_approve' => 'This request cannot be approved in its current status.',
+        'cannot_cancel' => 'This request cannot be cancelled in its current status.',
+        'order_not_ready' => 'Linked system order is not ready for approval.',
+        'already_priced' => 'This request has already been priced.',
+        'variance_required_for_external' => 'Variance type and value are required when external items exist.',
+    ],
+
     // Languages
     'languages' => [
         'source_not_found' => 'Source language [:lang] does not exist.',

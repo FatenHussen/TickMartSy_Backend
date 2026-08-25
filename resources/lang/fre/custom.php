@@ -46,4 +46,20 @@ return [
         'cannot_change_final_status' => 'Impossible de modifier le statut d\'une commande de service clôturée.',
         'service_not_available' => 'Le service demandé n\'est pas disponible dans la boutique sélectionnée.',
     ],
+
+    'custom_order_requests' => [
+        'created_successfully' => 'Votre commande rapide a été envoyée et est en attente de tarification.',
+        'approved_successfully' => 'Commande approuvée. La préparation va commencer.',
+        'cancelled_successfully' => 'Commande personnalisée annulée.',
+        'cancelled_by_admin_successfully' => 'Commande personnalisée annulée par l\'administration.',
+        'converted_successfully' => 'Commande convertie en commande système, en attente d\'approbation client.',
+        'not_found' => 'Demande de commande personnalisée introuvable.',
+        'address_not_found' => 'Adresse de livraison introuvable ou non associée à vous.',
+        'payment_method_unavailable' => 'Mode de paiement indisponible.',
+        'cannot_approve' => 'Impossible d\'approuver cette demande dans son état actuel.',
+        'cannot_cancel' => 'Impossible d\'annuler cette demande dans son état actuel.',
+        'order_not_ready' => 'La commande système liée n\'est pas prête pour approbation.',
+        'already_priced' => 'Cette demande a déjà été tarifée.',
+        'variance_required_for_external' => 'Le type et la valeur de variation sont requis pour les articles externes.',
+    ],
 ];

@@ -1186,6 +1186,22 @@ return [
         'service_not_available' => 'الخدمة المطلوبة غير متوفرة في المتجر المحدد.',
     ],
 
+    'custom_order_requests' => [
+        'created_successfully' => 'تم إرسال طلبك السريع بنجاح وهو بانتظار التسعير.',
+        'approved_successfully' => 'تمت الموافقة على الطلب وسيبدأ التحضير.',
+        'cancelled_successfully' => 'تم إلغاء الطلب المخصص.',
+        'cancelled_by_admin_successfully' => 'تم إلغاء الطلب المخصص من الإدارة.',
+        'converted_successfully' => 'تم تحويل الطلب المخصص إلى طلب نظامي وبانتظار موافقة الزبون.',
+        'not_found' => 'طلب مخصص غير موجود.',
+        'address_not_found' => 'عنوان التوصيل غير موجود أو لا يخصك.',
+        'payment_method_unavailable' => 'طريقة الدفع غير متاحة.',
+        'cannot_approve' => 'لا يمكن الموافقة على هذا الطلب في حالته الحالية.',
+        'cannot_cancel' => 'لا يمكن إلغاء هذا الطلب في حالته الحالية.',
+        'order_not_ready' => 'الطلب النظامي غير جاهز للموافقة.',
+        'already_priced' => 'هذا الطلب تم تسعيره مسبقاً.',
+        'variance_required_for_external' => 'نوع وقيمة التفاوت مطلوبان عند وجود بنود خارجية.',
+    ],
+
     // Languages
     'languages' => [
         'source_not_found' => 'لغة المصدر [:lang] غير موجودة.',

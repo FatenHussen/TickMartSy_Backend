@@ -5,6 +5,7 @@ namespace App\Enums;
 enum OrderStatus: string
 {
     case PENDING = 'pending';
+    case WAITING_APPROVAL = 'waiting_approval';
     case PREPARING = 'preparing';
     case OUT_DELIVERY = 'out_delivery';
     case DELIVERED = 'delivered';
@@ -18,6 +19,7 @@ enum OrderStatus: string
     {
         return match ($this) {
             self::PENDING => 'قيد الانتظار',
+            self::WAITING_APPROVAL => 'بانتظار موافقة الزبون',
             self::PREPARING => 'قيد التحضير',
             self::OUT_DELIVERY => 'خرج للتوصيل',
             self::DELIVERED => 'تم التوصيل',
@@ -33,6 +35,7 @@ enum OrderStatus: string
     {
         return match ($this) {
             self::PENDING => 'Pending',
+            self::WAITING_APPROVAL => 'Waiting approval',
             self::PREPARING => 'Preparing',
             self::OUT_DELIVERY => 'Out for delivery',
             self::DELIVERED => 'Delivered',

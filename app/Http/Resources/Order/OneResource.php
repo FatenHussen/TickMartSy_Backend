@@ -30,6 +30,15 @@ class OneResource extends JsonResource
             'status' => $this->status,
             'rejection_reason' => $this->rejection_reason,
             'cart_type' => $this->cart_type,
+            'custom_order_request_id' => $this->custom_order_request_id,
+            'has_external_items' => (bool) $this->has_external_items,
+            'price_variance_type' => $this->price_variance_type,
+            'price_variance_value' => $this->price_variance_value,
+            ...(
+                $this->approximate_total !== null
+                    ? $this->withCurrency($this->approximate_total, 'approximate_total')
+                    : ['approximate_total' => null]
+            ),
             'is_instant_delivery' => $this->is_instant_delivery,
             ...$this->withCurrency($this->delivery_price, 'delivery_price'),
             ...$this->withCurrency($this->subtotal, 'subtotal'),

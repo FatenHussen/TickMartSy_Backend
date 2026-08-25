@@ -43,6 +43,7 @@ class RolePermissionSeeder extends Seeder
             'Notification',
             'VendorPackage',
             'ServiceOrder',
+            'CustomOrderRequest',
             'VendorService',
             'VendorServiceType',
             'ShopVendorService',

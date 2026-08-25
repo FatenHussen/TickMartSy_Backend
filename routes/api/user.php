@@ -41,6 +41,7 @@ use App\Http\Controllers\User\SearchController;
 use App\Http\Controllers\User\QuickActionController;
 use App\Http\Controllers\User\PromotionController;
 use App\Http\Controllers\User\ServiceOrder\ServiceOrderController;
+use App\Http\Controllers\User\CustomOrderRequest\CustomOrderRequestController;
 
 Route::prefix('user')->group(
     function () {
@@ -196,6 +197,13 @@ Route::prefix('user')->group(
 
         Route::middleware(['auth:user'])->group(function () {
             Route::apiResource('service-orders', ServiceOrderController::class)
+                ->only(['index', 'show', 'store']);
+        });
+
+        Route::middleware(['auth:user'])->group(function () {
+            Route::post('custom-order-requests/{id}/approve', [CustomOrderRequestController::class, 'approve']);
+            Route::post('custom-order-requests/{id}/cancel', [CustomOrderRequestController::class, 'cancel']);
+            Route::apiResource('custom-order-requests', CustomOrderRequestController::class)
                 ->only(['index', 'show', 'store']);
         });
 

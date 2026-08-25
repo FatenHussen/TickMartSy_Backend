@@ -1036,12 +1036,18 @@ class OrderService extends BaseService
             ->where('user_id', $userId)
             ->firstOrFail();
 
-        if ($order->status !== OrderStatus::PENDING->value) {
+        if (! in_array($order->status, [
+            OrderStatus::PENDING->value,
+            OrderStatus::WAITING_APPROVAL->value,
+        ], true)) {
             throw new CustomExceptionWithMessage('custom.orders.cannot_cancel');
         }
 
         foreach ($order->items as $item) {
-            if ($item->item_status !== OrderStatus::PENDING->value) {
+            if (! in_array($item->item_status, [
+                OrderStatus::PENDING->value,
+                OrderStatus::WAITING_APPROVAL->value,
+            ], true)) {
                 throw new CustomExceptionWithMessage('custom.orders.items_cannot_cancel');
             }
         }
@@ -1055,14 +1061,23 @@ class OrderService extends BaseService
 
         foreach ($order->items as $item) {
 
-            $inventory->increaseStock(
-                $item->shop_product_variant_id,
-                $item->quantity
-            );
+            if (! $item->is_external && $item->shop_product_variant_id) {
+                $inventory->increaseStock(
+                    (int) $item->shop_product_variant_id,
+                    (int) $item->quantity
+                );
+            }
 
             $item->update([
-                'status' => OrderStatus::CANCELLED->value
+                'item_status' => OrderStatus::CANCELLED->value
             ]);
+        }
+
+        if ($order->custom_order_request_id) {
+            \App\Models\CustomOrderRequest::query()
+                ->where('id', $order->custom_order_request_id)
+                ->where('status', \App\Enums\CustomOrderRequestStatus::WAITING_APPROVAL->value)
+                ->update(['status' => \App\Enums\CustomOrderRequestStatus::CANCELLED->value]);
         }
 
         event(new OrderStatusChanged(
