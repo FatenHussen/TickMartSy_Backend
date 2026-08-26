@@ -95,13 +95,16 @@ return new class extends Migration
         ];
 
         foreach ($defaults as $row) {
-            Setting::updateOrCreate(
-                ['key' => $row['key']],
-                [
-                    'value' => $row['value'],
-                    'type' => $row['type'],
-                ]
-            );
+            // لا تعيد كتابة إعدادات موجودة (الأدمن قد غيّرها)
+            if (Setting::query()->where('key', $row['key'])->exists()) {
+                continue;
+            }
+
+            Setting::create([
+                'key' => $row['key'],
+                'value' => $row['value'],
+                'type' => $row['type'],
+            ]);
         }
     }
 

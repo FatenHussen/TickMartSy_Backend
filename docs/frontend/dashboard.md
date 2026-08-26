@@ -22,6 +22,8 @@
 12. [بلد المنشأ — Select من كل دول العالم](#12-بلد-المنشأ--select-من-كل-دول-العالم)
 13. [بلدان المبيع — بدون رفع أيقونة + افتراضي سوريا](#13-بلدان-المبيع--بدون-رفع-أيقونة--افتراضي-سوريا)
 14. [قناة البيع — للموقع أو ربط بمتجر](#14-قناة-البيع--للموقع-أو-ربط-بمتجر)
+15. [الطلب السريع — إعدادات + صفحات الظهور](#15-الطلب-السريع--إعدادات--صفحات-الظهور)
+16. [استيراد منتجات من Excel](#16-استيراد-منتجات-من-excel)
 
 ---
 
@@ -572,6 +574,156 @@ shop_variants[0][variant_index]=0
 
 ---
 
+## 15) الطلب السريع — إعدادات + صفحات الظهور
+
+> التفصيل الكامل (تحويل الطلبات + convert): [`../custom-orders/dashboard.md`](../custom-orders/dashboard.md)
+
+### الفكرة
+
+المحتوى والشكل **مركزي من Settings** (ليس قسم Page Builder).  
+الأدمن يختار:
+1. تفعيل/إيقاف الميزة (`quick_order_enabled`) — يشمل زر الهيدر
+2. **أي صفحات يظهر عليها القسم** (`quick_order_page_ids`)
+3. خلفية، ألوان، شكل الكروت، نصوص AR/EN، خطوات
+
+### Endpoints
+
+**Base:** `/api/admin/settings`  
+**صلاحيات:** `setting.view` / `setting.update`  
+قائمة الصفحات للـ multi-select: `GET /api/admin/pages`
+
+| Key | Type | وصف |
+|-----|------|-----|
+| `quick_order_enabled` | boolean | **إظهار/إخفاء** القسم + زر الهيدر |
+| `quick_order_page_ids` | json | مصفوفة `pages.id` — الصفحات التي يظهر عليها القسم. الافتراضي = صفحة `home` فقط. `[]` = لا يظهر على أي صفحة |
+| `quick_order_background_image` | file | صورة خلفية (`multipart` حقل `value`) |
+| `quick_order_background_color` | string | لون احتياطي (مثال `#FFE8D6`) |
+| `quick_order_card_background_color` | string | خلفية كروت الخطوات |
+| `quick_order_card_variant` | string | `horizontal` \| `vertical` \| `square` |
+| `quick_order_badge` / `title` / `subtitle` / `cta` | json | `{ "ar": "...", "en": "..." }` |
+| `quick_order_steps` | json | مصفوفة خطوات (حتى 6) |
+
+```http
+PUT /api/admin/settings/quick_order_enabled
+{ "value": false }
+```
+
+```http
+PUT /api/admin/settings/quick_order_page_ids
+{ "value": [1, 5, 12] }
+```
+
+```http
+PUT /api/admin/settings/quick_order_background_image
+Content-Type: multipart/form-data
+value: <image file>
+```
+
+### ما يقرأه التطبيق/الويب
+
+```http
+GET /api/user/settings → data.quick_order
+```
+
+| حقل | معنى |
+|-----|------|
+| `is_enabled` | ماستر سويتش (قسم + زر الهيدر) |
+| `page_ids` | IDs الصفحات المعتمدة |
+| `page_slugs` | نفس الصفحات كـ slug |
+
+**قاعدة العرض عند العميل:** إن `is_enabled` و (الصفحة الحالية ∈ `page_slugs` أو ∈ `page_ids`) → اعرض القسم.
+
+### UI مقترح
+
+تبويب «طلب سريع» ضمن الإعدادات:
+- سويتش تفعيل
+- **multi-select صفحات** من `GET /api/admin/pages`
+- صورة خلفية + ألوان
+- شكل الكارد
+- نصوص AR/EN
+- محرر الخطوات
+
+**مهم:** استلام الطلبات وتحويلها (`convert` / `cancel`) مسار منفصل تحت `/api/admin/custom-order-requests` — انظر [`../custom-orders/dashboard.md`](../custom-orders/dashboard.md).
+
+---
+
+## 16) استيراد منتجات من Excel
+
+استيراد جماعي من قالب SPBS (أعمدة عربية ثابتة). الكود يقرأ **هذه الأعمدة فقط** ويتجاهل أي عمود زيادة.
+
+### Endpoints
+
+| Method | Path | صلاحية | وصف |
+|--------|------|--------|-----|
+| `GET` | `/api/admin/products/import-template` | `product.view` | تنزيل قالب `.xlsx` |
+| `POST` | `/api/admin/products/import` | `product.create` | رفع الملف والاستيراد |
+
+```http
+POST /api/admin/products/import
+Content-Type: multipart/form-data
+file: <products.xlsx>
+```
+
+### أعمدة القالب (Mapping)
+
+| عمود الإكسل | حقل النظام |
+|-------------|------------|
+| كود المنتج | `sku` |
+| الفئة الرئيسية | اسم فئة → `category_id` (مطابقة دقيقة ar/en) |
+| اسم المنتج عربي | `name.ar` |
+| اسم المنتج انكليزي | `name.en` |
+| الوصف المختصر | `description.ar` |
+| العلامة التجارية | اسم براند → `brand_id` (اختياري) |
+| الباركود | `barcode` |
+| السعر دولار | `price` (USD) |
+| السعر سوري | يتحوّل لـ USD إذا ما في دولار |
+| نوع الخصم | `discount_type` (`none` / `percentage` / `fixed` أو بدون / نسبة / ثابت) |
+| الخصم | `discount` |
+| الكمية | `quantity` |
+| تاريخ انتهاء الصلاحية | `expiry_date` |
+
+### Upsert
+
+1. إن وُجد **باركود** مطابق → تحديث  
+2. وإلا إن وُجد **كود منتج (sku)** مطابق → تحديث  
+3. وإلا → إضافة جديدة  
+
+عند التحديث: الخلايا الفارغة **لا تمسح** القيم الموجودة.  
+المنتجات بسيطة (`sale_channel=platform`)؛ الباك ينشئ/يزامن الـ variant الافتراضي (سعر + كمية + باركود + sku).
+
+### تحقق عند الإضافة
+
+- اسم عربي + إنكليزي مطلوبان  
+- الفئة مطلوبة وموجودة (اسم فريد)  
+- سعر دولار أو سوري (≥ 0)  
+- كمية مطلوبة (≥ 0 عدد صحيح)  
+
+الصفوف الخاطئة تُتخطّى؛ الصحيحة تُستورد.
+
+### استجابة
+
+```json
+{
+  "status": true,
+  "message": "تم استيراد المنتجات",
+  "data": {
+    "created": 10,
+    "updated": 3,
+    "failed": [
+      { "row": 5, "errors": ["الفئة الرئيسية غير موجودة: ألبان"] }
+    ]
+  }
+}
+```
+
+### UI مطلوب
+
+- زر **تنزيل القالب** → `GET import-template`
+- زر **استيراد من Excel** → رفع ملف → عرض ملخص: أُضيف / حُدّث / فشل (رقم الصف + السبب)
+- لا Mapping يدوي من الواجهة — الأعمدة ثابتة من القالب
+
+---
+
 ## Checklist شامل
 
 ### صفحات وأقسام
@@ -591,21 +743,44 @@ shop_variants[0][variant_index]=0
 - [ ] بلد المنشأ Select؛ media اختياري
 - [ ] بلد مبيع بدون icon؛ افتراضي سوريا
 - [ ] sale_channel فقط (موقع/متجر) — احذف مستودعاتي/خارجي
+- [ ] استيراد Excel: تنزيل قالب + رفع + ملخص created/updated/failed
+
+### طلب سريع
+- [ ] إعدادات: سويتش `quick_order_enabled` + multi-select `quick_order_page_ids` + خلفية + كروت + نصوص
+- [ ] قائمة الصفحات من `GET /api/admin/pages`
+- [ ] حفظ `PUT /api/admin/settings/quick_order_page_ids` بمصفوفة IDs
+- [ ] شاشة قائمة/تفاصيل custom-order-requests + convert/cancel
 
 ---
 
-## أوامر التشغيل (بعد سحب التعديلات)
+## أوامر التشغيل (آمنة — ما تمسح ولا تعيد كتابة داتا قديمة)
 
 ```bash
+# 1) هيكل فقط: أعمدة + إعدادات quick_order الناقصة + sale_channel
 php artisan migrate
+
+# 2) صلاحيات ناقصة فقط (CustomOrderRequest …) — firstOrCreate
 php artisan db:seed --class=RolePermissionSeeder
-php artisan db:seed --class=CategoryPagesBackfillSeeder
-php artisan db:seed --class=NavMenuSeeder
+
+# 3) دول منشأ ناقصة فقط — ما يغيّر is_active/أسماء موجودة
 php artisan db:seed --class=CountrySeeder
+
+# 4) بلدان مبيع ناقصة + يعبّي icon إن فاضي فقط
 php artisan db:seed --class=SaleCountrySeeder
+```
+
+**لا تشغّلوا:**
+
+```bash
+php artisan migrate:fresh
+php artisan migrate:refresh
+php artisan db:seed          # كامل — خطر
+php artisan db:seed --class=SettingSeeder   # غير لازم؛ الـ migrate يضيف quick_order
 ```
 
 Migrations آب 2026:
 
+- `2026_08_26_103600_add_quick_order_settings` — مفاتيح ناقصة فقط
+- `2026_08_26_131500_add_quick_order_page_ids_setting` — صفحات الظهور (`quick_order_page_ids`)
 - `2026_08_26_104500_make_product_category_id_nullable_for_category_delete`
-- `2026_08_26_111600_add_sale_channel_to_products_table`
+- `2026_08_26_111600_add_sale_channel_to_products_table` — عمود جديد + تعبئة من `vendor_id`

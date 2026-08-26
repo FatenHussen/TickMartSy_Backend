@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers\Admin\Product;
 
+use App\Exports\ProductImportTemplateExport;
 use App\Http\Controllers\BaseCRUDController;
 use App\Http\Requests\Admin\Product\FilterRequest;
+use App\Http\Requests\Admin\Product\ImportRequest;
 use App\Http\Requests\Admin\Product\StoreRequest;
 use App\Http\Requests\Admin\Product\UpdateRequest;
 use App\Http\Resources\Admin\Product\OneResource;
+use App\Services\Admin\ProductImportService;
 use App\Services\Admin\ProductService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ProductController extends BaseCRUDController
 {
@@ -19,6 +24,36 @@ class ProductController extends BaseCRUDController
         $this->filterRequest = FilterRequest::class;
         $this->createRequest = StoreRequest::class;
         $this->updateRequest = UpdateRequest::class;
+    }
+
+    /**
+     * تنزيل قالب استيراد المنتجات (أعمدة SPBS).
+     */
+    public function downloadImportTemplate(): BinaryFileResponse
+    {
+        return Excel::download(
+            new ProductImportTemplateExport(),
+            'products_import_template.xlsx'
+        );
+    }
+
+    /**
+     * استيراد منتجات من ملف Excel (upsert بالباركود ثم SKU).
+     */
+    public function import(ImportRequest $request, ProductImportService $importService): JsonResponse
+    {
+        try {
+            $result = $importService->import($request->file('file'));
+
+            return $this->sendResponse(
+                $result,
+                'تم استيراد المنتجات'
+            );
+        } catch (\InvalidArgumentException $e) {
+            return $this->sendError($e->getMessage(), 422);
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), 400);
+        }
     }
 
     /**

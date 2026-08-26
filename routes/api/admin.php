@@ -259,6 +259,13 @@ Route::prefix('admin')->group(function () {
             ->middleware('crud.permission:categoryattribute');
         Route::resource('category-details', CategoryDetailController::class)
             ->middleware('crud.permission:categorydetail');
+
+        // Product Excel import — must be registered before products/{product}
+        Route::get('products/import-template', [ProductController::class, 'downloadImportTemplate'])
+            ->middleware('admin.permission:product.view');
+        Route::post('products/import', [ProductController::class, 'import'])
+            ->middleware('admin.permission:product.create');
+
         Route::resource('products', ProductController::class)->middleware('crud.permission:product');
         Route::apiResource('product-extra-details', ProductExtraDetailController::class)
             ->middleware('crud.permission:productextradetail');

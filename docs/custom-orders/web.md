@@ -100,7 +100,7 @@ pending_pricing  →  waiting_approval  →  approved
 
 ---
 
-## قسم الطلب السريع (الهوم + الهيدر)
+## قسم الطلب السريع (صفحات مختارة + الهيدر)
 
 نفس مصدر الموبايل:
 
@@ -114,6 +114,8 @@ Accept-Language: ar
 ```json
 {
   "is_enabled": true,
+  "page_ids": [1],
+  "page_slugs": ["home"],
   "background_image": "https://.../storage/settings/quick-order-bg.jpg",
   "background_color": "#FFE8D6",
   "card_background_color": "#FFFFFF",
@@ -136,7 +138,8 @@ Accept-Language: ar
 
 | حقل | استخدام |
 |-----|---------|
-| `is_enabled` | إن `false`: أخفِ زر الهيدر **وقسم** الهوم بالكامل |
+| `is_enabled` | إن `false`: أخفِ زر الهيدر **وقسم** الطلب السريع بالكامل |
+| `page_ids` / `page_slugs` | اعرض القسم فقط على هذه الصفحات (افتراضي: `home`) |
 | `background_image` | صورة خلفية القسم (URL) — `background-size: cover` |
 | `background_color` | لون احتياطي تحت/بدل الصورة |
 | `card_background_color` | خلفية كل كارد خطوة |
@@ -150,14 +153,15 @@ Accept-Language: ar
 ```jsx
 const { data } = await api.get('/user/settings');
 const qo = data.quick_order;
+const showSection = qo?.is_enabled && qo.page_slugs?.includes(currentPageSlug);
 
-// في الهيدر + الهوم:
+// زر الهيدر عام عند التفعيل؛ القسم حسب الصفحة:
 {qo?.is_enabled && <QuickOrderHeaderButton label={qo.badge} />}
-{qo?.is_enabled && <QuickOrderSection config={qo} />}
+{showSection && <QuickOrderSection config={qo} />}
 ```
 
 - زر الهيدر ينقل إلى `/custom-orders/new` (أو يفتح Modal الإنشاء).
-- لا تُظهر القسم إن `is_enabled === false` حتى لو كان الكاش قديماً — أعد جلب الإعدادات عند دخول الهوم.
+- لا تُظهر القسم إن `is_enabled === false` أو الصفحة الحالية ليست ضمن `page_slugs`.
 
 ### خلفية القسم (CSS)
 
@@ -248,8 +252,8 @@ const qo = data.quick_order;
 
 ## Checklist ويب
 
-- [ ] جلب `GET /settings` وعرض `quick_order` فقط إن `is_enabled`
-- [ ] زر هيدر + بانر هوم من نفس المصدر
+- [ ] جلب `GET /settings` وعرض `quick_order` إن `is_enabled` والصفحة ضمن `page_slugs`
+- [ ] زر هيدر عام + قسم حسب الصفحات المختارة
 - [ ] خلفية صورة أو لون
 - [ ] كروت بـ `card_background_color` + `card_variant`
 - [ ] ريسبونسيف موبايل / ديسكتوب

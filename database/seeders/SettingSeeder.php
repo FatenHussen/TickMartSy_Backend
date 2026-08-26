@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Page;
 use App\Models\Setting;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -125,48 +126,22 @@ class SettingSeeder extends Seeder
             'type' => 'string',
         ]);
 
-        // قسم الطلب السريع (الهوم + زر الهيدر)
-        Setting::updateOrCreate(['key' => 'quick_order_enabled'], [
-            'value' => true,
-            'type' => 'boolean',
-        ]);
-        Setting::updateOrCreate(['key' => 'quick_order_background_image'], [
-            'value' => null,
-            'type' => 'file',
-        ]);
-        Setting::updateOrCreate(['key' => 'quick_order_background_color'], [
-            'value' => '#FFE8D6',
-            'type' => 'string',
-        ]);
-        Setting::updateOrCreate(['key' => 'quick_order_card_background_color'], [
-            'value' => '#FFFFFF',
-            'type' => 'string',
-        ]);
-        Setting::updateOrCreate(['key' => 'quick_order_card_variant'], [
-            'value' => 'horizontal',
-            'type' => 'string',
-        ]);
-        Setting::updateOrCreate(['key' => 'quick_order_badge'], [
-            'value' => ['ar' => 'طلب عاجل', 'en' => 'Urgent order'],
-            'type' => 'json',
-        ]);
-        Setting::updateOrCreate(['key' => 'quick_order_title'], [
-            'value' => ['ar' => 'تحتاجه الآن؟', 'en' => 'Need it now?'],
-            'type' => 'json',
-        ]);
-        Setting::updateOrCreate(['key' => 'quick_order_subtitle'], [
-            'value' => [
+        // قسم الطلب السريع — أضف المفاتيح الناقصة فقط (لا تعِد كتابة قيم الأدمن)
+        $quickOrderDefaults = [
+            ['key' => 'quick_order_enabled', 'value' => true, 'type' => 'boolean'],
+            ['key' => 'quick_order_background_image', 'value' => null, 'type' => 'file'],
+            ['key' => 'quick_order_background_color', 'value' => '#FFE8D6', 'type' => 'string'],
+            ['key' => 'quick_order_card_background_color', 'value' => '#FFFFFF', 'type' => 'string'],
+            ['key' => 'quick_order_card_variant', 'value' => 'horizontal', 'type' => 'string'],
+            ['key' => 'quick_order_badge', 'value' => ['ar' => 'طلب عاجل', 'en' => 'Urgent order'], 'type' => 'json'],
+            ['key' => 'quick_order_title', 'value' => ['ar' => 'تحتاجه الآن؟', 'en' => 'Need it now?'], 'type' => 'json'],
+            ['key' => 'quick_order_subtitle', 'value' => [
                 'ar' => 'اكتب ما تريده مثل قائمة السوق. نسعّره، توافق، ونوصّله للباب.',
                 'en' => 'Write what you want like a market list. We price it, you approve, we bring it to the door.',
-            ],
-            'type' => 'json',
-        ]);
-        Setting::updateOrCreate(['key' => 'quick_order_cta'], [
-            'value' => ['ar' => 'اطلب الآن', 'en' => 'Order now'],
-            'type' => 'json',
-        ]);
-        Setting::updateOrCreate(['key' => 'quick_order_steps'], [
-            'value' => [
+            ], 'type' => 'json'],
+            ['key' => 'quick_order_cta', 'value' => ['ar' => 'اطلب الآن', 'en' => 'Order now'], 'type' => 'json'],
+            ['key' => 'quick_order_page_ids', 'value' => $this->defaultQuickOrderPageIds(), 'type' => 'json'],
+            ['key' => 'quick_order_steps', 'value' => [
                 [
                     'number' => 1,
                     'title' => ['ar' => 'اكتبه', 'en' => 'Write it'],
@@ -185,8 +160,24 @@ class SettingSeeder extends Seeder
                     'description' => ['ar' => 'للباب بسرعة', 'en' => 'To your door, fast'],
                     'icon' => 'delivery',
                 ],
-            ],
-            'type' => 'json',
-        ]);
+            ], 'type' => 'json'],
+        ];
+
+        foreach ($quickOrderDefaults as $row) {
+            Setting::firstOrCreate(
+                ['key' => $row['key']],
+                ['value' => $row['value'], 'type' => $row['type']]
+            );
+        }
+    }
+
+    /**
+     * @return list<int>
+     */
+    private function defaultQuickOrderPageIds(): array
+    {
+        $homeId = Page::query()->where('slug', 'home')->value('id');
+
+        return $homeId ? [(int) $homeId] : [];
     }
 }

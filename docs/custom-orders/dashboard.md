@@ -166,9 +166,9 @@ Content-Type: application/json
 
 ---
 
-## إعدادات قسم الطلب السريع (الهوم)
+## إعدادات قسم الطلب السريع (تفعيل + صفحات الظهور)
 
-التحكم بإظهار القسم في التطبيق/الويب وخلفيته وشكل الكروت عبر **Settings**:
+التحكم بإظهار القسم في التطبيق/الويب، **على أي صفحات يظهر**، وخلفيته وشكل الكروت عبر **Settings**:
 
 **Base:** `/api/admin/settings`  
 **صلاحيات:** `setting.view` / `setting.update`
@@ -176,6 +176,7 @@ Content-Type: application/json
 | Key | Type | وصف |
 |-----|------|-----|
 | `quick_order_enabled` | boolean | إظهار/إخفاء القسم + زر الهيدر في التطبيق |
+| `quick_order_page_ids` | json | مصفوفة `pages.id` — الصفحات التي يظهر عليها القسم (افتراضي: `home`). `[]` = لا يظهر على أي صفحة |
 | `quick_order_background_image` | file | صورة خلفية القسم (`multipart` حقل `value`) |
 | `quick_order_background_color` | string | لون احتياطي إن لم تُرفع صورة (مثال `#FFE8D6`) |
 | `quick_order_card_background_color` | string | خلفية كروت الخطوات |
@@ -194,6 +195,13 @@ Content-Type: application/json
 ```
 
 ```http
+PUT /api/admin/settings/quick_order_page_ids
+Content-Type: application/json
+
+{ "value": [1, 5, 12] }
+```
+
+```http
 PUT /api/admin/settings/quick_order_background_image
 Content-Type: multipart/form-data
 
@@ -205,9 +213,9 @@ PUT /api/admin/settings/quick_order_card_variant
 { "value": "horizontal" }
 ```
 
-التطبيق يقرأ النتيجة مجمّعة من `GET /api/user/settings` → `data.quick_order`.
+التطبيق يقرأ النتيجة مجمّعة من `GET /api/user/settings` → `data.quick_order` (`page_ids` + `page_slugs`).
 
-**UI لوحة مقترح:** تبويب «طلب سريع» ضمن الإعدادات: سويتش تفعيل، رفع صورة خلفية، اختيار لون القسم ولون الكارد، قائمة منسدلة لشكل الكارد، حقول نصوص AR/EN، محرر الخطوات.
+**UI لوحة مقترح:** تبويب «طلب سريع» ضمن الإعدادات: سويتش تفعيل، multi-select صفحات، رفع صورة خلفية، اختيار لون القسم ولون الكارد، قائمة منسدلة لشكل الكارد، حقول نصوص AR/EN، محرر الخطوات.
 
 ---
 

@@ -6,17 +6,26 @@
 
 | الفريق | الملف | يشمل |
 |--------|--------|------|
-| داشبورد | [`frontend/dashboard.md`](./frontend/dashboard.md) | Page Builder · أقسام · صفحات فئات · Nav · منتج/متغيّرات · حذف بتأكيد · أسعار · بلد منشأ/مبيع · قناة بيع |
-| ويب | [`frontend/web.md`](./frontend/web.md) | Nav · أقسام · فئات · منتج · تسجيل · فلاتر · طلب سريع · نص تحميل · أسعار |
-| Flutter | [`frontend/flutter.md`](./frontend/flutter.md) | Nav · أقسام layout/variant · فئات دائرية · فلاتر · منتج/سلة · تسجيل · أسعار |
+| داشبورد | [`frontend/dashboard.md`](./frontend/dashboard.md) | Page Builder · أقسام · Nav · منتج · **طلب سريع (إعدادات + صفحات الظهور)** · استيراد Excel · … |
+| ويب | [`frontend/web.md`](./frontend/web.md) | Nav · أقسام · فئات · منتج · تسجيل · فلاتر · **طلب سريع حسب الصفحة** · نص تحميل · أسعار |
+| Flutter | [`frontend/flutter.md`](./frontend/flutter.md) | Nav · أقسام layout/variant · فئات دائرية · فلاتر · منتج/سلة · تسجيل · أسعار · **طلب سريع حسب الصفحة** |
 
 ## طلبات مخصصة (Custom Orders)
 
+التفصيل الكامل للطلب السريع (فلو الأدمن + ويب + Flutter + إعدادات القسم):
+
 | الفريق | الملف |
 |--------|--------|
-| داشبورد | [`custom-orders/dashboard.md`](./custom-orders/dashboard.md) |
-| ويب | [`custom-orders/web.md`](./custom-orders/web.md) |
-| Flutter | [`custom-orders/flutter.md`](./custom-orders/flutter.md) |
+| داشبورد | [`custom-orders/dashboard.md`](./custom-orders/dashboard.md) — convert/cancel **+ Settings: تفعيل + صفحات الظهور + شكل القسم** |
+| ويب | [`custom-orders/web.md`](./custom-orders/web.md) — قسم حسب `page_slugs` + فلو الإنشاء |
+| Flutter | [`custom-orders/flutter.md`](./custom-orders/flutter.md) — قسم حسب `page_slugs` + فلو الإنشاء |
+
+### تحديث مهم (26 آب 2026) — صفحات ظهور الطلب السريع
+
+- المحتوى والشكل يبقى من **Settings** (ليس Page Builder).
+- مفتاح جديد: `quick_order_page_ids` — الأدمن يختار صفحات الظهور.
+- العميل يقرأ `data.quick_order.page_ids` + `page_slugs` من `GET /api/user/settings`.
+- الافتراضي = صفحة `home` فقط.
 
 ## مرجع API
 

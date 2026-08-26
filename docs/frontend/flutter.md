@@ -19,6 +19,7 @@
 9. [التسجيل بدون إيميل](#9-التسجيل-بدون-إيميل)
 10. [فلاتر المنتجات](#10-فلاتر-المنتجات)
 11. [عرض الأسعار دولار + ليرة](#11-عرض-الأسعار)
+12. [قسم الطلب السريع (حسب الصفحة)](#12-قسم-الطلب-السريع-حسب-الصفحة)
 
 ---
 
@@ -549,6 +550,57 @@ POST /api/user/auth/verify-otp
 
 ---
 
+## 12) قسم الطلب السريع (حسب الصفحة)
+
+> المرجع التفصيلي: [`../custom-orders/flutter.md`](../custom-orders/flutter.md)
+
+### التغيير
+
+قسم «طلب سريع» يظهر على **الصفحات التي يختارها الأدمن** (افتراضي: `home`) + زر الهيدر عند التفعيل.  
+المحتوى/الشكل من Settings — **ليس** قسم Page Builder.
+
+### Endpoint
+
+```http
+GET /api/user/settings
+Accept-Language: ar
+```
+
+استخدم `data.quick_order`:
+
+| حقل | استخدام |
+|-----|---------|
+| `is_enabled` | إن `false`: أخفِ زر الهيدر والقسم بالكامل |
+| `page_ids` / `page_slugs` | اعرض القسم فقط إن الصفحة الحالية ضمن القائمة |
+| `background_image` / `background_color` | خلفية القسم |
+| `card_background_color` / `card_variant` | شكل كروت الخطوات |
+| `badge` / `title` / `subtitle` / `cta` / `steps` | المحتوى |
+| `action.page_slug` | `custom_order_request` — شاشة الإنشاء |
+
+### قاعدة العرض
+
+```dart
+final qo = settings.quickOrder;
+final showHeader = qo.isEnabled;
+final showSection =
+    qo.isEnabled && qo.pageSlugs.contains(currentPageSlug);
+```
+
+1. `is_enabled == false` → لا زر ولا قسم
+2. `is_enabled == true` → زر الهيدر عام
+3. القسم فقط إذا `page_slugs` تحتوي slug الصفحة الحالية
+
+الـ CTA / الزر يفتح إنشاء طلب: `POST /api/user/custom-order-requests`.
+
+### Checklist
+
+- [ ] قراءة `quick_order` من settings (أو كاش)
+- [ ] احترام `is_enabled`
+- [ ] احترام `page_slugs` على كل صفحة Page Builder
+- [ ] خلفية صورة أو لون + `card_variant`
+
+---
+
 ## أوامر التشغيل (Backend)
 
 ```bash
@@ -558,7 +610,7 @@ php artisan db:seed --class=CategoryPagesBackfillSeeder
 php artisan db:seed --class=NavMenuSeeder
 ```
 
-> طلب سريع (الهوم): [`../custom-orders/flutter.md`](../custom-orders/flutter.md)
+> طلب سريع (تفصيل + فلو الإنشاء): [`../custom-orders/flutter.md`](../custom-orders/flutter.md)
 
 ---
 
@@ -584,6 +636,7 @@ php artisan db:seed --class=NavMenuSeeder
 - [ ] تسجيل: phone مطلوب، email اختياري
 - [ ] أسعار من `*_formatted` / `*_currencies`
 
-### Nav + فلاتر
+### Nav + فلاتر + طلب سريع
 - [ ] `GET /nav-menu` ديناميكي
 - [ ] chips + `/products` + toggles + ترتيب
+- [ ] `quick_order`: `is_enabled` + `page_slugs`

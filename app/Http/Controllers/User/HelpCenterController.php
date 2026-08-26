@@ -10,6 +10,7 @@ use App\Http\Resources\ServiceCenter\AllResource as ServiceCenterAllResource;
 use App\Models\Branch;
 use App\Models\Contact;
 use App\Models\Faq;
+use App\Models\Page;
 use App\Models\ServiceCenter;
 use App\Models\Setting;
 use App\Models\Tire;
@@ -119,7 +120,7 @@ class HelpCenterController extends Controller
     }
 
     /**
-     * Home «طلب سريع» hero: visibility + background + step cards styling.
+     * «طلب سريع» section: visibility + placement pages + background + step cards.
      *
      * @param  \Illuminate\Support\Collection<string, Setting>  $settings
      * @return array<string, mixed>
@@ -144,8 +145,14 @@ class HelpCenterController extends Controller
             $steps = [];
         }
 
+        [$pageIds, $pageSlugs] = $this->resolveQuickOrderPages(
+            $settings['quick_order_page_ids']?->value
+        );
+
         return [
             'is_enabled' => $isEnabled,
+            'page_ids' => $pageIds,
+            'page_slugs' => $pageSlugs,
             'background_image' => $bgImage
                 ? asset('storage/' . ltrim((string) $bgImage, '/'))
                 : null,
@@ -169,6 +176,66 @@ class HelpCenterController extends Controller
                 'route' => '/api/user/custom-order-requests',
             ],
         ];
+    }
+
+    /**
+     * Normalize stored page IDs and resolve slugs for clients.
+     * Missing setting → home only (backward compatible).
+     * Explicit empty array → no pages (section hidden; header still follows is_enabled).
+     *
+     * @return array{0: list<int>, 1: list<string>}
+     */
+    private function resolveQuickOrderPages(mixed $raw): array
+    {
+        if ($raw === null) {
+            return $this->homeQuickOrderPages();
+        }
+
+        if (! is_array($raw)) {
+            return $this->homeQuickOrderPages();
+        }
+
+        $ids = collect($raw)
+            ->map(fn ($id) => (int) $id)
+            ->filter(fn ($id) => $id > 0)
+            ->unique()
+            ->values()
+            ->all();
+
+        if ($ids === []) {
+            return [[], []];
+        }
+
+        $pages = Page::query()
+            ->whereIn('id', $ids)
+            ->get(['id', 'slug'])
+            ->keyBy('id');
+
+        $orderedIds = [];
+        $slugs = [];
+        foreach ($ids as $id) {
+            $page = $pages->get($id);
+            if (! $page) {
+                continue;
+            }
+            $orderedIds[] = (int) $page->id;
+            $slugs[] = (string) $page->slug;
+        }
+
+        return [$orderedIds, $slugs];
+    }
+
+    /**
+     * @return array{0: list<int>, 1: list<string>}
+     */
+    private function homeQuickOrderPages(): array
+    {
+        $home = Page::query()->where('slug', 'home')->first(['id', 'slug']);
+        if ($home) {
+            return [[(int) $home->id], ['home']];
+        }
+
+        return [[], ['home']];
     }
 
     private function localizedSettingText(mixed $value, string $locale): ?string

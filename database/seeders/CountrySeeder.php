@@ -19,25 +19,20 @@ class CountrySeeder extends Seeder
                 ->first();
 
             if ($existing) {
-                // Keep FK-stable id; refresh name/code if needed
-                if ($existing->code !== $country['code']) {
+                // لا تغيّر is_active ولا تعيد كتابة الأسماء إذا الصف موجود — ثبّت الـ id
+                $updates = [];
+                if (blank($existing->code) && filled($country['code'])) {
                     $codeTaken = Country::query()
                         ->where('code', $country['code'])
                         ->where('id', '!=', $existing->id)
                         ->exists();
-
-                    $existing->update([
-                        'name' => $country['name'],
-                        'code' => $codeTaken ? $existing->code : $country['code'],
-                        'is_active' => true,
-                    ]);
-                } else {
-                    $existing->update([
-                        'name' => $country['name'],
-                        'is_active' => true,
-                    ]);
+                    if (! $codeTaken) {
+                        $updates['code'] = $country['code'];
+                    }
                 }
-
+                if ($updates !== []) {
+                    $existing->update($updates);
+                }
                 continue;
             }
 

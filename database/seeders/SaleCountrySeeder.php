@@ -20,11 +20,10 @@ class SaleCountrySeeder extends Seeder
                 ->first();
 
             if ($existing) {
-                $existing->update([
-                    'name' => $country['name'],
-                    'icon' => $country['icon'],
-                    'is_active' => $country['is_active'],
-                ]);
+                // لا تلمس is_active أو الاسم إذا الأدمن عدّلهم — عبّي icon فقط إن فاضي
+                if (blank($existing->icon) && filled($country['icon'])) {
+                    $existing->update(['icon' => $country['icon']]);
+                }
                 continue;
             }
 

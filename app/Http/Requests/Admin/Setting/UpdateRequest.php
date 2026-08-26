@@ -92,6 +92,11 @@ class UpdateRequest extends FormRequest
             $rules['value.en'] = ['nullable', 'string', 'max:500'];
         }
 
+        if ($key === 'quick_order_page_ids') {
+            $rules['value'][] = 'max:100';
+            $rules['value.*'] = ['integer', 'distinct', Rule::exists('pages', 'id')];
+        }
+
         return $rules;
     }
 

@@ -1,7 +1,7 @@
-# ويب — كل التعديلات (نسخة نهائية)
+# ويب — كل التعديلات (نسخة نهائية — 26 آب 2026)
 
 > **أرسلوا هذا الملف لفريق الويب فقط.**  
-> يجمع **كل** التعديلات المطلوبة في الموقع (مو بس الأسعار أو نص التحميل).
+> يجمع **كل** التعديلات: Nav · أقسام · فئات · منتج · تسجيل · **فلاتر (تفصيلي)** · طلب سريع · نص تحميل · أسعار.
 
 ---
 
@@ -14,7 +14,7 @@
 5. [صفحة المنتج (shop_variants + country)](#5-صفحة-المنتج)
 6. [التسجيل بدون إيميل](#6-التسجيل-بدون-إيميل)
 7. [فلاتر المنتجات](#7-فلاتر-المنتجات)
-8. [قسم الطلب السريع (الهوم)](#8-قسم-الطلب-السريع-الهوم)
+8. [قسم الطلب السريع (حسب الصفحة)](#8-قسم-الطلب-السريع-حسب-الصفحة)
 9. [نص تحميل التطبيق + عرض الأسعار](#9-نص-تحميل-التطبيق-وعرض-الأسعار)
 
 ---
@@ -345,53 +345,150 @@ POST /api/user/auth/verify-otp
 
 ---
 
-## 7) فلاتر المنتجات
+## 7) فلاتر المنتجات (تفصيلي — اعتمدوه للتنفيذ)
 
-> المرجع: `FRONTEND_WEB_FILTERS.md` — **هذا هو آخر تحديث؛ اعتمدوه للتنفيذ.**
+نفس `GET /api/user/products` (عام، بدون توكن إلزامي). التوكن اختياري — يفعّل فقط `is_favorite`.
 
-### التغيير
-
-نفس `GET /api/user/products` (عام، بدون توكن إلزامي). تغيّر السلوك + باراميترات:
+### قبل → بعد
 
 | الموضوع | بعد |
 |---------|-----|
-| `category_id` | الفئة + **كل الفروع** — ممنوع فلترة محلية |
-| الصفات | `GET /categories/{id}/attributes` لأي مستوى → صفات **الجذر** |
+| `category_id` | الفئة + **كل الفروع بأي عمق** — ممنوع فلترة محلية |
+| الصفات | أي مستوى → صفات **الجذر** + `root_category_id` للكاش |
 | جديد | `is_instant_delivery` |
-| ترتيب يعمل | `sort_by`: `price_asc` \| `price_desc` \| `newest` \| `oldest` \| `rating` |
+| ترتيب | `sort_by`: `price_asc` \| `price_desc` \| `newest` \| `oldest` \| `rating` |
 | بحث | `search` (ليس `name`) |
-| بلد في القائمة | أرسل `country` كنص. لا ترسل `country_id` على `/products` |
+| بلد | أرسل `country` كنص — **لا** `country_id` على `/products` |
+| أقسام API | merge(فلاتر القسم, query URL) والـ URL يغلّب |
 
-### مثال
+### باراميترات تعمل
+
+| Param | مثال | السلوك |
+|-------|------|--------|
+| `category_id` | `12` | الفئة + كل الأحفاد |
+| `brand_id` | `7` | ماركة |
+| `shop_id` | `3` | متوفر في الفرع |
+| `price_min` / `price_max` | `100` | بعملة العرض؛ الباك يحوّل |
+| `search` | `أرز` | اسم + وصف |
+| `country` | `تركيا` | تطابق جزئي على نص البلد |
+| `is_free_delivery` | `1` | توصيل مجاني |
+| `is_instant_delivery` | `1` | توصيل فوري |
+| `on_sale` | `1` | عليه خصم |
+| `in_stock_only` | `1` | كمية > 0 |
+| `attribute_values` | `31,40` أو `[]` | منطق **OR** |
+| `type` | `trend` | قائمة جاهزة (انظر تحت) |
+| `sort_by` | `newest` | بعد `type` إن وُجدا معاً |
+| `page` / `per_page` | `1` / `15` | ترقيم |
+
+**لا تستخدم على `/products`:** `name` · `country_id` · `sort_by=rating_desc` (استخدم `rating`).
+
+أرسل فقط المفاتيح المفعّلة — لا `null` ولا `""`. للبوليان المفعّل أرسل `true`؛ عند إلغاء الخيار **احذف المفتاح**.
+
+### صفات الفئة (chips)
 
 ```http
-GET /api/user/products?category_id=2&attribute_values=31,40&in_stock_only=1&is_instant_delivery=1&sort_by=newest
+GET /api/user/categories/{categoryId}/attributes
 ```
+
+```json
+{
+  "data": [{
+    "id": 10,
+    "category_id": 5,
+    "root_category_id": 5,
+    "name": { "ar": "اللون", "en": "Color" },
+    "type": "color",
+    "values": [{ "id": 31, "name": { "ar": "أحمر", "en": "Red" } }]
+  }]
+}
+```
+
+- اعرض chips فور فتح **أي** فئة (حتى الجذر)
+- كاش بـ `root_category_id` — لا تعيد الطلب داخل نفس الشجرة
+- قائمة فاضية = الجذر بلا صفات (مو خطأ)
+- صفحة تفاصيل المنتج: استخدم `attributes_map` / `shop_variants` — **ليس** هذا الـ endpoint
 
 ```http
-GET /api/user/categories/2/attributes
+GET /api/user/products?category_id=12&attribute_values=31,40
+GET /api/user/products?category_id=12&attribute_values[]=31&attribute_values[]=40
 ```
 
-كاش الصفات بـ `root_category_id`. لا تعيد الطلب داخل نفس الشجرة.
+### `type` (قوائم جاهزة)
 
-### Checklist
+| قيمة | معنى |
+|------|------|
+| `new` | الأحدث |
+| `trend` / `most_popular` | متغيّر trend + مبيعات |
+| `top_rated` | أعلى تقييم |
+| `offers` | خصم، مرتّب بالنسبة |
+| `latest_flash_sale` | آخر فلاش سيل — إن ما في: قائمة فارغة |
+| `recommended` / `for_you` | حالياً placeholder — لا تعتمد عليهما |
+| `search_based` | يحتاج `search` |
 
-- [ ] chips من `/attributes` على الجذر والفرعية
-- [ ] كل الفلاتر في طلب المنتجات نفسه
-- [ ] `is_free_delivery` / `is_instant_delivery` / `on_sale` / `in_stock_only`
-- [ ] `price_min` / `price_max` بعملة العرض
-- [ ] تغيير فلتر يعيد `page=1`
-- [ ] أقسام API: query الـ URL يغلّب فلاتر القسم
+### `sort_by`
+
+| قيمة | ترتيب |
+|------|--------|
+| `price_asc` / `price_desc` | سعر |
+| `newest` / `oldest` | تاريخ |
+| `rating` | أعلى تقييم |
+
+بدون `type` وبدون `sort_by` → `latest()`.
+
+### مصادر الـ dropdowns
+
+| فلتر | المصدر |
+|------|--------|
+| صفات | `/categories/{id}/attributes` |
+| ماركة | `/api/user/brands` → `brand_id` |
+| متجر | `/api/user/shops` → `shop_id` |
+| بلد | `/api/user/countries` → أرسل **الاسم** في `country` |
+| سعر | `price_min` / `price_max` يدوياً |
+
+لا يوجد `GET /products/filter-options`.
+
+### أمثلة
+
+```http
+GET /api/user/products?category_id=2&in_stock_only=1&is_free_delivery=1&sort_by=newest
+GET /api/user/products?category_id=5&attribute_values=31,40&price_min=10&price_max=80
+GET /api/user/products?on_sale=true&is_instant_delivery=true
+GET /api/user/products?category_id=3&search=jeans&in_stock_only=true
+```
+
+### ممنوع
+
+```js
+// خطأ — يحذف منتجات الفروع
+products.filter((p) => p.category_id === selectedCategoryId);
+```
+
+- لا تفلتر محلياً بعد الـ API
+- لا تشترط leaf قبل إظهار الفلاتر/المنتجات
+- `product.country` نص للعرض — ليس `{ name.ar }`
+- أي تغيير فلتر → `page = 1`
+- empty state من `pagination.total === 0` فقط
+
+### Checklist فلاتر
+
+- [ ] شريط فلاتر على صفحة الفئة **و** صفحة المنتجات
+- [ ] `/attributes` على أي فئة + كاش `root_category_id`
+- [ ] كل الفلاتر في نفس `GET /products`
+- [ ] toggles: free / instant / on_sale / in_stock
+- [ ] `price_min`/`price_max` + `sort_by`
+- [ ] أقسام API: query URL يغلّب
 
 ---
 
-## 8) قسم الطلب السريع (الهوم)
+## 8) قسم الطلب السريع (حسب الصفحة)
 
 > المرجع التفصيلي: [`../custom-orders/web.md`](../custom-orders/web.md)
 
 ### التغيير
 
-قسم «طلب سريع» في الهوم + زر الهيدر يُحكمان من الإعدادات — إظهار/إخفاء، صورة خلفية، لون الكروت، وشكل الكارد.
+قسم «طلب سريع» يظهر على **الصفحات التي يختارها الأدمن من Settings** (افتراضي: `home` فقط) + زر الهيدر عند التفعيل.
+
+المحتوى/الشكل مركزي من الإعدادات — **ليس** قسم Page Builder.
 
 ### Endpoint
 
@@ -405,41 +502,60 @@ Accept-Language: ar
 | حقل | معنى |
 |-----|------|
 | `is_enabled` | أخفِ الزر والقسم إن `false` |
+| `page_ids` / `page_slugs` | اعرض القسم فقط إن الصفحة الحالية ضمن القائمة (افتراضي: `home`) |
 | `background_image` / `background_color` | خلفية القسم |
 | `card_background_color` / `card_variant` | تصميم كروت الخطوات |
 | `badge` / `title` / `subtitle` / `cta` / `steps` | المحتوى |
 
-الـ CTA يفتح إنشاء طلب: `POST /api/user/custom-order-requests` (تفاصيل الفلو في نفس ملف المرجع).
+```jsx
+const qo = settings.quick_order;
+const showSection =
+  qo?.is_enabled && qo.page_slugs?.includes(currentPageSlug);
+
+{qo?.is_enabled && <QuickOrderHeaderButton />}
+{showSection && <QuickOrderSection config={qo} />}
+```
+
+الـ CTA يفتح إنشاء طلب: `POST /api/user/custom-order-requests` (تفاصيل الفلو في المرجع أعلاه).
 
 ### Checklist
 
 - [ ] قراءة `quick_order` من settings
-- [ ] احترام `is_enabled`
+- [ ] احترام `is_enabled` (زر الهيدر + القسم)
+- [ ] احترام `page_slugs` / `page_ids` حسب الصفحة الحالية
 - [ ] خلفية صورة أو لون + ريسبونسيف
 
 ---
 
 ## 9) نص تحميل التطبيق + عرض الأسعار
 
-> المرجع: `FRONTEND_WEB_APP_DOWNLOAD_AND_PRICES.md`
-
 ### نص قسم Google Play / App Store
 
-احذف «ومنتجات طازجة» من الجملة الثابتة في الهبوط:
+النص **ثابت في i18n** — مو من الـ API.
 
-> كل ما تحبه، يصلك بابتسامة. عروض رائعة وفرحة صغيرة في كل سلة.
-
-النص **مو من الـ API** — عدّل i18n / الكود مباشرة.
+| | |
+|--|--|
+| **احذف** | «ومنتجات طازجة» |
+| **بعد** | كل ما تحبه، يصلك بابتسامة. عروض رائعة وفرحة صغيرة في كل سلة. |
 
 ### الأسعار
 
 - اعرض `*_formatted` أو `*_currencies` من الـ API
-- لا تحسب سعر الصرف محلياً
-- في صفحة المنتج: السعر بعد الخصم هو الأساسي
+- **لا تحسب** سعر الصرف محلياً
+- في صفحة المنتج: السعر بعد الخصم هو الأساسي؛ الأصلي مشطوب عند الخصم
+
+```js
+function formatDual(currencies) {
+  if (!currencies) return '';
+  return [currencies.USD?.formatted, currencies.SYP?.formatted]
+    .filter(Boolean)
+    .join(' / ');
+}
+```
 
 ---
 
-## Checklist شامل
+## Checklist شامل (أرسلوه مع الملف)
 
 - [ ] Nav Menu ديناميكي من `/api/user/nav-menu`
 - [ ] عرض أقسام موحّد (`layout` ثم `variant`)
@@ -447,20 +563,17 @@ Accept-Language: ar
 - [ ] منتجات الشجرة بدون فلترة محلية
 - [ ] صفحة منتج: حماية `shop_variants` null + `country` string
 - [ ] تسجيل: phone مطلوب، email اختياري، OTP SMS
-- [ ] فلاتر: attributes جذر + `is_instant_delivery` + `sort_by`
-- [ ] طلب سريع من `settings.quick_order`
-- [ ] نص تحميل التطبيق بدون «ومنتجات طازجة»
+- [ ] **فلاتر كاملة** (§7): attributes + toggles + سعر + ترتيب + كاش جذر
+- [ ] طلب سريع من `settings.quick_order` (`is_enabled` + `page_slugs`)
+- [ ] نص تحميل بدون «ومنتجات طازجة»
 - [ ] أسعار من `*_formatted` / `*_currencies` فقط
 
 ---
 
-## أوامر التشغيل (Backend)
+## Backend (آمن)
 
 ```bash
 php artisan migrate
-php artisan db:seed --class=RolePermissionSeeder
-php artisan db:seed --class=CategoryPagesBackfillSeeder
-php artisan db:seed --class=NavMenuSeeder
 ```
 
-> تفاصيل فلو الطلب السريع أيضاً: [`../custom-orders/web.md`](../custom-orders/web.md)
+> فلو الطلب السريع بالكامل: [`../custom-orders/web.md`](../custom-orders/web.md)
