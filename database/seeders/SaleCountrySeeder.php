@@ -7,55 +7,97 @@ use Illuminate\Database\Seeder;
 
 class SaleCountrySeeder extends Seeder
 {
+    /**
+     * Seed sale countries with flag icons.
+     * Syria is first / default market.
+     * Safe to re-run: matches by English name.
+     */
     public function run(): void
     {
-        $saleCountries = [
+        foreach ($this->saleCountries() as $country) {
+            $existing = SaleCountry::query()
+                ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(name, '$.en')) = ?", [$country['name']['en']])
+                ->first();
+
+            if ($existing) {
+                $existing->update([
+                    'name' => $country['name'],
+                    'icon' => $country['icon'],
+                    'is_active' => $country['is_active'],
+                ]);
+                continue;
+            }
+
+            SaleCountry::create($country);
+        }
+    }
+
+    /**
+     * @return list<array{name: array{ar: string, en: string}, icon: string, is_active: bool}>
+     */
+    private function saleCountries(): array
+    {
+        return [
             [
-                'name' => [
-                    'ar' => 'السعودية',
-                    'en' => 'Saudi Arabia',
-                ],
+                'name' => ['ar' => 'سوريا', 'en' => 'Syria'],
+                'icon' => '🇸🇾',
                 'is_active' => true,
             ],
             [
-                'name' => [
-                    'ar' => 'الإمارات',
-                    'en' => 'UAE',
-                ],
+                'name' => ['ar' => 'السعودية', 'en' => 'Saudi Arabia'],
+                'icon' => '🇸🇦',
                 'is_active' => true,
             ],
             [
-                'name' => [
-                    'ar' => 'الكويت',
-                    'en' => 'Kuwait',
-                ],
+                'name' => ['ar' => 'الإمارات', 'en' => 'UAE'],
+                'icon' => '🇦🇪',
                 'is_active' => true,
             ],
             [
-                'name' => [
-                    'ar' => 'قطر',
-                    'en' => 'Qatar',
-                ],
+                'name' => ['ar' => 'الكويت', 'en' => 'Kuwait'],
+                'icon' => '🇰🇼',
                 'is_active' => true,
             ],
             [
-                'name' => [
-                    'ar' => 'البحرين',
-                    'en' => 'Bahrain',
-                ],
+                'name' => ['ar' => 'قطر', 'en' => 'Qatar'],
+                'icon' => '🇶🇦',
                 'is_active' => true,
             ],
             [
-                'name' => [
-                    'ar' => 'عمان',
-                    'en' => 'Oman',
-                ],
+                'name' => ['ar' => 'البحرين', 'en' => 'Bahrain'],
+                'icon' => '🇧🇭',
+                'is_active' => true,
+            ],
+            [
+                'name' => ['ar' => 'عمان', 'en' => 'Oman'],
+                'icon' => '🇴🇲',
+                'is_active' => true,
+            ],
+            [
+                'name' => ['ar' => 'الأردن', 'en' => 'Jordan'],
+                'icon' => '🇯🇴',
+                'is_active' => true,
+            ],
+            [
+                'name' => ['ar' => 'لبنان', 'en' => 'Lebanon'],
+                'icon' => '🇱🇧',
+                'is_active' => true,
+            ],
+            [
+                'name' => ['ar' => 'مصر', 'en' => 'Egypt'],
+                'icon' => '🇪🇬',
+                'is_active' => true,
+            ],
+            [
+                'name' => ['ar' => 'العراق', 'en' => 'Iraq'],
+                'icon' => '🇮🇶',
+                'is_active' => true,
+            ],
+            [
+                'name' => ['ar' => 'تركيا', 'en' => 'Turkey'],
+                'icon' => '🇹🇷',
                 'is_active' => true,
             ],
         ];
-
-        foreach ($saleCountries as $country) {
-            SaleCountry::create($country);
-        }
     }
 }

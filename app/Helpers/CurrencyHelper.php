@@ -110,6 +110,65 @@ class CurrencyHelper
     }
 
     /**
+     * تحويل مبلغ بالليرة السورية إلى الدولار (العملة الأساسية للتخزين).
+     */
+    public static function convertSypToUsd(?float $amountSyp): ?float
+    {
+        if ($amountSyp === null) {
+            return null;
+        }
+
+        $syp = Currency::query()->where('code', 'SYP')->first();
+
+        if (!$syp) {
+            return round($amountSyp, 6);
+        }
+
+        return (float) $syp->convertToBase($amountSyp);
+    }
+
+    /**
+     * إذا أُرسل السعر بالليرة فقط، حوّله إلى USD وخزّنه في الحقل الأساسي.
+     * إن وُجد السعر بالدولار يُفضَّل ويُتجاهل السعر بالليرة.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    public static function applySypPriceInputs(array $data): array
+    {
+        $pairs = [
+            'price' => 'price_syp',
+            'cost_price' => 'cost_price_syp',
+        ];
+
+        foreach ($pairs as $usdKey => $sypKey) {
+            $hasUsd = array_key_exists($usdKey, $data)
+                && $data[$usdKey] !== null
+                && $data[$usdKey] !== '';
+            $hasSyp = array_key_exists($sypKey, $data)
+                && $data[$sypKey] !== null
+                && $data[$sypKey] !== '';
+
+            if (!$hasUsd && $hasSyp) {
+                $data[$usdKey] = self::convertSypToUsd((float) $data[$sypKey]);
+            }
+
+            unset($data[$sypKey]);
+        }
+
+        if (isset($data['variants']) && is_array($data['variants'])) {
+            foreach ($data['variants'] as $i => $variant) {
+                if (!is_array($variant)) {
+                    continue;
+                }
+                $data['variants'][$i] = self::applySypPriceInputs($variant);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
      * تحويل نطاق أسعار من عملة اليوزر للدولار
      */
     public static function convertPriceRangeToUSD(?float $minPrice, ?float $maxPrice, ?int $currencyId = null): array

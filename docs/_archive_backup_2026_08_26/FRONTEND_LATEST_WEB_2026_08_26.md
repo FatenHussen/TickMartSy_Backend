@@ -1,0 +1,44 @@
+# آخر تحديث — ويب — 26 آب 2026
+
+> **أرسلوا هذا الملف لفريق الويب فقط.**
+
+---
+
+## 1) نص تحميل التطبيق (Google Play / App Store)
+
+النص **ثابت في كود الموقع / i18n** — مو من الـ API.
+
+| | |
+|--|--|
+| **احذف** | «ومنتجات طازجة» |
+| **بعد** | كل ما تحبه، يصلك بابتسامة. عروض رائعة وفرحة صغيرة في كل سلة. |
+
+ابحث عن: `منتجات طازجة` أو `يصلك بابتسامة`.
+
+حدّث الترجمة الإنجليزية إن وُجدت (مثلاً احذف "and fresh products").
+
+---
+
+## 2) عرض الأسعار
+
+- استخدم `price_formatted` / `price_after_discount_formatted`
+- للعرض الثنائي: `price_currencies.USD` + `price_currencies.SYP`
+- **لا تحسب** سعر الصرف في الفرونت
+- في صفحة المنتج: السعر بعد الخصم هو الأساسي للشراء
+
+```js
+function formatDual(currencies) {
+  if (!currencies) return '';
+  return [currencies.USD?.formatted, currencies.SYP?.formatted]
+    .filter(Boolean)
+    .join(' / ');
+}
+```
+
+---
+
+## Checklist
+
+- [ ] إزالة «ومنتجات طازجة» من قسم تحميل التطبيق
+- [ ] أسعار من الـ API فقط (`*_formatted` / `*_currencies`)
+- [ ] لا حساب صرف محلي

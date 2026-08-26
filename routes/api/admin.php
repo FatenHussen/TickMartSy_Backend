@@ -285,6 +285,10 @@ Route::prefix('admin')->group(function () {
             ->middleware('admin.permission:categoryattribute.delete');
         Route::get('category-attributes/{id}/linked-items', [CategoryAttributeController::class, 'linkedItems'])
             ->middleware('admin.permission:categoryattribute.view');
+        Route::get('categories/{id}/delete-impact', [CategoryController::class, 'deleteImpact'])
+            ->middleware('admin.permission:category.delete');
+        Route::get('categories/{id}/linked-items', [CategoryController::class, 'linkedItems'])
+            ->middleware('admin.permission:category.view');
 
         Route::apiResource('shops', ShopCrudController::class)->middleware('crud.permission:shops');
         Route::apiResource('stores', StoreCrudController::class)->middleware('crud.permission:store');

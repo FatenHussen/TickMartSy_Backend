@@ -13,7 +13,7 @@ class SaleCountryService extends BaseService
     protected $resource   = OneResource::class;
     protected $collection = AllResource::class;
 
-    protected $singleImages = ['icon'];
+    // Icons come from SaleCountrySeeder (emoji flags), not file upload
 
     protected $searchableFields = ['id', 'name'];
     protected $sortableFields   = ['id', 'name', 'created_at'];

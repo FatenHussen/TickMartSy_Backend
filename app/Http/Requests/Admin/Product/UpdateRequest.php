@@ -80,11 +80,44 @@ class UpdateRequest extends FormRequest
 
         if (auth('vendor-user')->check()) {
             $this->merge([
+                'sale_channel' => 'shop',
                 'vendor_id' => auth('vendor-user')->id(),
             ]);
+        } elseif ($this->filled('sale_channel')) {
+            $channel = $this->input('sale_channel');
+            if (!in_array($channel, ['platform', 'shop'], true)) {
+                $channel = 'platform';
+            }
+            $merge = ['sale_channel' => $channel];
+            if ($channel === 'platform') {
+                $merge['vendor_id'] = 1;
+            }
+            $this->merge($merge);
         }
 
+        $this->normalizeSypPriceInputs();
+
         $this->normalizeRestrictedFieldsForRestaurantCategory();
+    }
+
+    private function normalizeSypPriceInputs(): void
+    {
+        $normalized = \App\Helpers\CurrencyHelper::applySypPriceInputs($this->all());
+
+        $merge = [];
+        if (array_key_exists('price', $normalized)) {
+            $merge['price'] = $normalized['price'];
+        }
+        if (array_key_exists('cost_price', $normalized)) {
+            $merge['cost_price'] = $normalized['cost_price'];
+        }
+        if (array_key_exists('variants', $normalized)) {
+            $merge['variants'] = $normalized['variants'];
+        }
+
+        if ($merge !== []) {
+            $this->merge($merge);
+        }
     }
 
     private function normalizeRestrictedFieldsForRestaurantCategory(): void
@@ -162,6 +195,8 @@ class UpdateRequest extends FormRequest
             'is_instant_delivery'   => 'nullable|boolean',
             'is_visible'            => 'nullable|boolean',
             'thumbnail'             => 'nullable|image',
+            'sale_channel'          => 'nullable|in:platform,shop',
+            'vendor_id'             => 'nullable|integer|exists:vendors,id',
 
             // Variants
             // 'variants'                      => 'nullable|array',
@@ -243,5 +278,22 @@ class UpdateRequest extends FormRequest
         }
 
         return $rules;
+    }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            if ($this->input('sale_channel') !== 'shop') {
+                return;
+            }
+
+            $shopVariants = $this->input('shop_variants');
+            if (!is_array($shopVariants) || count($shopVariants) < 1) {
+                $validator->errors()->add(
+                    'shop_variants',
+                    'عند اختيار «ربط بمتجر» يجب اختيار فرع واحد على الأقل.'
+                );
+            }
+        });
     }
 }

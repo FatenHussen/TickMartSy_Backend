@@ -32,8 +32,21 @@ class SaleCountry extends Model
         return $this->hasMany(Product::class, 'sale_country_id');
     }
 
-    public function getIconUrlAttribute()
+    public function getIconUrlAttribute(): ?string
     {
-        return $this->icon ? asset('storage/' . $this->icon) : null;
+        if (!$this->icon) {
+            return null;
+        }
+
+        // Emoji flag or absolute URL from seeder — return as-is
+        if (
+            str_starts_with($this->icon, 'http://')
+            || str_starts_with($this->icon, 'https://')
+            || ! preg_match('/[\\\\\\/]/', $this->icon)
+        ) {
+            return $this->icon;
+        }
+
+        return asset('storage/' . ltrim($this->icon, '/'));
     }
 }

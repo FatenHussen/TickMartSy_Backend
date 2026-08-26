@@ -58,11 +58,48 @@ class StoreRequest extends FormRequest
             }
             $this->merge(['extra_details' => $data['extra_details']]);
         }
-        $this->merge([
-            'vendor_id' => auth('vendor-user')->user()->id ?? 1,
-        ]);
+        if (auth('vendor-user')->check()) {
+            $this->merge([
+                'sale_channel' => 'shop',
+                'vendor_id' => auth('vendor-user')->user()->id ?? 1,
+            ]);
+        } else {
+            $channel = $this->input('sale_channel', 'platform');
+            if (!in_array($channel, ['platform', 'shop'], true)) {
+                $channel = 'platform';
+            }
+            $merge = ['sale_channel' => $channel];
+            if ($channel === 'platform') {
+                $merge['vendor_id'] = 1;
+            } elseif (!$this->filled('vendor_id')) {
+                $merge['vendor_id'] = 1;
+            }
+            $this->merge($merge);
+        }
+
+        $this->normalizeSypPriceInputs();
 
         $this->normalizeRestrictedFieldsForRestaurantCategory();
+    }
+
+    private function normalizeSypPriceInputs(): void
+    {
+        $normalized = \App\Helpers\CurrencyHelper::applySypPriceInputs($this->all());
+
+        $merge = [];
+        if (array_key_exists('price', $normalized)) {
+            $merge['price'] = $normalized['price'];
+        }
+        if (array_key_exists('cost_price', $normalized)) {
+            $merge['cost_price'] = $normalized['cost_price'];
+        }
+        if (array_key_exists('variants', $normalized)) {
+            $merge['variants'] = $normalized['variants'];
+        }
+
+        if ($merge !== []) {
+            $this->merge($merge);
+        }
     }
 
     private function normalizeRestrictedFieldsForRestaurantCategory(): void
@@ -120,6 +157,8 @@ class StoreRequest extends FormRequest
             'is_instant_delivery'   => 'nullable|boolean',
             'is_visible'            => 'nullable|boolean',
             'thumbnail'             => 'nullable|image',
+            'sale_channel'          => 'nullable|in:platform,shop',
+            'vendor_id'             => 'nullable|integer|exists:vendors,id',
 
             // Variants
             'variants'                      => 'nullable|array',
@@ -149,12 +188,11 @@ class StoreRequest extends FormRequest
             'extra_details.*.quantity'            => 'required|integer|min:0',
             'extra_details.*.price'               => 'required|numeric|min:0',
 
-            // Media
-            'media' => 'required|array|min:1',
-            'media.*' => 'required|image|max:5120',
+            // Media (optional — product can be created without images)
+            'media' => 'nullable|array',
+            'media.*' => 'nullable|image|max:5120',
 
-            // Shop Product Variants
-            // Shop Product Variants
+            // Shop Product Variants — required when sale_channel=shop (see withValidator)
             'shop_variants'                     => 'nullable|array',
             'shop_variants.*.shop_id'           => 'required|exists:shops,id',
             'shop_variants.*.variant_index'     => 'required|integer|min:0',
@@ -190,5 +228,22 @@ class StoreRequest extends FormRequest
         }
 
         return $rules;
+    }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            if ($this->input('sale_channel') !== 'shop') {
+                return;
+            }
+
+            $shopVariants = $this->input('shop_variants');
+            if (!is_array($shopVariants) || count($shopVariants) < 1) {
+                $validator->errors()->add(
+                    'shop_variants',
+                    'عند اختيار «ربط بمتجر» يجب اختيار فرع واحد على الأقل.'
+                );
+            }
+        });
     }
 }

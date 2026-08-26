@@ -16,6 +16,10 @@ class SectionController extends Controller
 
     public function index(Request $request)
     {
+        $request->validate([
+            'page_slug' => ['required', 'string', 'max:255', 'exists:pages,slug'],
+        ]);
+
         $page = Page::where('slug', $request->page_slug)->firstOrFail();
 
         $sections = $this->pageSectionPresentation->getSectionsForUserView($page, $request);

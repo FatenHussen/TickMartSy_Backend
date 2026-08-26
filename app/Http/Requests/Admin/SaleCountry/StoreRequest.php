@@ -30,8 +30,8 @@ class StoreRequest extends FormRequest
 
     public function rules(): array
     {
+        // icon is seeded (flag emoji); not uploaded from dashboard
         $rules = [
-            'icon' => 'nullable|image|max:2048',
             'is_active' => 'nullable|boolean',
         ];
 

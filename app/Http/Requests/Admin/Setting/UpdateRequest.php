@@ -15,7 +15,8 @@ class UpdateRequest extends FormRequest
 
     public function rules(): array
     {
-        $setting = Setting::where('key', $this->route('key'))->first();
+        $key = $this->route('key');
+        $setting = Setting::where('key', $key)->first();
         $type = $setting?->type ?? 'string';
 
         $valueRules = ['required'];
@@ -34,7 +35,16 @@ class UpdateRequest extends FormRequest
                 $valueRules[] = 'array';
                 break;
             case 'file':
-                $valueRules[] = $this->hasFile('value') ? 'file' : 'string';
+                if ($this->hasFile('value')) {
+                    $valueRules = array_merge($valueRules, [
+                        'file',
+                        'image',
+                        'max:5120',
+                        'mimes:jpg,jpeg,png,webp',
+                    ]);
+                } else {
+                    $valueRules[] = 'string';
+                }
                 break;
             case 'string':
             default:
@@ -42,15 +52,58 @@ class UpdateRequest extends FormRequest
                 break;
         }
 
-        return [
-            'value' => array_merge(
-                $valueRules,
-                $this->route('key') === 'payment_default'
-                    ? [
-                        Rule::exists('payment_methods', 'id')->where(fn($query) => $query->where('is_active', true)),
-                    ]
-                    : []
-            ),
+        if ($key === 'quick_order_card_variant') {
+            $valueRules[] = Rule::in(['horizontal', 'vertical', 'square']);
+        }
+
+        if (in_array($key, ['quick_order_background_color', 'quick_order_card_background_color'], true)) {
+            $valueRules[] = 'max:50';
+        }
+
+        if ($key === 'payment_default') {
+            $valueRules[] = Rule::exists('payment_methods', 'id')
+                ->where(fn ($query) => $query->where('is_active', true));
+        }
+
+        $rules = [
+            'value' => $valueRules,
         ];
+
+        if ($key === 'quick_order_steps') {
+            $rules['value'][] = 'min:1';
+            $rules['value'][] = 'max:6';
+            $rules['value.*.number'] = ['nullable', 'integer', 'min:1'];
+            $rules['value.*.icon'] = ['nullable', 'string', 'max:50'];
+            $rules['value.*.title'] = ['nullable', 'array'];
+            $rules['value.*.title.ar'] = ['nullable', 'string', 'max:255'];
+            $rules['value.*.title.en'] = ['nullable', 'string', 'max:255'];
+            $rules['value.*.description'] = ['nullable', 'array'];
+            $rules['value.*.description.ar'] = ['nullable', 'string', 'max:500'];
+            $rules['value.*.description.en'] = ['nullable', 'string', 'max:500'];
+        }
+
+        if (in_array($key, [
+            'quick_order_badge',
+            'quick_order_title',
+            'quick_order_subtitle',
+            'quick_order_cta',
+        ], true)) {
+            $rules['value.ar'] = ['nullable', 'string', 'max:500'];
+            $rules['value.en'] = ['nullable', 'string', 'max:500'];
+        }
+
+        return $rules;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $key = $this->route('key');
+        $setting = Setting::where('key', $key)->first();
+
+        if ($setting?->type === 'boolean' && $this->has('value') && ! is_bool($this->input('value'))) {
+            $this->merge([
+                'value' => filter_var($this->input('value'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false,
+            ]);
+        }
     }
 }

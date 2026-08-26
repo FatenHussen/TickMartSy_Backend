@@ -32,6 +32,11 @@ class Handler
             ], 422);
         });
 
+        // 409 Delete confirmation required (category / attribute / variant)
+        $exceptions->render(function (\App\Exceptions\DeleteConfirmationRequiredException $e, $request) {
+            return $e->render();
+        });
+
         // 409 Foreign key constraint (delete restricted)
         $exceptions->render(function (QueryException $e, $request) {
             $errorCode = $e->errorInfo[1] ?? null;

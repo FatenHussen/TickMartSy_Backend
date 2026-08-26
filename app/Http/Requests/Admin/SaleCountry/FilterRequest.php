@@ -14,6 +14,7 @@ class FilterRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'search' => 'nullable|string|max:255',
             'is_active' => 'nullable|boolean',
         ];
     }

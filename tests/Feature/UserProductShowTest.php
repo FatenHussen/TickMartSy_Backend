@@ -77,6 +77,94 @@ class UserProductShowTest extends TestCase
         $this->assertNull($shopVariants[0]['shop_id']);
     }
 
+    public function test_admin_create_platform_sale_channel_links_platform_default_shop(): void
+    {
+        $platformVendor = $this->createVendor();
+        if ($platformVendor->id !== ProductService::PLATFORM_VENDOR_ID) {
+            $this->markTestSkipped('Platform sale_channel requires vendors.id = 1.');
+        }
+
+        $category = $this->createCategory();
+        $defaultShop = Shop::create([
+            'name' => ['en' => 'Platform default', 'ar' => 'فرع المنصة'],
+            'email' => 'platform-default@example.com',
+            'vendor_id' => ProductService::PLATFORM_VENDOR_ID,
+            'is_active' => true,
+            'is_default' => true,
+        ]);
+
+        $resource = app(ProductService::class)->create([
+            'category_id' => $category->id,
+            'sale_channel' => 'platform',
+            'name' => ['en' => 'Site product', 'ar' => 'منتج الموقع'],
+            'description' => ['en' => 'Desc', 'ar' => 'وصف'],
+            'sku' => 'SITE-001',
+            'price' => 30,
+            'quantity' => 5,
+            'approval_status' => ProductApprovalStatus::APPROVED,
+            'is_active' => true,
+        ]);
+
+        $product = Product::with(['variants.shopVariants'])->findOrFail($resource->id);
+
+        $this->assertSame('platform', $product->sale_channel);
+        $this->assertSame(ProductService::PLATFORM_VENDOR_ID, (int) $product->vendor_id);
+        $this->assertCount(1, $product->variants);
+        $this->assertCount(1, $product->variants->first()->shopVariants);
+        $this->assertSame($defaultShop->id, $product->variants->first()->shopVariants->first()->shop_id);
+
+        $response = $this->getJson("/api/user/products/{$product->id}");
+        $response->assertOk();
+        $this->assertSame($defaultShop->id, $response->json('data.shop_variants.0.shop_id'));
+        $this->assertNotNull($response->json('data.shop_variants.0.id'));
+    }
+
+    public function test_admin_create_shop_sale_channel_requires_explicit_shop_link(): void
+    {
+        $vendor = $this->createVendor();
+        $category = $this->createCategory();
+        $shop = Shop::create([
+            'name' => ['en' => 'Branch', 'ar' => 'فرع'],
+            'email' => 'branch@example.com',
+            'vendor_id' => $vendor->id,
+            'is_active' => true,
+            'is_default' => true,
+        ]);
+
+        $resource = app(ProductService::class)->create([
+            'category_id' => $category->id,
+            'sale_channel' => 'shop',
+            'name' => ['en' => 'Vendor product', 'ar' => 'منتج متجر'],
+            'description' => ['en' => 'Desc', 'ar' => 'وصف'],
+            'price' => 40,
+            'quantity' => 3,
+            'approval_status' => ProductApprovalStatus::APPROVED,
+            'is_active' => true,
+            'variants' => [
+                [
+                    'sku' => 'V-1',
+                    'price' => 40,
+                    'quantity' => 3,
+                    'is_active' => true,
+                    'attributes_values_ids' => [],
+                ],
+            ],
+            'shop_variants' => [
+                [
+                    'shop_id' => $shop->id,
+                    'variant_index' => 0,
+                    'cost_price' => 20,
+                ],
+            ],
+        ]);
+
+        $product = Product::with(['variants.shopVariants'])->findOrFail($resource->id);
+
+        $this->assertSame('shop', $product->sale_channel);
+        $this->assertSame($vendor->id, (int) $product->vendor_id);
+        $this->assertSame($shop->id, $product->variants->first()->shopVariants->first()->shop_id);
+    }
+
     public function test_admin_create_persists_variants_and_shop_links(): void
     {
         $vendor = $this->createVendor();

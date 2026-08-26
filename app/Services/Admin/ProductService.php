@@ -4,6 +4,7 @@ namespace App\Services\Admin;
 
 use App\Models\AttributeValue;
 use App\Models\Product;
+use App\Models\Shop;
 use App\Services\BaseService;
 use App\Http\Resources\Admin\Product\OneResource;
 use App\Http\Resources\Admin\Product\AllResource;
@@ -13,6 +14,9 @@ use Illuminate\Support\Facades\Log;
 
 class ProductService extends BaseService
 {
+    /** Tikmool platform vendor — used for site-owned products. */
+    public const PLATFORM_VENDOR_ID = 1;
+
     protected $model      = Product::class;
     protected $resource   = OneResource::class;
     protected $collection = AllResource::class;
@@ -104,11 +108,23 @@ class ProductService extends BaseService
                 ?? $unit?->getTranslation('name', 'ar', false);
         }
 
+        if (empty($data['sale_country_id'])) {
+            $syriaId = \App\Models\SaleCountry::query()
+                ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(name, '$.en')) = ?", ['Syria'])
+                ->value('id');
+            if ($syriaId) {
+                $data['sale_country_id'] = $syriaId;
+            }
+        }
+
+        $this->applySaleChannel($data);
+
         $object = $this->model::create($data);
         $this->handleSingleImages($object, $data);
         $this->handleRelations($object, $data);
         $this->handleMedia($object, $data);
         $this->ensureDefaultVariant($object);
+        $this->ensureDefaultShopLinks($object);
 
         $object->refresh();
 
@@ -143,16 +159,59 @@ class ProductService extends BaseService
 
         $this->handleSingleImages($object, $data);
 
+        if (array_key_exists('sale_channel', $data) || array_key_exists('shop_variants', $data)) {
+            if (!array_key_exists('sale_channel', $data)) {
+                $data['sale_channel'] = $object->sale_channel ?? 'platform';
+            }
+            $this->applySaleChannel($data);
+        }
+
         $object->update($data);
         $this->handleRelations($object, $data);
         $this->handleMedia($object, $data);
         $this->ensureDefaultVariant($object);
+        $this->ensureDefaultShopLinks($object);
 
         $object->refresh();
 
         DB::commit();
 
         return new $this->resource($object);
+    }
+
+    /**
+     * platform → site product (vendor Tikmool + default platform shop, no shop picker).
+     * shop → must send shop_variants; vendor taken from the first selected shop.
+     */
+    private function applySaleChannel(array &$data): void
+    {
+        $channel = $data['sale_channel'] ?? 'platform';
+        if (!in_array($channel, ['platform', 'shop'], true)) {
+            $channel = 'platform';
+        }
+        $data['sale_channel'] = $channel;
+
+        if ($channel === 'platform') {
+            $data['vendor_id'] = self::PLATFORM_VENDOR_ID;
+            // Clear any client-sent shops; ensureDefaultShopLinks attaches platform default.
+            $data['shop_variants'] = [];
+
+            return;
+        }
+
+        if (!empty($data['shop_variants']) && is_array($data['shop_variants'])) {
+            $firstShopId = collect($data['shop_variants'])
+                ->pluck('shop_id')
+                ->filter()
+                ->first();
+
+            if ($firstShopId) {
+                $vendorId = Shop::query()->whereKey($firstShopId)->value('vendor_id');
+                if ($vendorId) {
+                    $data['vendor_id'] = $vendorId;
+                }
+            }
+        }
     }
 
     private function ensureDefaultVariant(Product $product): void
@@ -170,6 +229,67 @@ class ProductService extends BaseService
             'attributes_values_ids' => [],
             'is_active' => true,
         ]);
+    }
+
+    /**
+     * Platform products without a shop link get the Tikmool default branch.
+     * Shop-channel products only use explicitly sent shop_variants.
+     */
+    private function ensureDefaultShopLinks(Product $product): void
+    {
+        $channel = $product->sale_channel ?? 'platform';
+        if ($channel === 'shop') {
+            return;
+        }
+
+        $product->unsetRelation('variants');
+        $product->load('variants.shopVariants');
+
+        $unlinkedVariants = $product->variants->filter(
+            fn ($variant) => $variant->shopVariants->isEmpty()
+        );
+
+        if ($unlinkedVariants->isEmpty()) {
+            return;
+        }
+
+        $defaultShop = $this->resolvePlatformDefaultShop();
+        if (!$defaultShop) {
+            Log::warning('Platform product saved without shop links and no platform default shop found', [
+                'product_id' => $product->id,
+                'vendor_id' => self::PLATFORM_VENDOR_ID,
+            ]);
+
+            return;
+        }
+
+        foreach ($unlinkedVariants as $variant) {
+            $variant->shopVariants()->create([
+                'shop_id' => $defaultShop->id,
+                'cost_price' => null,
+            ]);
+        }
+    }
+
+    private function resolvePlatformDefaultShop(): ?Shop
+    {
+        $defaultShop = Shop::query()
+            ->where('vendor_id', self::PLATFORM_VENDOR_ID)
+            ->where('is_default', true)
+            ->where('is_active', true)
+            ->orderBy('id')
+            ->first();
+
+        if ($defaultShop) {
+            return $defaultShop;
+        }
+
+        return Shop::query()
+            ->where('vendor_id', self::PLATFORM_VENDOR_ID)
+            ->where('is_active', true)
+            ->orderByDesc('is_default')
+            ->orderBy('id')
+            ->first();
     }
 
     public function queryBuilder($query, $filters = [], $config = [])

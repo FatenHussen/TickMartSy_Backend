@@ -66,9 +66,11 @@ class OneResource extends JsonResource
                 'name' => $this->brand->name,
             ] : null,
 
+            'country_id' => $this->country_id,
             'origin_country' => $this->originCountry ? [
                 'id' => $this->originCountry->id,
                 'name' => $this->originCountry->name,
+                'code' => $this->originCountry->code,
             ] : null,
 
             'sale_country' => $this->saleCountry ? [
@@ -81,6 +83,10 @@ class OneResource extends JsonResource
                 'id' => $this->vendor->id,
                 'name' => $this->vendor->name,
             ] : null,
+
+            // platform = للموقع (بدون اختيار متجر في الواجهة)
+            // shop = مربوط بمتجر/فرع يختاره الأدمن
+            'sale_channel' => $this->sale_channel ?? 'platform',
 
             'approval_status' => $this->approval_status?->value,
             'approval_status_label' => match ($this->approval_status?->value) {

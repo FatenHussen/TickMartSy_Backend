@@ -2,8 +2,10 @@
 
 namespace App\Services\Admin;
 
+use App\Exceptions\DeleteConfirmationRequiredException;
 use App\Http\Resources\Admin\Category\OneResource;
 use App\Models\Category;
+use App\Services\Base\CategoryDeleteImpactService;
 use App\Services\BaseService;
 use App\Http\Resources\Admin\Category\AllResource;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +22,58 @@ class CategoryService extends BaseService
         $this->pagination = true;
         $this->searchableFields = ['name'];
         $this->sortableFields = ['id', 'created_at', 'order'];
+    }
+
+    public function deleteImpact($id): array
+    {
+        $category = $this->applyAdminCityRestriction($this->model::query())->findOrFail($id);
+
+        return (new CategoryDeleteImpactService())->impact($category);
+    }
+
+    public function linkedItems($id, int $page = 1, int $perPage = 10): array
+    {
+        $category = $this->applyAdminCityRestriction($this->model::query())->findOrFail($id);
+
+        return (new CategoryDeleteImpactService())->linkedItems($category, $page, $perPage);
+    }
+
+    /**
+     * الحذف مسموح مع تنبيه بما هو مرتبط.
+     * بدون confirm وفي وجود ارتباطات → 409 مع تفاصيل التأثير.
+     */
+    public function deleteWithConfirmation($id, bool $confirmed = false): array
+    {
+        $category = $this->applyAdminCityRestriction($this->model::query())->findOrFail($id);
+        $impactService = new CategoryDeleteImpactService();
+        $impact = $impactService->impact($category);
+
+        if ($impact['requires_confirmation'] && !$confirmed) {
+            throw new DeleteConfirmationRequiredException(
+                $impact,
+                'custom.category_delete_impact.requires_confirmation'
+            );
+        }
+
+        return DB::transaction(function () use ($category, $impactService) {
+            $subtreeIds = $category->idsInSubtree();
+
+            foreach ($subtreeIds as $categoryId) {
+                $node = Category::query()->find($categoryId);
+                if ($node) {
+                    $this->deleteSingleImages($node);
+                }
+            }
+
+            return $impactService->executeDelete($category);
+        });
+    }
+
+    public function delete($id): bool
+    {
+        $this->deleteWithConfirmation($id, request()->boolean('confirm'));
+
+        return true;
     }
 
     public function queryBuilder($query, $filters = [], $config = [])

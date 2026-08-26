@@ -85,6 +85,7 @@ class HelpCenterController extends Controller
                     ? asset('storage/' . $settings['quick_action_image']->value)
                     : null,
             ],
+            'quick_order' => $this->formatQuickOrderSettings($settings, $locale),
             'contact' => [
                 'phone' => $settings['phone']->value ?? null,
                 'whatsapp' => $settings['whts']->value ?? null,
@@ -115,6 +116,72 @@ class HelpCenterController extends Controller
                     : '#9CA3AF',
             ],
         ]);
+    }
+
+    /**
+     * Home «طلب سريع» hero: visibility + background + step cards styling.
+     *
+     * @param  \Illuminate\Support\Collection<string, Setting>  $settings
+     * @return array<string, mixed>
+     */
+    private function formatQuickOrderSettings($settings, string $locale): array
+    {
+        $enabledRaw = $settings['quick_order_enabled']->value ?? true;
+        $isEnabled = filter_var($enabledRaw, FILTER_VALIDATE_BOOLEAN);
+
+        $bgImage = $settings['quick_order_background_image']->value ?? null;
+        if (is_array($bgImage)) {
+            $bgImage = $bgImage[0] ?? null;
+        }
+
+        $cardVariant = $settings['quick_order_card_variant']->value ?? 'horizontal';
+        if (! in_array($cardVariant, ['horizontal', 'vertical', 'square'], true)) {
+            $cardVariant = 'horizontal';
+        }
+
+        $steps = $settings['quick_order_steps']->value ?? [];
+        if (! is_array($steps)) {
+            $steps = [];
+        }
+
+        return [
+            'is_enabled' => $isEnabled,
+            'background_image' => $bgImage
+                ? asset('storage/' . ltrim((string) $bgImage, '/'))
+                : null,
+            'background_color' => $settings['quick_order_background_color']->value ?? '#FFE8D6',
+            'card_background_color' => $settings['quick_order_card_background_color']->value ?? '#FFFFFF',
+            'card_variant' => $cardVariant,
+            'badge' => $this->localizedSettingText($settings['quick_order_badge']->value ?? null, $locale),
+            'title' => $this->localizedSettingText($settings['quick_order_title']->value ?? null, $locale),
+            'subtitle' => $this->localizedSettingText($settings['quick_order_subtitle']->value ?? null, $locale),
+            'cta' => $this->localizedSettingText($settings['quick_order_cta']->value ?? null, $locale),
+            'steps' => collect($steps)->map(function ($step) use ($locale) {
+                return [
+                    'number' => (int) ($step['number'] ?? 0),
+                    'icon' => $step['icon'] ?? null,
+                    'title' => $this->localizedSettingText($step['title'] ?? null, $locale),
+                    'description' => $this->localizedSettingText($step['description'] ?? null, $locale),
+                ];
+            })->values()->all(),
+            'action' => [
+                'page_slug' => 'custom_order_request',
+                'route' => '/api/user/custom-order-requests',
+            ],
+        ];
+    }
+
+    private function localizedSettingText(mixed $value, string $locale): ?string
+    {
+        if (is_string($value)) {
+            return $value;
+        }
+
+        if (! is_array($value)) {
+            return null;
+        }
+
+        return $value[$locale] ?? $value['en'] ?? $value['ar'] ?? null;
     }
 
     // public function contactus(StoreRequest $request)

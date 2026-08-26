@@ -63,7 +63,7 @@ class SettingController extends Controller
     private function normalizeValue($value, string $type)
     {
         return match ($type) {
-            'boolean' => (bool) $value,
+            'boolean' => filter_var($value, FILTER_VALIDATE_BOOLEAN),
             'integer' => is_numeric($value) ? (int) $value : 0,
             'number' => is_numeric($value) ? (float) $value : 0,
             'json' => $value,

@@ -17,6 +17,7 @@ class CountryService extends BaseService
         $this->resource   = OneResource::class;
         $this->collection = AllResource::class;
         $this->relations = [];
-        $this->pagination = true;
+        // Full list for product/brand origin dropdowns (no pagination)
+        $this->pagination = false;
     }
 }

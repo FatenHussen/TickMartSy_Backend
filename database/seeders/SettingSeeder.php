@@ -124,5 +124,69 @@ class SettingSeeder extends Seeder
             'value' => '#FFF4CC',
             'type' => 'string',
         ]);
+
+        // قسم الطلب السريع (الهوم + زر الهيدر)
+        Setting::updateOrCreate(['key' => 'quick_order_enabled'], [
+            'value' => true,
+            'type' => 'boolean',
+        ]);
+        Setting::updateOrCreate(['key' => 'quick_order_background_image'], [
+            'value' => null,
+            'type' => 'file',
+        ]);
+        Setting::updateOrCreate(['key' => 'quick_order_background_color'], [
+            'value' => '#FFE8D6',
+            'type' => 'string',
+        ]);
+        Setting::updateOrCreate(['key' => 'quick_order_card_background_color'], [
+            'value' => '#FFFFFF',
+            'type' => 'string',
+        ]);
+        Setting::updateOrCreate(['key' => 'quick_order_card_variant'], [
+            'value' => 'horizontal',
+            'type' => 'string',
+        ]);
+        Setting::updateOrCreate(['key' => 'quick_order_badge'], [
+            'value' => ['ar' => 'طلب عاجل', 'en' => 'Urgent order'],
+            'type' => 'json',
+        ]);
+        Setting::updateOrCreate(['key' => 'quick_order_title'], [
+            'value' => ['ar' => 'تحتاجه الآن؟', 'en' => 'Need it now?'],
+            'type' => 'json',
+        ]);
+        Setting::updateOrCreate(['key' => 'quick_order_subtitle'], [
+            'value' => [
+                'ar' => 'اكتب ما تريده مثل قائمة السوق. نسعّره، توافق، ونوصّله للباب.',
+                'en' => 'Write what you want like a market list. We price it, you approve, we bring it to the door.',
+            ],
+            'type' => 'json',
+        ]);
+        Setting::updateOrCreate(['key' => 'quick_order_cta'], [
+            'value' => ['ar' => 'اطلب الآن', 'en' => 'Order now'],
+            'type' => 'json',
+        ]);
+        Setting::updateOrCreate(['key' => 'quick_order_steps'], [
+            'value' => [
+                [
+                    'number' => 1,
+                    'title' => ['ar' => 'اكتبه', 'en' => 'Write it'],
+                    'description' => ['ar' => 'قائمتك، بكلماتك', 'en' => 'Your list, in your words'],
+                    'icon' => 'edit',
+                ],
+                [
+                    'number' => 2,
+                    'title' => ['ar' => 'نسعّره', 'en' => 'We price it'],
+                    'description' => ['ar' => 'أسعار واضحة قبل الدفع', 'en' => 'Clear prices before you pay'],
+                    'icon' => 'price',
+                ],
+                [
+                    'number' => 3,
+                    'title' => ['ar' => 'نوصّل', 'en' => 'We deliver'],
+                    'description' => ['ar' => 'للباب بسرعة', 'en' => 'To your door, fast'],
+                    'icon' => 'delivery',
+                ],
+            ],
+            'type' => 'json',
+        ]);
     }
 }

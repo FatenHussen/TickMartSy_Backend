@@ -82,16 +82,16 @@ class ProductForm
                                         ->dehydrated(fn(callable $get): bool => !static::isRestaurantCategory($get('category_id')))
                                         ->columnSpan(1),
 
-                                    Forms\Components\TextInput::make('country.ar')
-                                        ->label(__('custom.products.form.country_ar'))
-                                        ->maxLength(255)
-                                        ->visible(fn(callable $get): bool => !static::isRestaurantCategory($get('category_id')))
-                                        ->dehydrated(fn(callable $get): bool => !static::isRestaurantCategory($get('category_id')))
-                                        ->columnSpan(1),
-
-                                    Forms\Components\TextInput::make('country.en')
-                                        ->label(__( 'custom.products.form.country_en'))
-                                        ->maxLength(255)
+                                    Forms\Components\Select::make('country_id')
+                                        ->label(__('custom.products.form.country'))
+                                        ->relationship('originCountry', 'name')
+                                        ->getOptionLabelFromRecordUsing(
+                                            fn ($record) => $record->getTranslation('name', app()->getLocale())
+                                                ?: $record->getTranslation('name', 'en')
+                                        )
+                                        ->searchable()
+                                        ->preload()
+                                        ->nullable()
                                         ->visible(fn(callable $get): bool => !static::isRestaurantCategory($get('category_id')))
                                         ->dehydrated(fn(callable $get): bool => !static::isRestaurantCategory($get('category_id')))
                                         ->columnSpan(1),
@@ -324,8 +324,47 @@ class ProductForm
                                 ])
                                 ->collapsible(),
 
-                            Section::make(__('custom.products.discount'))
+                            Section::make(__('custom.products.sections.pricing'))
                                 ->schema([
+                                    Forms\Components\TextInput::make('price')
+                                        ->label(__('custom.products.form.price_label') . ' ($)')
+                                        ->numeric()
+                                        ->prefix('$')
+                                        ->minValue(0)
+                                        ->live(onBlur: true)
+                                        ->afterStateHydrated(function ($state, callable $set) {
+                                            if ($state === null || $state === '') {
+                                                return;
+                                            }
+                                            $syp = \App\Models\Currency::query()->where('code', 'SYP')->first();
+                                            if ($syp) {
+                                                $set('price_syp_display', $syp->convertFromBase((float) $state));
+                                            }
+                                        })
+                                        ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                            $syp = \App\Models\Currency::query()->where('code', 'SYP')->first();
+                                            if ($syp && $state !== null && $state !== '') {
+                                                $set('price_syp_display', $syp->convertFromBase((float) $state));
+                                            }
+                                        })
+                                        ->columnSpan(1),
+
+                                    Forms\Components\TextInput::make('price_syp_display')
+                                        ->label(__('custom.products.form.price_label') . ' (ل.س)')
+                                        ->numeric()
+                                        ->suffix('ل.س')
+                                        ->minValue(0)
+                                        ->dehydrated(false)
+                                        ->live(onBlur: true)
+                                        ->afterStateUpdated(function ($state, callable $set) {
+                                            if ($state === null || $state === '') {
+                                                return;
+                                            }
+                                            $usd = \App\Helpers\CurrencyHelper::convertSypToUsd((float) $state);
+                                            $set('price', $usd);
+                                        })
+                                        ->columnSpan(1),
+
                                     Forms\Components\Select::make('discount_type')
                                         ->label(__('custom.products.form.discount_type'))
                                         ->options([
@@ -341,20 +380,27 @@ class ProductForm
                                         ->label(__('custom.products.form.discount_label'))
                                         ->numeric()
                                         ->minValue(0)
-                                        ->suffix(fn(callable $get) => $get('discount_type') === 'percentage' ? '%' : '')
+                                        ->suffix(fn(callable $get) => $get('discount_type') === 'percentage' ? '%' : '$')
                                         ->visible(fn(callable $get) => $get('discount_type') !== 'none')
                                         ->columnSpan(1),
-                                ])
-                                ->columns(2)
-                                ->collapsible(),
 
-                            Section::make(__('custom.products.sections.pricing'))
-                                ->schema([
-                                    Forms\Components\TextInput::make('price')
-                                        ->label(__('custom.products.form.price_label'))
-                                        ->numeric()
-                                        ->prefix('$')
-                                        ->minValue(0)
+                                    Forms\Components\Placeholder::make('price_after_discount_display')
+                                        ->label(__('custom.products.price_after_discount'))
+                                        ->content(function (callable $get) {
+                                            $price = (float) ($get('price') ?? 0);
+                                            $type = $get('discount_type');
+                                            $discount = (float) ($get('discount') ?? 0);
+                                            if (!$price || $type === 'none' || $discount <= 0) {
+                                                return number_format($price, 4) . ' $';
+                                            }
+                                            $final = $type === 'percentage'
+                                                ? $price - ($price * $discount / 100)
+                                                : max(0, $price - $discount);
+                                            $syp = \App\Models\Currency::query()->where('code', 'SYP')->first();
+                                            $sypAmount = $syp ? $syp->convertFromBase($final) : null;
+                                            return number_format($final, 4) . ' $'
+                                                . ($sypAmount !== null ? ' / ' . number_format($sypAmount, 2) . ' ل.س' : '');
+                                        })
                                         ->columnSpan(1),
 
                                     Forms\Components\TextInput::make('cost_price')
@@ -415,7 +461,7 @@ class ProductForm
                                         ->helperText(__('custom.products.form.max_purchase_quantity_help'))
                                         ->columnSpan(1),
                                 ])
-                                ->columns(2)
+                                ->columns(4)
                                 ->collapsible(),
 
                             Section::make(__('custom.products.sections.visibility'))
@@ -535,9 +581,7 @@ class ProductForm
                                         ->disk('public')
                                         ->directory('product')
                                         ->multiple()
-                                        ->minFiles(1)
                                         ->maxFiles(10)
-                                        ->required()
                                         ->reorderable()
                                         ->imageEditor()
                                         ->helperText(__('custom.products.form.images_help'))
@@ -981,8 +1025,6 @@ class ProductForm
         $set('model', null);
         $set('sku', null);
         $set('barcode', null);
-        $set('country.ar', null);
-        $set('country.en', null);
         $set('country_id', null);
         $set('sale_country_id', null);
     }

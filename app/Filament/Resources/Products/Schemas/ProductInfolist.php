@@ -83,11 +83,12 @@ class ProductInfolist
                                         ->color('warning')
                                         ->icon('heroicon-o-user-group'),
 
-                                    Infolists\Components\TextEntry::make('country')
+                                    Infolists\Components\TextEntry::make('originCountry.name')
                                         ->label(__('custom.products.country'))
                                         ->badge()
                                         ->color('gray')
-                                        ->icon('heroicon-o-globe-alt'),
+                                        ->icon('heroicon-o-globe-alt')
+                                        ->placeholder('—'),
 
                                     Infolists\Components\TextEntry::make('rejection_reason')
                                         ->label(__('custom.products.rejection_reason'))

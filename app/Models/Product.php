@@ -40,6 +40,7 @@ class Product extends Model implements Sectionable
         'bought_with',
         'is_instant_delivery',
         'vendor_id',
+        'sale_channel',
         'flash_sale_id',
         'discount',
         'discount_type',

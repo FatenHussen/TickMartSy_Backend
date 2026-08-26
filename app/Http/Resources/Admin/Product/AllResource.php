@@ -57,6 +57,8 @@ class AllResource extends JsonResource
                 'name' => $this->vendor->name,
             ] : null,
 
+            'sale_channel' => $this->sale_channel ?? 'platform',
+
             'origin_country' => $this->originCountry?->name,
             'sale_country' => $this->saleCountry?->name,
 
