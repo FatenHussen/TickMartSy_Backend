@@ -1,5 +1,7 @@
 # Custom Order Requests — Web (User Website)
 
+> **آخر تحديث | Last Updated:** 2026-08-26
+
 نفس فلو تطبيق الموبايل للطلب السريع على موقع المستخدم.
 
 **Base:** `/api/user`  
@@ -266,3 +268,7 @@ const showSection = qo?.is_enabled && qo.page_slugs?.includes(currentPageSlug);
 1. التحقق من طول النص ≥ 10 في الواجهة **والاعتماد على السيرفر**.
 2. معاينة الصور قبل الرفع (حد 5، كل صورة ≤ 5MB).
 3. بعد الموافقة وجّه المستخدم لصفحة تتبع الطلب النظامي `GET /api/user/orders/{order_id}`.
+
+---
+
+**آخر تحديث | Last Updated:** 2026-08-26

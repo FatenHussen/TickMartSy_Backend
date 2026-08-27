@@ -1,8 +1,9 @@
-# Flutter — كل التعديلات (نسخة نهائية)
+# Flutter — كل التعديلات (نسخة نهائية — 26 آب 2026)
 
 > **أرسلوا هذا الملف لفريق Flutter فقط.**  
 > Base: `/api/user` + `Accept-Language: ar|en`.  
-> يجمع **كل** التعديلات المطلوبة في التطبيق (مو بس السلة/الأسعار).
+> يجمع **كل** التعديلات المطلوبة في التطبيق (مو بس السلة/الأسعار).  
+> **آخر تحديث | Last Updated:** 2026-08-26
 
 ---
 
@@ -640,3 +641,7 @@ php artisan db:seed --class=NavMenuSeeder
 - [ ] `GET /nav-menu` ديناميكي
 - [ ] chips + `/products` + toggles + ترتيب
 - [ ] `quick_order`: `is_enabled` + `page_slugs`
+
+---
+
+**آخر تحديث | Last Updated:** 2026-08-26

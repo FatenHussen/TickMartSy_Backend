@@ -1,5 +1,7 @@
 # Custom Order Requests — Flutter (User App)
 
+> **آخر تحديث | Last Updated:** 2026-08-26
+
 طلب سريع / اكتب طلبك بنفسك: الزبون يرسل نص + صور اختيارية، الأدمن يسعّر ويحوّل لطلب نظامي، ثم الزبون يوافق أو يلغي.
 
 **Base:** `/api/user`  
@@ -207,3 +209,7 @@ if (qo.backgroundImage != null) {
 | `address_not_found` | عنوان ليس للمستخدم |
 | `cannot_approve` / `cannot_cancel` | حالة غير مناسبة |
 | `already_priced` (أدمن) | محاولة تحويل مرتين |
+
+---
+
+**آخر تحديث | Last Updated:** 2026-08-26

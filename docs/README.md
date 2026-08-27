@@ -7,8 +7,8 @@
 | الفريق | الملف | يشمل |
 |--------|--------|------|
 | داشبورد | [`frontend/dashboard.md`](./frontend/dashboard.md) | Page Builder · أقسام · Nav · منتج · **طلب سريع (إعدادات + صفحات الظهور)** · استيراد Excel · … |
-| ويب | [`frontend/web.md`](./frontend/web.md) | Nav · أقسام · فئات · منتج · تسجيل · فلاتر · **طلب سريع حسب الصفحة** · نص تحميل · أسعار |
-| Flutter | [`frontend/flutter.md`](./frontend/flutter.md) | Nav · أقسام layout/variant · فئات دائرية · فلاتر · منتج/سلة · تسجيل · أسعار · **طلب سريع حسب الصفحة** |
+| ويب | [`frontend/web.md`](./frontend/web.md) | Nav · أقسام · فئات · منتج · تسجيل · فلاتر · **طلب سريع حسب الصفحة** · نص تحميل · أسعار · **آخر تحديث 2026-08-26** |
+| Flutter | [`frontend/flutter.md`](./frontend/flutter.md) | Nav · أقسام layout/variant · فئات دائرية · فلاتر · منتج/سلة · تسجيل · أسعار · **طلب سريع حسب الصفحة** · **آخر تحديث 2026-08-26** |
 
 ## طلبات مخصصة (Custom Orders)
 
@@ -17,8 +17,8 @@
 | الفريق | الملف |
 |--------|--------|
 | داشبورد | [`custom-orders/dashboard.md`](./custom-orders/dashboard.md) — convert/cancel **+ Settings: تفعيل + صفحات الظهور + شكل القسم** |
-| ويب | [`custom-orders/web.md`](./custom-orders/web.md) — قسم حسب `page_slugs` + فلو الإنشاء |
-| Flutter | [`custom-orders/flutter.md`](./custom-orders/flutter.md) — قسم حسب `page_slugs` + فلو الإنشاء |
+| ويب | [`custom-orders/web.md`](./custom-orders/web.md) — قسم حسب `page_slugs` + فلو الإنشاء · **آخر تحديث 2026-08-26** |
+| Flutter | [`custom-orders/flutter.md`](./custom-orders/flutter.md) — قسم حسب `page_slugs` + فلو الإنشاء · **آخر تحديث 2026-08-26** |
 
 ### تحديث مهم (26 آب 2026) — صفحات ظهور الطلب السريع
 
