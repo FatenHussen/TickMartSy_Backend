@@ -4,9 +4,11 @@ namespace App\Services\Base;
 
 use App\Models\Basket;
 use App\Models\Category;
+use App\Models\NavMenuItem;
 use App\Models\Page;
 use App\Models\Product;
 use App\Models\RecipeItem;
+use App\Models\SectionItem;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -124,7 +126,7 @@ class CategoryDeleteImpactService
     }
 
     /**
-     * تنفيذ الحذف بعد التأكيد: منتجات (soft)، سلال، فئات فرعية، ثم الفئة.
+     * تنفيذ الحذف بعد التأكيد: منتجات (soft)، سلال، صفحات، nav/sections، ثم الفئات (soft).
      */
     public function executeDelete(Category $category): array
     {
@@ -160,6 +162,24 @@ class CategoryDeleteImpactService
                     $basket->delete();
                 });
 
+            // Soft-delete لا يشغّل cascadeOnDelete — احذف صفحات الفئات يدوياً
+            Page::query()
+                ->whereIn('category_id', $subtreeIds)
+                ->each(function (Page $page) {
+                    $page->delete();
+                });
+
+            // بنود Nav المربوطة بالفئة
+            NavMenuItem::query()
+                ->whereIn('category_id', $subtreeIds)
+                ->delete();
+
+            // عناصر يدوية في Sections تشير للفئة
+            SectionItem::query()
+                ->where('item_type', Category::class)
+                ->whereIn('item_id', $subtreeIds)
+                ->delete();
+
             $orderedIds = $this->orderIdsDeepestFirst($subtreeIds);
 
             foreach ($orderedIds as $categoryId) {
@@ -168,10 +188,7 @@ class CategoryDeleteImpactService
                     continue;
                 }
 
-                if ($node->icon) {
-                    // يحذف ملف الأيقونة إن وُجد مسار خدمة الصور عبر BaseService لاحقاً من الخارج
-                }
-
+                // Soft delete — تبقى السجلات خارج قوائم المستخدم عبر deleted_at
                 $node->delete();
             }
         });

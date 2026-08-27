@@ -178,7 +178,7 @@ class UserProductShowTest extends TestCase
 
         $resource = app(ProductService::class)->create([
             'category_id' => $category->id,
-            'vendor_id' => $vendor->id,
+            'sale_channel' => 'shop',
             'name' => ['en' => 'Jeans', 'ar' => 'جينز'],
             'description' => ['en' => 'Desc', 'ar' => 'وصف'],
             'price' => 20,

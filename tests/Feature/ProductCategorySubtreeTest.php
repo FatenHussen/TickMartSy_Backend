@@ -86,6 +86,7 @@ class ProductCategorySubtreeTest extends TestCase
             'category_id' => $category->id,
             'vendor_id' => $vendor->id,
             'name' => ['en' => $name, 'ar' => $name],
+            'description' => ['en' => $name, 'ar' => $name],
             'approval_status' => ProductApprovalStatus::APPROVED,
             'is_active' => true,
         ]);

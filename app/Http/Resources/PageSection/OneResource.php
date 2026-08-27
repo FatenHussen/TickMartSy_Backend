@@ -103,7 +103,12 @@ class OneResource extends JsonResource
     {
         $item = $sectionItem->item;
 
+        // Soft-deleted / missing morph target (e.g. deleted category)
         if (!$item) {
+            return false;
+        }
+
+        if (method_exists($item, 'trashed') && $item->trashed()) {
             return false;
         }
 

@@ -35,8 +35,8 @@ class CategoryService extends BaseService
 
     public function queryBuilder($query, $filters = [], $config = [])
     {
-        // Filter only active categories for users
-        $query->where('is_active', true);
+        // Active + not soft-deleted; never orphan children of deleted/inactive parents
+        $query->visibleToUsers();
 
         // Apply search BEFORE calling parent
         if (!empty($config['search'])) {

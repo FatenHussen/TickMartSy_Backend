@@ -13,11 +13,20 @@ return new class extends Migration
 {
     public function up(): void
     {
+        $driver = Schema::getConnection()->getDriverName();
+
         Schema::table('products', function (Blueprint $table) {
             $table->dropForeign(['category_id']);
         });
 
-        DB::statement('ALTER TABLE products MODIFY category_id BIGINT UNSIGNED NULL');
+        // MODIFY is MySQL/MariaDB-only; SQLite needs Schema::change().
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement('ALTER TABLE products MODIFY category_id BIGINT UNSIGNED NULL');
+        } else {
+            Schema::table('products', function (Blueprint $table) {
+                $table->unsignedBigInteger('category_id')->nullable()->change();
+            });
+        }
 
         Schema::table('products', function (Blueprint $table) {
             $table->foreign('category_id')
@@ -29,6 +38,8 @@ return new class extends Migration
 
     public function down(): void
     {
+        $driver = Schema::getConnection()->getDriverName();
+
         // امنع القيم الفارغة قبل إرجاع NOT NULL
         DB::table('products')->whereNull('category_id')->delete();
 
@@ -36,7 +47,13 @@ return new class extends Migration
             $table->dropForeign(['category_id']);
         });
 
-        DB::statement('ALTER TABLE products MODIFY category_id BIGINT UNSIGNED NOT NULL');
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement('ALTER TABLE products MODIFY category_id BIGINT UNSIGNED NOT NULL');
+        } else {
+            Schema::table('products', function (Blueprint $table) {
+                $table->unsignedBigInteger('category_id')->nullable(false)->change();
+            });
+        }
 
         Schema::table('products', function (Blueprint $table) {
             $table->foreign('category_id')

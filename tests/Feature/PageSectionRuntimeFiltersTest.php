@@ -119,6 +119,7 @@ class PageSectionRuntimeFiltersTest extends TestCase
             'category_id' => $category->id,
             'vendor_id' => $vendor->id,
             'name' => ['en' => $name, 'ar' => $name],
+            'description' => ['en' => $name, 'ar' => $name],
             'discount' => $discount,
             'is_active' => true,
             'approval_status' => \App\Enums\ProductApprovalStatus::APPROVED->value,

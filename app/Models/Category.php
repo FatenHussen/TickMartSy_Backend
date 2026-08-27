@@ -5,11 +5,12 @@ namespace App\Models;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 
 class Category extends Model implements Sectionable
 {
-    use HasFactory, HasTranslations, LogsActivity;
+    use HasFactory, HasTranslations, SoftDeletes, LogsActivity;
 
     public $translatable = ['name'];
 
@@ -87,7 +88,21 @@ class Category extends Model implements Sectionable
 
     public function scopeActive($query)
     {
-        return $query->where('is_active', true);
+        return $query->where('is_active', true)->whereNull('deleted_at');
+    }
+
+    /**
+     * Visible in user catalog: not soft-deleted, active, and either a root
+     * or nested under an active (non-deleted) parent.
+     */
+    public function scopeVisibleToUsers($query)
+    {
+        return $query
+            ->where('is_active', true)
+            ->where(function ($q) {
+                $q->whereNull('parent_id')
+                    ->orWhereHas('parent', fn ($parent) => $parent->active());
+            });
     }
 
     public function scopeOrdered($query)
@@ -114,7 +129,7 @@ class Category extends Model implements Sectionable
     public function activeChildren()
     {
         return $this->hasMany(Category::class, 'parent_id')
-            ->where('is_active', true)
+            ->active()
             ->orderBy('order', 'asc');
     }
 

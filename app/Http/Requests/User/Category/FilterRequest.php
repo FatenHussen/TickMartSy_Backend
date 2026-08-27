@@ -3,6 +3,7 @@
 namespace App\Http\Requests\User\Category;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class FilterRequest extends FormRequest
 {
@@ -35,7 +36,13 @@ class FilterRequest extends FormRequest
     {
         return [
             'name' => 'nullable|string',
-            'parent_id' => 'nullable|integer|exists:categories,id',
+            'parent_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('categories', 'id')
+                    ->whereNull('deleted_at')
+                    ->where('is_active', true),
+            ],
             'brand_id' => 'nullable|integer|exists:brands,id',
             'search' => 'nullable|string',
             'shop_id' => 'nullable|integer|exists:shops,id',
