@@ -166,6 +166,12 @@ function hrefFor(item) {
 - استخدم `background_color` للقسم و `background_card_color` للكارد
 - تجاهل قسمًا `items` فارغة
 
+### إظهار / إخفاء الأقسام (Admin)
+
+> **الدليل الكامل:** [`../page-sections/web.md`](../page-sections/web.md)
+
+عندما يخفي الأدمن قسمًا من الداشبورد (`is_active: false`)، **لا يصل** للويب — الباك يستبعده من `GET /api/user/sections` و `GET /api/user/categories/{id}/page`. **لا فلترة إضافية** مطلوبة في الويب.
+
 ---
 
 ## 3) صفحات الفئات

@@ -14,6 +14,13 @@
 | ويب | [`frontend/web.md`](./frontend/web.md) | Nav · أقسام · فئات · منتج · تسجيل · فلاتر · **طلب سريع حسب الصفحة** · نص تحميل · أسعار · **آخر تحديث 2026-08-26** |
 | Flutter | [`frontend/flutter.md`](./frontend/flutter.md) | Nav · أقسام layout/variant · فئات دائرية · فلاتر · منتج/سلة · تسجيل · أسعار · **طلب سريع حسب الصفحة** · **آخر تحديث 2026-08-26** |
 
+## إظهار / إخفاء أقسام الصفحة (Eye toggle)
+
+| الفريق | الملف |
+|--------|--------|
+| داشبورد | [`page-sections/dashboard.md`](./page-sections/dashboard.md) — أيقونة عين · `POST /toggle-status` · UI checklist |
+| ويب | [`page-sections/web.md`](./page-sections/web.md) — لا تغيير UI · الباك يستبعد الأقسام المخفية |
+
 ## طلبات مخصصة (Custom Orders)
 
 التفصيل الكامل للطلب السريع (فلو الأدمن + ويب + Flutter + إعدادات القسم):

@@ -113,6 +113,49 @@ class PageSectionRuntimeFiltersTest extends TestCase
         $this->assertSame('product', $saleResponse->json('data.0.content_type'));
     }
 
+    public function test_inactive_page_sections_are_hidden_from_user_api(): void
+    {
+        $page = Page::create(['title' => 'Home', 'slug' => 'home-visibility-test']);
+
+        $visibleSection = Section::create([
+            'name' => ['en' => 'Visible', 'ar' => 'Visible'],
+            'type' => 'manual',
+            'manual_model' => 'banner',
+            'is_active' => true,
+        ]);
+
+        $hiddenSection = Section::create([
+            'name' => ['en' => 'Hidden', 'ar' => 'Hidden'],
+            'type' => 'manual',
+            'manual_model' => 'banner',
+            'is_active' => true,
+        ]);
+
+        PageSection::create([
+            'page_id' => $page->id,
+            'section_id' => $visibleSection->id,
+            'display_type_id' => DisplayTypeCatalog::idFor('banner'),
+            'position' => 'before',
+            'order' => 1,
+            'is_active' => true,
+        ]);
+
+        PageSection::create([
+            'page_id' => $page->id,
+            'section_id' => $hiddenSection->id,
+            'display_type_id' => DisplayTypeCatalog::idFor('banner'),
+            'position' => 'after',
+            'order' => 2,
+            'is_active' => false,
+        ]);
+
+        $response = $this->getJson('/api/user/sections?page_slug=home-visibility-test');
+
+        $response->assertOk();
+        $this->assertCount(1, $response->json('data'));
+        $this->assertSame(1, $response->json('data.0.order'));
+    }
+
     private function createProduct(Category $category, Vendor $vendor, string $name, int $discount): Product
     {
         return Product::create([

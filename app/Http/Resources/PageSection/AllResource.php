@@ -28,7 +28,7 @@ class AllResource extends JsonResource
             'background_color' => $this->background_color,
             'background_card_color' => $this->background_card_color,
             'show_when' => $this->show_when,
-
+            'is_active' => (bool) $this->is_active,
         ];
     }
 }

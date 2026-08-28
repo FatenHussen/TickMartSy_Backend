@@ -43,6 +43,8 @@ class UpdateRequest extends FormRequest
 
             'show_when' => ['nullable', 'array'],
             'show_when.*' => ['nullable'],
+
+            'is_active' => ['nullable', 'boolean'],
         ];
     }
 

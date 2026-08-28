@@ -44,6 +44,8 @@ POST /api/admin/toggle-status
 - `recipe` - الوصفات
 - `media` - الوسائط
 - `icon` - الأيقونات
+- `page_section` - أقسام الصفحة (إظهار/إخفاء قسم في Page Builder)
+- `section` - مكتبة الأقسام
 
 ### Location
 - `country` - البلدان

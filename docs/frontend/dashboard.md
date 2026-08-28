@@ -97,6 +97,49 @@
 - `GET /api/admin/page-sections/pages/{page}/preview`
 - `PUT/DELETE /api/admin/page-sections/{id}`
 
+### إظهار / إخفاء قسم (Eye toggle)
+
+> **الدليل الكامل:** [`../page-sections/dashboard.md`](../page-sections/dashboard.md)
+
+> **لا تحذف القسم** إذا تريد إخفاءه مؤقتًا — استخدم `is_active`.
+
+كل قسم في `GET /api/admin/pages/{id}` يرجع حقل **`is_active`**:
+
+| `is_active` | السلوك |
+|-------------|--------|
+| `true` | يظهر في الموقع/التطبيق |
+| `false` | مخفي عن المستخدمين — يبقى في الصفحة ويمكن إعادة إظهاره |
+
+**في شاشة تفاصيل الصفحة** (`/sections/pages/details/{id}`):
+
+- أيقونة **عين** بجانب كل قسم
+- `is_active: true` → عين مفتوحة (مرئي)
+- `is_active: false` → عين مغلقة / خط (مخفي) + تمييز بصري خفيف (opacity أو badge "Hidden")
+
+**طريقة 1 — Toggle API (موصى بها للأيقونة):**
+
+```http
+POST /api/admin/toggle-status
+Content-Type: application/json
+
+{
+  "type": "page_section",
+  "id": 12,
+  "is_active": 0
+}
+```
+
+**طريقة 2 — PATCH مباشر:**
+
+```http
+PATCH /api/admin/page-sections/12
+Content-Type: application/json
+
+{ "is_active": false }
+```
+
+> **Preview:** `GET .../preview` يعرض الأقسام **النشطة فقط** (كما يراها المستخدم). قائمة الأقسام في تفاصيل الصفحة تعرض **الكل** مع `is_active` لتمكين التوغل.
+
 ### البانرات
 
 قسم البانرات **يدوي** ويختار من البانرات الموجودة (`GET /api/admin/banners`). الصورة **عرضية** (≈ 16:6). بانر واحد = إعلان ثابت، عدة بانرات = سلايدر.

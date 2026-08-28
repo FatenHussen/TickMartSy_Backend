@@ -2,7 +2,7 @@
 
 > **أرسلوا هذا الملف لفريق Flutter فقط.**  
 > Base: `/api/user` + `Accept-Language: ar|en`.  
-> يجمع **كل** التعديلات المطلوبة في التطبيق (مو بس السلة/الأسعار).  
+> يجمع **كل** التعديلات المطلوبة في التطبيق (Nav · أقسام · فئات · منتج · فلاتر · أسعار · **طلب سريع حسب الصفحة**).  
 > **آخر تحديث | Last Updated:** 2026-08-26
 
 ---
@@ -20,7 +20,7 @@
 9. [التسجيل بدون إيميل](#9-التسجيل-بدون-إيميل)
 10. [فلاتر المنتجات](#10-فلاتر-المنتجات)
 11. [عرض الأسعار دولار + ليرة](#11-عرض-الأسعار)
-12. [قسم الطلب السريع (حسب الصفحة)](#12-قسم-الطلب-السريع-حسب-الصفحة)
+12. [قسم الطلب السريع (حسب الصفحة) — **آخر تحديث**](#12-قسم-الطلب-السريع-حسب-الصفحة--آخر-تحديث)
 
 ---
 
@@ -551,14 +551,18 @@ POST /api/user/auth/verify-otp
 
 ---
 
-## 12) قسم الطلب السريع (حسب الصفحة)
+## 12) قسم الطلب السريع (حسب الصفحة) — **آخر تحديث**
 
-> المرجع التفصيلي: [`../custom-orders/flutter.md`](../custom-orders/flutter.md)
+> **تحديث 26 آب 2026:** المحتوى والشكل من **Settings** (ليس Page Builder). الأدمن يختار **صفحات الظهور** عبر `quick_order_page_ids` — العميل يقرأ `page_ids` + `page_slugs`.  
+> فلو الإنشاء / الموافقة / الإلغاء بالكامل: [`../custom-orders/flutter.md`](../custom-orders/flutter.md)
 
-### التغيير
+### الفكرة
 
-قسم «طلب سريع» يظهر على **الصفحات التي يختارها الأدمن** (افتراضي: `home`) + زر الهيدر عند التفعيل.  
-المحتوى/الشكل من Settings — **ليس** قسم Page Builder.
+| قبل | بعد |
+|-----|-----|
+| القسم ثابت على الهوم فقط | يظهر على **الصفحات التي يختارها الأدمن** (افتراضي: `home`) |
+| — | زر الهيدر عام عند `is_enabled == true` |
+| — | القسم نفسه **حسب الصفحة** (`page_slugs`) |
 
 ### Endpoint
 
@@ -567,38 +571,211 @@ GET /api/user/settings
 Accept-Language: ar
 ```
 
-استخدم `data.quick_order`:
+### شكل `data.quick_order`
+
+```json
+{
+  "is_enabled": true,
+  "page_ids": [1],
+  "page_slugs": ["home"],
+  "background_image": "https://.../storage/settings/quick-order-bg.jpg",
+  "background_color": "#FFE8D6",
+  "card_background_color": "#FFFFFF",
+  "card_variant": "horizontal",
+  "badge": "طلب عاجل",
+  "title": "تحتاجه الآن؟",
+  "subtitle": "اكتب ما تريده مثل قائمة السوق...",
+  "cta": "اطلب الآن",
+  "steps": [
+    { "number": 1, "icon": "edit", "title": "اكتبه", "description": "قائمتك، بكلماتك" },
+    { "number": 2, "icon": "price", "title": "نسعّره", "description": "أسعار واضحة قبل الدفع" },
+    { "number": 3, "icon": "delivery", "title": "نوصّل", "description": "للباب بسرعة" }
+  ],
+  "action": {
+    "page_slug": "custom_order_request",
+    "route": "/api/user/custom-order-requests"
+  }
+}
+```
 
 | حقل | استخدام |
 |-----|---------|
-| `is_enabled` | إن `false`: أخفِ زر الهيدر والقسم بالكامل |
-| `page_ids` / `page_slugs` | اعرض القسم فقط إن الصفحة الحالية ضمن القائمة |
-| `background_image` / `background_color` | خلفية القسم |
-| `card_background_color` / `card_variant` | شكل كروت الخطوات |
-| `badge` / `title` / `subtitle` / `cta` / `steps` | المحتوى |
-| `action.page_slug` | `custom_order_request` — شاشة الإنشاء |
+| `is_enabled` | إن `false`: أخفِ زر الهيدر **وقسم** الطلب السريع بالكامل |
+| `page_ids` | IDs الصفحات المعتمدة |
+| `page_slugs` | نفس الصفحات كـ slug — **موصى للمطابقة** مع الصفحة الحالية |
+| `background_image` | URL صورة خلفية — `BoxFit.cover` |
+| `background_color` | لون احتياطي تحت/بدل الصورة |
+| `card_background_color` | خلفية كل كارد خطوة |
+| `card_variant` | `horizontal` \| `vertical` \| `square` |
+| `badge` / `title` / `subtitle` / `cta` | نصوص (حسب `Accept-Language`) |
+| `steps[]` | `{number, icon, title, description}` — حتى 6 |
+| `action.page_slug` | `custom_order_request` → شاشة الإنشاء |
 
-### قاعدة العرض
+### Dart Model
+
+```dart
+class QuickOrderSettings {
+  final bool isEnabled;
+  final List<int> pageIds;
+  final List<String> pageSlugs;
+  final String? backgroundImage;
+  final String backgroundColor;
+  final String cardBackgroundColor;
+  final String cardVariant;
+  final String badge;
+  final String title;
+  final String subtitle;
+  final String cta;
+  final List<QuickOrderStep> steps;
+
+  factory QuickOrderSettings.fromJson(Map<String, dynamic> json) =>
+      QuickOrderSettings(
+        isEnabled: json['is_enabled'] == true,
+        pageIds: (json['page_ids'] as List?)?.cast<int>() ?? [],
+        pageSlugs: (json['page_slugs'] as List?)?.cast<String>() ?? [],
+        backgroundImage: json['background_image'] as String?,
+        backgroundColor: json['background_color'] as String? ?? '#FFE8D6',
+        cardBackgroundColor:
+            json['card_background_color'] as String? ?? '#FFFFFF',
+        cardVariant: json['card_variant'] as String? ?? 'horizontal',
+        badge: json['badge'] as String? ?? '',
+        title: json['title'] as String? ?? '',
+        subtitle: json['subtitle'] as String? ?? '',
+        cta: json['cta'] as String? ?? '',
+        steps: (json['steps'] as List? ?? [])
+            .map((e) => QuickOrderStep.fromJson(e as Map<String, dynamic>))
+            .toList(),
+      );
+}
+
+class QuickOrderStep {
+  final int number;
+  final String? icon;
+  final String title;
+  final String description;
+  // fromJson ...
+}
+```
+
+### قاعدة الإظهار / الإخفاء
 
 ```dart
 final qo = settings.quickOrder;
 final showHeader = qo.isEnabled;
-final showSection =
-    qo.isEnabled && qo.pageSlugs.contains(currentPageSlug);
+final showSection = qo.isEnabled &&
+    (qo.pageSlugs.contains(currentPageSlug) ||
+        qo.pageIds.contains(currentPageId));
+
+// AppBar / Scaffold
+if (showHeader) QuickOrderHeaderButton(label: qo.badge);
+
+// داخل صفحة Page Builder (sections list)
+if (showSection) QuickOrderSection(config: qo);
 ```
 
-1. `is_enabled == false` → لا زر ولا قسم
-2. `is_enabled == true` → زر الهيدر عام
-3. القسم فقط إذا `page_slugs` تحتوي slug الصفحة الحالية
+1. `is_enabled == false` → لا زر ولا قسم على أي صفحة
+2. `is_enabled == true` → زر الهيدر **عام** (كل الشاشات)
+3. **القسم** فقط إن الصفحة الحالية ∈ `page_slugs` (أو `page_ids`)
+4. الافتراضي من الباك = `home` فقط؛ `page_ids: []` → لا قسم (الزر يبقى حسب `is_enabled`)
 
-الـ CTA / الزر يفتح إنشاء طلب: `POST /api/user/custom-order-requests`.
+### خلفية القسم
 
-### Checklist
+```dart
+BoxDecoration buildQuickOrderDecoration(QuickOrderSettings qo) {
+  if (qo.backgroundImage != null) {
+    return BoxDecoration(
+      image: DecorationImage(
+        image: NetworkImage(qo.backgroundImage!),
+        fit: BoxFit.cover,
+      ),
+    );
+  }
+  return BoxDecoration(color: _colorFromHex(qo.backgroundColor));
+}
+```
 
-- [ ] قراءة `quick_order` من settings (أو كاش)
-- [ ] احترام `is_enabled`
-- [ ] احترام `page_slugs` على كل صفحة Page Builder
-- [ ] خلفية صورة أو لون + `card_variant`
+### شكل الكارد (`card_variant`)
+
+| قيمة | تخطيط |
+|------|--------|
+| `horizontal` | أيقونة يسار + نص يمين (افتراضي) |
+| `vertical` | أيقونة فوق + نص تحت |
+| `square` | كارد مربّع (مناسب لـ `GridView`) |
+
+طبّق `card_background_color` على خلفية كل كارد. `borderRadius` ≈ 16، padding أفقي ≥ 16.
+
+### ريسبونسيف
+
+| عرض | تخطيط |
+|-----|--------|
+| ≥ 768 (تابلت) | صف: نص \| كروت الخطوات \| زر CTA |
+| < 768 (موبايل) | عمود: عنوان → كروت عمودياً أو `ListView` أفقي → CTA `width: double.infinity` |
+
+```dart
+LayoutBuilder(
+  builder: (context, constraints) {
+    final isWide = constraints.maxWidth >= 768;
+    return isWide
+        ? Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(child: _QuickOrderCopy(qo)),
+              Expanded(flex: 2, child: _QuickOrderSteps(qo)),
+              _QuickOrderCta(qo),
+            ],
+          )
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _QuickOrderCopy(qo),
+              _QuickOrderSteps(qo),
+              SizedBox(
+                width: double.infinity,
+                child: _QuickOrderCta(qo),
+              ),
+            ],
+          );
+  },
+);
+```
+
+### الأيقونات
+
+`steps[].icon`: `edit` | `price` | `delivery` — اربطها بـ Material/SVG محلي. قيمة غير معروفة → أيقونة افتراضية.
+
+### CTA → إنشاء الطلب
+
+```http
+POST /api/user/custom-order-requests
+Authorization: Bearer {token}
+Content-Type: multipart/form-data
+```
+
+| حقل | مطلوب |
+|-----|--------|
+| `description` | نعم (≥ 10 أحرف) |
+| `address_id` | نعم |
+| `payment_method_id` | لا |
+| `expected_at` | لا |
+| `images[]` | لا (حتى 5) |
+
+```dart
+Navigator.pushNamed(context, Routes.customOrderCreate);
+// أو context.push('/custom-order-requests/new');
+```
+
+بعد الإرسال: `pending_pricing` — لا تسعير تلقائي. التفاصيل الكاملة في [`../custom-orders/flutter.md`](../custom-orders/flutter.md).
+
+### Checklist — طلب سريع
+
+- [ ] `GET /settings` → parse `quick_order` (كاش مع invalidation عند تغيير اللغة)
+- [ ] `is_enabled` يتحكم بزر الهيدر + القسم
+- [ ] القسم يظهر فقط إن `page_slugs` / `page_ids` تطابق الصفحة الحالية
+- [ ] خلفية صورة (`NetworkImage` + `cover`) أو لون
+- [ ] كروت بـ `card_background_color` + `card_variant`
+- [ ] ريسبونسيف موبايل / تابلت
+- [ ] CTA → شاشة إنشاء + `POST /custom-order-requests`
+- [ ] إشعار `custom_order_request` + `waiting_approval` → شاشة الموافقة
 
 ---
 
@@ -637,10 +814,14 @@ php artisan db:seed --class=NavMenuSeeder
 - [ ] تسجيل: phone مطلوب، email اختياري
 - [ ] أسعار من `*_formatted` / `*_currencies`
 
-### Nav + فلاتر + طلب سريع
+### Nav + فلاتر + طلب سريع (آخر تحديث)
 - [ ] `GET /nav-menu` ديناميكي
 - [ ] chips + `/products` + toggles + ترتيب
-- [ ] `quick_order`: `is_enabled` + `page_slugs`
+- [ ] `GET /settings` → `quick_order`
+- [ ] `is_enabled`: زر الهيدر عام + إخفاء كامل عند `false`
+- [ ] `page_slugs` / `page_ids`: القسم حسب الصفحة (افتراضي `home`)
+- [ ] خلفية صورة/لون + `card_variant` + ريسبونسيف
+- [ ] CTA → `POST /custom-order-requests` (فلو كامل: [`../custom-orders/flutter.md`](../custom-orders/flutter.md))
 
 ---
 

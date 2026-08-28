@@ -32,6 +32,7 @@ class AdminOneResource extends JsonResource
                 ? $this->section->api_method
                 : null,
             'is_default' => (bool) $this->is_default,
+            'is_active' => (bool) $this->is_active,
             'page_id' => $this->page->id,
             'page_name' => $this->page->title,
             'position' => $this->position,
