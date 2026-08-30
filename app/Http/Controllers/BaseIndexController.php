@@ -11,7 +11,7 @@ abstract class BaseIndexController extends Controller
 
     public function index(Request $request)
     {
-        $filters = $this->filterRequest ? app($this->filterRequest)->validated() : [];
+        $filters = $this->resolveValidatedFilters($request, $this->filterRequest);
 
         $config = [
             'search'     => $request->input('search'),

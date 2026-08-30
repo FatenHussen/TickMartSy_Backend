@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 
 abstract class Controller
@@ -19,6 +20,24 @@ abstract class Controller
         $perPage = (int) $request->input($key, $default);
 
         return $perPage < 1 ? $default : min($perPage, self::MAX_PER_PAGE);
+    }
+
+    /**
+     * @param  class-string<FormRequest>|null  $filterRequest
+     * @return array<string, mixed>
+     */
+    protected function resolveValidatedFilters(Request $request, ?string $filterRequest): array
+    {
+        if ($filterRequest === null) {
+            return [];
+        }
+
+        /** @var FormRequest $formRequest */
+        $formRequest = $filterRequest::createFrom($request);
+        $formRequest->setContainer(app())->setRedirector(app('redirect'));
+        $formRequest->validateResolved();
+
+        return $formRequest->validated();
     }
 
     protected function sendResponse($data = [], $message = null, $code = 200, $meta = [])
