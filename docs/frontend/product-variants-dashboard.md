@@ -9,13 +9,14 @@
 ## الفهرس
 
 1. [الفكرة العامة](#1-الفكرة-العامة)
-2. [نموذج إضافة متغيّر — Single لكل select](#2-نموذج-إضافة-متغيّر--single-لكل-select)
-3. [كارد المتغيّر — التخطيط والحقول](#3-كارد-المتغيّر--التخطيط-والحقول)
-4. [قائمة المتغيّرات](#4-قائمة-المتغيّرات)
-5. [جلب صفات الفئة](#5-جلب-صفات-الفئة)
-6. [توليد SKU — إنجليزي فقط](#6-توليد-sku--إنجليزي-فقط)
-7. [السعر · الخصم · التحديث](#7-السعر--الخصم--التحديث)
-8. [Payload · Checklist](#8-payload--checklist)
+2. [إنشاء منتج جديد — حفظ محلي (بدون product id)](#2-إنشاء-منتج-جديد--حفظ-محلي-بدون-product-id)
+3. [نموذج إضافة متغيّر — Single لكل select](#3-نموذج-إضافة-متغيّر--single-لكل-select)
+4. [كارد المتغيّر — التخطيط والحقول](#4-كارد-المتغيّر--التخطيط-والحقول)
+5. [قائمة المتغيّرات](#5-قائمة-المتغيّرات)
+6. [جلب صفات الفئة](#6-جلب-صفات-الفئة)
+7. [توليد SKU — إنجليزي فقط](#7-توليد-sku--إنجليزي-فقط)
+8. [السعر · الخصم · التحديث](#8-السعر--الخصم--التحديث)
+9. [Payload · Checklist](#9-payload--checklist)
 
 ---
 
@@ -35,18 +36,145 @@
 
 ---
 
-## 2) نموذج إضافة متغيّر — Single لكل select
+## 2) إنشاء منتج جديد — حفظ محلي (بدون product id)
+
+> **مهم:** في صفحة **إنشاء منتج** (`/products/create`) **لا يوجد** `product.id` بعد.
+> المتغيّرات تُدار **محلياً في state الفورم** — **مو** عبر API منفصل.
+
+### ❌ خطأ شائع (يظهر في الواجهة حالياً)
+
+```
+toast: «احفظ المنتج أولاً، ثم أضف المتغيّرات»
+```
+
+**هذا خطأ في الفرونت.** احذفه. المستخدم لازم يقدر يملأ **كل التابات** (معلومات · صور · متغيّرات...) ثم يضغط **«إنشاء المنتج»** مرة واحدة.
+
+### وضعان
+
+| الوضع | المسار | المتغيّرات |
+|-------|--------|-----------|
+| **إنشاء** | `/products/create` | **state محلي فقط** — لا `POST/PUT product-variants` |
+| **تعديل** | `/products/{id}/edit` | state + `PUT products/{id}` أو `PUT product-variants/{id}` |
+
+### تدفق الإنشاء (المطلوب)
+
+```
+1. المستخدم يختار الفئة → يجلب صفات الفئة
+2. يملأ تاب المعلومات + تاب المتغيّرات + باقي التابات
+3. «إضافة متغيّر» → يضيف صف لـ localVariants[]  (بدون API)
+4. «تحديث المتغيّر» → يحدّث نفس الصف في localVariants[]  (بدون API)
+5. «إنشاء المنتج» → POST /api/admin/products  +  variants[]  +  shop_variants[]
+```
+
+### شكل state محلي
+
+```js
+const [localVariants, setLocalVariants] = useState([]);
+
+function addLocalVariant(selections) {
+  const ids = selections.map(s => s.valueId).filter(Boolean);
+  if (ids.length === 0 || isDuplicateVariant(localVariants, ids)) return;
+
+  setLocalVariants(prev => [
+    ...prev,
+    {
+      _localKey: crypto.randomUUID(), // للـ React key — لا ترسله
+      attributes_values_ids: ids,
+      sku: generateVariantSku(productSku, selections),
+      price: null,
+      price_syp: null,
+      discount: 0,
+      discount_type: 'none',
+      quantity: null,
+      barcode: null,
+      is_active: true,
+      is_trend: false,
+      images: [], // File[] — تُرفق مع multipart
+    },
+  ]);
+}
+
+function updateLocalVariant(localKey, patch) {
+  setLocalVariants(prev =>
+    prev.map(v => (v._localKey === localKey ? { ...v, ...patch } : v))
+  );
+}
+```
+
+### عند «إنشاء المنتج» — طلب واحد
+
+```http
+POST /api/admin/products
+Content-Type: multipart/form-data
+```
+
+```text
+name[ar]=...
+category_id=5
+price=7
+variants[0][attributes_values_ids][0]=3
+variants[0][attributes_values_ids][1]=12
+variants[0][sku]=VAR-FF0000-L
+variants[0][price]=7
+variants[0][discount]=7
+variants[0][discount_type]=percentage
+variants[0][quantity]=10
+variants[0][is_active]=1
+variants[0][images][0]=<file>
+
+shop_variants[0][shop_id]=5
+shop_variants[0][variant_index]=0
+```
+
+- **لا ترسل** `variants[i][id]` — المنتج جديد
+- **`variant_index`** = ترتيب الصف في `variants[]` (0، 1، …)
+- الباك ينشئ المنتج + كل المتغيّرات **بنفس الطلب**
+
+### أزرار الكارد — حسب الوضع
+
+| الزر | إنشاء (create) | تعديل (edit) |
+|------|----------------|--------------|
+| إضافة متغيّr | `addLocalVariant()` | state أو API |
+| تحديث المتغيّr | `updateLocalVariant()` | `PUT product-variants/{id}` أو حفظ المنتج |
+| حذف متغيّr | `filter` من state | DELETE مع تأكيد |
+
+### ❌ ممنوع في وضع الإنشاء
+
+```js
+if (!productId) {
+  toast('احفظ المنتج أولاً'); // ← احذف
+  return;
+}
+```
+
+### ✅ الصح
+
+```js
+const isCreate = productId == null;
+
+function onSaveVariantCard(variant) {
+  if (isCreate) {
+    updateLocalVariant(variant._localKey, variant);
+    return;
+  }
+  await api.put(`/product-variants/${variant.id}`, variant);
+}
+```
+
+---
+
+## 3) نموذج إضافة متغيّr — Single لكل select
 
 > مثل الصورة المرجعية: **dropdown واحد لكل صفة** — **قيمة واحدة فقط**.
 
 ```
-┌─ إضافة متغيّر جديد ──────────────────────┐
+┌─ إضافة متغيّr جديد ──────────────────────┐
 │                                           │
 │  لون      ▼  [ green        ]             │  ← single
 │  قياس     ▼  [ l            ]             │  ← single
 │  تصميم    ▼  [ تعبان       ]             │  ← single
 │                                           │
-│  [ إضافة متغيّر جديد ]                    │
+│  [ إضافة متغيّr جديد ]                    │
 └───────────────────────────────────────────┘
 ```
 
@@ -57,7 +185,7 @@
 | 1 | **كل صفة = select واحد** — لون، مقاس، تصميم... |
 | 2 | **لا multi-select** — لا checkboxes للمقاسات |
 | 3 | **لا حقول سعر/كمية** داخل نموذج الإضافة — فقط الصفات |
-| 4 | كل ضغطة «إضافة» → **متغيّر واحد** جديد بالقائمة |
+| 4 | كل ضغطة «إضافة» → **متغيّr واحد** جديد بالقائمة |
 | 5 | لتكرار نفس اللون بمقاس آخر → **إضافة مرة ثانية** (green + M...) |
 
 ```js
@@ -77,7 +205,7 @@ function onAddVariant(selections) {
     ...prev,
     {
       attributes_values_ids: attrs,
-      sku: generateVariantSku(productSku, attrs), // English only — see §6
+      sku: generateVariantSku(productSku, attrs), // English only — see §7
       price: null,
       priceSyp: null,
       discount: 0,
@@ -90,10 +218,10 @@ function onAddVariant(selections) {
 }
 ```
 
-### ❌ ممنوع
+### ❌ ممنoع
 
 ```js
-// multi مقاس → 4 متغيّرات دفعة واحدة
+// multi مقاس → 4 متغيّrات دفعة واحدة
 selectedSizes.map(size => addVariant({ color, size }));
 
 // تفرد كروت حقول عند الاختيار
@@ -184,24 +312,24 @@ bool isDuplicate(List<int> a, List<int> b) {
 
 ---
 
-## 3) كارد المتغيّر — التخطيط والحقول
+## 4) كارد المتغيّr — التخطيط والحقول
 
-> بعد الإضافة — **كارد واحد لكل متغيّر** (مثل المرجع + حقولكم).
+> بعد الإضافة — **كارد واحد لكل متغيّr** (مثل المرجع + حقولكم).
 
 ```
-┌─ متغيّرات المنتج ─────────────────────────────────────────┐
+┌─ متغيّrات المنتج ─────────────────────────────────────────┐
 │  [توليد جميع SKU المفقودة]    إجمالي: 3 | SKU: 2 | ...  │
 ├─────────────────────────────────────────────────────────┤
 │  ● green · l · تعبان                    [متوفر]         │
 │                                                         │
 │  ┌─ المعلومات الأساسية ─────────────────────────────┐  │
-│  │  رمز المتغيّر (SKU)  [ LIG-8188-GREEN-L      ]   │  │
+│  │  رمز المتغيّr (SKU)  [ LIG-8188-GREEN-L      ]   │  │
 │  │                                                   │  │
 │  │  ┌─────────┬─────────┬──────────┬──────────────┐ │  │
-│  │  │ سعر ($) │ سعر(ل.س)│ نوع خصم  │ قيمة الخصم  │ │  │
+│  │  │ سعر ($) │ سعر(ل.س)│ نوع خصm  │ قيمة الخصm  │ │  │
 │  │  │ [2300]  │ [0    ] │ [نسبة ▼] │ [10       ]  │ │  │
 │  │  └─────────┴─────────┴──────────┴──────────────┘ │  │
-│  │  سعر بعد الخصم (readonly): [ SYP … · $ … ]       │  │
+│  │  سعر بعد الخصm (readonly): [ SYP … · $ … ]       │  │
 │  │                                                   │  │
 │  │  ┌─────────┬─────────┬──────────────┐            │  │
 │  │  │ الكمية  │ الباركود│ تكلفة (اخ.) │            │  │
@@ -221,14 +349,14 @@ bool isDuplicate(List<int> a, List<int> b) {
 | 1 | رمز المتغيّr (SKU) | `variants[].sku` | ❌ `nullable` |
 | 2 | سعر ($) | `variants[].price` | ❌ `nullable` — إذا فارغ الباك يأخذ سعر المنتج |
 | 3 | سعر (ل.س) | `variants[].price_syp` | ❌ — يُحوّل لـ `price` |
-| 4 | نوع الخصم | `variants[].discount_type` | ❌ — افتراضي `none` |
+| 4 | نوع الخصm | `variants[].discount_type` | ❌ — افتراضي `none` |
 | 5 | قيمة الخصm | `variants[].discount` | ❌ |
 | 6 | سعر بعد الخصm | — | readonly |
 | 7 | الكمية | `variants[].quantity` | ❌ `nullable` |
 | 8 | الباركود | `variants[].barcode` | ❌ `nullable` |
 | 9 | تكلفة (shop) | `shop_variants[].cost_price` | ❌ — على ربط الفرع |
 
-**لا تعرض:** ~~الوزن~~ (مو موجود على `product_variants`) · ~~اسم المتغيّر~~
+**لا تعرض:** ~~الوزن~~ (مو موجود على `product_variants`) · ~~اسم المتغيّr~~
 
 
 
@@ -258,6 +386,9 @@ variants[0][attributes_values_ids][1]=12
 **ملاحظة الباك:** إذا `price` فارغ → يُعيَّن تلقائياً من `product.price` (أو `0`).
 
 ### تحديث متغيّr واحد
+
+> **وضع الإنشاء:** حدّث state محلي فقط — انظر **§2**.
+> **وضع التعديل:** استخدم أحد الخيارين:
 
 ```http
 PUT /api/admin/product-variants/{id}
@@ -290,10 +421,10 @@ variants[0][quantity]=30
 
 ---
 
-## 4) قائمة المتغيّرات
+## 5) قائمة المتغيّrات
 
-- **كارد واحد = متغيّر واحد** — مو كارد لكل مقاس بالنموذج.
-- عدة متغيّرات = **عدة كروت** (أو tabs) — كل واحد فيه select values مختلفة.
+- **كارد واحد = متغيّr واحد** — مو كارد لكل مقاس بالنموذج.
+- عدة متغيّrات = **عدة كروت** (أو tabs) — كل واحد فيه select values مختلفة.
 
 ```
 إضافة 1: green + l + تعبان   →  كارد 1
@@ -305,7 +436,7 @@ variants[0][quantity]=30
 
 ---
 
-## 5) جلب صفات الفئة
+## 6) جلب صفات الفئة
 
 ```http
 GET /api/admin/category-attributes?category_id={categoryId}
@@ -321,7 +452,7 @@ GET /api/admin/category-attributes?category_id={categoryId}
 
 
 
-## 6) توليد SKU — إنجlيزi فقط
+## 7) توليد SKU — إنجlيزi فقط
 
 > **رمز التخزين التعريفي للمتغيّr** يُولَّد في **الواجهة**. **ممنوع** أي حرف عربي داخل SKU.
 
@@ -361,7 +492,7 @@ function readableSku(productSku, selections) {
 
 ---
 
-## 7) السعر · الخصm · التحديث
+## 8) السعر · الخصm · التحديث
 
 ### USD ↔ SYP
 
@@ -376,7 +507,7 @@ const sypRate = currencies.find(c => c.code === 'SYP')?.exchange_rate ?? 1;
 | `price_syp` | يحوّل لـ USD |
 | الاثنان | يعتمد **$** |
 
-### سعر بعد الخصم
+### سعر بعد الخصm
 
 ```js
 function priceAfterDiscount(price, discountType, discount) {
@@ -391,11 +522,15 @@ function priceAfterDiscount(price, discountType, discount) {
 
 ---
 
-## 8) Payload · Checklist
+## 9) Payload · Checklist
 
-### مثال — 3 متغيّرات (single each)
+### مثال — إنشاء منتج + 3 متغيّrات (طلب واحد)
 
 ```text
+POST /api/admin/products
+
+name[ar]=...
+category_id=5
 variants[0][sku]=PROD-GREEN-L
 variants[0][price]=2300
 variants[0][quantity]=30
@@ -411,15 +546,17 @@ variants[1][sku]=PROD-GREEN-M
 
 ### Checklist
 
+- [ ] **إنشاء منتج:** متغيّrات في **state محلي** — **لا** toast «احفظ المنتج أولاً»
+- [ ] **إنشاء منتج:** `POST /products` + `variants[]` دفعة واحدة عند «إنشاء المنتج»
 - [ ] **Single select** لكل صفة (لون · مقاس · تصميم) — **مو multi**
 - [ ] نموذج الإضافة = **dropdowns فقط** — بدون حقول سعر
-- [ ] كل «إضافة» = **متغيّر واحد** + **كارد واحد**
+- [ ] كل «إضافة» = **متغيّr واحد** + **كارد واحد**
 - [ ] **لا** `map` على المقاسات → كروت متعددة
-- [ ] كارد المتغيّر: SKU + ($ · ل.س · خصم · بعد الخصم · كمية · باركود)
-- [ ] **كل حقول المتغيّr اختيارية** — SKU · سعر · خصm · كمية · باركود — **بدون** `required` — مو `required` في الفورm
+- [ ] كارد المتغيّr: SKU + ($ · ل.س · خصm · بعد الخصm · كمية · باركود)
+- [ ] **كل حقول المتغيّr اختيارية** — SKU · سعر · خصm · كمية · باركود — **بدون** `required`
 - [ ] تكلفة → `shop_variants[].cost_price` إن `sale_channel=shop`
-- [ ] تحديث: `PUT product-variants/{id}` أو `PUT products/{id}` + `variants[i][id]`
-- [ ] **SKU إنجlيزي فقط** — `SKU-27T4376` · لا `PROD-أخضر-XL` · استخدم `name.en` أو suffix عشوائي
+- [ ] **تعديل فقط:** `PUT product-variants/{id}` أو `PUT products/{id}` + `variants[i][id]`
+- [ ] **SKU إنجlيزi فقط** — `SKU-27T4376` · لا `PROD-أخضر-XL`
 - [ ] **احذف** `name.ar` / `name.en` من payload
 
 ---
@@ -427,11 +564,17 @@ variants[1][sku]=PROD-GREEN-M
 ## ملخص للمطور
 
 ```
-نموذج إضافة:  لون ▼  +  مقاس ▼  +  تصميم ▼  (كلها single)
-                    ↓ [إضافة]
-كارد متغيّر:  SKU + حقولكم ($ · ل.س · خصم · كمية · باركود)
-                    ↓ [حفظ]
-API:           variants[i]  — صف واحد لكل متغيّر
+إنشاء منتج:
+  تاب معلومات + تاب متغيّrات + ...  →  state محلي
+  «إضافة» / «تحديث المتغيّr»         →  localVariants[]  (بدون API)
+  «إنشاء المنتج»                    →  POST /products + variants[]
+
+تعديل منتج:
+  نموذج إضافة:  لون ▼  +  مقاس ▼  +  تصميم ▼  (كلها single)
+                      ↓ [إضافة]
+  كارد متغيّr:  SKU + حقول ($ · ل.س · خصm · كمية · باركود)
+                      ↓ [حفظ]
+  API:           variants[i]  — صف واحد لكل متغيّr
 ```
 
 **الباك جاهز — التعديل UI فقط.**

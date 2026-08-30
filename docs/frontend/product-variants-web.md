@@ -2,7 +2,8 @@
 
 > **أرسلوا هذا الملف لفريق الويب فقط.**  
 > Base: `/api/user` + `Accept-Language: ar|en`.  
-> **آخر تحديث:** 2026-08-30
+> **آخر تحديث:** 2026-08-30  
+> **ملخص التغييرات:** [`product-variants-storefront-update.md`](product-variants-storefront-update.md)
 
 ---
 

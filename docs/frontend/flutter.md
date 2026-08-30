@@ -828,6 +828,7 @@ php artisan db:seed --class=NavMenuSeeder
 
 ## 13) متغيّرات المنتج — عرض واختيار
 
+> **آخر تحديث:** [`product-variants-storefront-update.md`](product-variants-storefront-update.md)  
 > **الدليل الكامل:** [`product-variants-flutter.md`](product-variants-flutter.md)
 
 ### ملخص

@@ -375,6 +375,8 @@ GET /api/admin/category-attributes?category_id={rootCategoryId}
 
 ### قواعد مهمة
 
+0. **إنشاء منتج (`/products/create`):** المتغيّrات **state محلي** — **لا** تطلب `product.id` ولا toast «احفظ المنتج أولاً». عند «إنشاء المنتج» → `POST /products` + `variants[]` **دفعة واحدة**. التفاصيل: [`product-variants-dashboard.md` §2](product-variants-dashboard.md#2-إنشاء-منتج-جديد--حفظ-محلي-بدون-product-id)
+
 1. **`variants` بديل كامل (replace):**
    - صف فيه `id` → تحديث
    - صف بدون `id` → إنشاء جديد
@@ -845,7 +847,8 @@ Migrations آب 2026:
 | **القائمة** | كارد (أو tab) لكل متغيّر — عدة مقاسات = **عدة إضافات** |
 | **اسم المتغيّر** | **محذوف** — الصفات + SKU |
 | صفات الفئة | `GET /api/admin/category-attributes?category_id={id}` عند المستوى 1 |
-| **الباك** | **لا تعديل** — `variants[]` جاهز |
+| **الباك** | **لا تعديل** — `variants[]` جاهز في `POST` و `PUT` |
+| **إنشاء منتج** | متغيّrات **محلياً** — حفظ مع `POST /products` (§2 في الدليل) |
 | السعر | **`variants[].price` ($)** + **`variants[].price_syp` (ل.س)** — مزامنة تلقائية |
 | سعر بعد الخصم | **عرض فقط** — يُحسب حيّاً في الواجهة |
 | الكمية | **`variants[].quantity`** — **اختياري** (`nullable`) — مو required |

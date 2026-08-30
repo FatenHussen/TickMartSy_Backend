@@ -2,7 +2,8 @@
 
 > **أرسلوا هذا الملف لفريق Flutter فقط.**  
 > Base: `/api/user` + `Accept-Language: ar|en`.  
-> **آخر تحديث:** 2026-08-30
+> **آخر تحديث:** 2026-08-30  
+> **ملخص التغييرات:** [`product-variants-storefront-update.md`](product-variants-storefront-update.md)
 
 ---
 
@@ -137,11 +138,11 @@ GET /api/user/products/{id}?lat=...&lng=...
 | `variant_id` | ID المتغيّر الأساسي |
 | `sku` | معرّف اختياري — **لا يوجد `name`** |
 | `attributes` | **هوية المتغيّر** — لون + مقاس... |
-| `price` / `price_usd` / `price_syp` | السعر الأصلي بعملتين |
+| `price_currencies.USD/SYP` | السعر الأصلي بعملتين |
 | `quantity` | المخزون المتاح — **حقل واحد** |
 | `discount_value` + `discount_type` | إعداد الخصم (10 + percentage) |
 | `discount` | **المبلغ المخصوم** (للعرض) |
-| `price_after_discount` | السعر النهائي للعرض |
+| `price_after_discount_currencies` | السعر النهائي بعملتين |
 
 ---
 
@@ -165,23 +166,22 @@ GET /api/user/products/{id}?lat=...&lng=...
 
 1. اعرض صفات من `attributes_map` أو استنتجها من `shop_variants[].attributes`.
 2. عند اختيار لون → فلتر المقاسات المتاحة لهذا اللون فقط.
-3. عند اختيار مقاس → حدّد `shop_variant` المطابق.
+3. عند اختيار مقاس → حدّد `shop_variant` المطابق بـ **`attribute` + `value`**.
 4. إذا `quantity <= 0` → عطّل «أضف للسلة».
 5. **لا تفترض** أن كل لون × كل مقاس موجود — اعرض فقط ما في `shop_variants`.
 
 ```dart
 ShopVariant? findVariant(
   List<ShopVariant> variants,
-  Map<int, int> selectedValueIds, // categoryAttributeId → valueId
+  Map<String, String> selected, // "لون" → "أحمر", "قياس" → "M"
 ) {
-  return variants.cast<ShopVariant?>().firstWhere(
-    (v) {
-      if (v == null) return false;
-      final ids = v.attributes.map((a) => a.id).toSet();
-      return selectedValueIds.values.every(ids.contains);
-    },
-    orElse: () => null,
-  );
+  if (selected.isEmpty) return null;
+  for (final v in variants) {
+    final matches = selected.entries.every((e) =>
+      v.attributes.any((a) => a.attribute == e.key && a.value == e.value));
+    if (matches) return v;
+  }
+  return null;
 }
 ```
 
@@ -198,8 +198,8 @@ ShopVariant? findVariant(
 
 | للعرض | الحقل |
 |-------|-------|
-| سعر بالدولار | `price_usd` أو `price_currencies.USD.amount` |
-| سعر بالليرة | `price_syp` أو `price_currencies.SYP.amount` |
+| سعر USD | `price_currencies.USD.amount` |
+| سعر SYP | `price_currencies.SYP.amount` |
 | السعر بعد الخصم (USD) | `price_after_discount_usd` |
 | السعر بعد الخصم (SYP) | `price_after_discount_syp` |
 
@@ -264,8 +264,9 @@ Widget buildPrice(ShopVariant v) {
 ```dart
 bool get canAddToCart =>
     selectedVariant != null &&
-    (selectedVariant!.quantity ?? 0) > 0 &&
-    selectedVariant!.id != null;
+    selectedVariant!.id != null &&
+    selectedVariant!.shopId != null &&
+    (selectedVariant!.quantity) > 0;
 ```
 
 ---
@@ -286,17 +287,15 @@ Text(product.deliveryTime ?? '—'); // "3-5 أيام"
 ```dart
 class ShopVariant {
   final int? id;
-  final int variantId;
+  final int? variantId;
   final String? sku;
   final double price;
-  final double priceUsd;
-  final double priceSyp;
+  final Map<String, CurrencyAmount> priceCurrencies;
   final int discountValue;
   final String discountType;
   final double discountAmount;
   final double priceAfterDiscount;
-  final double priceAfterDiscountUsd;
-  final double priceAfterDiscountSyp;
+  final Map<String, CurrencyAmount> priceAfterDiscountCurrencies;
   final int quantity;
   final int? shopId;
   final List<VariantAttribute> attributes;
@@ -304,24 +303,15 @@ class ShopVariant {
 
   factory ShopVariant.fromJson(Map<String, dynamic> json) => ShopVariant(
     id: json['id'],
-    variantId: json['variant_id'] ?? 0,
+    variantId: json['variant_id'],
     sku: json['sku'],
     price: (json['price'] as num?)?.toDouble() ?? 0,
-    priceUsd: (json['price_usd'] as num?)?.toDouble()
-        ?? (json['price_currencies']?['USD']?['amount'] as num?)?.toDouble()
-        ?? (json['price'] as num?)?.toDouble()
-        ?? 0,
-    priceSyp: (json['price_syp'] as num?)?.toDouble()
-        ?? (json['price_currencies']?['SYP']?['amount'] as num?)?.toDouble()
-        ?? 0,
+    priceCurrencies: _parseCurrencies(json['price_currencies']),
     discountValue: json['discount_value'] ?? 0,
     discountType: json['discount_type'] ?? 'none',
     discountAmount: (json['discount'] as num?)?.toDouble() ?? 0,
     priceAfterDiscount: (json['price_after_discount'] as num?)?.toDouble() ?? 0,
-    priceAfterDiscountUsd: (json['price_after_discount_usd'] as num?)?.toDouble()
-        ?? (json['price_after_discount'] as num?)?.toDouble()
-        ?? 0,
-    priceAfterDiscountSyp: (json['price_after_discount_syp'] as num?)?.toDouble() ?? 0,
+    priceAfterDiscountCurrencies: _parseCurrencies(json['price_after_discount_currencies']),
     quantity: json['quantity'] ?? 0,
     shopId: json['shop_id'],
     attributes: (json['attributes'] as List?)
@@ -334,20 +324,24 @@ class ShopVariant {
 }
 
 class VariantAttribute {
-  final int id;
-  final String name;
-  final String? hex;
-  final CategoryAttributeRef categoryAttribute;
+  final String attribute;
+  final String value;
+  final String? type;
 
   factory VariantAttribute.fromJson(Map<String, dynamic> json) =>
       VariantAttribute(
-        id: json['id'],
-        name: json['name'] ?? '',
-        hex: json['hex'],
-        categoryAttribute: CategoryAttributeRef.fromJson(
-          json['category_attribute'] ?? {},
-        ),
+        attribute: json['attribute'] ?? '',
+        value: json['value'] ?? '',
+        type: json['type'],
       );
+}
+
+Map<String, CurrencyAmount> _parseCurrencies(dynamic raw) {
+  if (raw is! Map) return {};
+  return raw.map((k, v) => MapEntry(
+    k.toString(),
+    CurrencyAmount.fromJson(Map<String, dynamic>.from(v)),
+  ));
 }
 ```
 
@@ -363,5 +357,6 @@ class VariantAttribute {
 - [ ] اعرض `price_after_discount` + شارة خصم
 - [ ] دعم **USD و SYP** من API (لا تحويل محلي)
 - [ ] `delivery_time` من المنتج — ليس per variant
-- [ ] `shop_product_variant_id` = `id` (مع حماية null)
-- [ ] fallback الصور: variant → product → thumbnail
+- [ ] مطابقة بـ `attribute` + `value` (مو `id`)
+- [ ] `shop_product_variant_id` = `id` + `shop_id != null`
+- [ ] fallback الصور: variant → product → thumbnail (`images[].path`)
