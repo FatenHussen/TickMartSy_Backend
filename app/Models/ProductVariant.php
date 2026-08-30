@@ -22,6 +22,8 @@ class ProductVariant extends Model
         'model',
         'barcode',
         'price',
+        'discount',
+        'discount_type',
         'quantity',
         'attributes_values_ids',
         'is_trend',
@@ -32,6 +34,7 @@ class ProductVariant extends Model
         'attributes_values_ids' => 'array',
         'is_active' => 'boolean',
         'price' => 'float',
+        'discount' => 'integer',
         'quantity' => 'integer',
     ];
 
@@ -190,31 +193,67 @@ class ProductVariant extends Model
 
     public function getFinalPriceAttribute(): float
     {
-        // 1. Base price (سعر المتغير هو المصدر الوحيد للسعر)
         $price = (float) $this->price;
+        $discount = $this->resolveEffectiveDiscount();
 
-        // 2. Get product final discount
-        $discount = $this->product?->final_discount;
-
-        if (!$discount || !$discount['type'] || $discount['value'] <= 0) {
+        if (!$discount['type'] || $discount['value'] <= 0) {
             return round($price, 2);
         }
 
-        // 3. Apply discount
-        if ($discount['type'] === 'percentage') {
-            $price -= ($price * ($discount['value'] / 100));
-        }
-
-        if ($discount['type'] === 'fixed') {
-            $price -= $discount['value'];
-        }
-
-        return (float) round(max(0, $price), 2);
+        return (float) round(max(0, $this->applyDiscount($price, $discount['type'], $discount['value'])), 2);
     }
 
-    public function getDiscountAttribute(): float
+    public function getDiscountAmountAttribute(): float
     {
         return (float) round(max(0, ((float) $this->price) - $this->final_price), 2);
+    }
+
+    /**
+     * Variant discount takes priority; falls back to product flash sale / product discount.
+     */
+    protected function resolveEffectiveDiscount(): array
+    {
+        if ($this->discount && $this->discount_type && $this->discount_type !== 'none') {
+            return [
+                'source' => 'variant',
+                'type' => $this->normalizeDiscountType($this->discount_type),
+                'value' => (float) $this->discount,
+            ];
+        }
+
+        $productDiscount = $this->product?->final_discount;
+
+        if ($productDiscount && ($productDiscount['type'] ?? null) && ($productDiscount['value'] ?? 0) > 0) {
+            return $productDiscount;
+        }
+
+        return [
+            'source' => 'none',
+            'type' => null,
+            'value' => 0,
+        ];
+    }
+
+    protected function normalizeDiscountType(?string $type): ?string
+    {
+        if (!$type) {
+            return null;
+        }
+
+        return $type === 'percent' ? 'percentage' : $type;
+    }
+
+    protected function applyDiscount(float $price, string $type, float $value): float
+    {
+        if ($type === 'percentage') {
+            return round($price - ($price * ($value / 100)), 2);
+        }
+
+        if ($type === 'fixed') {
+            return max(0, round($price - $value, 2));
+        }
+
+        return $price;
     }
 
     public function getPriceAfterDiscountAttribute(): float

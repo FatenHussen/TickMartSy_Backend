@@ -169,6 +169,8 @@ class StoreRequest extends FormRequest
             'variants.*.model'              => 'nullable|string|max:255',
             'variants.*.barcode'            => 'nullable|string|max:255',
             'variants.*.price'              => 'nullable|numeric|min:0',
+            'variants.*.discount'           => 'nullable|integer|min:0|max:100',
+            'variants.*.discount_type'      => 'nullable|in:none,percentage,fixed',
             'variants.*.quantity'           => 'nullable|integer|min:0',
             'variants.*.is_trend'           => 'nullable|boolean',
             'variants.*.is_active'          => 'nullable|boolean',

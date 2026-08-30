@@ -22,8 +22,10 @@ class AuthController extends Controller
 
         $request_data = $request->validated();
 
-        /** @var Admin */
-        $admin = Admin::where('email', $request_data['email'])->first();
+        /** @var Admin|null */
+        $admin = Admin::with('roles.permissions')
+            ->where('email', $request_data['email'])
+            ->first();
 
         $response = $this->auth_service->login($admin, $request_data);
 

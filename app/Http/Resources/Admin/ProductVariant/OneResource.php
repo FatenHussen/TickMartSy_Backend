@@ -17,7 +17,9 @@ class OneResource extends JsonResource
             'model' => $this->model,
             'barcode' => $this->barcode,
             'price' => $this->price,
-            'discount' => $this->discount,
+            'discount' => $this->discount ?? 0,
+            'discount_type' => $this->discount_type ?? 'none',
+            'discount_amount' => $this->discount_amount,
             'price_after_discount' => $this->price_after_discount,
             'quantity' => $this->quantity,
             'product' => [

@@ -24,6 +24,7 @@
 14. [قناة البيع — للموقع أو ربط بمتجر](#14-قناة-البيع--للموقع-أو-ربط-بمتجر)
 15. [الطلب السريع — إعدادات + صفحات الظهور](#15-الطلب-السريع--إعدادات--صفحات-الظهور)
 16. [استيراد منتجات من Excel](#16-استيراد-منتجات-من-excel)
+17. [متغيّرات المنتج — صفات + Multi-select + خصم](#17-متغيّرات-المنتج--صفات--multi-select--خصم)
 
 ---
 
@@ -827,3 +828,32 @@ Migrations آب 2026:
 - `2026_08_26_131500_add_quick_order_page_ids_setting` — صفحات الظهور (`quick_order_page_ids`)
 - `2026_08_26_104500_make_product_category_id_nullable_for_category_delete`
 - `2026_08_26_111600_add_sale_channel_to_products_table` — عمود جديد + تعبئة من `vendor_id`
+
+---
+
+## 17) متغيّرات المنتج — صفات + Multi-select + سعر + خصم
+
+> **الدليل الكامل:** [`product-variants-dashboard.md`](product-variants-dashboard.md)
+
+### ملخص سريع
+
+| البند | التفاصيل |
+|-------|----------|
+| **Single / Multi** | **أول متغيّر = Single** (صف واحد) · **من الثاني = Multi** (عدة صفوف) |
+| **اسم المتغيّر** | **محذوف** — لا `name.ar` / `name.en`؛ الهوية من الصفات + SKU |
+| صفات الفئة | `GET /api/admin/category-attributes?category_id={id}` عند المستوى 1 |
+| إضافة متغيّر | `variantsTable.length === 0` → Single · وإلا → Multi |
+| السعر | **`variants[].price` ($)** + **`variants[].price_syp` (ل.س)** — مزامنة تلقائية |
+| سعر بعد الخصم | **عرض فقط** — يُحسب حيّاً في الواجهة |
+| الكمية | **`variants[].quantity`** — «الكمية المتوفرة» |
+| الباركود | **`variants[].barcode`** لكل متغيّر |
+| الخصم | **`variants[].discount` + `discount_type`** لكل متغيّر |
+| موعد التسليم | **`delivery_time`** على المنتج — ليس per variant |
+| SKU | توليد من الواجهة (الباك لا يولّد تلقائيًا) |
+
+### Migration
+
+```bash
+php artisan migrate   # 2026_08_30_120000_add_discount_to_product_variants_table
+```
+

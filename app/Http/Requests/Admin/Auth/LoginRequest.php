@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class LoginRequest extends FormRequest
 {
@@ -22,7 +23,11 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required','email','exists:admins,email'],
+            'email' => [
+                'required',
+                'email',
+                Rule::exists('admins', 'email')->whereNull('deleted_at'),
+            ],
             'password' => ['required']
         ];
     }

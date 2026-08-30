@@ -21,7 +21,7 @@ class OneResource extends JsonResource
             'phone' => $this->phone,
             'email' => $this->email,
             'is_active' => (bool) $this->is_active,
-            'roles' => $this->roles->pluck(['name']),
+            'roles' => $this->roles->pluck('name')->values(),
             'permissions' => $this->roles->flatMap->permissions->pluck('name')->unique(),
             'cities' => CityResource::collection($this->whenLoaded('cities')),
             'created_at' => $this->created_at?->format('Y-m-d H:i'),

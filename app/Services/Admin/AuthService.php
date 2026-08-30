@@ -14,9 +14,8 @@ use Illuminate\Support\Facades\Hash;
 class AuthService
 {
 
-    public function login(Admin $admin, array $credentials)
+    public function login(?Admin $admin, array $credentials)
     {
-
         if (! $admin) {
             throw new NotFoundException();
         }

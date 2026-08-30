@@ -563,6 +563,8 @@ class ProductService extends BaseService
                     'model',
                     'barcode',
                     'price',
+                    'discount',
+                    'discount_type',
                     'quantity',
                     'attributes_values_ids',
                     'is_trend',

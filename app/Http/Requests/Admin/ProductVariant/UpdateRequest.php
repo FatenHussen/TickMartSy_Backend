@@ -16,6 +16,8 @@ class UpdateRequest extends BaseRequest
             'model'                   => 'sometimes|nullable|string|max:255',
             'barcode'                 => 'sometimes|nullable|string|max:255',
             'price'                   => 'sometimes|nullable|numeric|min:0',
+            'discount'                => 'sometimes|nullable|integer|min:0|max:100',
+            'discount_type'           => 'sometimes|nullable|in:none,percentage,fixed',
             'quantity'                => 'sometimes|nullable|integer|min:0',
             'attributes_values_ids'   => 'sometimes|array',
             'attributes_values_ids.*' => 'integer|exists:attribute_values,id',

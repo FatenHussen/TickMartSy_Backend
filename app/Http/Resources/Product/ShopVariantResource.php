@@ -47,7 +47,9 @@ class ShopVariantResource extends JsonResource
                     ->get()
             ),
             ...$this->withCurrency($this->price, 'price'),
-            ...$this->withCurrency($this->discount, 'discount'),
+            'discount_value' => $this->discount ?? 0,
+            'discount_type' => $this->discount_type ?? 'none',
+            ...$this->withCurrency($this->discount_amount, 'discount'),
             ...$this->withCurrency($this->price_after_discount, 'price_after_discount'),
             'quantity' => $this->quantity,
             'shop_id'  => $shopVariant?->shop_id,

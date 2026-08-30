@@ -17,6 +17,7 @@
 7. [فلاتر المنتجات](#7-فلاتر-المنتجات)
 8. [قسم الطلب السريع (حسب الصفحة)](#8-قسم-الطلب-السريع-حسب-الصفحة)
 9. [نص تحميل التطبيق + عرض الأسعار](#9-نص-تحميل-التطبيق-وعرض-الأسعار)
+10. [متغيّرات المنتج — عرض واختيار](#10-متغيّرات-المنتج--عرض-واختيار)
 
 ---
 
@@ -587,4 +588,25 @@ php artisan migrate
 
 ---
 
-**آخر تحديث | Last Updated:** 2026-08-26
+## 10) متغيّرات المنتج — عرض واختيار
+
+> **الدليل الكامل:** [`product-variants-web.md`](product-variants-web.md)
+
+### ملخص
+
+| البند | التفاصيل |
+|-------|----------|
+| API | `GET /api/user/products/{id}` → `shop_variants[]` |
+| الهوية | `attributes` + `sku` — **لا اسم متغيّر** |
+| UX | swatches للون + أزرار للمقاس (فقط المتاح) |
+| السعر | `price_usd` / `price_syp` + `price_after_discount_*` |
+| الكمية | `quantity` — «الكمية المتوفرة» |
+| الخصم | `discount_value`/`discount_type` → `price_after_discount` |
+| التسليم | `product.delivery_time` — ليس per variant |
+| السلة | `shop_product_variant_id` = `id` |
+
+- لا Cartesian افتراضي — اعرض تركيبات موجودة في API فقط.
+
+---
+
+**آخر تحديث | Last Updated:** 2026-08-30

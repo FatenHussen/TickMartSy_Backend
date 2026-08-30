@@ -21,6 +21,7 @@
 10. [فلاتر المنتجات](#10-فلاتر-المنتجات)
 11. [عرض الأسعار دولار + ليرة](#11-عرض-الأسعار)
 12. [قسم الطلب السريع (حسب الصفحة) — **آخر تحديث**](#12-قسم-الطلب-السريع-حسب-الصفحة--آخر-تحديث)
+13. [متغيّرات المنتج — عرض واختيار](#13-متغيّرات-المنتج--عرض-واختيار)
 
 ---
 
@@ -825,4 +826,26 @@ php artisan db:seed --class=NavMenuSeeder
 
 ---
 
-**آخر تحديث | Last Updated:** 2026-08-26
+## 13) متغيّرات المنتج — عرض واختيار
+
+> **الدليل الكامل:** [`product-variants-flutter.md`](product-variants-flutter.md)
+
+### ملخص
+
+| البند | التفاصيل |
+|-------|----------|
+| API | `GET /api/user/products/{id}` → `shop_variants[]` |
+| الهوية | `attributes` + `sku` — **لا اسم متغيّر** |
+| الاختيار | لون → فلتر المقاسات المتاحة → `shop_product_variant_id` |
+| السعر | `price_usd` / `price_syp` + `price_after_discount_*` |
+| الكمية | `quantity` — «الكمية المتوفرة» |
+| الخصم | `discount_value` + `discount_type` → `price_after_discount` |
+| التسليم | `product.delivery_time` — ليس per variant |
+| عرض التوفير | `discount` = المبلغ المخصوم |
+
+- لا تفترض كل الألوان × كل المقاسات — اعرض فقط ما في API.
+- `canAddToCart` يتطلب `quantity > 0` و `id != null`.
+
+---
+
+**آخر تحديث | Last Updated:** 2026-08-30
