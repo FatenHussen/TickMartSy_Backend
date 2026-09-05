@@ -2,7 +2,7 @@
 
 > **أرسلوا هذا الملف لفريق الويب.**  
 > Base: `/api/user` + `Accept-Language: ar|en`  
-> **آخر تحديث | Last Updated:** 2026-09-05  
+> **آخر تحديث | Last Updated:** 2026-09-05 (مساءً)  
 > الملف الشامل السابق يبقى: [`web.md`](./web.md)
 
 يجمع **كل** ما يحتاجه الموقع حتى اليوم: Nav · أقسام · فئات · فلاتر · تسجيل · طلب سريع · أسعار · متغيّرات · **ضمان** · **كمية** · **سلل مجدولة** · **سلة مخصصة**.
@@ -38,8 +38,10 @@
 | **إضافة السلة** | `quantity > 0` | نفس الشرط + `id` و `shop_id` غير `null` — `null` كمية = غير متوفر |
 | **السلل المجدولة** | جدولة مكتوبة جوّا كل سلة | تبويبات من `GET /schedules` — السلل حسب `schedule_id` |
 | **السلة المخصصة** | — | كروت فئات + تخصيص داخل الفئة + تأكيد نعم/لا — [`WEB_CUSTOM_BASKET.md`](./WEB_CUSTOM_BASKET.md) |
+| **حقول الكرت** | شكّ إن الصورة اسمها ثاني | الغلاف = `image` · المعرض = `images[]` · الشارات = `top_badges` / `bottom_badges` — ما في aliases |
+| **اسم / خصم** | كائن ترجمة أو `"none"` | `name` string حسب اللغة · `discount_type` = `percentage` \| `fixed` \| `null` |
 
-ضمان/كمية: نفس `GET /api/user/products/{id}`. السلة المخصصة: endpoints جديدة — [`WEB_CUSTOM_BASKET.md`](./WEB_CUSTOM_BASKET.md).
+ضمان/كمية: نفس `GET /api/user/products/{id}`. السلة المخصصة: [`WEB_CUSTOM_BASKET.md`](./WEB_CUSTOM_BASKET.md). إذا الكرت بلا صورة: الأدمن ما حفظها بعد — نفس الحقول تتعبّى بعد رفع الباك.
 
 ---
 
@@ -318,14 +320,18 @@ GET /api/user/settings
 - [ ] طلب سريع من `settings.quick_order`
 - [ ] أسعار من الـ API فقط
 - [ ] سلل مجدولة: تبويبات `/schedules` + `schedule_id` + تخصيص بنفس الـ id
+- [ ] كروت الجدولة من `image` + `images` + `top_badges` / `bottom_badges` (بدون aliases)
 
 ---
 
 ## 13) السلل المجدولة + السلة المخصصة
 
-> الدليل الكامل للإرسال: [`WEB_CUSTOM_BASKET.md`](./WEB_CUSTOM_BASKET.md) — **5 أيلول 2026**
+> الدليل الكامل للإرسال: [`WEB_CUSTOM_BASKET.md`](./WEB_CUSTOM_BASKET.md) — **5 أيلول 2026 مساءً**
 
-**كروت الفئات** (صورة دائرية، اسم، وصف، بادجز):
+كروت الفئات على الصفحة: `GET /api/user/sections?page_slug=home` عندما `display_type_id=11` أو `content_type=schedule`. ضغط الكرت → `/schedules/{id}`.  
+`display_type_id=5` = سلل أدمن جاهزة — مسار مختلف.
+
+**كروت / قائمة:**
 
 ```http
 GET /api/user/schedules
@@ -333,31 +339,23 @@ GET /api/user/schedules/{id}
 Accept-Language: ar
 ```
 
-`image` / `images[]` (تناوب أو GIF)، `description`، `top_badges`، `bottom_badges`، `interval_days`، `discount_*`.
+عقد ثابت — لا تنتظروا أسماء ثانية:
 
-**تخصيص داخل فئة** (`id` = أسبوعي مثلاً) — Auth:
+| الحقل | النوع | ملاحظة |
+|--------|--------|--------|
+| `id` · `name` | number · **string** | الاسم حسب `Accept-Language` |
+| `description` | string \| null | |
+| `image` | string \| null | URL كامل — مو `cover_image` / `photo` |
+| `images` | string[] | URLs — مو `gallery` / `media` |
+| `interval_days` | number | |
+| `discount_type` | `percentage` \| `fixed` \| `null` | مو `"none"` |
+| `discount_value` | number | بدون خصم غالباً `0` |
+| `top_badges` / `bottom_badges` | array | `id` · `name` · `image` · `color` · `position` |
 
-| | Endpoint |
-|--|----------|
-| هيدر + مسودة + جدول | `GET /api/user/schedules/{id}/custom-basket` |
-| إضافة | `POST .../custom-basket/items` `{ shop_product_variant_id, quantity }` |
-| كمية | `PUT .../items/{itemId}` `{ quantity }` |
-| حذف | `DELETE .../items/{itemId}` |
-| تأكيد | `POST .../custom-basket/confirm` |
+**تخصيص** (Auth) — `GET /api/user/schedules/{id}/custom-basket` ثم items + confirm.  
+إضافة: `{ shop_product_variant_id, quantity }` من `shop_variants[].id`.  
+`summary.savings_formatted` = وفّرت. نعم: `{ confirm_schedule: true, start_date }` · لا: `{ confirm_schedule: false }` → `cart_items`.
 
-تصفح المنتجات: `GET /products?category_id=&search=&brand_id=` — الشركات: `GET /brands`.
-
-`summary.savings` = وفّرت. الخصم من الفئة على السلة كاملة.
-
-تأكيد:
-
-- نعم: `{ "confirm_schedule": true, "start_date": "2026-09-08" }` → طلباتي المجدولة + `cart_items`
-- لا: `{ "confirm_schedule": false }` → `cart_items` مرة واحدة
-
-عقد كامل للإرسال: [`WEB_CUSTOM_BASKET.md`](./WEB_CUSTOM_BASKET.md)
-
-أقسام الصفحة: `content_type=schedule` / `display_type_id=11` = كروت فئات الجدولة. `display_type_id=5` = سلل أدمن جاهزة.
-
-سلل الأدمن الجاهزة (اختياري): قسم `schedule-basket?schedule_id=`.
+التفاصيل والعقد الكامل: [`WEB_CUSTOM_BASKET.md`](./WEB_CUSTOM_BASKET.md)
 
 ---

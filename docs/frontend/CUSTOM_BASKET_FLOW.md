@@ -1,6 +1,10 @@
 # السلة المخصصة — ملخص العقد
 
-> 5 أيلول 2026 — العقد بعد التنفيذ
+> 5 أيلول 2026 (مساءً) — العقد بعد التنفيذ
+
+عقد الكرت للمستخدم ثابت: `image` (URL) · `images[]` · `top_badges` / `bottom_badges` — ما في `cover_image` / `gallery`. `name` string حسب اللغة. `discount_type` = `percentage` \| `fixed` \| `null`.
+
+تعديل الأدمن: **POST** + `_method=PUT` · بدون Content-Type يدوي · خصم فاضي = لا ترسلوا الحقل.
 
 أرسلوا لكل فريق ملفه:
 

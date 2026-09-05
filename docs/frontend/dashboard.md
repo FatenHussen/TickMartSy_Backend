@@ -2,7 +2,10 @@
 
 > **أرسلوا هذا الملف لفريق الداشبورد فقط.**  
 > Base: `/api/admin` + Admin token.  
+> **آخر تحديث:** 5 أيلول 2026 (مساءً)  
 > يجمع **كل** تعديلات الباك التي تحتاج تنفيذ في الداشبورد (مو بس المنتج).
+
+**اليوم:** تعديل فئة الجدولة = POST + `_method=PUT` · بدون Content-Type يدوي · خصم فاضي لا يُرسل · قسم الصفحة `schedule` ≠ `schedule-basket`. الدليل: [`DASHBOARD_CUSTOM_BASKET.md`](./DASHBOARD_CUSTOM_BASKET.md).
 
 ---
 
@@ -905,20 +908,22 @@ php artisan migrate   # 2026_08_30_120000_add_discount_to_product_variants_table
 
 ## 20) السلل المجدولة — كتالوج الجدولات
 
-> **أرسلوا هذا الملف:** [`DASHBOARD_CUSTOM_BASKET.md`](./DASHBOARD_CUSTOM_BASKET.md) — **5 أيلول 2026**
+> **أرسلوا هذا الملف:** [`DASHBOARD_CUSTOM_BASKET.md`](./DASHBOARD_CUSTOM_BASKET.md) — **5 أيلول 2026 مساءً**
 
 فيه: فئات الجدولة · قسم الصفحة (`schedule` vs `schedule-basket`) · سلة جاهزة · **كيف تختارون الأصناف** (`shop-product-variants` + فلاتر).
 
 الجدولة مصدر واحد: **كتالوج `schedules`**. سلة الأدمن الجاهزة تختار `schedule_id`. كارد «العنصر 1» يحمّل `GET /api/admin/shop-product-variants?category_id=&brand_id=&price_min=&search=` — القيمة `id` = `shop_product_variant_id`. لا تستخدموا صفات المنتج على هالكارد.
+
+**تعديل الجدول (مهم):** أرسلوا **POST** + `_method=PUT` (مو PUT خام). **لا** تضعوا `Content-Type: multipart/form-data` يدوياً. خصم فاضي = احذفوا `discount_type` و`discount_value` (لا `''`). الرد لازم فيه `image` · `images` · `top_badges` · `bottom_badges` و`updated_at` جديد — إذا `updated_at === created_at` فالصورة ما انحفظت. لا ترسلوا `item_type` في قسم الصفحة.
 
 ### كتالوج الجدولات
 
 | Method | Endpoint |
 |--------|----------|
 | GET/POST | `/api/admin/schedules` |
-| GET/PUT/DELETE | `/api/admin/schedules/{id}` |
+| POST + `_method=PUT` / DELETE | `/api/admin/schedules/{id}` |
 
-حقول الإنشاء: `name[ar|en]`، `description[ar|en]`، `interval_days`، `discount_type` (`percentage` \| `fixed`)، `discount_value`، `is_active`، `image`، `images[]`، `badges[][id]` + `badges[][position]` = `top` \| `bottom`.
+حقول الإنشاء: `name[ar|en]`، `description[ar|en]`، `interval_days`، `discount_type` (`percentage` \| `fixed` — احذفوا الحقل إذا فاضي)، `discount_value`، `is_active`، `image`، `images[]`، `badges[][id]` + `badges[][position]` = `top` \| `bottom`.
 
 خصم الجدولة ينطبق على **كل** سلة المستخدم بهالفئة.
 

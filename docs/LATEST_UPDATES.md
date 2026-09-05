@@ -1,11 +1,11 @@
 # آخر التعديلات والتحديثات — Tikmool Backend
 
 > **أرسلوا هذا الملف** — آخر نسخة شاملة (كل الفرق)  
-> **تاريخ:** 5 أيلول 2026  
+> **تاريخ:** 5 أيلول 2026 (مساءً)  
 > **النطاق:** من منتصف آب حتى اليوم — باك + داشبورد + ويب + Flutter  
-> **الحالة:** الباك جاهز بعد `php artisan migrate` — التنفيذ المتبقي في الواجهات
+> **الحالة:** الباك جاهز بعد `git pull` + `php artisan migrate` + `php artisan config:clear`
 
-**آخر ما نزل اليوم:** قسم فئات الجدولة الزمنية في Page Builder + السلة المخصصة.
+**آخر ما نزل اليوم:** حفظ صورة/بادجز الجدولة عند التعديل + عقد حقول الكرت الثابت (`image` / `images` / `top_badges`) + أنواع قسم الصفحة `schedule` ≠ `schedule-basket`.
 
 ---
 
@@ -52,14 +52,17 @@
 
 ---
 
-## آخر نسخة (5 أيلول 2026) — السلة المخصصة (كل الفرق)
+## آخر نسخة (5 أيلول 2026 مساءً) — السلة المخصصة (كل الفرق)
 
 الأدمن يعرّف **فئات جدولة** بحرية (أسبوعي، شهري، كل 3 أيام…). كل فئة: اسم + أيام + خصم على **السلة كاملة** + صورة + وصف + بادجز.
 
 المستخدم يفتح الفئة ويختار هو المنتجات والكميات. يقدر يخصّص أكثر من فئة. عند التأكيد: **نعم** = جدولة + تذكير · **لا** = طلب مرة.
 
+**اليوم:** تعديل الأدمن كان يرجّع نجاح بدون كتابة الصورة/البادجز. بعد الرفع + migrate، نفس حقول المستخدم تتعبّى. ما في aliases — الغلاف = `image`، المعرض = `images[]`، الشارات = `top_badges` / `bottom_badges`.
+
 ```bash
 php artisan migrate
+php artisan config:clear
 ```
 
 > داشبورد: [`DASHBOARD_CUSTOM_BASKET.md`](./frontend/DASHBOARD_CUSTOM_BASKET.md)  
@@ -73,7 +76,11 @@ php artisan migrate
 | GET/POST | `/api/admin/schedules` |
 | GET/PUT/DELETE | `/api/admin/schedules/{id}` |
 
+تعديل الجدول: **POST** + `_method=PUT` (مو PUT خام). لا تضعوا `Content-Type: multipart/form-data` يدوياً. خصم فاضي = **لا ترسلوا** `discount_type` / `discount_value`.
+
 `POST` multipart: `name[ar|en]` · `description[ar|en]` · `interval_days` · `discount_type` (`percentage`\|`fixed`) · `discount_value` · `is_active` · `image` · `images[]` · `badges[][id]` + `badges[][position]` = `top`\|`bottom`.
+
+رد التعديل لازم فيه `image` · `images` · `top_badges` · `bottom_badges` و`updated_at` جديد.
 
 سلة أدمن جاهزة (اختياري): `POST /api/admin/scheduled-baskets` **يتطلب `schedule_id`**. لا ترسلوا `schedules[].number_of_days`. خصم فاضي = يرث الفئة. خصم معبّأ = استثناء لهالسلة.
 
@@ -88,7 +95,7 @@ GET /api/user/schedules
 GET /api/user/schedules/{id}
 ```
 
-يرجع: `name` · `description` · `image` · `images[]` · `interval_days` · `discount_*` · `top_badges` · `bottom_badges`.
+عقد الكرت الثابت (بدون aliases): `name` (string حسب اللغة) · `description` · `image` (URL كامل — مو `cover_image`/`photo`) · `images[]` (مو `gallery`) · `interval_days` · `discount_type` = `percentage`\|`fixed`\|`null` (مو `"none"`) · `top_badges` · `bottom_badges`.
 
 كرت عمودي، صورة دائرية. الضغط → صفحة `{id}`.
 

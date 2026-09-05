@@ -2,7 +2,7 @@
 
 > **أرسلوا هذا الملف لفريق Flutter.**  
 > Base: `/api/user` + `Accept-Language: ar|en`  
-> **آخر تحديث | Last Updated:** 2026-09-05  
+> **آخر تحديث | Last Updated:** 2026-09-05 (مساءً)  
 > الملف الشامل السابق يبقى: [`flutter.md`](./flutter.md)
 
 يجمع **كل** ما يحتاجه التطبيق حتى اليوم: Nav · أقسام · فئات دائرية · فلاتر · تسجيل · طلب سريع · أسعار · متغيّرات · **ضمان** · **كمية** · **سلة مخصصة**.
@@ -38,8 +38,10 @@
 | **منتج بلا متغيّرات** | افتراض صف | الأدمن ما عاد يضيف متغيّر فاضي — الباك يبقى يرجّع `shop_variants[0]` fallback حتى ما يكسر الشاشة |
 | **canAddToCart** | `quantity > 0` | + `id != null` + `shopId != null` — كمية `null` = 0 |
 | **السلة المخصصة** | — | كروت `/schedules` + تخصيص داخل الفئة + تأكيد نعم/لا — [`FLUTTER_CUSTOM_BASKET.md`](./FLUTTER_CUSTOM_BASKET.md) |
+| **حقول الكرت** | شكّ إن الصورة اسمها ثاني | `image` · `images` · `top_badges` / `bottom_badges` — ما في `cover_image` / `gallery` |
+| **اسم / خصم** | كائن ترجمة أو `none` | `name` = `String` · `discountType` = `percentage` \| `fixed` \| `null` |
 
-ضمان/كمية: نفس `GET /api/user/products/{id}`. السلة المخصصة: endpoints جديدة — القسم 14.
+ضمان/كمية: نفس `GET /api/user/products/{id}`. السلة المخصصة: القسم 14 + [`FLUTTER_CUSTOM_BASKET.md`](./FLUTTER_CUSTOM_BASKET.md). إذا الكرت بلا صورة: الأدمن ما حفظها بعد.
 
 ---
 
@@ -297,7 +299,7 @@ int? asInt(dynamic v) {
 - [ ] **كمية:** `ShopVariant.quantity` كـ `int?`
 - [ ] `canAddToCart`: id + shopId + qty > 0
 - [ ] لا Cartesian
-- [ ] سلة مخصصة: كروت `/schedules` + تخصيص `/schedules/{id}/custom-basket` — [`FLUTTER_CUSTOM_BASKET.md`](./FLUTTER_CUSTOM_BASKET.md)
+- [ ] سلة مخصصة: كروت من `image` / `images` / `top_badges` + تخصيص `/schedules/{id}/custom-basket` — [`FLUTTER_CUSTOM_BASKET.md`](./FLUTTER_CUSTOM_BASKET.md)
 
 ### باقي التطبيق
 - [ ] Nav ديناميكي
@@ -310,9 +312,11 @@ int? asInt(dynamic v) {
 
 ## 14) السلة المخصصة
 
-> الدليل الكامل للإرسال: [`FLUTTER_CUSTOM_BASKET.md`](./FLUTTER_CUSTOM_BASKET.md) — **5 أيلول 2026**
+> الدليل الكامل للإرسال: [`FLUTTER_CUSTOM_BASKET.md`](./FLUTTER_CUSTOM_BASKET.md) — **5 أيلول 2026 مساءً**
 
 كروت: `GET /api/user/schedules` — صورة دائرية + وصف + بادجز.
+
+عقد ثابت: `image` (URL) · `images` (`List<String>`) · `top_badges` / `bottom_badges`. لا `cover_image` / `photo` / `gallery`. `name` = `String`. `discount_type` = `percentage` \| `fixed` \| `null`.
 
 تخصيص داخل فئة (`Auth`):
 

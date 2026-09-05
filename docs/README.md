@@ -2,7 +2,7 @@
 
 هيكل نظيف — أرسل لكل فريق **ملف واحد** فيه **كل** التعديلات.
 
-**آخر التعديلات والتحديثات (5 أيلول 2026 — كل شيء):** [`LATEST_UPDATES.md`](./LATEST_UPDATES.md)
+**آخر التعديلات والتحديثات (5 أيلول 2026 مساءً — كل شيء):** [`LATEST_UPDATES.md`](./LATEST_UPDATES.md)
 
 **نظرة شاملة من أول استنساخ حتى الوضع الحالي (بدون تواريخ):** [`FULL_PROJECT_OVERVIEW.md`](./FULL_PROJECT_OVERVIEW.md)
 
@@ -13,8 +13,8 @@
 | الفريق | الملف | يشمل |
 |--------|--------|------|
 | داشبورد | [`frontend/dashboard.md`](./frontend/dashboard.md) | Page Builder · أقسام · Nav · منتج · **طلب سريع** · استيراد Excel · **باگ كمية المنتج** · **الضمان دروب داون** · **سلة مخصصة** · … |
-| ويب | [`frontend/WEB_LATEST.md`](./frontend/WEB_LATEST.md) | **آخر نسخة 5 أيلول** — Nav · أقسام · منتج · ضمان · كمية · متغيّرات · فلاتر · طلب سريع · **سلة مخصصة** |
-| Flutter | [`frontend/FLUTTER_LATEST.md`](./frontend/FLUTTER_LATEST.md) | **آخر نسخة 5 أيلول** — نفس المحاور للتطبيق · **سلة مخصصة** |
+| ويب | [`frontend/WEB_LATEST.md`](./frontend/WEB_LATEST.md) | **آخر نسخة 5 أيلول مساءً** — Nav · أقسام · منتج · ضمان · كمية · متغيّرات · فلاتر · طلب سريع · **سلة مخصصة** (`image` / `images` / بادجز) |
+| Flutter | [`frontend/FLUTTER_LATEST.md`](./frontend/FLUTTER_LATEST.md) | **آخر نسخة 5 أيلول مساءً** — نفس المحاور للتطبيق · **سلة مخصصة** |
 
 ## سلة مخصصة (أرسلوا ملف الفريق)
 
