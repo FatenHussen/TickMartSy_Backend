@@ -14,6 +14,8 @@ use Illuminate\Validation\Rule;
  */
 class StoreRequest extends FormRequest
 {
+    use NormalizesSectionPayload;
+
     public function authorize(): bool
     {
         return true;
@@ -21,18 +23,7 @@ class StoreRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $this->merge($this->normalizeContentType($this->all()));
-
-        $manualModel = $this->input('manual_model');
-        $typeConfig = $manualModel ? config("section_items.$manualModel") : null;
-
-        if ($typeConfig && is_array($this->input('item_ids'))) {
-            $itemIds = $this->input('item_ids', []);
-            foreach ($itemIds as &$item) {
-                $item['item_type'] = $typeConfig['item_type'];
-            }
-            $this->merge(['item_ids' => $itemIds]);
-        }
+        $this->mergeNormalizedSectionPayload();
     }
 
     public function rules(): array
@@ -49,7 +40,7 @@ class StoreRequest extends FormRequest
 
             'manual_model' => ['required_if:type,manual', 'nullable', Rule::in($allowedTypes)],
             'item_ids' => ['required_if:type,manual', 'nullable', 'array', 'min:1'],
-            'item_ids.*.item_type' => ['required_with:item_ids', 'string'],
+            'item_ids.*.item_type' => ['nullable', 'string'],
             'item_ids.*.item_id' => ['required_with:item_ids', 'integer'],
             'item_ids.*.link' => ['nullable', 'string', 'max:255'],
             'item_ids.*.order' => ['nullable', 'integer', 'min:0'],
@@ -78,38 +69,5 @@ class StoreRequest extends FormRequest
             'page_id' => ['prohibited'],
             'page_ids' => ['prohibited'],
         ];
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     * @return array<string, mixed>
-     */
-    private function normalizeContentType(array $data): array
-    {
-        $contentType = Section::canonicalizeContentType($data['content_type'] ?? null);
-        if (!$contentType) {
-            return [];
-        }
-
-        $type = $data['type'] ?? (empty($data['item_ids']) ? 'api' : 'manual');
-        $merged = [
-            'type' => $type,
-            'content_type' => $contentType,
-        ];
-
-        if ($type === 'manual') {
-            $merged['manual_model'] = $data['manual_model'] ?? $contentType;
-        } else {
-            $merged['api_method'] = $data['api_method']
-                ?? (Section::API_METHOD_BY_CONTENT[$contentType] ?? null);
-
-            if ($contentType === 'restaurant') {
-                $filters = $data['filters'] ?? [];
-                $filters['is_restaurant'] = true;
-                $merged['filters'] = $filters;
-            }
-        }
-
-        return $merged;
     }
 }

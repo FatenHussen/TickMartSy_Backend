@@ -130,6 +130,31 @@ class Section extends Model
     }
 
     /**
+     * @return array{item_type: string, url?: string}|null
+     */
+    public static function itemConfigFor(?string $manualModel): ?array
+    {
+        $key = self::canonicalizeContentType($manualModel);
+        if (!$key) {
+            return null;
+        }
+
+        $items = config('section_items');
+        if (!is_array($items) || !isset($items[$key]) || !is_array($items[$key])) {
+            return null;
+        }
+
+        return $items[$key];
+    }
+
+    public static function itemTypeFor(?string $manualModel): ?string
+    {
+        $config = self::itemConfigFor($manualModel);
+
+        return is_string($config['item_type'] ?? null) ? $config['item_type'] : null;
+    }
+
+    /**
      * Friendly content kind used by the dashboard (product, restaurant, shop, ...).
      */
     public function contentType(): ?string

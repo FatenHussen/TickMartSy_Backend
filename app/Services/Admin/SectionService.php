@@ -69,6 +69,18 @@ class SectionService extends BaseService
     {
         unset($data['content_type']);
 
+        if (($data['type'] ?? null) === 'manual' && !empty($data['item_ids']) && is_array($data['item_ids'])) {
+            $itemType = Section::itemTypeFor($data['manual_model'] ?? null);
+            if ($itemType) {
+                foreach ($data['item_ids'] as &$item) {
+                    if (is_array($item) && empty($item['item_type'])) {
+                        $item['item_type'] = $itemType;
+                    }
+                }
+                unset($item);
+            }
+        }
+
         $data['layout'] = $data['layout'] ?? SectionLayout::Slider->value;
         $data['variant'] = $data['variant'] ?? VariantSection::Horizontal->value;
 

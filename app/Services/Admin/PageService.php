@@ -224,11 +224,9 @@ class PageService extends BaseService
         ]);
 
         if ($isManual && !empty($data['item_ids'])) {
-            $itemType = config("section_items.{$data['manual_model']}.item_type");
-
             foreach ($data['item_ids'] as $index => $item) {
                 $section->sectionItems()->create([
-                    'item_type' => $itemType,
+                    'item_type' => $item['item_type'] ?? Section::itemTypeFor($data['manual_model'] ?? null),
                     'item_id' => $item['item_id'],
                     'link' => $item['link'] ?? null,
                     'order' => $item['order'] ?? $index,

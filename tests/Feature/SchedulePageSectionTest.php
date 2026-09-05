@@ -152,4 +152,25 @@ class SchedulePageSectionTest extends TestCase
         $this->assertSame('schedule-basket', $request->input('content_type'));
         $this->assertSame('schedule-basket', $request->input('api_method'));
     }
+
+    public function test_manual_schedule_section_fills_item_type(): void
+    {
+        $request = \App\Http\Requests\Admin\Section\StoreRequest::create('/api/admin/sections', 'POST', [
+            'name' => ['ar' => 'weekly', 'en' => 'weekly'],
+            'type' => 'manual',
+            'content_type' => 'schedule',
+            'manual_model' => 'schedule',
+            'item_ids' => [
+                ['item_id' => 1, 'order' => 0],
+                ['item_id' => 2, 'order' => 1],
+            ],
+        ]);
+        $request->setContainer($this->app)->setRedirector($this->app->make('redirect'));
+        $request->validateResolved();
+
+        $this->assertSame('schedule', $request->input('content_type'));
+        $this->assertSame('schedule', $request->input('manual_model'));
+        $this->assertSame(\App\Models\Schedule::class, $request->input('item_ids.0.item_type'));
+        $this->assertSame(\App\Models\Schedule::class, $request->input('item_ids.1.item_type'));
+    }
 }
