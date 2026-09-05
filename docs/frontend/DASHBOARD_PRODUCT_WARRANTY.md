@@ -1,32 +1,88 @@
-# الداشبورد — الضمان دروب داون + بدون متغيّر افتراضي
+# الداشبورد — قسم الضمانات + دروب داون المنتج
 
-> **الجمهور:** فريق الداشبورد  
-> **تاريخ:** 5 أيلول 2026  
-> **الباك:** جاهز بعد `migrate` + إعادة صلاحيات `warranty.*`
+> **أرسلوا هذا الملف لفريق الداشبورد**  
+> **آخر تحديث:** 5 أيلول 2026  
+> **Base:** `/api/admin` + Admin token  
+> **الباك:** بعد `git pull` + `php artisan migrate`
+
+انسخوا شاشة **الوحدات** أو **الأيقونات**. نفس الفكرة: قسم مستقل يعرّف الخيارات، وفورم المنتج يختار واحداً.
 
 ---
 
-## 1) الضمان = قائمة منسدلة من قسم مستقل
+## ماذا تعملون (ملخص)
 
-حقل الضمان في إنشاء المنتج **ليس** عدد أشهر (`warranty_period`).
+| أين | المطلوب |
+|-----|---------|
+| السايدبار | بند جديد تحت المنتجات — الباك **لا** يرسم القائمة |
+| صفحة CRUD | `/products/warranties` |
+| فورم المنتج | `<select name="warranty_id">` بدل أشهر `warranty_period` |
+| الأدوار | مجموعة `warranty.*` (مفرد) |
 
-الأدمن يعرّف خيارات الضمان من قسم **الضمانات** (مثل الأيقونات: اسم عربي/إنجليزي + وصف عربي/إنجليزي + تفعيل/تعديل/حذف)، ثم يختار واحداً من الدروب داون على فورم المنتج.
+---
 
-| الغرض | Endpoint |
-|--------|----------|
-| قائمة الضمانات | `GET /api/admin/warranties` |
-| إنشاء | `POST /api/admin/warranties` |
-| تعديل | `PATCH /api/admin/warranties/{id}` |
-| حذف | `DELETE /api/admin/warranties/{id}` |
-| ربط المنتج | `warranty_id` في `POST/PUT /api/admin/products` |
+## 1) السايدبار — بدون هالبند القسم ما بيطلع
 
-صلاحيات الواجهة (مفرد `warranty` — مو `warranties`):
+| | |
+|--|--|
+| العنوان | الضمانات / Warranties |
+| المسار | `/products/warranties` |
+| إظهار البند | `profile.permissions` فيها **`warranty.view`** |
 
-`warranty.view` · `warranty.create` · `warranty.update` · `warranty.delete`
+```ts
+const canViewWarranties = permissions.includes('warranty.view');
+```
 
-الـ API مثل الوحدات: أدمن مسجّل يكفي لـ `GET /warranties` (دروب داون المنتج). السايدبار يخضع لـ `warranty.view`.
+**ممنوع:** `warranties.view` — المفتاح مفرد زي `unit.view` و`icon.view`.
 
-### Payload الضمان
+المصدر:
+
+```http
+GET /api/admin/auth/profile
+```
+
+```json
+{
+  "permissions": [
+    "warranty.view",
+    "warranty.create",
+    "warranty.update",
+    "warranty.delete"
+  ]
+}
+```
+
+إذا المفاتيح مو موجودة: على السيرفر `php artisan migrate` ثم **خروج ودخول**. لا تعتمدوا توكن قديم.
+
+---
+
+## 2) الصلاحيات
+
+| مفتاح | الواجهة |
+|--------|---------|
+| `warranty.view` | السايدبار + قائمة + عرض |
+| `warranty.create` | زر إضافة |
+| `warranty.update` | تعديل + تفعيل |
+| `warranty.delete` | حذف |
+
+الـ API مثل الوحدات: أدمن مسجّل يكفي لـ `GET /warranties` (دروب داون المنتج). السايدبار وصفحة CRUD يخضعون للمفاتيح فوق.
+
+أضيفوا المجموعة في شاشة الأدوار بنفس الأسماء. لا تشتقوا الاسم من المسار `warranties`.
+
+---
+
+## 3) CRUD — نفس الوحدات
+
+| Method | Endpoint | صلاحية |
+|--------|----------|--------|
+| GET | `/api/admin/warranties` | `warranty.view` |
+| GET | `/api/admin/warranties/{id}` | `warranty.view` |
+| POST | `/api/admin/warranties` | `warranty.create` |
+| PATCH | `/api/admin/warranties/{id}` | `warranty.update` |
+| DELETE | `/api/admin/warranties/{id}` | `warranty.delete` |
+
+فلاتر القائمة: `page` · `per_page` · `name` · `is_active=1` (أو `true`).
+
+### إنشاء / تعديل
 
 ```json
 {
@@ -39,51 +95,80 @@
 }
 ```
 
-الاسم مطلوب. الوصف اختياري.
+- `name.ar` و `name.en` مطلوبان عند الإنشاء
+- `description` اختياري
+- لا صورة
 
-### فورم المنتج
+### عنصر القائمة / التفاصيل
 
-- `<select name="warranty_id">` — اختياري
-- الخيارات: `GET /api/admin/warranties?is_active=1&per_page=500`
-- لا ترسلوا `warranty_period` من الواجهة
-- فارغ = لا ترسلوا `warranty_id` عند الإنشاء؛ عند التعديل أرسلوا `warranty_id=` لتفريغه
-- رد المنتج: `warranty: { id, name, description }` + `warranty_id`
+```json
+{
+  "id": 1,
+  "name": "إرجاع مجاني",
+  "name_translations": { "ar": "إرجاع مجاني", "en": "FREE Returns" },
+  "description": "يمكنك إرجاع المنتج مجاناً…",
+  "description_translations": { "ar": "…", "en": "…" },
+  "is_active": true,
+  "created_at": "2026-09-05T20:00:00.000000Z",
+  "updated_at": "2026-09-05T20:00:00.000000Z"
+}
+```
 
-مسار الداشبورد: `/products/warranties`
+`name` و `description` = نص حسب `Accept-Language`. للفورم استخدموا `name_translations` / `description_translations`.
 
-### سايدبار — الباك ما بيرجّع قائمة أقسام
+القائمة مغلفة كباقي الـ CRUD: `data.items` + `data.pagination`.
 
-قسم **الضمانات** ما بيطلع لحاله. زي الأيقونات/الوحدات: تضيفوا بند تحت المنتجات.
+---
+
+## 4) فورم إنشاء / تعديل المنتج
+
+الحقل **مو** عدد أشهر.
 
 | | |
 |--|--|
-| العنوان | الضمانات |
-| المسار | `/products/warranties` |
-| إظهار البند | `permissions` فيها **`warranty.view`** (مو `warranties.view`) |
-| CRUD الصفحة | نفس مفاتيح `warranty.*` |
+| الحقل | `<select name="warranty_id">` — اختياري |
+| الخيارات | `GET /api/admin/warranties?is_active=1&per_page=500` |
+| القيمة | `id` |
+| العرض | `name` (أو `name_translations` حسب لغة الداش) |
+| إنشاء بدون ضمان | لا ترسلوا `warranty_id` |
+| تعديل لتفريغ الضمان | أرسلوا `warranty_id=` (فاضي) |
+| **لا ترسلوا** | `warranty_period` |
 
-المصدر: `GET /api/admin/auth/profile` → `permissions: ["warranty.view", ...]`.  
-إذا المفتاح مو موجود: على السيرفر `php artisan migrate` ثم **تسجيل خروج/دخول** (كاش Spatie).
+### رد المنتج
 
----
-
-## 2) ليش كان في «المتغير رقم 1» دائماً؟
-
-الداشبورد كان **يولّد كارد متغيّر فاضي تلقائياً** بعد اختيار نوع المنتج (حتى بدون صفات). هذا مو من الباك.
-
-**القرار:** لا متغيّر افتراضي. تاب المتغيّرات فاضي إلى أن يضغط الأدمن «إضافة».
-
-استثناء: منتج مطعم مربوط بفرع ما زال يحتاج `variants[0]` عند اختيار المحل (`shop_variants`) — هذا مو الكارد الفارغ العام.
-
-المنتج يُنشأ بدون `variants` إذا الأدمن ما أضاف ولا كارد. الكمية تبقى على `variants[].quantity` عند وجود كارد.
-
----
-
-## 3) تشغيل الباك
-
-```bash
-php artisan migrate
-php artisan db:seed --class=AdminRolePermissionSeeder
+```json
+{
+  "warranty_id": 1,
+  "warranty": {
+    "id": 1,
+    "name": "إرجاع مجاني",
+    "name_translations": { "ar": "إرجاع مجاني", "en": "FREE Returns" },
+    "description": "…",
+    "description_translations": { "ar": "…", "en": "…" }
+  },
+  "warranty_period": null
+}
 ```
 
-الثاني يضيف `warranty.*` ويعيد مزامنة صلاحيات سوبر أدمن.
+اعرضوا المختار من `warranty` / `warranty_id`. `warranty_period` قديم — تجاهلوه.
+
+---
+
+## 5) لا متغيّر افتراضي
+
+لا تولّدوا كارد «المتغير رقم 1» بعد اختيار نوع المنتج. تاب المتغيّرات فاضي إلى أن يضغط الأدمن «إضافة».
+
+استثناء: منتج مطعم مربوط بفرع ما زال يحتاج `variants[0]` عند اختيار المحل — هذا مو الكارد الفارغ العام.
+
+---
+
+## 6) Checklist
+
+- [ ] سايدبار: الضمانات → `/products/warranties` إذا `warranty.view`
+- [ ] المفتاح `warranty.view` مو `warranties.view`
+- [ ] CRUD: اسم ar/en · وصف ar/en · تفعيل · تعديل · حذف
+- [ ] أدوار: مجموعة `warranty.*`
+- [ ] فورم المنتج: `warranty_id` من `GET /warranties?is_active=1&per_page=500`
+- [ ] لا `warranty_period`
+- [ ] بعد migrate: خروج ودخول ثم فحص `profile.permissions`
+- [ ] لا كارد متغيّر تلقائي
