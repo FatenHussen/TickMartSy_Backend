@@ -37,6 +37,11 @@ class AllResource extends JsonResource
                 'name' => $this->unitOption->name,
             ] : null,
             'warranty_period'       => $this->warranty_period,
+            'warranty_id'           => $this->warranty_id,
+            'warranty'              => $this->whenLoaded('warranty', fn () => $this->warranty ? [
+                'id' => $this->warranty->id,
+                'name' => $this->warranty->name,
+            ] : null),
             'expiry_date'           => $this->expiry_date?->format('Y-m-d'),
             'is_visible'            => $this->is_visible,
             'is_active'             => (bool) $this->is_active,

@@ -69,6 +69,7 @@ class AdminRolePermissionSeeder extends Seeder
             'SystemSetting',
             'VendorAccounting',
             'Unit',
+            'Warranty',
             'ProductExtraDetail'
         ];
 

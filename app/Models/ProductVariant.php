@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Resources\Product\VariantAttributeResource;
+use App\Traits\NormalizesBlankStringAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -11,7 +12,7 @@ use Spatie\Translatable\HasTranslations;
 
 class ProductVariant extends Model
 {
-    use HasFactory, HasTranslations, SoftDeletes;
+    use HasFactory, HasTranslations, SoftDeletes, NormalizesBlankStringAttributes;
 
     public array $translatable = ['name'];
 
@@ -37,6 +38,21 @@ class ProductVariant extends Model
         'discount' => 'integer',
         'quantity' => 'integer',
     ];
+
+    public function setSkuAttribute($value): void
+    {
+        $this->attributes['sku'] = $this->normalizeBlankString($value);
+    }
+
+    public function setModelAttribute($value): void
+    {
+        $this->attributes['model'] = $this->normalizeBlankString($value);
+    }
+
+    public function setBarcodeAttribute($value): void
+    {
+        $this->attributes['barcode'] = $this->normalizeBlankString($value);
+    }
 
     /**
      * Boot the model and register event listeners

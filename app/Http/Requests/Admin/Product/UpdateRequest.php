@@ -98,6 +98,50 @@ class UpdateRequest extends FormRequest
         $this->normalizeSypPriceInputs();
 
         $this->normalizeRestrictedFieldsForRestaurantCategory();
+
+        $this->normalizeBlankUniqueStrings();
+    }
+
+    private function normalizeBlankUniqueStrings(): void
+    {
+        $merge = [];
+
+        foreach (['sku', 'model', 'barcode', 'product_number'] as $field) {
+            if (!$this->exists($field)) {
+                continue;
+            }
+
+            $value = $this->input($field);
+            if (is_string($value) && trim($value) === '') {
+                $merge[$field] = null;
+            }
+        }
+
+        $variants = $this->input('variants');
+        if (is_array($variants)) {
+            foreach ($variants as $index => $variant) {
+                if (!is_array($variant)) {
+                    continue;
+                }
+
+                foreach (['sku', 'model', 'barcode'] as $field) {
+                    if (!array_key_exists($field, $variant)) {
+                        continue;
+                    }
+
+                    $value = $variant[$field];
+                    if (is_string($value) && trim($value) === '') {
+                        $variants[$index][$field] = null;
+                    }
+                }
+            }
+
+            $merge['variants'] = $variants;
+        }
+
+        if ($merge !== []) {
+            $this->merge($merge);
+        }
     }
 
     private function normalizeSypPriceInputs(): void
@@ -184,6 +228,7 @@ class UpdateRequest extends FormRequest
             'unit'                  => 'nullable|string|max:50',
             'unit_id'               => 'nullable|integer|exists:units,id',
             'warranty_period'       => 'nullable|integer|min:0',
+            'warranty_id'           => 'nullable|integer|exists:warranties,id',
             'stock'                 => 'nullable|integer|min:0',
             'max_purchase_quantity' => 'nullable|integer|min:1',
             'barcode'               => 'nullable|string',

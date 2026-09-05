@@ -2,6 +2,8 @@
 
 هيكل نظيف — أرسل لكل فريق **ملف واحد** فيه **كل** التعديلات.
 
+**آخر التعديلات والتحديثات (5 أيلول 2026 — كل شيء):** [`LATEST_UPDATES.md`](./LATEST_UPDATES.md)
+
 **نظرة شاملة من أول استنساخ حتى الوضع الحالي (بدون تواريخ):** [`FULL_PROJECT_OVERVIEW.md`](./FULL_PROJECT_OVERVIEW.md)
 
 **تقرير شخصي للإدارة — شو اشتغلتِ (ويب + داشبورد، بدون تواريخ):** [`تقرير_عملي_ويب_وداشبورد.txt`](./تقرير_عملي_ويب_وداشبورد.txt)
@@ -10,9 +12,17 @@
 
 | الفريق | الملف | يشمل |
 |--------|--------|------|
-| داشبورد | [`frontend/dashboard.md`](./frontend/dashboard.md) | Page Builder · أقسام · Nav · منتج · **طلب سريع (إعدادات + صفحات الظهور)** · استيراد Excel · … |
+| داشبورد | [`frontend/dashboard.md`](./frontend/dashboard.md) | Page Builder · أقسام · Nav · منتج · **طلب سريع** · استيراد Excel · **باگ كمية المنتج** · **الضمان دروب داون** · … |
 | ويب | [`frontend/web.md`](./frontend/web.md) | Nav · أقسام · فئات · منتج · تسجيل · فلاتر · **طلب سريع حسب الصفحة** · نص تحميل · أسعار · **آخر تحديث 2026-08-26** |
 | Flutter | [`frontend/flutter.md`](./frontend/flutter.md) | Nav · أقسام layout/variant · فئات دائرية · فلاتر · منتج/سلة · تسجيل · أسعار · **طلب سريع حسب الصفحة** · **آخر تحديث 2026-08-26** |
+
+## إنشاء منتج — UX
+
+| الموضوع | الملف |
+|---------|--------|
+| صفات جزئية + حذف صور | [`frontend/DASHBOARD_PRODUCT_CREATE_UX.md`](./frontend/DASHBOARD_PRODUCT_CREATE_UX.md) |
+| باگ كمية المنتج (توست «موجبة») | [`frontend/DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md`](./frontend/DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md) |
+| ضمان المنتج (دروب داون + قسم مستقل) | [`frontend/DASHBOARD_PRODUCT_WARRANTY.md`](./frontend/DASHBOARD_PRODUCT_WARRANTY.md) |
 
 ## إظهار / إخفاء أقسام الصفحة (Eye toggle)
 

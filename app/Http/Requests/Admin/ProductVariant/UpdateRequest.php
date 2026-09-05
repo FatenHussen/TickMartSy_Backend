@@ -6,6 +6,26 @@ use App\Http\Requests\BaseRequest;
 
 class UpdateRequest extends BaseRequest
 {
+    protected function prepareForValidation(): void
+    {
+        $merge = [];
+
+        foreach (['sku', 'model', 'barcode'] as $field) {
+            if (!$this->exists($field)) {
+                continue;
+            }
+
+            $value = $this->input($field);
+            if (is_string($value) && trim($value) === '') {
+                $merge[$field] = null;
+            }
+        }
+
+        if ($merge !== []) {
+            $this->merge($merge);
+        }
+    }
+
     public function rules(): array
     {
         return [

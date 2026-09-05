@@ -24,6 +24,7 @@ class ProductService extends BaseService
     protected $relations = [
         'category',
         'unitOption',
+        'warranty',
         'brand',
         'originCountry',
         'saleCountry',

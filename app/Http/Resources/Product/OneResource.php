@@ -31,6 +31,11 @@ class OneResource extends JsonResource
             'quantity' => $this->quantity,
             'unit' => $this->unit,
             'warranty_period' => $this->warranty_period,
+            'warranty' => $this->warranty ? [
+                'id' => $this->warranty->id,
+                'name' => $this->warranty->name,
+                'description' => $this->warranty->description,
+            ] : null,
             'stock' => $this->stock,
             'max_purchase_quantity' => $this->max_purchase_quantity,
             'is_visible' => $this->is_visible,

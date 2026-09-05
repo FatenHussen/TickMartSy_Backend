@@ -25,6 +25,7 @@
 15. [الطلب السريع — إعدادات + صفحات الظهور](#15-الطلب-السريع--إعدادات--صفحات-الظهور)
 16. [استيراد منتجات من Excel](#16-استيراد-منتجات-من-excel)
 17. [متغيّرات المنتج — Single select + كارد حقول](#17-متغيّرات-المنتج--single-select--كارد-حقول)
+18. [باگ: كمية المنتج إلزامية والمخفية](#18-باگ-كمية-المنتج-إلزامية-والمخفية)
 
 ---
 
@@ -851,7 +852,7 @@ Migrations آب 2026:
 | **إنشاء منتج** | متغيّrات **محلياً** — حفظ مع `POST /products` (§2 في الدليل) |
 | السعر | **`variants[].price` ($)** + **`variants[].price_syp` (ل.س)** — مزامنة تلقائية |
 | سعر بعد الخصم | **عرض فقط** — يُحسب حيّاً في الواجهة |
-| الكمية | **`variants[].quantity`** — **اختياري** (`nullable`) — مو required |
+| الكمية | **`variants[].quantity`** — **اختياري** (`nullable`) — مو required. **لا** تطلبوا `quantity` المنتج إذا الحقل مخفي — انظر §18 |
 | الباركود | **`variants[].barcode`** لكل متغيّر |
 | الخصم | **`variants[].discount` + `discount_type`** لكل متغيّر |
 | موعد التسليم | **`delivery_time`** على المنتج — ليس per variant |
@@ -859,10 +860,11 @@ Migrations آب 2026:
 
 ### فلاتر القوائم (`is_active`)
 
-عند جلب الألوان/الوحدات/الفئات... استخدم:
+عند جلب الألوان/الوحدات/الضمانات/الفئات... استخدم:
 
 ```http
 GET /api/admin/colors?page=1&per_page=500&is_active=1
+GET /api/admin/warranties?page=1&per_page=500&is_active=1
 ```
 
 أو `is_active=true` — **الباك يقبل الاثنين** بعد التحديث.
@@ -874,4 +876,28 @@ GET /api/admin/colors?page=1&per_page=500&is_active=1
 ```bash
 php artisan migrate   # 2026_08_30_120000_add_discount_to_product_variants_table
 ```
+
+---
+
+## 18) باگ: كمية المنتج إلزامية والمخفية
+
+> الدليل الكامل: [`DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md`](./DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md) — **5 أيلول 2026**
+
+توست «يجب أن تكون الكمية موجبة» مع كمية المتغيّر ظاهرة (`5`) = **باگ**. Zod يطلب `quantity` **المنتج** المخفي عندما الفئة إلها صفات.
+
+- الباك: `quantity` و `variants.*.quantity` كلاهما `nullable|min:0`
+- الحل: `quantity` المنتج `.optional()` — لا ترسلوه إذا فاضي
+- كمية المتغيّر تبقى على `variants[].quantity`
+
+---
+
+## 19) الضمان دروب داون + لا متغيّر افتراضي
+
+> الدليل: [`DASHBOARD_PRODUCT_WARRANTY.md`](./DASHBOARD_PRODUCT_WARRANTY.md) — **5 أيلول 2026**
+
+- قسم مستقل: `GET/POST/PATCH/DELETE /api/admin/warranties` — صلاحيات `warranty.*`
+- فورم المنتج: `warranty_id` اختياري — **لا** `warranty_period`
+- لا تولّدوا كارد «المتغير رقم 1» تلقائياً؛ الأدمن يضيف المتغيّر بنفسه
+
+---
 

@@ -73,6 +73,7 @@ use App\Http\Controllers\Admin\UserBasketSchedule\UserBasketScheduleController;
 use App\Http\Controllers\Admin\UserGift\UserGiftController as AdminUserGiftController;
 use App\Http\Controllers\Admin\UserPoint\UserPointController;
 use App\Http\Controllers\Admin\Unit\UnitController;
+use App\Http\Controllers\Admin\Warranty\WarrantyController;
 use App\Http\Controllers\Admin\Vendor\VendorCrudController;
 use App\Http\Controllers\Admin\VendorAccounting\VendorAccountingController;
 use App\Http\Controllers\Admin\VendorPackage\VendorPackageController;
@@ -152,6 +153,7 @@ Route::prefix('admin')->group(function () {
         Route::apiResource('icons', IconController::class)->middleware('crud.permission:icon');
         Route::apiResource('quick-actions', QuickActionController::class)->middleware('crud.permission:quickaction');
         Route::apiResource('units', UnitController::class);
+        Route::apiResource('warranties', WarrantyController::class);
 
         // --- Statistics ---
         Route::prefix('statistics')->middleware('admin.permission:statistics.view')->group(function () {

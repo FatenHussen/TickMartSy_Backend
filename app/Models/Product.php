@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Http\Resources\Product\AllResource;
 use App\Traits\LogsActivity;
+use App\Traits\NormalizesBlankStringAttributes;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -14,7 +15,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Product extends Model implements Sectionable
 {
-    use HasFactory, HasTranslations, SoftDeletes, LogsActivity;
+    use HasFactory, HasTranslations, SoftDeletes, LogsActivity, NormalizesBlankStringAttributes;
 
     protected $fillable = [
         'product_number',
@@ -32,6 +33,7 @@ class Product extends Model implements Sectionable
         'unit',
         'unit_id',
         'warranty_period',
+        'warranty_id',
         'stock',
         'max_purchase_quantity',
         'barcode',
@@ -115,6 +117,26 @@ class Product extends Model implements Sectionable
         } catch (\Throwable $e) {
             $this->attributes['expiry_date'] = null;
         }
+    }
+
+    public function setSkuAttribute($value): void
+    {
+        $this->attributes['sku'] = $this->normalizeBlankString($value);
+    }
+
+    public function setModelAttribute($value): void
+    {
+        $this->attributes['model'] = $this->normalizeBlankString($value);
+    }
+
+    public function setBarcodeAttribute($value): void
+    {
+        $this->attributes['barcode'] = $this->normalizeBlankString($value);
+    }
+
+    public function setProductNumberAttribute($value): void
+    {
+        $this->attributes['product_number'] = $this->normalizeBlankString($value);
     }
 
     /*
@@ -350,6 +372,11 @@ class Product extends Model implements Sectionable
     public function unitOption()
     {
         return $this->belongsTo(Unit::class, 'unit_id');
+    }
+
+    public function warranty()
+    {
+        return $this->belongsTo(Warranty::class);
     }
 
     public function vendor()
