@@ -8,6 +8,8 @@ use App\Models\Language;
 
 class StoreRequest extends FormRequest
 {
+    use NormalizesEmptyIntegerIds;
+
     protected array $locales = [];
 
     public function authorize(): bool
@@ -82,6 +84,7 @@ class StoreRequest extends FormRequest
         $this->normalizeRestrictedFieldsForRestaurantCategory();
 
         $this->normalizeBlankUniqueStrings();
+        $this->normalizeEmptyIntegerIds();
     }
 
     private function normalizeBlankUniqueStrings(): void

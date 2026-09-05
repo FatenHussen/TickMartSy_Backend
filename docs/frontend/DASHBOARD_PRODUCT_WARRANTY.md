@@ -131,8 +131,10 @@ GET /api/admin/auth/profile
 | القيمة | `id` |
 | العرض | `name` (أو `name_translations` حسب لغة الداش) |
 | إنشاء بدون ضمان | لا ترسلوا `warranty_id` |
-| تعديل لتفريغ الضمان | أرسلوا `warranty_id=` (فاضي) |
+| تعديل لتفريغ الضمان | لا ترسلوا الحقل، أو `null` — **لا** `""` |
 | **لا ترسلوا** | `warranty_period` |
+
+نفس الشي لأي select اختياري (`brand_id` · `country_id` · `unit_id`): فاضي = احذفوا المفتاح أو `null`. `""` يكسّر MySQL (`Incorrect integer value`).
 
 ### رد المنتج
 

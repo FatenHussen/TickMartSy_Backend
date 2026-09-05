@@ -9,6 +9,8 @@ use App\Models\Product;
 
 class UpdateRequest extends FormRequest
 {
+    use NormalizesEmptyIntegerIds;
+
     protected array $locales = [];
 
     public function authorize(): bool
@@ -100,6 +102,7 @@ class UpdateRequest extends FormRequest
         $this->normalizeRestrictedFieldsForRestaurantCategory();
 
         $this->normalizeBlankUniqueStrings();
+        $this->normalizeEmptyIntegerIds();
     }
 
     private function normalizeBlankUniqueStrings(): void
