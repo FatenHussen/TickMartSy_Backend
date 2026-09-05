@@ -7,6 +7,7 @@ use App\Services\BaseService;
 use App\Http\Resources\Admin\ScheduledBasket\OneResource;
 use App\Http\Resources\Admin\ScheduledBasket\AllResource;
 use App\Services\Base\MediaService;
+use App\Support\ScheduleDiscount;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -26,6 +27,8 @@ class ScheduledBasketService extends BaseService
         'items.variant',
         'items.shopProductVariant',
         'schedules',
+        'catalogSchedule',
+        'defaultSchedule',
         'badges',
         'basketImages',
     ];
@@ -57,12 +60,17 @@ class ScheduledBasketService extends BaseService
     public function queryBuilder($query, $filters = [], $config = [])
     {
         $categoryId = $filters['category_id'] ?? null;
-        unset($filters['category_id']);
+        $scheduleId = $filters['schedule_id'] ?? null;
+        unset($filters['category_id'], $filters['schedule_id']);
 
         // Filter only scheduled baskets (is_schedule = 1)
         $query->where('is_schedule', true);
 
         $query = parent::queryBuilder($query, $filters, $config);
+
+        if ($scheduleId) {
+            $query->where('schedule_id', (int) $scheduleId);
+        }
 
         if ($categoryId) {
             $query->where(function ($q) use ($categoryId) {
@@ -87,13 +95,11 @@ class ScheduledBasketService extends BaseService
 
             // Store items, schedules, and badges temporarily
             $items = $data['items'] ?? [];
-            $schedulesData = $data['schedules'] ?? [];
             $badgesData = $data['badges'] ?? [];
-
-            // Remove items, schedules, and badges from data
             unset($data['items'], $data['schedules'], $data['badges']);
 
-            // Set defaults
+            $this->applyDiscountOverride($data);
+
             if (!empty($categoryIds)) {
                 $data['category_id'] = $categoryIds[0];
             }
@@ -103,36 +109,20 @@ class ScheduledBasketService extends BaseService
             $data['num_sold'] = 0;
             $data['is_schedule'] = true;
 
-            // Create basket first
             $basket = $this->model::create($data);
 
-            // Handle single images (for basket image)
             $this->handleSingleImages($basket, $imageData);
 
             if (!empty($categoryIds)) {
                 $basket->categories()->sync($categoryIds);
             }
 
-            // Sync items if they exist
             if (!empty($items)) {
                 $this->syncScheduledBasketItems($basket, $items);
             }
 
-            // Create schedules if provided
-            if (!empty($schedulesData)) {
-                foreach ($schedulesData as $scheduleData) {
-                    $basket->schedules()->create([
-                        'title' => $scheduleData['title'] ?? ['en' => 'Schedule', 'ar' => 'جدولة'],
-                        'number_of_days' => $scheduleData['number_of_days'],
-                        'discount_type' => $scheduleData['discount_type'] ?? null,
-                        'discount_value' => $scheduleData['discount_value'] ?? null,
-                        'is_active' => $scheduleData['is_active'] ?? true,
-                        'is_default' => $scheduleData['is_default'] ?? false,
-                    ]);
-                }
-            }
+            $this->syncCatalogScheduleSnapshot($basket);
 
-            // Sync badges if provided
             if (!empty($badgesData)) {
                 $badgeSync = [];
                 foreach ($badgesData as $badge) {
@@ -180,13 +170,11 @@ class ScheduledBasketService extends BaseService
 
             // Store items, schedules, and badges temporarily
             $items = $data['items'] ?? [];
-            $schedulesData = $data['schedules'] ?? [];
             $badgesData = $data['badges'] ?? [];
-
-            // Remove items, schedules, and badges from data
             unset($data['items'], $data['schedules'], $data['badges']);
 
-            // Find basket
+            $this->applyDiscountOverride($data);
+
             $basket = $this->model::findOrFail($id);
 
             if (!empty($categoryIds)) {
@@ -218,25 +206,8 @@ class ScheduledBasketService extends BaseService
                 $this->syncScheduledBasketItems($basket, $items);
             }
 
-            // Update schedules if provided
-            if (!empty($schedulesData)) {
-                // Delete old schedules
-                $basket->schedules()->delete();
+            $this->syncCatalogScheduleSnapshot($basket->fresh());
 
-                // Create new schedules
-                foreach ($schedulesData as $scheduleData) {
-                    $basket->schedules()->create([
-                        'title' => $scheduleData['title'] ?? ['en' => 'Schedule', 'ar' => 'جدولة'],
-                        'number_of_days' => $scheduleData['number_of_days'],
-                        'discount_type' => $scheduleData['discount_type'] ?? null,
-                        'discount_value' => $scheduleData['discount_value'] ?? null,
-                        'is_active' => $scheduleData['is_active'] ?? true,
-                        'is_default' => $scheduleData['is_default'] ?? false,
-                    ]);
-                }
-            }
-
-            // Sync badges if provided
             if (!empty($badgesData)) {
                 $badgeSync = [];
                 foreach ($badgesData as $badge) {
@@ -291,6 +262,43 @@ class ScheduledBasketService extends BaseService
         return $imageData;
     }
 
+    protected function applyDiscountOverride(array &$data): void
+    {
+        if (!array_key_exists('discount', $data)) {
+            return;
+        }
+
+        if ($data['discount'] === null || $data['discount'] === '') {
+            $data['has_custom_discount'] = false;
+            $data['discount'] = 0;
+            return;
+        }
+
+        $data['has_custom_discount'] = true;
+        $data['discount_type'] = ScheduleDiscount::normalizeType(
+            $data['discount_type'] ?? 'percentage'
+        );
+    }
+
+    protected function syncCatalogScheduleSnapshot(Basket $basket): void
+    {
+        $basket->loadMissing('catalogSchedule');
+        $schedule = $basket->catalogSchedule;
+
+        if (!$schedule) {
+            return;
+        }
+
+        $basket->schedules()->delete();
+        $basket->schedules()->create([
+            'title' => $schedule->getTranslations('name'),
+            'number_of_days' => (int) $schedule->interval_days,
+            'discount_type' => ScheduleDiscount::normalizeType($basket->resolvedDiscountType()),
+            'discount_value' => $basket->resolvedDiscountValue(),
+            'is_active' => true,
+            'is_default' => true,
+        ]);
+    }
 
     /**
      * Sync scheduled basket items - handles primary variant + alternatives

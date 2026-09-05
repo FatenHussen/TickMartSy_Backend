@@ -27,6 +27,9 @@ class PageSectionRuntimeFilters
         'type',
         'search',
         'sort_by',
+        'schedule_id',
+        'schedule_days',
+        'interval_days',
     ];
 
     /** Which query keys each API section handler can consume. */
@@ -68,7 +71,8 @@ class PageSectionRuntimeFilters
         'recipes' => ['name', 'type', 'sort_by'],
         'baskets' => ['category_id', 'name', 'type', 'sort_by'],
         'suggested_baskets' => ['category_id', 'type'],
-        'schedule-basket' => ['category_id', 'type'],
+        'schedule-basket' => ['category_id', 'type', 'schedule_id', 'schedule_days'],
+        'schedules' => ['interval_days'],
     ];
 
     public static function extractFromRequest(Request $request): array

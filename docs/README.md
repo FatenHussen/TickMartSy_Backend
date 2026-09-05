@@ -12,9 +12,20 @@
 
 | الفريق | الملف | يشمل |
 |--------|--------|------|
-| داشبورد | [`frontend/dashboard.md`](./frontend/dashboard.md) | Page Builder · أقسام · Nav · منتج · **طلب سريع** · استيراد Excel · **باگ كمية المنتج** · **الضمان دروب داون** · … |
-| ويب | [`frontend/web.md`](./frontend/web.md) | Nav · أقسام · فئات · منتج · تسجيل · فلاتر · **طلب سريع حسب الصفحة** · نص تحميل · أسعار · **آخر تحديث 2026-08-26** |
-| Flutter | [`frontend/flutter.md`](./frontend/flutter.md) | Nav · أقسام layout/variant · فئات دائرية · فلاتر · منتج/سلة · تسجيل · أسعار · **طلب سريع حسب الصفحة** · **آخر تحديث 2026-08-26** |
+| داشبورد | [`frontend/dashboard.md`](./frontend/dashboard.md) | Page Builder · أقسام · Nav · منتج · **طلب سريع** · استيراد Excel · **باگ كمية المنتج** · **الضمان دروب داون** · **سلة مخصصة** · … |
+| ويب | [`frontend/WEB_LATEST.md`](./frontend/WEB_LATEST.md) | **آخر نسخة 5 أيلول** — Nav · أقسام · منتج · ضمان · كمية · متغيّرات · فلاتر · طلب سريع · **سلة مخصصة** |
+| Flutter | [`frontend/FLUTTER_LATEST.md`](./frontend/FLUTTER_LATEST.md) | **آخر نسخة 5 أيلول** — نفس المحاور للتطبيق · **سلة مخصصة** |
+
+## سلة مخصصة (أرسلوا ملف الفريق)
+
+| الفريق | الملف |
+|--------|--------|
+| داشبورد | [`frontend/DASHBOARD_CUSTOM_BASKET.md`](./frontend/DASHBOARD_CUSTOM_BASKET.md) |
+| ويب | [`frontend/WEB_CUSTOM_BASKET.md`](./frontend/WEB_CUSTOM_BASKET.md) |
+| Flutter | [`frontend/FLUTTER_CUSTOM_BASKET.md`](./frontend/FLUTTER_CUSTOM_BASKET.md) |
+| ملخص العقد | [`frontend/CUSTOM_BASKET_FLOW.md`](./frontend/CUSTOM_BASKET_FLOW.md) |
+
+الملفات التفصيلية الأطول (نفس المحتوى + أمثلة قديمة): [`web.md`](./frontend/web.md) · [`flutter.md`](./frontend/flutter.md)
 
 ## إنشاء منتج — UX
 

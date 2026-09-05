@@ -28,28 +28,38 @@ class AllResource extends JsonResource
             'images' => $this->image_urls ?? [],
             'num_varieties' => (int) $this->num_varieties,
 
-            // Pricing
             'original_price' => round($this->calculated_price, 2),
-            'discount' => $this->discount,
-            'discount_type' => $this->discount_type,
+            'discount' => $this->resolvedDiscountValue(),
+            'discount_type' => $this->resolvedDiscountType(),
+            'has_custom_discount' => (bool) $this->has_custom_discount,
             'discount_amount' => round($this->discount_amount, 2),
             'final_price' => round($this->final_price, 2),
 
-            // Stats
             'rating' => (float) $this->rating,
             'average_rating' => $this->average_rating,
             'num_sold' => (int) $this->num_sold,
 
-            // Delivery
             'delivery_price' => (float) $this->delivery_price,
             'is_schedule' => true,
+            'schedule_id' => $this->schedule_id,
+            'schedule' => $this->when(
+                $this->relationLoaded('catalogSchedule') && $this->catalogSchedule,
+                fn () => [
+                    'id' => $this->catalogSchedule->id,
+                    'name' => $this->catalogSchedule->name,
+                    'interval_days' => (int) $this->catalogSchedule->interval_days,
+                    'discount_type' => $this->catalogSchedule->discount_type,
+                    'discount_value' => $this->catalogSchedule->discount_value !== null
+                        ? (float) $this->catalogSchedule->discount_value
+                        : 0,
+                    'is_active' => (bool) $this->catalogSchedule->is_active,
+                ]
+            ),
 
-            // Schedule info
             'has_schedule' => $this->schedules->isNotEmpty(),
             'schedule_count' => $this->schedules->count(),
             'is_active' => $this->is_active,
 
-            // Timestamps
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
             'top_badges' => BadgeOneResource::collection(
@@ -59,7 +69,6 @@ class AllResource extends JsonResource
             'bottom_badges' => BadgeOneResource::collection(
                 ($this->badges ?? collect())->where('position', 'bottom')->values()
             ),
-
         ];
     }
 }

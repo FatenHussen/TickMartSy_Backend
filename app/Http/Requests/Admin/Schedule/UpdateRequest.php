@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin\Schedule;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Language;
+use Illuminate\Http\UploadedFile;
 
 class UpdateRequest extends FormRequest
 {
@@ -19,17 +20,26 @@ class UpdateRequest extends FormRequest
         $this->locales = Language::active()->pluck('code')->toArray();
         $data = $this->all();
 
-        // Prepare translatable name field
         if (isset($data['name'])) {
             $prepared = [];
             foreach ($this->locales as $locale) {
-                if (isset($data['name'][$locale])) {
-                    $prepared[$locale] = $data['name'][$locale];
-                } else {
-                    $prepared[$locale] = null;
-                }
+                $prepared[$locale] = $data['name'][$locale] ?? null;
             }
             $this->merge(['name' => $prepared]);
+        }
+
+        if (isset($data['description'])) {
+            $prepared = [];
+            foreach ($this->locales as $locale) {
+                $prepared[$locale] = $data['description'][$locale] ?? null;
+            }
+            $this->merge(['description' => $prepared]);
+        }
+
+        if ($this->file('images') instanceof UploadedFile) {
+            $this->merge([
+                'images' => [$this->file('images')],
+            ]);
         }
     }
 
@@ -40,11 +50,19 @@ class UpdateRequest extends FormRequest
             'is_active' => 'nullable|boolean',
             'discount_type' => 'nullable|in:percentage,fixed',
             'discount_value' => 'nullable|numeric|min:0',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp',
+            'deleted_image_ids' => 'nullable|array',
+            'deleted_image_ids.*' => 'integer',
+            'badges' => 'nullable|array',
+            'badges.*.id' => 'required|integer|exists:badges,id',
+            'badges.*.position' => 'nullable|in:top,bottom',
         ];
 
-        // Add locale-specific validation for name
         foreach ($this->locales as $locale) {
             $rules["name.$locale"] = 'nullable|string|max:255';
+            $rules["description.$locale"] = 'nullable|string|max:2000';
         }
 
         return $rules;

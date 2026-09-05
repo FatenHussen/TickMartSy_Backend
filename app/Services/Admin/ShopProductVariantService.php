@@ -5,6 +5,7 @@ namespace App\Services\Admin;
 use App\Exceptions\DeleteConfirmationRequiredException;
 use App\Http\Resources\Admin\ShopProductVariant\AllResource;
 use App\Http\Resources\Admin\ShopProductVariant\OneResource;
+use App\Models\Category;
 use App\Models\ShopProductVariant;
 use App\Services\Base\VariantDeleteImpactService;
 use App\Services\BaseService;
@@ -38,14 +39,22 @@ class ShopProductVariantService extends BaseService
 
         // Filter by category
         if (!empty($categoryIds)) {
-            $query->whereHas('productVariant.product', function (Builder $q) use ($categoryIds) {
-                $q->whereIn('category_id', $categoryIds);
+            $subtreeIds = Category::expandIdsToSubtrees($categoryIds);
+            $query->whereHas('productVariant.product', function (Builder $q) use ($subtreeIds) {
+                $q->whereIn('category_id', $subtreeIds);
             });
         }
 
         // Filter by shop
         if (!empty($filters['shop_id'])) {
             $query->where('shop_id', $filters['shop_id']);
+        }
+
+        // Filter by brand
+        if (!empty($filters['brand_id'])) {
+            $query->whereHas('productVariant.product', function (Builder $q) use ($filters) {
+                $q->where('brand_id', $filters['brand_id']);
+            });
         }
 
         // Filter by product
@@ -84,6 +93,18 @@ class ShopProductVariantService extends BaseService
 
         if (array_key_exists('cost_price_max', $filters) && $filters['cost_price_max'] !== null) {
             $query->where('cost_price', '<=', $filters['cost_price_max']);
+        }
+
+        if (array_key_exists('price_min', $filters) && $filters['price_min'] !== null) {
+            $query->whereHas('productVariant', function (Builder $q) use ($filters) {
+                $q->where('price', '>=', $filters['price_min']);
+            });
+        }
+
+        if (array_key_exists('price_max', $filters) && $filters['price_max'] !== null) {
+            $query->whereHas('productVariant', function (Builder $q) use ($filters) {
+                $q->where('price', '<=', $filters['price_max']);
+            });
         }
 
         return $query;

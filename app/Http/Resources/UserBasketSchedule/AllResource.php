@@ -3,6 +3,7 @@
 namespace App\Http\Resources\UserBasketSchedule;
 
 use App\Http\Resources\ScheduledBasketAlertResource;
+use App\Support\ScheduleDiscount;
 use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -18,15 +19,11 @@ class AllResource extends JsonResource
         $discountValue = $this->schedule?->discount_value ?? 0;
         $discountType = $this->schedule?->discount_type ?? null;
 
-        $discountAmount = 0;
-
-        if ($discountValue > 0) {
-            if ($discountType === 'percent') {
-                $discountAmount = round($totalPrice * $discountValue / 100, 2);
-            } else {
-                $discountAmount = round(min($discountValue, $totalPrice), 2);
-            }
-        }
+        $discountAmount = ScheduleDiscount::amount(
+            $totalPrice,
+            $discountType,
+            $discountValue,
+        );
 
         return [
             'id' => $this->id,

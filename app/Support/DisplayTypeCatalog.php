@@ -126,6 +126,10 @@ class DisplayTypeCatalog
             $contentType = 'schedule-basket';
         }
 
+        if ($section->api_method === 'schedules') {
+            $contentType = 'schedule';
+        }
+
         return $contentType;
     }
 

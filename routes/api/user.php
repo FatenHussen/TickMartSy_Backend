@@ -12,6 +12,7 @@ use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\User\Auth\ProfileController;
 use App\Http\Controllers\User\Basket\BasketController;
 use App\Http\Controllers\User\Basket\UserBasketScheduleController;
+use App\Http\Controllers\User\Basket\CustomBasketController;
 use App\Http\Controllers\User\MyBasket\ScheduledBasketAlertController;
 use App\Http\Controllers\User\MyBasket\MyBasketController;
 use App\Http\Controllers\User\CartController;
@@ -109,8 +110,8 @@ Route::prefix('user')->group(
         });
 
         Route::prefix('schedules')->group(function () {
-            // Public routes
             Route::get('/', [ScheduleController::class, 'index']);
+            Route::get('/{id}', [ScheduleController::class, 'get_one']);
         });
 
         //  Product routes
@@ -216,6 +217,14 @@ Route::prefix('user')->group(
             Route::delete('scheduled-baskets/{id}', [UserBasketScheduleController::class, 'destroy'])->name('user.scheduled-baskets.destroy');
             Route::post('scheduled-baskets/{id}/pause', [UserBasketScheduleController::class, 'pause'])->name('user.scheduled-baskets.pause');
             Route::post('scheduled-baskets/{id}/resume', [UserBasketScheduleController::class, 'resume'])->name('user.scheduled-baskets.resume');
+
+            Route::prefix('schedules/{scheduleId}/custom-basket')->group(function () {
+                Route::get('/', [CustomBasketController::class, 'show']);
+                Route::post('items', [CustomBasketController::class, 'addItem']);
+                Route::put('items/{itemId}', [CustomBasketController::class, 'updateItem']);
+                Route::delete('items/{itemId}', [CustomBasketController::class, 'removeItem']);
+                Route::post('confirm', [CustomBasketController::class, 'confirm']);
+            });
         });
 
         Route::get('/my-baskets', [MyBasketController::class, 'index'])->middleware(['auth:user']);

@@ -56,26 +56,17 @@ class OrderPricingService
                 Basket::findOrFail($data['admin_basket_id'])->delivery_price
             ],
 
-            CartType::SCHEDULE_ADMIN_CART->value => function() use ($data) {
-                $basketId = $data['admin_schedule_basket_id'] ?? $data['admin_basket_id'];
-                $basket = Basket::findOrFail($basketId);
+            CartType::SCHEDULE_ADMIN_CART->value => (function () use ($data) {
+                $basketId = $data['admin_schedule_basket_id'] ?? $data['admin_basket_id'] ?? null;
 
-                $basketDiscount = $basket->discount;
-
-                // Check if user selected a specific schedule
-                if (!empty($data['basket_schedule_id'])) {
-                    $basketSchedule = $basket->schedules()
-                        ->where('id', $data['basket_schedule_id'])
-                        ->where('is_active', true)
-                        ->first();
-
-                    if ($basketSchedule && $basketSchedule->discount_value > 0) {
-                        $basketDiscount = $basketSchedule->discount_value;
-                    }
+                if (!$basketId) {
+                    return [0, 0];
                 }
 
-                return [$basketDiscount, $basket->delivery_price];
-            },
+                $basket = Basket::with('catalogSchedule')->findOrFail($basketId);
+
+                return [$basket->resolvedDiscountValue(), $basket->delivery_price];
+            })(),
 
             default => [
                 0,

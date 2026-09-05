@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin\Schedule;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Language;
+use Illuminate\Http\UploadedFile;
 
 class StoreRequest extends FormRequest
 {
@@ -19,14 +20,26 @@ class StoreRequest extends FormRequest
         $this->locales = Language::active()->pluck('code')->toArray();
         $data = $this->all();
 
-        // Prepare translatable name field
-        $prepared = [];
+        $preparedName = [];
+        $preparedDescription = [];
         foreach ($this->locales as $locale) {
             if (isset($data['name'][$locale])) {
-                $prepared[$locale] = $data['name'][$locale];
+                $preparedName[$locale] = $data['name'][$locale];
+            }
+            if (isset($data['description'][$locale])) {
+                $preparedDescription[$locale] = $data['description'][$locale];
             }
         }
-        $this->merge(['name' => $prepared]);
+        $this->merge(['name' => $preparedName]);
+        if ($preparedDescription !== []) {
+            $this->merge(['description' => $preparedDescription]);
+        }
+
+        if ($this->file('images') instanceof UploadedFile) {
+            $this->merge([
+                'images' => [$this->file('images')],
+            ]);
+        }
     }
 
     public function rules(): array
@@ -36,11 +49,17 @@ class StoreRequest extends FormRequest
             'is_active' => 'nullable|boolean',
             'discount_type' => 'nullable|in:percentage,fixed',
             'discount_value' => 'nullable|numeric|min:0',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp',
+            'badges' => 'nullable|array',
+            'badges.*.id' => 'required|integer|exists:badges,id',
+            'badges.*.position' => 'nullable|in:top,bottom',
         ];
 
-        // Add locale-specific validation for name
         foreach ($this->locales as $locale) {
             $rules["name.$locale"] = 'required|string|max:255';
+            $rules["description.$locale"] = 'nullable|string|max:2000';
         }
 
         return $rules;

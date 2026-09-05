@@ -83,6 +83,10 @@ class OneResource extends JsonResource
             $contentType = 'schedule-basket';
         }
 
+        if ($this->section->api_method === 'schedules') {
+            $contentType = 'schedule';
+        }
+
         if (!$contentType) {
             return null;
         }

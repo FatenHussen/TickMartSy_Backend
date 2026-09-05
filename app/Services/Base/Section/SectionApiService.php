@@ -53,6 +53,7 @@ class SectionApiService
             'recipes' => RecipeService::class,
             'baskets' => BasketService::class,
             'schedule-basket' => ScheduleBasketService::class,
+            'schedules' => ScheduleService::class,
             'products' => ProductService::class,
             'shops' => ShopService::class,
             'restaurants' => ShopService::class,

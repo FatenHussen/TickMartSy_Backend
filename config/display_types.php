@@ -16,6 +16,7 @@ return [
         'brand' => 6,
         'recipe' => 7,
         'category' => 8,
+        'schedule' => 11,
     ],
 
     'page_slug_overrides' => [
@@ -34,5 +35,6 @@ return [
         8 => ['manual_model' => 'category', 'image' => 'images/display/category.png', 'allowed_page_slugs' => null],
         9 => ['manual_model' => 'banner', 'image' => 'images/display/banner.png', 'allowed_page_slugs' => ['welcome']],
         10 => ['manual_model' => 'banner', 'image' => 'images/display/banner.png', 'allowed_page_slugs' => ['intro']],
+        11 => ['manual_model' => 'schedule', 'image' => 'images/display/schedule.png', 'allowed_page_slugs' => null],
     ],
 ];

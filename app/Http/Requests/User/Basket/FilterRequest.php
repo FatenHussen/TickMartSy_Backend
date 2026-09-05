@@ -25,6 +25,7 @@ class FilterRequest extends FormRequest
             'is_schedule' => 'nullable|boolean',
             'category_id' => 'nullable|integer|exists:categories,id',
             'schedule_days' => 'nullable|integer|min:1',
+            'schedule_id' => 'nullable|integer|exists:schedules,id',
             'price_min' => 'nullable|numeric|min:0',
             'price_max' => 'nullable|numeric|min:0',
             'rating_min' => 'nullable|numeric|min:0|max:5',

@@ -26,6 +26,8 @@
 16. [استيراد منتجات من Excel](#16-استيراد-منتجات-من-excel)
 17. [متغيّرات المنتج — Single select + كارد حقول](#17-متغيّرات-المنتج--single-select--كارد-حقول)
 18. [باگ: كمية المنتج إلزامية والمخفية](#18-باگ-كمية-المنتج-إلزامية-والمخفية)
+19. [الضمان دروب داون](#19-الضمان-دروب-داون--لا-متغيّر-افتراضي)
+20. [السلل المجدولة + السلة المخصصة](#20-السلل-المجدولة--كتالوج-الجدولات)
 
 ---
 
@@ -85,8 +87,8 @@
 | الحقل | القيم |
 |-------|-------|
 | `type` | `manual` \| `api` |
-| `manual_model` | `banner` \| `product` \| `shop` \| `restaurant` \| `brand` \| `recipe` \| `basket` \| `category` |
-| `api_method` | `products` \| `categories` \| `shops` \| `restaurants` \| `brands` \| `recipes` \| `baskets` \| `schedule-basket` \| `suggested_products` \| `suggested_shops` \| `suggested_baskets` |
+| `manual_model` | `banner` \| `product` \| `shop` \| `restaurant` \| `brand` \| `recipe` \| `basket` \| `category` \| `schedule` \| `schedule-basket` |
+| `api_method` | `products` \| `categories` \| `shops` \| `restaurants` \| `brands` \| `recipes` \| `baskets` \| `schedule-basket` \| `schedules` \| `suggested_products` \| `suggested_shops` \| `suggested_baskets` |
 | `layout` | `slider` \| `list` \| `grid` — طريقة عرض القسم |
 | `variant` | `horizontal` \| `vertical` \| `square` — شكل الكارد |
 | `content_type` | بديل أبسط يُحوَّل تلقائيًا |
@@ -176,7 +178,7 @@ Content-Type: application/json
 | الحقل | مطلوب | الوصف |
 |-------|-------|--------|
 | `name.ar` / `name.en` | نعم | اسم القسم |
-| `content_type` | لا | بديل مُبسّط يُحوَّل تلقائيًا (`banner` \| `product` \| `shop` \| `restaurant` \| `brand` \| `category` \| `recipe` \| `basket`) |
+| `content_type` | لا | بديل مُبسّط يُحوَّل تلقائيًا (`banner` \| `product` \| `shop` \| `restaurant` \| `brand` \| `category` \| `recipe` \| `basket` \| `schedule` \| `schedule-basket` \| `suggested_products` \| `suggested_shops` \| `suggested_baskets`) |
 | `type` | **نعم** | `manual` أو `api` |
 | `variant` | لا | `horizontal` (سلايدر) \| `vertical` (شبكة) \| `square` (مربعات). افتراضي `horizontal` |
 | `background_color` | لا | لون خلفية |
@@ -898,6 +900,86 @@ php artisan migrate   # 2026_08_30_120000_add_discount_to_product_variants_table
 - قسم مستقل: `GET/POST/PATCH/DELETE /api/admin/warranties` — صلاحيات `warranty.*`
 - فورم المنتج: `warranty_id` اختياري — **لا** `warranty_period`
 - لا تولّدوا كارد «المتغير رقم 1» تلقائياً؛ الأدمن يضيف المتغيّر بنفسه
+
+---
+
+## 20) السلل المجدولة — كتالوج الجدولات
+
+> **أرسلوا هذا الملف:** [`DASHBOARD_CUSTOM_BASKET.md`](./DASHBOARD_CUSTOM_BASKET.md) — **5 أيلول 2026**
+
+فيه: فئات الجدولة · قسم الصفحة (`schedule` vs `schedule-basket`) · سلة جاهزة · **كيف تختارون الأصناف** (`shop-product-variants` + فلاتر).
+
+الجدولة مصدر واحد: **كتالوج `schedules`**. سلة الأدمن الجاهزة تختار `schedule_id`. كارد «العنصر 1» يحمّل `GET /api/admin/shop-product-variants?category_id=&brand_id=&price_min=&search=` — القيمة `id` = `shop_product_variant_id`. لا تستخدموا صفات المنتج على هالكارد.
+
+### كتالوج الجدولات
+
+| Method | Endpoint |
+|--------|----------|
+| GET/POST | `/api/admin/schedules` |
+| GET/PUT/DELETE | `/api/admin/schedules/{id}` |
+
+حقول الإنشاء: `name[ar|en]`، `description[ar|en]`، `interval_days`، `discount_type` (`percentage` \| `fixed`)، `discount_value`، `is_active`، `image`، `images[]`، `badges[][id]` + `badges[][position]` = `top` \| `bottom`.
+
+خصم الجدولة ينطبق على **كل** سلة المستخدم بهالفئة.
+
+كرت الويب/التطبيق: `GET /api/user/schedules` — صورة + وصف + بادجز.
+
+### قسم فئات الجدولة على الصفحة (`/sections/pages/{id}/sections/create`)
+
+أضيفوا نوع محتوى **فئات الجدولة الزمنية** — هذا **ليس** `schedule-basket` (سلل أدمن جاهزة).
+
+| الحقل | القيمة |
+|--------|--------|
+| التسمية في الفورم | فئات الجدولة الزمنية |
+| `content_type` / `manual_model` | `schedule` |
+| `api_method` | `schedules` |
+| `display_type_id` | `11` (الباك يعيّنه تلقائيًا) |
+| `variant` الموصى به | `vertical` |
+| عناصر يدوية | `GET /api/admin/schedules` |
+
+`GET /api/admin/sections/item-types` صار يرجع مفتاح `schedule` مع `url: admin/schedules`.
+
+إنشاء مباشر على الصفحة:
+
+```json
+{
+  "type": "api",
+  "content_type": "schedule",
+  "name": { "ar": "فئات الجدولة الزمنية", "en": "Schedule categories" },
+  "layout": "slider",
+  "variant": "vertical"
+}
+```
+
+أو اختيار فئات محددة:
+
+```json
+{
+  "type": "manual",
+  "manual_model": "schedule",
+  "name": { "ar": "فئات الجدولة الزمنية", "en": "Schedule categories" },
+  "item_ids": [{ "item_id": 2, "order": 0 }],
+  "layout": "slider",
+  "variant": "vertical"
+}
+```
+
+### إنشاء سلة مجدولة
+
+```http
+POST /api/admin/scheduled-baskets
+```
+
+- **مطلوب:** `schedule_id` من الكتالوج (جدولة مفعّلة).
+- **لا** ترسلوا مصفوفة `schedules[].number_of_days` — الأيام والخصم من الجدولة.
+- سلة واحدة = جدولة واحدة.
+- الأصناف: `GET /api/admin/shop-product-variants?category_id=` ثم `items[][shop_product_variant_id]` = `id`. التفاصيل في الدليل الكامل §4.
+
+استثناء خصم سلة واحدة (عيد 40% بدل 20% الأسبوعي): أرسلوا `discount` + `discount_type`. إذا ما أرسلتوهم، السلة ترث خصم الجدولة. لمسح الاستثناء عند التعديل: أرسلوا `discount` فاضي/`null`.
+
+الاستجابة فيها `schedule_id`، `schedule` (من الكتالوج)، `has_custom_discount`، و`discount` / `discount_type` = الخصم الفعلي المعروض.
+
+فلتر القائمة: `GET /api/admin/scheduled-baskets?schedule_id={id}`.
 
 ---
 

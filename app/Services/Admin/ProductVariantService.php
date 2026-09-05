@@ -5,6 +5,7 @@ namespace App\Services\Admin;
 use App\Exceptions\DeleteConfirmationRequiredException;
 use App\Http\Resources\Admin\ProductVariant\AllResource;
 use App\Http\Resources\Admin\ProductVariant\OneResource;
+use App\Models\Category;
 use App\Models\ProductVariant;
 use App\Services\Base\MediaService;
 use App\Services\Base\VariantDeleteImpactService;
@@ -34,10 +35,15 @@ class ProductVariantService extends BaseService
         // Remove fields that are not direct columns
         unset($filters['attributes_values_ids']);
 
-        // Filter by category
-        if (!empty($filters['category_id'])) {
-            $query->whereHas('product', function (Builder $q) use ($filters) {
-                $q->where('category_id', $filters['category_id']);
+        $categoryIds = array_values(array_unique(array_filter(array_merge(
+            is_array($filters['category_ids'] ?? null) ? $filters['category_ids'] : [],
+            isset($filters['category_id']) ? [(int) $filters['category_id']] : [],
+        ))));
+
+        if (!empty($categoryIds)) {
+            $subtreeIds = Category::expandIdsToSubtrees($categoryIds);
+            $query->whereHas('product', function (Builder $q) use ($subtreeIds) {
+                $q->whereIn('category_id', $subtreeIds);
             });
         }
 

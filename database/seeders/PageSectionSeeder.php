@@ -30,6 +30,7 @@ class PageSectionSeeder extends Seeder
         $scheduleBasketsDisplayTypeId = DisplayTypeCatalog::idFor('schedule-basket');
         $brandsDisplayTypeId = DisplayTypeCatalog::idFor('brand');
         $recipeDisplayTypeId = DisplayTypeCatalog::idFor('recipe');
+        $scheduleDisplayTypeId = DisplayTypeCatalog::idFor('schedule');
         $bannerDisplayType2Id = DisplayTypeCatalog::idFor('banner', 'welcome');
         $introBannerDisplayTypeId = DisplayTypeCatalog::idFor('banner', 'intro');
 
@@ -382,6 +383,24 @@ class PageSectionSeeder extends Seeder
             'filters' => [
                 'schedule_days' => 30
             ]
+        ]));
+
+        $scheduleCategoriesSection = Section::create([
+            'name' => ['en' => 'Schedule categories', 'ar' => 'فئات الجدولة الزمنية'],
+            'type' => 'api',
+            'api_method' => 'schedules',
+            'see_more' => false,
+            'filters' => [],
+        ]);
+
+        PageSection::create($fillPageSectionColors([
+            'page_id' => $homePage->id,
+            'section_id' => $scheduleCategoriesSection->id,
+            'display_type_id' => $scheduleDisplayTypeId,
+            'position' => 'after',
+            'variant' => VariantSection::Vertical->value,
+            'order' => 8,
+            'filters' => [],
         ]));
 
         /*

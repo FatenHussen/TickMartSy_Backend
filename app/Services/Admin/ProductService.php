@@ -3,6 +3,7 @@
 namespace App\Services\Admin;
 
 use App\Models\AttributeValue;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Shop;
 use App\Services\BaseService;
@@ -313,7 +314,7 @@ class ProductService extends BaseService
         unset($filters['category_id'], $filters['category_ids']);
 
         if (!empty($categoryIds)) {
-            $query->whereIn('category_id', $categoryIds);
+            $query->whereIn('category_id', Category::expandIdsToSubtrees($categoryIds));
         }
 
         // Filter by shop_id if provided

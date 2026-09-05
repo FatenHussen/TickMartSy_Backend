@@ -2,7 +2,7 @@
 
 > **أرسلوا هذا الملف لفريق الويب فقط.**  
 > Base: `/api/user` + `Accept-Language: ar|en`.  
-> **آخر تحديث:** 2026-08-30  
+> **آخر تحديث:** 2026-09-05  
 > **ملخص التغييرات:** [`product-variants-storefront-update.md`](product-variants-storefront-update.md)
 
 ---
@@ -212,8 +212,9 @@ function renderPrice(variant) {
 ## 6) الكمية
 
 - استخدم **`quantity` فقط** — «الكمية المتوفرة».
+- الحقل ممكن **`null`** — اعتبروه 0 (غير متوفر).
 - لا حقل `stock` على المتغيّر.
-- `maxQuantity = Math.min(variant.quantity, product.max_purchase_quantity ?? variant.quantity)`.
+- `maxQuantity = Math.min(variant.quantity ?? 0, product.max_purchase_quantity ?? variant.quantity ?? 0)`.
 
 ```js
 const canAddToCart = Boolean(

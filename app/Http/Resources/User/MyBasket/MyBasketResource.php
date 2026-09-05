@@ -22,14 +22,11 @@ class MyBasketResource extends JsonResource
             return $item->price * $item->quantity;
         });
 
-        $discountAmount = 0;
-        if ($this->schedule && $this->schedule->discount_value > 0) {
-            if ($this->schedule->discount_type === 'percent') {
-                $discountAmount = $calculatedPrice * ($this->schedule->discount_value / 100);
-            } else {
-                $discountAmount = min($this->schedule->discount_value, $calculatedPrice);
-            }
-        }
+        $discountAmount = \App\Support\ScheduleDiscount::amount(
+            $calculatedPrice,
+            $this->schedule?->discount_type,
+            $this->schedule?->discount_value ?? 0,
+        );
 
         $finalPrice = $calculatedPrice - $discountAmount;
 

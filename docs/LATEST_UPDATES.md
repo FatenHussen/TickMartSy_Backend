@@ -1,23 +1,30 @@
 # آخر التعديلات والتحديثات — Tikmool Backend
 
-> **تاريخ التحديث:** 5 أيلول 2026  
-> **النطاق:** كل التغييرات من منتصف آب 2026 حتى اليوم — باك + داشبورد + ويب + Flutter  
-> **الحالة:** الباك جاهز — التنفيذ المتبقي في الواجهات (UI)
+> **أرسلوا هذا الملف** — آخر نسخة شاملة (كل الفرق)  
+> **تاريخ:** 5 أيلول 2026  
+> **النطاق:** من منتصف آب حتى اليوم — باك + داشبورد + ويب + Flutter  
+> **الحالة:** الباك جاهز بعد `php artisan migrate` — التنفيذ المتبقي في الواجهات
+
+**آخر ما نزل اليوم:** قسم فئات الجدولة الزمنية في Page Builder + السلة المخصصة.
 
 ---
 
 ## أين أبدأ؟
 
-| الفريق | الملف الرئيسي | ملاحظة |
-|--------|---------------|--------|
-| **داشبورد** | [`frontend/dashboard.md`](./frontend/dashboard.md) | كل تعديلات الأدمن في ملف واحد |
-| **ويب** | [`frontend/web.md`](./frontend/web.md) | Nav · أقسام · فئات · منتج · فلاتر · طلب سريع |
-| **Flutter** | [`frontend/flutter.md`](./frontend/flutter.md) | نفس المحاور للتطبيق |
+| الفريق | أرسلوا هذا | ملاحظة |
+|--------|------------|--------|
+| **الكل (هذا الملف)** | [`LATEST_UPDATES.md`](./LATEST_UPDATES.md) | آخر نسخة لكل شيء |
+| **داشبورد** | [`frontend/dashboard.md`](./frontend/dashboard.md) | كل تعديلات الأدمن |
+| **ويب** | [`frontend/WEB_LATEST.md`](./frontend/WEB_LATEST.md) | آخر نسخة الموقع |
+| **Flutter** | [`frontend/FLUTTER_LATEST.md`](./frontend/FLUTTER_LATEST.md) | آخر نسخة التطبيق |
+| **سلة مخصصة — داش** | [`frontend/DASHBOARD_CUSTOM_BASKET.md`](./frontend/DASHBOARD_CUSTOM_BASKET.md) | فئات + سلل جاهزة |
+| **سلة مخصصة — ويب** | [`frontend/WEB_CUSTOM_BASKET.md`](./frontend/WEB_CUSTOM_BASKET.md) | كروت + تخصيص + تأكيد |
+| **سلة مخصصة — Flutter** | [`frontend/FLUTTER_CUSTOM_BASKET.md`](./frontend/FLUTTER_CUSTOM_BASKET.md) | نفس العقد للشاشات |
 | **متغيّرات — داشبورد** | [`frontend/product-variants-dashboard.md`](./frontend/product-variants-dashboard.md) | **آخر تحديث 30 آب** |
 | **إنشاء منتج — صفات جزئية + حذف صور** | [`frontend/DASHBOARD_PRODUCT_CREATE_UX.md`](./frontend/DASHBOARD_PRODUCT_CREATE_UX.md) | **31 آب** |
 | **باگ كمية المنتج (توست موجبة)** | [`frontend/DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md`](./frontend/DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md) | **5 أيلول** |
 | **ضمان المنتج — دروب داون + قسم مستقل** | [`frontend/DASHBOARD_PRODUCT_WARRANTY.md`](./frontend/DASHBOARD_PRODUCT_WARRANTY.md) | **5 أيلول** |
-| **متغيّرات — ويب + Flutter** | [`frontend/product-variants-storefront-update.md`](./frontend/product-variants-storefront-update.md) | **آخر تحديث 30 آب** |
+| **متغيّرات — ويب + Flutter** | [`frontend/product-variants-storefront-update.md`](./frontend/product-variants-storefront-update.md) | **آخر تحديث 5 أيلول** |
 | **متغيّرات — ويب (تفصيل)** | [`frontend/product-variants-web.md`](./frontend/product-variants-web.md) | |
 | **متغيّرات — ويب (دليل شامل + مقارنة tikmool-website)** | [`frontend/WEB_VARIANTS_COMPLETE.md`](./frontend/WEB_VARIANTS_COMPLETE.md) | **31 آب** — API حقيقي · types · gaps · سلة |
 | **متغيّرات — Flutter (تفصيل)** | [`frontend/product-variants-flutter.md`](./frontend/product-variants-flutter.md) | |
@@ -28,20 +35,95 @@
 
 ---
 
-## ملخص تنفيذي — أهم 10 تغييرات
+## ملخص تنفيذي — أهم التغييرات حتى اليوم
 
 | # | التغيير | من يتأثر |
 |---|---------|----------|
-| 1 | **متغيّرات المنتج** — سعر + كمية + **خصم** على `product_variants` (مو shop) | الكل |
-| 2 | **إنشاء منتج** — المتغيّرات في **state محلي** ثم `POST /products` دفعة واحدة | داشبورد |
-| 3 | **Single select** لكل صفة — لا multi-select للمقاسات | داشبورد |
-| 4 | **حذف اسم المتغيّر** — الهوية = صفات + SKU | الكل |
-| 5 | **Page Builder موحّد** — صفحات + أقسام + preview + reorder | داشبورد + ويب + Flutter |
-| 6 | **Eye toggle** — إخفاء قسم بدون حذف (`is_active`) | داشبورد + ويب + Flutter |
-| 7 | **Nav Menu ديناميكي** — `GET /api/user/nav-menu` | ويب + Flutter |
-| 8 | **الطلب السريع** — إعدادات + `quick_order_page_ids` + convert/cancel | الكل |
-| 9 | **استيراد Excel** — قالب SPBS + upsert | داشبورد |
-| 10 | **قناة البيع** `sale_channel` — platform أو shop | داشبورد |
+| 1 | **السلة المخصصة** — فئات جدولة + تخصيص داخل الفئة + تأكيد نعم/لا | الكل |
+| 2 | **ضمان المنتج** — دروب داون من قسم مستقل · المتجر يقرأ `warranty.name` | الكل |
+| 3 | **كمية المنتج** — المخزون = `shop_variants[].quantity` (ممكن `null`) | الكل |
+| 4 | **متغيّرات المنتج** — سعر + كمية + **خصم** على `product_variants` | الكل |
+| 5 | **إنشاء منتج** — متغيّرات في state محلي ثم `POST /products` مرة | داشبورد |
+| 6 | **Page Builder موحّد** — صفحات + أقسام + preview + reorder | الكل |
+| 7 | **Eye toggle** — إخفاء قسم بدون حذف (`is_active`) | الكل |
+| 8 | **Nav Menu ديناميكي** — `GET /api/user/nav-menu` | ويب + Flutter |
+| 9 | **الطلب السريع** — إعدادات + `quick_order_page_ids` + convert/cancel | الكل |
+| 10 | **استيراد Excel** + **قناة البيع** `sale_channel` | داشبورد |
+
+---
+
+## آخر نسخة (5 أيلول 2026) — السلة المخصصة (كل الفرق)
+
+الأدمن يعرّف **فئات جدولة** بحرية (أسبوعي، شهري، كل 3 أيام…). كل فئة: اسم + أيام + خصم على **السلة كاملة** + صورة + وصف + بادجز.
+
+المستخدم يفتح الفئة ويختار هو المنتجات والكميات. يقدر يخصّص أكثر من فئة. عند التأكيد: **نعم** = جدولة + تذكير · **لا** = طلب مرة.
+
+```bash
+php artisan migrate
+```
+
+> داشبورد: [`DASHBOARD_CUSTOM_BASKET.md`](./frontend/DASHBOARD_CUSTOM_BASKET.md)  
+> ويب: [`WEB_CUSTOM_BASKET.md`](./frontend/WEB_CUSTOM_BASKET.md)  
+> Flutter: [`FLUTTER_CUSTOM_BASKET.md`](./frontend/FLUTTER_CUSTOM_BASKET.md)
+
+### داشبورد — فئات الجدولة
+
+| Method | Endpoint |
+|--------|----------|
+| GET/POST | `/api/admin/schedules` |
+| GET/PUT/DELETE | `/api/admin/schedules/{id}` |
+
+`POST` multipart: `name[ar|en]` · `description[ar|en]` · `interval_days` · `discount_type` (`percentage`\|`fixed`) · `discount_value` · `is_active` · `image` · `images[]` · `badges[][id]` + `badges[][position]` = `top`\|`bottom`.
+
+سلة أدمن جاهزة (اختياري): `POST /api/admin/scheduled-baskets` **يتطلب `schedule_id`**. لا ترسلوا `schedules[].number_of_days`. خصم فاضي = يرث الفئة. خصم معبّأ = استثناء لهالسلة.
+
+قسم الصفحة: على `/sections/pages/{id}/sections/create` نوع **فئات الجدولة الزمنية** = `content_type: schedule` / `api_method: schedules` / `display_type_id: 11`. هذا غير `schedule-basket` (سلل جاهزة).
+
+### ويب + Flutter — كروت ثم تخصيص
+
+كروت عامة:
+
+```http
+GET /api/user/schedules
+GET /api/user/schedules/{id}
+```
+
+يرجع: `name` · `description` · `image` · `images[]` · `interval_days` · `discount_*` · `top_badges` · `bottom_badges`.
+
+كرت عمودي، صورة دائرية. الضغط → صفحة `{id}`.
+
+تخصيص (Auth) — مسودة لكل `schedule_id`:
+
+| | Endpoint |
+|--|----------|
+| هيدر + مسودة + `summary` | `GET /api/user/schedules/{id}/custom-basket` |
+| إضافة | `POST .../items` `{ shop_product_variant_id, quantity }` |
+| كمية | `PUT .../items/{itemId}` `{ quantity }` |
+| حذف | `DELETE .../items/{itemId}` |
+| تأكيد | `POST .../confirm` |
+
+تصفح: `GET /products?category_id=&search=&brand_id=` · `GET /brands` · `GET /categories`.
+
+عرض السلة من `items` + `summary` (`savings` = وفّرت). لا تحسبوا الخصم على الفرونت.
+
+| الزر | Body | النتيجة |
+|------|------|---------|
+| نعم | `{ "confirm_schedule": true, "start_date": "2026-09-08" }` | طلباتي المجدولة + تذكير + `cart_items` لأول طلب |
+| لا | `{ "confirm_schedule": false }` | `cart_items` مرة — المسودة تُحذف |
+
+`cart_items`: `[{ shop_product_variant_id, quantity }]` → سلة الموقع / `POST /orders`.
+
+---
+
+## آخر تحديث (5 أيلول 2026) — ضمان المنتج + كمية + آخر نسخة ويب/Flutter
+
+- الضمان في المتجر: `warranty: { id, name, description }` من `GET /api/user/products/{id}`
+- الكمية المعروضة للعميل: `shop_variants[].quantity` (ممكن `null`)
+- الأدمن ما عاد يولّد متغيّر فاضي — الباك يبقى fallback `shop_variants[0]`
+
+> ويب: [`WEB_LATEST.md`](./frontend/WEB_LATEST.md)  
+> Flutter: [`FLUTTER_LATEST.md`](./frontend/FLUTTER_LATEST.md)  
+> داشبورد: [`DASHBOARD_PRODUCT_WARRANTY.md`](./frontend/DASHBOARD_PRODUCT_WARRANTY.md)
 
 ---
 
@@ -113,6 +195,35 @@ php artisan migrate   # يضيف discount على product_variants
 | `country` | **string** في صفحة المنتج |
 
 > الدليل المشترك: [`product-variants-storefront-update.md`](./frontend/product-variants-storefront-update.md)
+
+---
+
+## الجدول الزمني — أيلول 2026
+
+### 5 أيلول — سلة مخصصة · ضمان · كمية
+
+| الميزة | الوصف |
+|--------|--------|
+| **فئات الجدولة** | كتالوج `schedules`: اسم · أيام · خصم · صورة · وصف · بادجز |
+| **تخصيص المستخدم** | مسودة لكل فئة · إضافة/كمية/حذف · `summary` من الـ API |
+| **تأكيد نعم/لا** | نعم = جدولة + تذكير · لا = طلب مرة + حذف المسودة |
+| **سلة أدمن جاهزة** | مربوطة بـ `schedule_id` — ترث خصم الفئة أو استثناء |
+| **ضمان المنتج** | دروب داون `warranty_id` · المتجر `warranty: { id, name, description }` |
+| **كمية المنتج** | المخزون = `shop_variants[].quantity` · لا توست «موجبة» على الكمية المخفية |
+
+**Endpoints جديدة:**
+
+```http
+GET/POST /api/admin/schedules
+GET/PUT/DELETE /api/admin/schedules/{id}
+GET  /api/user/schedules
+GET  /api/user/schedules/{id}
+GET  /api/user/schedules/{id}/custom-basket
+POST /api/user/schedules/{id}/custom-basket/items
+PUT  /api/user/schedules/{id}/custom-basket/items/{itemId}
+DELETE /api/user/schedules/{id}/custom-basket/items/{itemId}
+POST /api/user/schedules/{id}/custom-basket/confirm
+```
 
 ---
 
@@ -201,11 +312,29 @@ PUT  /api/admin/settings/quick_order_page_ids
 
 ---
 
-## Migrations — آب 2026 (ترتيب التشغيل)
+## Migrations (ترتيب التشغيل)
 
 ```bash
 php artisan migrate   # آمن — هيكل فقط، لا يمسح داتا
 ```
+
+### أيلول 2026
+
+| Migration | الغرض |
+|-----------|--------|
+| `2026_09_05_100000_normalize_empty_unique_product_strings_to_null` | قيم فريدة فاضية → null |
+| `2026_09_05_110000_create_warranties_table` | قسم الضمانات |
+| `2026_09_05_124400_add_schedule_id_to_baskets_table` | ربط سلة الأدمن بفئة الكتالوج |
+| `2026_09_05_132000_add_card_fields_to_schedules_table` | وصف + صورة على فئة الجدولة |
+| `2026_09_05_132100_add_is_draft_to_user_basket_schedules_table` | مسودة تخصيص المستخدم |
+
+صلاحيات الضمان (مرة):
+
+```bash
+php artisan db:seed --class=AdminRolePermissionSeeder
+```
+
+### آب 2026
 
 | Migration | الغرض |
 |-----------|--------|
@@ -256,8 +385,12 @@ php artisan db:seed --class=SaleCountrySeeder        # بلدان مبيع
 
 ## Checklist — حسب الفريق
 
-### داشبoard
+### داشبورد
 
+- [ ] **سلة مخصصة:** فئات جدولة (اسم · أيام · خصم · صورة · بادجز) — [`DASHBOARD_CUSTOM_BASKET.md`](./frontend/DASHBOARD_CUSTOM_BASKET.md)
+- [ ] سلة جاهزة (إن وُجدت) مربوطة بـ `schedule_id` — لا `number_of_days` جوّا السلة
+- [ ] ضمان: قسم مستقل + دروب داون `warranty_id` — لا كارد متغيّر افتراضي
+- [ ] كمية المنتج اختيارية (لا توست «موجبة» على الحقل المخفي)
 - [ ] Page Builder: صفحات + أقسام + reorder + preview + eye toggle
 - [ ] Nav Menu CRUD + reorder
 - [ ] منتج: أي مستوى فئة · sale_channel · بلد منشأ · بلدان مبيع
@@ -269,6 +402,9 @@ php artisan db:seed --class=SaleCountrySeeder        # بلدان مبيع
 
 ### ويب
 
+- [ ] **سلة مخصصة:** كروت `/schedules` + تخصيص + تأكيد نعم/لا — [`WEB_CUSTOM_BASKET.md`](./frontend/WEB_CUSTOM_BASKET.md)
+- [ ] ضمان: `warranty.name` / `.description`
+- [ ] كمية: `shop_variants[].quantity` (ممكن `null`)
 - [ ] Nav من API · Page Builder · صفحات فئات
 - [ ] منتج: shop_variants picker · price_currencies · discount per variant
 - [ ] فلاتر · تسجيل بدون إيميل · أسعار USD/SYP
@@ -277,6 +413,9 @@ php artisan db:seed --class=SaleCountrySeeder        # بلدان مبيع
 
 ### Flutter
 
+- [ ] **سلة مخصصة:** كروت `/schedules` + شاشات تخصيص + نعم/لا — [`FLUTTER_CUSTOM_BASKET.md`](./frontend/FLUTTER_CUSTOM_BASKET.md)
+- [ ] ضمان: `warranty.name` / `.description`
+- [ ] كمية: `ShopVariant.quantity` كـ `int?`
 - [ ] نفس محاور الويب (Nav · صفحات · فئات · منتج · فلاتر)
 - [ ] shop_variants · attributes_map · quantity · discount
 - [ ] طلب سريع حسب الصفحة
@@ -296,6 +435,9 @@ php artisan db:seed --class=SaleCountrySeeder        # بلدان مبيع
 | Nav ثابت بالكود | `GET /nav-menu` |
 | `price_usd` / `price_syp` flat | `price_currencies.USD` / `.SYP` |
 | مستودعاتي / خارجي (sale) | `platform` \| `shop` فقط |
+| `warranty_period` (أشهر) | `warranty_id` + كائن `warranty` |
+| `schedules[].number_of_days` جوّا سلة الأدمن | `schedule_id` من كتالوج `/schedules` |
+| حساب خصم الفئة على الفرونت | `summary.savings` / `summary.final_price_formatted` |
 
 ---
 
@@ -314,6 +456,10 @@ php artisan db:seed --class=SaleCountrySeeder        # بلدان مبيع
 ## روابط سريعة إضافية
 
 - [`README.md`](./README.md) — فهرس الوثائق
+- [`frontend/DASHBOARD_CUSTOM_BASKET.md`](./frontend/DASHBOARD_CUSTOM_BASKET.md) — سلة مخصصة داش
+- [`frontend/WEB_CUSTOM_BASKET.md`](./frontend/WEB_CUSTOM_BASKET.md) — سلة مخصصة ويب
+- [`frontend/FLUTTER_CUSTOM_BASKET.md`](./frontend/FLUTTER_CUSTOM_BASKET.md) — سلة مخصصة Flutter
+- [`frontend/DASHBOARD_PRODUCT_WARRANTY.md`](./frontend/DASHBOARD_PRODUCT_WARRANTY.md) — ضمان
 - [`api/ADMIN_PRODUCTS_COMPLETE_DOCUMENTATION.md`](./api/ADMIN_PRODUCTS_COMPLETE_DOCUMENTATION.md) — منتجات Admin
 - [`api/ADMIN_PRODUCT_VARIANTS_UPDATE_DELETE.md`](./api/ADMIN_PRODUCT_VARIANTS_UPDATE_DELETE.md) — متغيّرات CRUD
 - [`api/TOGGLE_STATUS_API.md`](./api/TOGGLE_STATUS_API.md) — toggle عام

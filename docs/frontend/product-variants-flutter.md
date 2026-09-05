@@ -2,7 +2,7 @@
 
 > **أرسلوا هذا الملف لفريق Flutter فقط.**  
 > Base: `/api/user` + `Accept-Language: ar|en`.  
-> **آخر تحديث:** 2026-08-30  
+> **آخر تحديث:** 2026-09-05  
 > **ملخص التغييرات:** [`product-variants-storefront-update.md`](product-variants-storefront-update.md)
 
 ---
@@ -257,16 +257,16 @@ Widget buildPrice(ShopVariant v) {
 
 ## 7) الكمية والمخزون
 
-- **حقل واحد:** `quantity` على المتغيّر — «الكمية المتوفرة».
+- **حقل واحد:** `quantity` على المتغيّر — «الكمية المتوفرة» — نوع `int?`.
 - لا يوجد `stock` منفصل على المتغيّر.
-- `canAddToCart = quantity > 0 && selectedVariant != null`.
+- `canAddToCart = (quantity ?? 0) > 0 && id != null && shopId != null`.
 
 ```dart
 bool get canAddToCart =>
     selectedVariant != null &&
     selectedVariant!.id != null &&
     selectedVariant!.shopId != null &&
-    (selectedVariant!.quantity) > 0;
+    (selectedVariant!.quantity ?? 0) > 0;
 ```
 
 ---

@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin\Basket\ScheduledBasket;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
@@ -44,8 +45,13 @@ class StoreRequest extends FormRequest
             'name.*' => 'required|string|max:255',
             'description' => 'nullable|array',
             'description.*' => 'nullable|string|max:2000',
+            'schedule_id' => [
+                'required',
+                'integer',
+                Rule::exists('schedules', 'id')->where('is_active', true),
+            ],
             'discount' => 'nullable|numeric|min:0',
-            'discount_type' => 'required|in:fixed,percentage',
+            'discount_type' => 'required_with:discount|in:fixed,percentage',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif',
@@ -53,16 +59,6 @@ class StoreRequest extends FormRequest
             'deleted_image_ids.*' => 'integer',
             'delivery_price' => 'nullable|numeric|min:0',
             'is_active' => 'sometimes|boolean',
-
-            // Schedules (multiple schedules)
-            'schedules' => 'required|array|min:1',
-            'schedules.*.title' => 'nullable|array',
-            'schedules.*.title.*' => 'nullable|string|max:255',
-            'schedules.*.number_of_days' => 'required|integer|min:1',
-            'schedules.*.discount_type' => 'nullable|in:fixed,percentage',
-            'schedules.*.discount_value' => 'nullable|numeric|min:0',
-            'schedules.*.is_active' => 'nullable|boolean',
-            'schedules.*.is_default' => 'nullable|boolean',
 
             // Basket items - for scheduled baskets
             'items' => 'required|array|min:1',
@@ -88,11 +84,8 @@ class StoreRequest extends FormRequest
             'category_id.exists' => 'الفئة المحددة غير موجودة',
             'name.required' => 'اسم السلة مطلوب',
             'name.*.required' => 'اسم السلة مطلوب لجميع اللغات',
-
-            'schedules.required' => 'الجدولات مطلوبة',
-            'schedules.min' => 'يجب إضافة جدولة واحدة على الأقل',
-            'schedules.*.number_of_days.required' => 'عدد الأيام للتوصيل مطلوب',
-            'schedules.*.number_of_days.min' => 'عدد الأيام يجب أن يكون على الأقل 1',
+            'schedule_id.required' => 'الجدولة مطلوبة',
+            'schedule_id.exists' => 'الجدولة المحددة غير موجودة',
 
             'items.required' => 'يجب إضافة منتج واحد على الأقل للسلة',
             'items.min' => 'يجب إضافة منتج واحد على الأقل للسلة',

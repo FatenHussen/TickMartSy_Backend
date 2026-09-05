@@ -29,6 +29,7 @@ class SendScheduledBasketReminderJob implements ShouldQueue
 
         $userSchedules = UserBasketSchedule::with(['user', 'schedule', 'items.product', 'items.variant.productVariant.product'])
             ->where('is_active', true)
+            ->where('is_draft', false)
             ->whereNull('paused_at')
             ->whereNotNull('start_date')
             ->whereHas('schedule', fn($query) => $query->where('is_active', true))

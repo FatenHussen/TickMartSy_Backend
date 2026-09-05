@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use App\Models\ProductMedia;
 use Spatie\Translatable\HasTranslations;
 use App\Models\Favorite;
+use App\Support\ScheduleDiscount;
 use App\Traits\LogsActivity;
 
 class Basket extends Model implements Sectionable
@@ -30,8 +32,10 @@ class Basket extends Model implements Sectionable
         'num_sold',
         'image',
         'is_schedule',
+        'schedule_id',
         'is_active',
-        'delivery_price'
+        'delivery_price',
+        'has_custom_discount',
     ];
 
     public function favorites(): MorphMany
@@ -49,6 +53,7 @@ class Basket extends Model implements Sectionable
     protected $casts = [
         'offer_ends_at' => 'date',
         'is_schedule' => 'boolean',
+        'has_custom_discount' => 'boolean',
         'is_active' => 'boolean',
         'price' => 'float',
         'discount' => 'float',
@@ -79,24 +84,77 @@ class Basket extends Model implements Sectionable
 
     public function getDiscountAmountAttribute()
     {
-        $total = $this->calculated_price;
+        return ScheduleDiscount::amount(
+            $this->calculated_price,
+            $this->resolvedDiscountType(),
+            $this->resolvedDiscountValue(),
+        );
+    }
 
-        // If basket is scheduled and has a default schedule, use its discount
-        if ($this->is_schedule && $this->defaultSchedule) {
-            $schedule = $this->defaultSchedule;
-            if ($schedule->discount_type === 'percentage') {
-                return $total * ($schedule->discount_value / 100);
-            } else {
-                return $schedule->discount_value ?? 0;
-            }
+    public function catalogSchedule(): BelongsTo
+    {
+        return $this->belongsTo(Schedule::class, 'schedule_id');
+    }
+
+    public function resolvedDiscountType(): ?string
+    {
+        if ($this->is_schedule && $this->has_custom_discount) {
+            return $this->discount_type;
         }
 
-        // Otherwise use basket's own discount
-        if ($this->discount_type === 'percentage') {
-            return $total * ($this->discount / 100);
-        } else {
-            return $this->discount;
+        if ($this->is_schedule) {
+            return $this->catalogSchedule?->discount_type
+                ?? $this->defaultSchedule?->discount_type
+                ?? $this->discount_type;
         }
+
+        return $this->discount_type;
+    }
+
+    public function resolvedDiscountValue(): float
+    {
+        if ($this->is_schedule && $this->has_custom_discount) {
+            return (float) $this->discount;
+        }
+
+        if ($this->is_schedule) {
+            return (float) ($this->catalogSchedule?->discount_value
+                ?? $this->defaultSchedule?->discount_value
+                ?? $this->discount
+                ?? 0);
+        }
+
+        return (float) ($this->discount ?? 0);
+    }
+
+    public function scheduleIntervalDays(): ?int
+    {
+        if (!$this->is_schedule) {
+            return null;
+        }
+
+        $days = $this->catalogSchedule?->interval_days
+            ?? $this->defaultSchedule?->number_of_days;
+
+        return $days !== null ? (int) $days : null;
+    }
+
+    public function catalogScheduleArray(): ?array
+    {
+        $schedule = $this->catalogSchedule;
+
+        if (!$this->is_schedule || !$schedule) {
+            return null;
+        }
+
+        return [
+            'id' => $schedule->id,
+            'name' => $schedule->name,
+            'interval_days' => (int) $schedule->interval_days,
+            'discount_type' => $schedule->discount_type,
+            'discount_value' => $schedule->discount_value !== null ? (float) $schedule->discount_value : 0,
+            'is_active' => (bool) $schedule->is_active,
+        ];
     }
 
     public function getFinalPriceAttribute()
@@ -169,12 +227,10 @@ class Basket extends Model implements Sectionable
     public function toSectionArray(): array
     {
         $nextDelivery = null;
+        $intervalDays = $this->scheduleIntervalDays();
 
-        // Use default schedule for next delivery calculation
-        if ($this->is_schedule && $this->defaultSchedule) {
-            $nextDelivery = now()
-                ->addDays($this->defaultSchedule->number_of_days)
-                ->format('Y-m-d');
+        if ($this->is_schedule && $intervalDays) {
+            $nextDelivery = now()->addDays($intervalDays)->format('Y-m-d');
         }
         $itemsCount = $this->items?->count() ?? 0;
 
@@ -196,8 +252,8 @@ class Basket extends Model implements Sectionable
 
             // pricing
             'original_price' => round($this->calculated_price, 2),
-            'discount_value' => $this->discount,
-            'discount_type'  => $this->discount_type,
+            'discount_value' => $this->resolvedDiscountValue(),
+            'discount_type'  => $this->resolvedDiscountType(),
             'discount_amount' => round($this->discount_amount, 2),
             'price_after_discount' => round($this->final_price, 2),
 

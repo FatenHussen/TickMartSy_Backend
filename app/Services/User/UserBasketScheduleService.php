@@ -21,8 +21,13 @@ class UserBasketScheduleService extends BaseService
 
     protected $relations = [
         'schedule',
-        'items.product',
-        'items.variant',
+        'schedule.badges',
+        'schedule.scheduleImages',
+        'items.product.media',
+        'items.product.brand',
+        'items.product.unitOption',
+        'items.variant.productVariant',
+        'items.variant.shop',
     ];
 
     protected $searchableFields = ['id', 'name'];
@@ -33,6 +38,7 @@ class UserBasketScheduleService extends BaseService
         $query = $this->model::query()
             ->with($this->relations)
             ->where('user_id', auth('user')->id())
+            ->where('is_draft', false)
             ->latest();
 
         $perPage = $config['per_page'] ?? 10;
@@ -65,7 +71,10 @@ class UserBasketScheduleService extends BaseService
             'user_id' => auth('user')->id(),
         ]);
 
-        $basket = $this->model::with($this->relations)->find($id);
+        $basket = $this->model::with($this->relations)
+            ->where('user_id', auth('user')->id())
+            ->where('is_draft', false)
+            ->find($id);
 
         if (!$basket) {
             Log::warning('Basket not found', [
@@ -81,6 +90,8 @@ class UserBasketScheduleService extends BaseService
     public function create($data)
     {
         $data['user_id'] = auth('user')->id();
+        $data['is_draft'] = false;
+        $data['is_active'] = $data['is_active'] ?? true;
         $items = $data['items'] ?? [];
         unset($data['items']);
 
@@ -108,7 +119,7 @@ class UserBasketScheduleService extends BaseService
 
     public function update($id, array $data)
     {
-        $basket = $this->model::where('user_id', auth('user')->id())->find($id);
+        $basket = $this->model::where('user_id', auth('user')->id())->where('is_draft', false)->find($id);
 
         if (!$basket) {
             throw new NotFoundException();
@@ -146,7 +157,7 @@ class UserBasketScheduleService extends BaseService
 
     public function delete($id): bool
     {
-        $basket = $this->model::where('user_id', auth('user')->id())->find($id);
+        $basket = $this->model::where('user_id', auth('user')->id())->where('is_draft', false)->find($id);
 
         if (!$basket) {
             throw new NotFoundException();
@@ -159,7 +170,7 @@ class UserBasketScheduleService extends BaseService
 
     public function pause($id)
     {
-        $basket = $this->model::where('user_id', auth('user')->id())->find($id);
+        $basket = $this->model::where('user_id', auth('user')->id())->where('is_draft', false)->find($id);
 
         if (!$basket) {
             throw new NotFoundException();
@@ -174,7 +185,7 @@ class UserBasketScheduleService extends BaseService
 
     public function resume($id)
     {
-        $basket = $this->model::where('user_id', auth('user')->id())->find($id);
+        $basket = $this->model::where('user_id', auth('user')->id())->where('is_draft', false)->find($id);
 
         if (!$basket) {
             throw new NotFoundException();

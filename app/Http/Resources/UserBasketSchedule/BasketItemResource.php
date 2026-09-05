@@ -3,7 +3,6 @@
 namespace App\Http\Resources\UserBasketSchedule;
 
 use App\Http\Resources\Basket\BasketItemProductResource;
-use App\Http\Resources\UserBasketSchedule\BasketItemVariantResource;
 use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -14,29 +13,29 @@ class BasketItemResource extends JsonResource
     public function toArray($request): array
     {
         $availability = $this->resource->basket?->availability_items_by_id[$this->id] ?? null;
-
-        $originalPrice = $this->price;
-        $discountValue = $this->basket?->schedule?->discount_value ?? 0;
-        $discountType = $this->basket?->schedule?->discount_type ?? null;
-
-        $discountAmount = 0;
-        if ($discountValue > 0) {
-            if ($discountType === 'percent') {
-                $discountAmount = round($originalPrice * $discountValue / 100, 2);
-            } else {
-                $discountAmount = round(min($discountValue, $originalPrice), 2);
-            }
-        }
-
-        $priceAfterDiscount = $originalPrice - $discountAmount;
+        $unitPrice = (float) $this->price;
+        $quantity = (int) $this->quantity;
+        $lineTotal = $unitPrice * $quantity;
 
         return [
             'id' => $this->id,
-            'quantity' => (int) $this->quantity,
-            ...$this->withCurrency($originalPrice, 'original_price'),
-            ...$this->withCurrency($discountAmount, 'discount_amount'),
-            ...$this->withCurrency($priceAfterDiscount, 'price_after_discount'),
+            'quantity' => $quantity,
+            'unit' => $this->product?->unitOption?->name ?? $this->product?->unit,
+            ...$this->withCurrency($unitPrice, 'original_price'),
+            ...$this->withCurrency($lineTotal, 'line_total'),
             'shop_product_variant_id' => $this->shop_product_variant_id,
+            'shop' => $this->whenLoaded('variant', function () {
+                $shop = $this->variant?->shop;
+                if (!$shop) {
+                    return null;
+                }
+
+                return [
+                    'id' => $shop->id,
+                    'name' => $shop->name,
+                    'image' => $shop->image_url ?? null,
+                ];
+            }),
             'availability_status' => $availability['status'] ?? 'unknown',
             'is_available' => $availability['is_available'] ?? true,
             'available_quantity' => $availability['available_quantity'] ?? null,

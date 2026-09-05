@@ -587,27 +587,8 @@ class OrderService extends BaseService
                     throw new CustomExceptionWithMessage('custom.orders.basket_id_required');
                 }
 
-                $basket = Basket::findOrFail($basketId);
-
-                // Check if user selected a specific schedule
-                if (!empty($data['basket_schedule_id'])) {
-                    $basketSchedule = $basket->schedules()
-                        ->where('id', $data['basket_schedule_id'])
-                        ->where('is_active', true)
-                        ->first();
-
-                    if ($basketSchedule && $basketSchedule->discount_value > 0) {
-                        // Use selected schedule discount
-                        $basketDiscount = $basketSchedule->discount_value;
-                    } else {
-                        // Fallback to basket discount if schedule not found or no discount
-                        $basketDiscount = $basket->discount;
-                    }
-                } else {
-                    // No schedule selected, use basket discount only
-                    $basketDiscount = $basket->discount;
-                }
-
+                $basket = Basket::with('catalogSchedule')->findOrFail($basketId);
+                $basketDiscount = $basket->resolvedDiscountValue();
                 $deliveryPrice = $basket->delivery_price;
                 break;
 

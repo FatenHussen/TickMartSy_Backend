@@ -86,13 +86,16 @@ class StoreRequest extends FormRequest
      */
     private function normalizeContentType(array $data): array
     {
-        $contentType = $data['content_type'] ?? null;
+        $contentType = Section::canonicalizeContentType($data['content_type'] ?? null);
         if (!$contentType) {
             return [];
         }
 
         $type = $data['type'] ?? (empty($data['item_ids']) ? 'api' : 'manual');
-        $merged = ['type' => $type];
+        $merged = [
+            'type' => $type,
+            'content_type' => $contentType,
+        ];
 
         if ($type === 'manual') {
             $merged['manual_model'] = $data['manual_model'] ?? $contentType;

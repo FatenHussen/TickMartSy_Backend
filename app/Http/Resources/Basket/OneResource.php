@@ -23,41 +23,25 @@ class OneResource extends JsonResource
         $currencyId = $user?->currency_id;
         $nextDelivery = null;
         $defaultSchedule = null;
+        $catalogSchedule = $this->catalogScheduleArray();
+        $intervalDays = $this->scheduleIntervalDays();
 
-        // Get default schedule info for scheduled baskets
+        if ($this->is_schedule && $intervalDays) {
+            $nextDelivery = now()->addDays($intervalDays)->format('Y-m-d');
+        }
+
         if ($this->is_schedule && $this->defaultSchedule) {
             $defaultSchedule = [
                 'id' => $this->defaultSchedule->id,
                 'title' => $this->defaultSchedule->title,
                 'number_of_days' => $this->defaultSchedule->number_of_days,
-                'discount_type' => $this->defaultSchedule->discount_type,
-                'discount_value' => $this->defaultSchedule->discount_value,
-            ];
-
-            // Calculate next delivery based on default schedule
-            $nextDelivery = now()->addDays($this->defaultSchedule->number_of_days)->format('Y-m-d');
-        }
-
-        // Get default schedule info for scheduled baskets
-        $defaultSchedule = null;
-        if ($this->is_schedule && $this->defaultSchedule) {
-            $defaultSchedule = [
-                'id' => $this->defaultSchedule->id,
-                'title' => $this->defaultSchedule->title,
-                'number_of_days' => $this->defaultSchedule->number_of_days,
-                'discount_type' => $this->defaultSchedule->discount_type,
-                'discount_value' => $this->defaultSchedule->discount_value,
+                'discount_type' => $this->resolvedDiscountType(),
+                'discount_value' => $this->resolvedDiscountValue(),
             ];
         }
 
-        // For scheduled baskets, use default schedule's discount values
-        $discountType = $this->discount_type;
-        $discountValue = $this->discount;
-
-        if ($this->is_schedule && $this->defaultSchedule) {
-            $discountType = $this->defaultSchedule->discount_type;
-            $discountValue = $this->defaultSchedule->discount_value;
-        }
+        $discountType = $this->resolvedDiscountType();
+        $discountValue = $this->resolvedDiscountValue();
 
         $categoryNames = ($this->categories ?? collect())->pluck('name')->filter()->implode(' - ');
 
@@ -94,6 +78,9 @@ class OneResource extends JsonResource
                 ? BasketScheduleAllResource::collection($this->schedules ?? collect())
                 : [],
             'default_schedule' => $defaultSchedule,
+            'schedule_id' => $this->schedule_id,
+            'schedule' => $catalogSchedule,
+            'has_custom_discount' => (bool) $this->has_custom_discount,
             'is_favorite' => (bool) ($this->is_favorite ?? false),
 
             'top_badges' => BadgeOneResource::collection(

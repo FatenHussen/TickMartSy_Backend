@@ -20,6 +20,7 @@ class Section extends Model
         'recipes',
         'baskets',
         'schedule-basket',
+        'schedules',
         'products',
         'shops',
         'restaurants',
@@ -37,6 +38,11 @@ class Section extends Model
         'category',
         'recipe',
         'basket',
+        'schedule',
+        'schedule-basket',
+        'suggested_products',
+        'suggested_shops',
+        'suggested_baskets',
     ];
 
     public const API_METHOD_BY_CONTENT = [
@@ -47,6 +53,11 @@ class Section extends Model
         'category' => 'categories',
         'recipe' => 'recipes',
         'basket' => 'baskets',
+        'schedule' => 'schedules',
+        'schedule-basket' => 'schedule-basket',
+        'suggested_products' => 'suggested_products',
+        'suggested_shops' => 'suggested_shops',
+        'suggested_baskets' => 'suggested_baskets',
     ];
 
     protected $casts = [
@@ -75,6 +86,48 @@ class Section extends Model
         'details_slug',
         'is_active',
     ];
+
+    /**
+     * Map dashboard aliases (Scheduled baskets, suggested-products, …) to a canonical content_type.
+     */
+    public static function canonicalizeContentType(?string $contentType): ?string
+    {
+        if ($contentType === null || $contentType === '') {
+            return $contentType;
+        }
+
+        $key = strtolower(trim($contentType));
+        $hyphenated = str_replace([' ', '_'], '-', $key);
+
+        $aliases = [
+            'schedule-basket' => 'schedule-basket',
+            'scheduled-basket' => 'schedule-basket',
+            'scheduled-baskets' => 'schedule-basket',
+            'schedules' => 'schedule',
+            'schedule-category' => 'schedule',
+            'schedule-categories' => 'schedule',
+            'suggested-products' => 'suggested_products',
+            'suggested-shops' => 'suggested_shops',
+            'suggested-baskets' => 'suggested_baskets',
+        ];
+
+        if (isset($aliases[$hyphenated])) {
+            return $aliases[$hyphenated];
+        }
+
+        $fromApiMethod = array_flip(self::API_METHOD_BY_CONTENT);
+        if (isset($fromApiMethod[$key]) || isset($fromApiMethod[$hyphenated])) {
+            return $fromApiMethod[$key] ?? $fromApiMethod[$hyphenated];
+        }
+
+        foreach (self::CONTENT_TYPES as $canonical) {
+            if (strtolower($canonical) === $key || str_replace('_', '-', strtolower($canonical)) === $hyphenated) {
+                return $canonical;
+            }
+        }
+
+        return $contentType;
+    }
 
     /**
      * Friendly content kind used by the dashboard (product, restaurant, shop, ...).

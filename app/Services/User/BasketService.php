@@ -23,6 +23,8 @@ class BasketService extends BaseService
         'items.variant',
         'basketImages',
         'schedules',
+        'catalogSchedule',
+        'defaultSchedule',
         'favorites'
     ];
     protected $searchableFields = ['name'];
@@ -37,6 +39,7 @@ class BasketService extends BaseService
         $isSchedule = $filters['is_schedule'] ?? null;
         $categoryId = $filters['category_id'] ?? null;
         $scheduleDays = $filters['schedule_days'] ?? null;
+        $scheduleId = $filters['schedule_id'] ?? null;
         $priceMin = $filters['price_min'] ?? null;
         $priceMax = $filters['price_max'] ?? null;
         $ratingMin = $filters['rating_min'] ?? null;
@@ -50,6 +53,7 @@ class BasketService extends BaseService
             $filters['is_schedule'],
             $filters['category_id'],
             $filters['schedule_days'],
+            $filters['schedule_id'],
             $filters['price_min'],
             $filters['price_max'],
             $filters['rating_min'],
@@ -2508,10 +2512,18 @@ class BasketService extends BaseService
         }
 
         // Filter by schedule days
+        if ($scheduleId !== null) {
+            $query->where('schedule_id', (int) $scheduleId);
+        }
+
         if ($scheduleDays !== null) {
-            $query->whereHas('schedules', function ($q) use ($scheduleDays) {
-                $q->where('number_of_days', $scheduleDays)
-                  ->where('is_active', true);
+            $query->where(function ($q) use ($scheduleDays) {
+                $q->whereHas('catalogSchedule', function ($scheduleQuery) use ($scheduleDays) {
+                    $scheduleQuery->where('interval_days', $scheduleDays);
+                })->orWhereHas('schedules', function ($scheduleQuery) use ($scheduleDays) {
+                    $scheduleQuery->where('number_of_days', $scheduleDays)
+                        ->where('is_active', true);
+                });
             });
         }
 

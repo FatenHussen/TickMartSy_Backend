@@ -21,6 +21,7 @@ class MyBasketService
 
         if (in_array($type, ['user-schedule', 'all'])) {
             $userScheduledBaskets = UserBasketSchedule::where('user_id', $userId)
+                ->where('is_draft', false)
                 ->with([
                     'schedule',
                     'items.product.media',
@@ -52,6 +53,8 @@ class MyBasketService
                     'items.variant',
                     'items.shopProductVariant.productVariant.product',
                     'schedules',
+                    'catalogSchedule',
+                    'defaultSchedule',
                 ])
                 ->get()
                 ->map(function ($basket) use ($orders) {

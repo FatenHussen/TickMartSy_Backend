@@ -1,9 +1,10 @@
-# Flutter — كل التعديلات (نسخة نهائية — 26 آب 2026)
+# Flutter — كل التعديلات (نسخة نهائية — 5 أيلول 2026)
 
 > **أرسلوا هذا الملف لفريق Flutter فقط.**  
 > Base: `/api/user` + `Accept-Language: ar|en`.  
-> يجمع **كل** التعديلات المطلوبة في التطبيق (Nav · أقسام · فئات · منتج · فلاتر · أسعار · **طلب سريع حسب الصفحة**).  
-> **آخر تحديث | Last Updated:** 2026-08-26
+> يجمع **كل** التعديلات: Nav · أقسام · فئات · منتج · فلاتر · أسعار · طلب سريع · متغيّرات · **ضمان** · **كمية**.  
+> **آخر نسخة موحّدة (موصى بها للإرسال):** [`FLUTTER_LATEST.md`](./FLUTTER_LATEST.md)  
+> **آخر تحديث | Last Updated:** 2026-09-05
 
 ---
 
@@ -22,6 +23,7 @@
 11. [عرض الأسعار دولار + ليرة](#11-عرض-الأسعار)
 12. [قسم الطلب السريع (حسب الصفحة) — **آخر تحديث**](#12-قسم-الطلب-السريع-حسب-الصفحة--آخر-تحديث)
 13. [متغيّرات المنتج — عرض واختيار](#13-متغيّرات-المنتج--عرض-واختيار)
+14. [الضمان + الكمية (5 أيلول 2026)](#14-الضمان--الكمية-5-أيلول-2026)
 
 ---
 
@@ -103,7 +105,7 @@ class NavMenuItem {
 |-------|--------|-------|
 | **`layout`** | طريقة عرض **القسم كامل** | `slider` \| `list` \| `grid` |
 | **`variant`** | شكل **الكارد داخل** القسم | `horizontal` \| `vertical` \| `square` |
-| **`display_type_id`** | نوع **المحتوى** | 1=banner, 2=product, 3=shop, 4=basket, 5=schedule-basket, 6=brand, 7=recipe, 8=category |
+| **`display_type_id`** | نوع **المحتوى** | 1=banner, 2=product, 3=shop, 4=basket, 5=schedule-basket, 6=brand, 7=recipe, 8=category, **11=schedule** (فئات الجدولة) |
 
 **غلط قديم (احذفوه):** `variant == horizontal` → سلايدر. **صار خطأ.**  
 السلايدر = `layout: slider`، شكل الكارد = `variant`.
@@ -401,7 +403,7 @@ class ShopVariant {
   final int? id;
   final int? shopId;
   final num price;
-  final int quantity;
+  final int? quantity; // stock — nullable
 }
 ```
 
@@ -823,6 +825,8 @@ php artisan db:seed --class=NavMenuSeeder
 - [ ] `page_slugs` / `page_ids`: القسم حسب الصفحة (افتراضي `home`)
 - [ ] خلفية صورة/لون + `card_variant` + ريسبونسيف
 - [ ] CTA → `POST /custom-order-requests` (فلو كامل: [`../custom-orders/flutter.md`](../custom-orders/flutter.md))
+- [ ] ضمان: `warranty.name` / `.description`
+- [ ] كمية المتغيّر `int?` + `canAddToCart` آمن مع `null`
 
 ---
 
@@ -845,8 +849,39 @@ php artisan db:seed --class=NavMenuSeeder
 | عرض التوفير | `discount` = المبلغ المخصوم |
 
 - لا تفترض كل الألوان × كل المقاسات — اعرض فقط ما في API.
-- `canAddToCart` يتطلب `quantity > 0` و `id != null`.
+- `canAddToCart` يتطلب `quantity > 0` و `id != null` و `shopId != null` — كمية `null` = 0.
 
 ---
 
-**آخر تحديث | Last Updated:** 2026-08-30
+## 14) الضمان + الكمية (5 أيلول 2026)
+
+> الدليل الكامل للإرسال: [`FLUTTER_LATEST.md`](./FLUTTER_LATEST.md)
+
+### الضمان
+
+```dart
+class ProductWarranty {
+  final int id;
+  final String name;
+  final String? description;
+}
+```
+
+من `GET /api/user/products/{id}`: `warranty` object أو `null`. الحقول localized strings. Fallback: `warranty_period`.
+
+### الكمية
+
+```dart
+bool canAddToCart(ShopVariant? v) =>
+    v?.id != null &&
+    v?.shopId != null &&
+    (v?.quantity ?? 0) > 0;
+```
+
+`ShopVariant.quantity` و `ProductDetail.quantity` كلاهما `int?`. المخزون من المتغيّر فقط.
+
+الأدمن ما عاد يضيف متغيّر فاضي. الباك يبقى يرجّع fallback `shop_variants[0]`.
+
+---
+
+**آخر تحديث | Last Updated:** 2026-09-05

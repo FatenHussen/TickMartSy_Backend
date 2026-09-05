@@ -2,7 +2,7 @@
 
 > **أرسلوا هذا الملف لفريق Flutter و Web معاً.**  
 > Base: `/api/user` + `Accept-Language: ar|en`  
-> **آخر تحديث:** 2026-08-30
+> **آخر تحديث:** 2026-09-05
 
 ---
 
@@ -34,7 +34,8 @@
 | 7 | `attributes` = `{ attribute, value, type }` — **مو** `id` / `category_attribute` | ✅ | ✅ |
 | 8 | الأسعار بعملتين عبر `*_currencies.USD` / `*_currencies.SYP` | ✅ | ✅ |
 | 9 | `delivery_time` على **مستوى المنتج** — ليس per variant | ✅ | ✅ |
-| 10 | `quantity` = **حقل واحد** للمخزون — لا `stock` منفصل | ✅ | ✅ |
+| 10 | `quantity` = **حقل واحد** للمخزون على المتغيّر — ممكن **`null`** | ✅ | ✅ |
+| 11 | **ضمان المنتج** `warranty: { id, name, description }` — مو أشهر فقط | ✅ | ✅ |
 
 ### محذوف / لا تعتمد عليه
 

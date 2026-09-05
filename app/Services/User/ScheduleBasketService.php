@@ -26,6 +26,8 @@ class ScheduleBasketService extends BaseService
         // 'items.companies',
         // 'items.companies.brand',
         'schedules',
+        'catalogSchedule',
+        'defaultSchedule',
         'favorites'
     ];
     protected $searchableFields = ['name'];
@@ -35,21 +37,24 @@ class ScheduleBasketService extends BaseService
     public function query(array $filters)
     {
         $scheduleDays = $filters['schedule_days'] ?? null;
+        $scheduleId = $filters['schedule_id'] ?? null;
 
         $query = Basket::query()->latest();
 
-
-        // Filter by schedule status
-        // if (isset($filters['is_schedule'])) {
-        //     $query->where('is_schedule', $filters['is_schedule']);
-        // }
         $query->where('is_schedule', 1);
 
-        // Filter by schedule days
+        if ($scheduleId !== null) {
+            $query->where('schedule_id', (int) $scheduleId);
+        }
+
         if ($scheduleDays !== null) {
-            $query->whereHas('schedules', function ($q) use ($scheduleDays) {
-                $q->where('number_of_days', $scheduleDays)
-                    ->where('is_active', true);
+            $query->where(function ($q) use ($scheduleDays) {
+                $q->whereHas('catalogSchedule', function ($scheduleQuery) use ($scheduleDays) {
+                    $scheduleQuery->where('interval_days', $scheduleDays);
+                })->orWhereHas('schedules', function ($scheduleQuery) use ($scheduleDays) {
+                    $scheduleQuery->where('number_of_days', $scheduleDays)
+                        ->where('is_active', true);
+                });
             });
         }
 
@@ -98,7 +103,7 @@ class ScheduleBasketService extends BaseService
         }
 
 
-        return $query->where('is_active', true);
+        return $query->with($this->relations)->where('is_active', true);
     }
 
     protected function applyTypeFilters($query, $type)

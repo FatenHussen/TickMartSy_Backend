@@ -75,6 +75,7 @@ class DatabaseSeeder extends Seeder
 
             // Recipes & Baskets
             RecipeSeeder::class,
+            ScheduleSeeder::class,
             BasketSeeder::class,
             BasketItemSeeder::class,
             BasketScheduleSeeder::class,
@@ -85,7 +86,6 @@ class DatabaseSeeder extends Seeder
             // UserTokenSeeder::class, // FCM tokens for push notifications
 
             // Schedules
-            ScheduleSeeder::class,
             UserBasketScheduleSeeder::class,
             UserBasketScheduleItemSeeder::class,
 

@@ -6,6 +6,7 @@ use App\Enums\ProductApprovalStatus;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Vendor;
+use App\Services\Admin\ProductService as AdminProductService;
 use App\Services\User\ProductService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -54,6 +55,22 @@ class ProductCategorySubtreeTest extends TestCase
 
         $this->assertSame([$childProduct->id], $ids->all());
         $this->assertNotContains($rootProduct->id, $ids);
+    }
+
+    public function test_admin_parent_category_filter_includes_descendant_products(): void
+    {
+        $vendor = $this->createVendor();
+        $root = $this->createCategory('Fashion');
+        $child = $this->createCategory('Jeans', $root);
+
+        $rootProduct = $this->createProduct($root, $vendor, 'Direct fashion product');
+        $childProduct = $this->createProduct($child, $vendor, 'Jeans product');
+
+        $ids = app(ProductService::class)
+            ->queryBuilder(Product::query(), ['category_id' => $root->id])
+            ->pluck('id');
+
+        $this->assertEqualsCanonicalizing([$rootProduct->id, $childProduct->id], $ids->all());
     }
 
     private function createCategory(string $name, ?Category $parent = null): Category

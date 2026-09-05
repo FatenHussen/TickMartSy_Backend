@@ -19,6 +19,7 @@ class UserBasketSchedule extends Model implements Sectionable
         'schedule_id',
         'name',
         'is_active',
+        'is_draft',
         'start_date',
         'next_run_date',
         'paused_at',
@@ -26,6 +27,7 @@ class UserBasketSchedule extends Model implements Sectionable
 
     protected $casts = [
         'is_active'     => 'boolean',
+        'is_draft'      => 'boolean',
         'start_date'    => 'date',
         'next_run_date' => 'date',
         'paused_at'     => 'datetime',
@@ -91,16 +93,11 @@ class UserBasketSchedule extends Model implements Sectionable
 
         $discountValue = $this->schedule?->discount_value ?? 0;
         $discountType  = $this->schedule?->discount_type ?? null;
-
-        $discountAmount = 0;
-
-        if ($discountValue > 0) {
-            if ($discountType === 'percent') {
-                $discountAmount = round($totalPrice * $discountValue / 100, 2);
-            } else {
-                $discountAmount = round(min($discountValue, $totalPrice), 2);
-            }
-        }
+        $discountAmount = \App\Support\ScheduleDiscount::amount(
+            $totalPrice,
+            $discountType,
+            $discountValue,
+        );
 
         $finalPrice = round($totalPrice - $discountAmount, 2);
         $itemsCount = $this->items?->count() ?? 0;
@@ -128,7 +125,17 @@ class UserBasketSchedule extends Model implements Sectionable
     // ================= Scopes =================
     public function scopeActive($query)
     {
-        return $query->where('is_active', true)->whereNull('paused_at');
+        return $query->where('is_active', true)->where('is_draft', false)->whereNull('paused_at');
+    }
+
+    public function scopeConfirmed($query)
+    {
+        return $query->where('is_draft', false);
+    }
+
+    public function scopeDraft($query)
+    {
+        return $query->where('is_draft', true);
     }
 
     public function scopePaused($query)

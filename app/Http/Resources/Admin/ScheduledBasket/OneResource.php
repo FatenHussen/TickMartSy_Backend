@@ -31,8 +31,9 @@ class OneResource extends JsonResource
 
             // Pricing
             'original_price' => round($this->calculated_price, 2),
-            'discount' => $this->discount,
-            'discount_type' => $this->discount_type,
+            'discount' => $this->resolvedDiscountValue(),
+            'discount_type' => $this->resolvedDiscountType(),
+            'has_custom_discount' => (bool) $this->has_custom_discount,
             'discount_amount' => round($this->discount_amount, 2),
             'final_price' => round($this->final_price, 2),
 
@@ -45,6 +46,23 @@ class OneResource extends JsonResource
             // Delivery
             'delivery_price' => (float) $this->delivery_price,
             'is_schedule' => true,
+            'schedule_id' => $this->schedule_id,
+            'schedule' => $this->whenLoaded('catalogSchedule', function () {
+                if (!$this->catalogSchedule) {
+                    return null;
+                }
+
+                return [
+                    'id' => $this->catalogSchedule->id,
+                    'name' => $this->catalogSchedule->getTranslations('name'),
+                    'interval_days' => (int) $this->catalogSchedule->interval_days,
+                    'discount_type' => $this->catalogSchedule->discount_type,
+                    'discount_value' => $this->catalogSchedule->discount_value !== null
+                        ? (float) $this->catalogSchedule->discount_value
+                        : 0,
+                    'is_active' => (bool) $this->catalogSchedule->is_active,
+                ];
+            }),
 
             // Items (with is_required, is_extra, shop_product_variant_ids)
             'items' => ScheduledBasketItemResource::collection($this->items->where('is_extra', 0)),

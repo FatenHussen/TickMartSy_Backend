@@ -32,6 +32,14 @@ return [
         'item_type' => 'App\Models\Category',
         'url'   => 'admin/categories',
     ],
+    'schedule' => [
+        'item_type' => 'App\Models\Schedule',
+        'url'   => 'admin/schedules',
+    ],
+    'schedule-basket' => [
+        'item_type' => 'App\Models\Basket',
+        'url'   => 'admin/scheduled-baskets',
+    ],
     // 'vendor' => [
     //     'item_type' => 'App\Models\Vendor',
     //     'url'   => 'admin/shop',

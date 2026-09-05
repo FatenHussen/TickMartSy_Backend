@@ -19,6 +19,7 @@ class FilterRequest extends FormRequest
             'min_price' => 'nullable|numeric|min:0',
             'max_price' => 'nullable|numeric|min:0',
             'discount_type' => 'nullable|in:fixed,percentage',
+            'schedule_id' => 'nullable|integer|exists:schedules,id',
         ];
     }
 }

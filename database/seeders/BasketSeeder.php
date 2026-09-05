@@ -4,12 +4,15 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Basket;
-use App\Models\BasketItem;
+use App\Models\Schedule;
 
 class BasketSeeder extends Seeder
 {
     public function run(): void
     {
+        $weekly = Schedule::query()->where('interval_days', 7)->first();
+        $monthly = Schedule::query()->where('interval_days', 30)->first();
+
         $basket1 = Basket::create([
             'category_id'      => 1,
             'name'             => [
@@ -19,14 +22,15 @@ class BasketSeeder extends Seeder
             'num_varieties'    => 6,
             'offer_ends_at'    => null,
             'price'            => 0,
-            'discount'         => 20,
+            'discount'         => 0,
             'discount_type'    => 'percentage',
+            'has_custom_discount' => false,
             'rating'           => 4.8,
             'num_sold'         => 1247,
             'image'            => 'baskets/image.jpg',
             'delivery_price' => 20,
-            'is_schedule' => 1
-
+            'is_schedule' => 1,
+            'schedule_id' => $weekly?->id,
         ]);
 
 
@@ -39,13 +43,15 @@ class BasketSeeder extends Seeder
             'num_varieties'    => 9,
             'offer_ends_at'    => null,
             'price'            => 0,
-            'discount'         => 12.50,
-            'discount_type'    => 'fixed',
+            'discount'         => 0,
+            'discount_type'    => 'percentage',
+            'has_custom_discount' => false,
             'rating'           => 4.5,
             'num_sold'         => 683,
             'image'            => 'baskets/image1.jpg',
             'delivery_price' => 20,
-            'is_schedule' => 1
+            'is_schedule' => 1,
+            'schedule_id' => $monthly?->id,
 
 
         ]);
