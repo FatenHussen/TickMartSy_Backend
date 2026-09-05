@@ -173,4 +173,38 @@ class SchedulePageSectionTest extends TestCase
         $this->assertSame(\App\Models\Schedule::class, $request->input('item_ids.0.item_type'));
         $this->assertSame(\App\Models\Schedule::class, $request->input('item_ids.1.item_type'));
     }
+
+    public function test_schedule_update_accepts_blank_discount_and_saves_name(): void
+    {
+        $schedule = Schedule::create([
+            'name' => ['ar' => 'أسبوعي', 'en' => 'Weekly'],
+            'interval_days' => 7,
+            'is_active' => true,
+            'discount_type' => 'percentage',
+            'discount_value' => 20,
+        ]);
+
+        $request = \App\Http\Requests\Admin\Schedule\UpdateRequest::create('/api/admin/schedules/'.$schedule->id, 'POST', [
+            'name' => ['ar' => 'شهري', 'en' => 'Monthly'],
+            'description' => ['ar' => 'وصف', 'en' => 'Desc'],
+            'interval_days' => 30,
+            'discount_type' => '',
+            'discount_value' => '',
+            'is_active' => '0',
+        ]);
+        $request->setContainer($this->app)->setRedirector($this->app->make('redirect'));
+        $request->validateResolved();
+
+        $this->assertNull($request->input('discount_type'));
+        $this->assertNull($request->input('discount_value'));
+
+        app(\App\Services\Admin\ScheduleService::class)->update($schedule->id, $request->validated());
+
+        $schedule->refresh();
+        $this->assertSame('شهري', $schedule->getTranslation('name', 'ar'));
+        $this->assertSame('Monthly', $schedule->getTranslation('name', 'en'));
+        $this->assertSame(30, (int) $schedule->interval_days);
+        $this->assertNull($schedule->discount_type);
+        $this->assertFalse($schedule->is_active);
+    }
 }

@@ -36,14 +36,14 @@ class BaseCRUDController extends Controller
     }
     public function store(Request $request)
     {
-        $data = app($this->createRequest)->validated();
+        $data = $this->resolveValidatedFilters($request, $this->createRequest);
         Log::info($data);
         $res = $this->service->create($data);
         return $this->sendResponse(data: $res);
     }
     public function update(Request $request, $id)
     {
-        $data = app($this->updateRequest)->validated();
+        $data = $this->resolveValidatedFilters($request, $this->updateRequest);
         $res = $this->service->update($id, $data);
         return $this->sendResponse(data: $res);
     }

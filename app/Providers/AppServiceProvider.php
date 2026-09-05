@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\Recipe;
 use App\Models\Shop;
 use App\Models\Category;
+use App\Models\Schedule;
 use App\Models\VendorWithdrawRequest;
 use App\Observers\CategoryObserver;
 use App\Observers\VendorWithdrawRequestObserver;
@@ -43,6 +44,7 @@ class AppServiceProvider extends ServiceProvider
             'shop' => Shop::class,
             'recipe' => Recipe::class,
             'basket' => Basket::class,
+            'schedule' => Schedule::class,
         ]);
 
         Gate::policy(Driver::class, DriverPolicy::class);

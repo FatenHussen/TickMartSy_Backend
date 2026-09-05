@@ -11,8 +11,8 @@ class AllResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'description' => $this->description,
+            'name' => $this->getTranslations('name'),
+            'description' => $this->getTranslations('description'),
             'image' => $this->image_url,
             'images' => $this->image_urls,
             'interval_days' => $this->interval_days,

@@ -3,12 +3,10 @@
 namespace App\Http\Requests\Admin\Schedule;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Models\Language;
-use Illuminate\Http\UploadedFile;
 
 class StoreRequest extends FormRequest
 {
-    protected array $locales = [];
+    use NormalizesSchedulePayload;
 
     public function authorize(): bool
     {
@@ -17,29 +15,7 @@ class StoreRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $this->locales = Language::active()->pluck('code')->toArray();
-        $data = $this->all();
-
-        $preparedName = [];
-        $preparedDescription = [];
-        foreach ($this->locales as $locale) {
-            if (isset($data['name'][$locale])) {
-                $preparedName[$locale] = $data['name'][$locale];
-            }
-            if (isset($data['description'][$locale])) {
-                $preparedDescription[$locale] = $data['description'][$locale];
-            }
-        }
-        $this->merge(['name' => $preparedName]);
-        if ($preparedDescription !== []) {
-            $this->merge(['description' => $preparedDescription]);
-        }
-
-        if ($this->file('images') instanceof UploadedFile) {
-            $this->merge([
-                'images' => [$this->file('images')],
-            ]);
-        }
+        $this->mergeNormalizedSchedulePayload(requireAllLocalesForName: true);
     }
 
     public function rules(): array

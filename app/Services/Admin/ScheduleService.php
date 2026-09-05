@@ -80,6 +80,7 @@ class ScheduleService extends BaseService
     public function create($data)
     {
         return DB::transaction(function () use ($data) {
+            $data = $this->mergeRequestUploads($data);
             $media = $this->extractMedia($data);
             $badges = $data['badges'] ?? [];
             unset($data['badges']);
@@ -98,20 +99,34 @@ class ScheduleService extends BaseService
     {
         return DB::transaction(function () use ($id, $data) {
             $schedule = $this->model::findOrFail($id);
+            $data = $this->mergeRequestUploads($data);
             $media = $this->extractMedia($data);
             $badges = array_key_exists('badges', $data) ? $data['badges'] : null;
             unset($data['badges']);
 
-            if (property_exists($schedule, 'translatable')) {
-                foreach ($schedule->translatable as $field) {
-                    if (isset($data[$field])) {
-                        $schedule->setTranslations($field, $data[$field]);
-                        unset($data[$field]);
-                    }
+            foreach ($schedule->translatable as $field) {
+                if (!isset($data[$field]) || !is_array($data[$field])) {
+                    continue;
                 }
+
+                $incoming = array_filter(
+                    $data[$field],
+                    static fn ($value) => $value !== null
+                );
+                unset($data[$field]);
+
+                if ($incoming === []) {
+                    continue;
+                }
+
+                $schedule->setTranslations(
+                    $field,
+                    array_merge($schedule->getTranslations($field), $incoming)
+                );
             }
 
-            $schedule->update($data);
+            $schedule->fill($data);
+            $schedule->save();
             $this->syncMedia($schedule, $media);
 
             if ($badges !== null) {
@@ -137,6 +152,41 @@ class ScheduleService extends BaseService
         $schedule->delete();
 
         return true;
+    }
+
+    /**
+     * Form-request validated() sometimes drops files / nested badge arrays on multipart POST.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    protected function mergeRequestUploads(array $data): array
+    {
+        $request = request();
+        if (!$request) {
+            return $data;
+        }
+
+        if (!(($data['image'] ?? null) instanceof UploadedFile) && $request->hasFile('image')) {
+            $data['image'] = $request->file('image');
+        }
+
+        $images = $data['images'] ?? null;
+        $hasUploadedImages = is_array($images) && collect($images)->contains(fn ($file) => $file instanceof UploadedFile);
+        if (!$hasUploadedImages && $request->hasFile('images')) {
+            $files = $request->file('images');
+            $data['images'] = is_array($files) ? $files : [$files];
+        }
+
+        if (!array_key_exists('badges', $data) && $request->exists('badges')) {
+            $data['badges'] = $request->input('badges');
+        }
+
+        if (!array_key_exists('deleted_image_ids', $data) && $request->exists('deleted_image_ids')) {
+            $data['deleted_image_ids'] = $request->input('deleted_image_ids');
+        }
+
+        return $data;
     }
 
     protected function extractMedia(array &$data): array
