@@ -26,22 +26,26 @@ return [
     |
 
     */
-    'allowed_origins' => [
+    'allowed_origins' => array_values(array_unique(array_filter(array_merge([
         'https://tikmool-dashboard.octopus-software.online',
-        'http://localhost:8081',
-        'http://localhost:5173',
         'https://tikmool-website.octopus-software.online',
-        "https://tickadmin.tickmartsy.com",
-        "https://tickmartsy.com"
-
-    ],
+        'https://tickadmin.tickmartsy.com',
+        'https://tickdash.tickmartsy.com',
+        'https://tickmartsy.com',
+        'https://www.tickmartsy.com',
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+        'http://localhost:8081',
+    ], array_filter(array_map('trim', explode(',', (string) env('CORS_ALLOWED_ORIGINS', '')))))))),
 
     /*
     |--------------------------------------------------------------------------
     | Allowed Origins Patterns
     |--------------------------------------------------------------------------
     */
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        '#^https://([a-z0-9-]+\.)?tickmartsy\.com$#',
+    ],
 
     /*
     |--------------------------------------------------------------------------

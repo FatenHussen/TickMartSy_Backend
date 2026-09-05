@@ -15,6 +15,10 @@ class SetLocale
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if ($request->isMethod('OPTIONS')) {
+            return $next($request);
+        }
+
         $availableLocales = Language::active()->pluck('code')->toArray();
 
         $locale = $request->header('Accept-Language');
