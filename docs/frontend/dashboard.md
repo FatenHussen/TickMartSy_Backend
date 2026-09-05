@@ -900,7 +900,8 @@ php artisan migrate   # 2026_08_30_120000_add_discount_to_product_variants_table
 
 > الدليل: [`DASHBOARD_PRODUCT_WARRANTY.md`](./DASHBOARD_PRODUCT_WARRANTY.md) — **5 أيلول 2026**
 
-- قسم مستقل: `GET/POST/PATCH/DELETE /api/admin/warranties` — صلاحيات `warranty.*`
+- قسم مستقل: `GET/POST/PATCH/DELETE /api/admin/warranties`
+- صلاحية السايدبار: **`warranty.view`** (مفرد — مو `warranties.view`). الباك لا يرسم القائمة؛ أضيفوا بند `/products/warranties` مثل الوحدات
 - فورم المنتج: `warranty_id` اختياري — **لا** `warranty_period`
 - لا تولّدوا كارد «المتغير رقم 1» تلقائياً؛ الأدمن يضيف المتغيّر بنفسه
 

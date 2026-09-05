@@ -20,8 +20,11 @@
 | حذف | `DELETE /api/admin/warranties/{id}` |
 | ربط المنتج | `warranty_id` في `POST/PUT /api/admin/products` |
 
-صلاحيات الواجهة: `warranty.view` · `warranty.create` · `warranty.update` · `warranty.delete`  
-(الـ API مثل الوحدات: أدمن مسجّل — القائمة تظهر في دروب داون المنتج بدون صلاحية إضافية)
+صلاحيات الواجهة (مفرد `warranty` — مو `warranties`):
+
+`warranty.view` · `warranty.create` · `warranty.update` · `warranty.delete`
+
+الـ API مثل الوحدات: أدمن مسجّل يكفي لـ `GET /warranties` (دروب داون المنتج). السايدبار يخضع لـ `warranty.view`.
 
 ### Payload الضمان
 
@@ -47,6 +50,20 @@
 - رد المنتج: `warranty: { id, name, description }` + `warranty_id`
 
 مسار الداشبورد: `/products/warranties`
+
+### سايدبار — الباك ما بيرجّع قائمة أقسام
+
+قسم **الضمانات** ما بيطلع لحاله. زي الأيقونات/الوحدات: تضيفوا بند تحت المنتجات.
+
+| | |
+|--|--|
+| العنوان | الضمانات |
+| المسار | `/products/warranties` |
+| إظهار البند | `permissions` فيها **`warranty.view`** (مو `warranties.view`) |
+| CRUD الصفحة | نفس مفاتيح `warranty.*` |
+
+المصدر: `GET /api/admin/auth/profile` → `permissions: ["warranty.view", ...]`.  
+إذا المفتاح مو موجود: على السيرفر `php artisan migrate` ثم **تسجيل خروج/دخول** (كاش Spatie).
 
 ---
 
