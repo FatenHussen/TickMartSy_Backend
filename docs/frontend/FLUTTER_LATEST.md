@@ -37,7 +37,7 @@
 | **كمية المنتج** | رقم على المنتج | المخزون = `shop_variants[].quantity` (ممكن `null`) |
 | **منتج بلا متغيّرات** | افتراض صف | الأدمن ما عاد يضيف متغيّر فاضي — الباك يبقى يرجّع `shop_variants[0]` fallback حتى ما يكسر الشاشة |
 | **canAddToCart** | `quantity > 0` | + `id != null` + `shopId != null` — كمية `null` = 0 |
-| **السلة المخصصة** | — | كروت `/schedules` + تخصيص داخل الفئة + تأكيد نعم/لا — [`FLUTTER_CUSTOM_BASKET.md`](./FLUTTER_CUSTOM_BASKET.md) |
+| **السلة المخصصة** | — | كروت `/schedules` + قسم `display_type_id=11` + تخصيص نعم/لا — [`FLUTTER_CUSTOM_BASKET.md`](./FLUTTER_CUSTOM_BASKET.md) |
 | **حقول الكرت** | شكّ إن الصورة اسمها ثاني | `image` · `images` · `top_badges` / `bottom_badges` — ما في `cover_image` / `gallery` |
 | **اسم / خصم** | كائن ترجمة أو `none` | `name` = `String` · `discountType` = `percentage` \| `fixed` \| `null` |
 
@@ -77,7 +77,7 @@ Accept-Language: ar
 |-----|--------|
 | `layout` | `slider` \| `list` \| `grid` — تخطيط القسم |
 | `variant` | `horizontal` \| `vertical` \| `square` — شكل الكارد |
-| `display_type_id` | نوع المحتوى (بانر، منتج، متجر...) |
+| `display_type_id` | نوع المحتوى: 1=banner … 8=category · **11=schedule** (فئات الجدولة) · 5=schedule-basket (سلل جاهزة) |
 
 **غلط قديم:** `variant == horizontal` يعني سلايدر. **احذفوه.**  
 السلايدر = `layout: slider`.
@@ -299,7 +299,7 @@ int? asInt(dynamic v) {
 - [ ] **كمية:** `ShopVariant.quantity` كـ `int?`
 - [ ] `canAddToCart`: id + shopId + qty > 0
 - [ ] لا Cartesian
-- [ ] سلة مخصصة: كروت من `image` / `images` / `top_badges` + تخصيص `/schedules/{id}/custom-basket` — [`FLUTTER_CUSTOM_BASKET.md`](./FLUTTER_CUSTOM_BASKET.md)
+- [ ] سلة مخصصة: قسم `display_type_id=11` + كروت `image`/`images`/`top_badges` + تخصيص `/schedules/{id}/custom-basket` — [`FLUTTER_CUSTOM_BASKET.md`](./FLUTTER_CUSTOM_BASKET.md)
 
 ### باقي التطبيق
 - [ ] Nav ديناميكي
@@ -312,23 +312,25 @@ int? asInt(dynamic v) {
 
 ## 14) السلة المخصصة
 
-> الدليل الكامل للإرسال: [`FLUTTER_CUSTOM_BASKET.md`](./FLUTTER_CUSTOM_BASKET.md) — **5 أيلول 2026 مساءً**
+> **أرسلوا هذا الملف:** [`FLUTTER_CUSTOM_BASKET.md`](./FLUTTER_CUSTOM_BASKET.md) — **5 أيلول 2026**
 
-كروت: `GET /api/user/schedules` — صورة دائرية + وصف + بادجز.
+على الرئيسية: `GET /api/user/sections?page_slug=home` — إذا `display_type_id=11` أو `content_type=schedule` اعرضوا كروت فئات (صورة دائرية). `onTap` → شاشة `scheduleId`.  
+`display_type_id=5` = سلل أدمن جاهزة — مسار مختلف.
 
-عقد ثابت: `image` (URL) · `images` (`List<String>`) · `top_badges` / `bottom_badges`. لا `cover_image` / `photo` / `gallery`. `name` = `String`. `discount_type` = `percentage` \| `fixed` \| `null`.
+كروت / قائمة: `GET /api/user/schedules` — `image` · `images` · `top_badges` / `bottom_badges`. `name` = `String`. `discount_type` = `percentage` \| `fixed` \| `null`.
 
-تخصيص داخل فئة (`Auth`):
+تخصيص (`Auth`):
 
 | | Endpoint |
 |--|----------|
 | هيدر + مسودة | `GET /api/user/schedules/{id}/custom-basket` |
-| إضافة | `POST .../items` `{ shop_product_variant_id, quantity }` |
-| كمية | `PUT .../items/{itemId}` `{ quantity }` |
+| إضافة | `POST .../items` `{ shop_product_variant_id, quantity }` من `shop_variants[].id` |
+| كمية | `PUT .../items/{itemId}` `{ quantity }` — `itemId` = `items[].id` |
 | حذف | `DELETE .../items/{itemId}` |
 | تأكيد | `POST .../confirm` |
 
 نعم: `{ "confirm_schedule": true, "start_date": "2026-09-08" }` → طلباتي المجدولة + `cart_items`  
-لا: `{ "confirm_schedule": false }` → `cart_items` مرة واحدة
+لا: `{ "confirm_schedule": false }` → `cart_items` مرة — المسودة تُحذف
 
-`summary.savings` = وفّرت. لا تحسبوا خصم الفئة على الجهاز.
+`summary.savingsFormatted` = وفّرت. لا تحسبوا الخصم على الجهاز. مسودة لكل `scheduleId`.
+

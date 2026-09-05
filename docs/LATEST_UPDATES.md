@@ -97,7 +97,7 @@ GET /api/user/schedules/{id}
 
 عقد الكرت الثابت (بدون aliases): `name` (string حسب اللغة) · `description` · `image` (URL كامل — مو `cover_image`/`photo`) · `images[]` (مو `gallery`) · `interval_days` · `discount_type` = `percentage`\|`fixed`\|`null` (مو `"none"`) · `top_badges` · `bottom_badges`.
 
-كرت عمودي، صورة دائرية. الضغط → صفحة `{id}`.
+كرت عمودي، صورة دائرية. الضغط → صفحة `{id}`. على الرئيسية أيضاً من `GET /sections` إذا `display_type_id=11` / `content_type=schedule`. `display_type_id=5` = سلل جاهزة.
 
 تخصيص (Auth) — مسودة لكل `schedule_id`:
 
@@ -420,7 +420,7 @@ php artisan db:seed --class=SaleCountrySeeder        # بلدان مبيع
 
 ### Flutter
 
-- [ ] **سلة مخصصة:** كروت `/schedules` + شاشات تخصيص + نعم/لا — [`FLUTTER_CUSTOM_BASKET.md`](./frontend/FLUTTER_CUSTOM_BASKET.md)
+- [ ] **سلة مخصصة:** قسم `display_type_id=11` + كروت + تخصيص نعم/لا — [`FLUTTER_CUSTOM_BASKET.md`](./frontend/FLUTTER_CUSTOM_BASKET.md)
 - [ ] ضمان: `warranty.name` / `.description`
 - [ ] كمية: `ShopVariant.quantity` كـ `int?`
 - [ ] نفس محاور الويب (Nav · صفحات · فئات · منتج · فلاتر)

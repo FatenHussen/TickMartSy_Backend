@@ -1,7 +1,7 @@
-# Flutter — آخر نسخة: كروت الجدولة + السلة المخصصة
+# Flutter — فئات الجدولة + السلة المخصصة + أقسام الصفحة
 
 > **أرسلوا هذا الملف لفريق Flutter**  
-> **آخر تحديث:** 5 أيلول 2026 (مساءً)  
+> **آخر تحديث:** 5 أيلول 2026  
 > **Base:** `/api/user` + `Accept-Language: ar|en`  
 > **Auth:** الكروت عامة. التخصيص والتأكيد = Bearer user.
 
@@ -9,9 +9,19 @@
 
 ---
 
-## ماذا تغيّر اليوم
+## لا تخلطوا بين النوعين
 
-أسماء الصورة والبادجز ثابتة — ما تغيّرت:
+| | فئات الجدولة | سلل أدمن جاهزة |
+|--|-------------|----------------|
+| شو هي | كرت أسبوعي / شهري — المستخدم يملأ المنتجات | سلة جاهزة من الأدمن |
+| `content_type` | `schedule` | `schedule-basket` |
+| `api_method` | `schedules` | `schedule-basket` |
+| `display_type_id` | **11** | **5** |
+| `onTap` | شاشة تخصيص `scheduleId` | تفاصيل سلة جاهزة |
+
+المسار الأساسي: **فئات الجدولة**. `display_type_id == 5` اختياري إذا ظهر القسم.
+
+عقد الكرت ثابت — لا تنتظروا أسماء ثانية:
 
 | عندكم | من الباك |
 |--------|-----------|
@@ -19,25 +29,42 @@
 | معرض | `images` (`List<String>`) |
 | شارات | `top_badges` / `bottom_badges` |
 
-لا تنتظروا `cover_image` / `photo` / `thumbnail` / `gallery` / `media`.
-
+لا `cover_image` / `photo` / `thumbnail` / `gallery` / `media`.  
 `name` = `String` حسب اللغة.  
 `discount_type` = `percentage` \| `fixed` \| `null` (مو `none`).
 
-إذا الصورة فاضية على الكرت: الأدمن ما حفظها بعد. نفس الحقول تتعبّى بعد رفع الباك.
+إذا الصورة فاضية: الأدمن ما حفظها بعد.
 
 ---
 
-## 1) كروت الفئات
+## 1) كروت الفئات على الرئيسية
 
-مستطيل عمودي + **صورة دائرية**.
+من أقسام الصفحة — ويدجت الأقسام الموحّد:
+
+```http
+GET /api/user/sections?page_slug=home
+Accept-Language: ar
+```
+
+إذا `content_type == 'schedule'` أو `display_type_id == 11`:
+
+- `layout`: `slider` \| `list` \| `grid`
+- `variant`: يُفضَّل `vertical` — مستطيل عمودي + **صورة دائرية**
+- `items` = كروت الفئات
+
+`onTap` → `CustomBasketScreen(scheduleId: item.id)`
+
+قسم `type == 'manual'`: الحقول داخل `items[].item`.  
+قسم `type == 'api'`: الحقول على `items[]` مباشرة.
+
+قائمة مستقلة (فعّال فقط، بلا ترقيم):
 
 ```http
 GET /api/user/schedules
 GET /api/user/schedules/{id}
 ```
 
-`data.items` — بدون صفحات. الفعّال فقط.
+`data.items`.
 
 ```dart
 class ScheduleCategory {
@@ -54,26 +81,24 @@ class ScheduleCategory {
 }
 ```
 
-`onTap` → شاشة التخصيص بـ `id`.
-
-أقسام الصفحة: `content_type == 'schedule'` أو `display_type_id == 11` → نفس الكرت.  
-`display_type_id == 5` = سلل أدمن جاهزة.
-
 بادج: `id`, `name`, `image`, `color`, `type`, `position`.
 
 ---
 
 ## 2) شاشة التخصيص
 
-1. هيدر: `schedule.image` + `schedule.name` + زر عرض السلة  
-2. فئات + بحث + (اختياري) براند  
-3. شبكة منتجات → `shop_variants[].id` + كمية → POST فوري
+غير المسجّل: هيدر من `GET /schedules/{id}` ثم اطلبوا تسجيل الدخول قبل الإضافة.
 
 ```http
 GET /api/user/schedules/{id}/custom-basket
+Authorization: Bearer {token}
 ```
 
-ينشئ مسودة. `is_draft: true` حتى التأكيد. مسودة لكل `scheduleId`.
+ينشئ مسودة فاضية. `is_draft: true` حتى التأكيد. **مسودة لكل `scheduleId`** (أسبوعي ≠ شهري).
+
+1. هيدر: `schedule.image` + `schedule.name` + زر **عرض السلة**
+2. فئات أفقية + بحث + (اختياري) كروت براند مربعة
+3. شبكة منتجات → متغيّر + كمية → POST فوري
 
 | الغرض | Endpoint |
 |--------|----------|
@@ -82,6 +107,16 @@ GET /api/user/schedules/{id}/custom-basket
 | منتجات | `GET /api/user/products?category_id=&search=&brand_id=` |
 | براند | `GET /api/user/brands` |
 | منتج | `GET /api/user/products/{id}` → `shop_variants[].id` |
+
+### ليش `shop_product_variant_id`؟
+
+البيع: منتج × متغيّر × **متجر**.  
+خذوا `shop_variants[].id` (مو `variant_id`). لازم `shop_id != null` و`(quantity ?? 0) > 0`.
+
+```dart
+bool canAdd(ShopVariant? v) =>
+    v?.id != null && v?.shopId != null && (v?.quantity ?? 0) > 0;
+```
 
 ---
 
@@ -97,11 +132,17 @@ PUT /api/user/schedules/{id}/custom-basket/items/{itemId}
 DELETE /api/user/schedules/{id}/custom-basket/items/{itemId}
 ```
 
-`itemId` = `items[].id`. عدّاد الزر من `summary.items_count`.
+نفس `shop_product_variant_id` يحدّث الكمية (ما يكرّر السطر). الرد = المسودة كاملة.
+
+`itemId` = `items[].id` من المسودة — **مو** المنتج ولا `shop_product_variant_id`.
+
+عدّاد الزر من `summary.items_count`.
 
 ---
 
 ## 4) عرض السلة = نفس GET
+
+لا تخزّنوا الإجمالي على الجهاز.
 
 | العمود | JSON |
 |--------|------|
@@ -110,21 +151,27 @@ DELETE /api/user/schedules/{id}/custom-basket/items/{itemId}
 | متغيّر | `items[].variant.name` (`List<String>`) |
 | كمية | `items[].quantity` |
 | وحدة | `items[].unit` |
-| سعر السطر | `items[].line_total_formatted` |
+| سعر الوحدة | `items[].original_price_formatted` |
+| سطر | `items[].line_total_formatted` |
 | متجر | `items[].shop.name` |
+| شركة | `items[].product.brand.name` |
 
 ```dart
 summary.itemsCount
 summary.totalQuantity
 summary.originalPriceFormatted
 summary.discountValue + summary.discountType
-summary.savingsFormatted
+summary.savingsFormatted   // وفّرت
 summary.finalPriceFormatted
 ```
+
+الخصم من فئة الجدولة على مجموع السلة.
 
 ---
 
 ## 5) تأكيد نعم / لا
+
+> بدك تطلب هالسلة كل **{schedule.name}** ونبعت تذكير قبل الموعد؟
 
 ```http
 POST /api/user/schedules/{id}/custom-basket/confirm
@@ -143,18 +190,36 @@ POST /api/user/schedules/{id}/custom-basket/confirm
 }
 ```
 
-- نعم → `scheduled: true` + `cart_items` لأول طلب + `GET /scheduled-baskets`
-- لا → `scheduled: false` + `cart_items` مرة (المسودة اتمسحت)
+- نعم → `scheduled: true` + تُحفظ في طلباتي المجدولة + `cart_items` لأول طلب
+- لا → `scheduled: false` + المسودة اتمسحت + `cart_items` مرة
 
-`POST /orders` بنفس `shop_product_variant_id` + `quantity`.
+`POST /orders` بنفس `shop_product_variant_id` + `quantity`.  
+بعد نعم: `GET /api/user/scheduled-baskets` أو `GET /api/user/my-baskets`.
+
+سلة فاضية → 422.
 
 ---
 
-## 6) Checklist
+## 6) سلل أدمن جاهزة (اختياري)
 
+إذا `display_type_id == 5` أو `content_type == 'schedule-basket'`:
+
+- سلل جاهزة من الأدمن — مو شاشة التخصيص
+- لا تفتحوا `custom-basket` عليها
+- فلتر قسم اختياري: `schedule_id`
+
+---
+
+## 7) Checklist
+
+- [ ] قسم `display_type_id=11` / `content_type=schedule` → كروت فئات (صورة دائرية)
+- [ ] `display_type_id=5` → سلل جاهزة، مسار مختلف
 - [ ] كروت: `image` / `images` / `top_badges` / `bottom_badges`
 - [ ] `name` String — `discount_type` null مسموح
+- [ ] `onTap` → شاشة `{scheduleId}`
 - [ ] `shop_variants[].id` + `shop_id != null` قبل الإضافة
+- [ ] `itemId` = `items[].id`
 - [ ] `summary` بدون حساب محلي
-- [ ] نعم يحتاج `start_date`
+- [ ] نعم يحتاج `start_date` · لا يحذف المسودة
+- [ ] `cart_items` → سلة / `POST /orders`
 - [ ] مسودة لكل `scheduleId`

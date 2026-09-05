@@ -66,11 +66,29 @@ class ProductCategorySubtreeTest extends TestCase
         $rootProduct = $this->createProduct($root, $vendor, 'Direct fashion product');
         $childProduct = $this->createProduct($child, $vendor, 'Jeans product');
 
-        $ids = app(ProductService::class)
+        $ids = app(AdminProductService::class)
             ->queryBuilder(Product::query(), ['category_id' => $root->id])
             ->pluck('id');
 
         $this->assertEqualsCanonicalizing([$rootProduct->id, $childProduct->id], $ids->all());
+    }
+
+    public function test_expand_ids_to_subtrees_includes_each_id_and_descendants(): void
+    {
+        $root = $this->createCategory('Fashion');
+        $child = $this->createCategory('Clothing', $root);
+        $grandchild = $this->createCategory('Jeans', $child);
+        $other = $this->createCategory('Food');
+
+        $this->assertEqualsCanonicalizing(
+            [$root->id, $child->id, $grandchild->id],
+            Category::expandIdsToSubtrees([$root->id])
+        );
+        $this->assertEqualsCanonicalizing(
+            [$child->id, $grandchild->id, $other->id],
+            Category::expandIdsToSubtrees([$child->id, $other->id])
+        );
+        $this->assertSame([], Category::expandIdsToSubtrees([]));
     }
 
     private function createCategory(string $name, ?Category $parent = null): Category

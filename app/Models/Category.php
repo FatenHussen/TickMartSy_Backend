@@ -172,8 +172,25 @@ class Category extends Model implements Sectionable
      */
     public function idsInSubtree(): array
     {
-        $ids = [$this->id];
-        $frontier = [$this->id];
+        return static::expandIdsToSubtrees([$this->id]);
+    }
+
+    /**
+     * Expand one or more category ids to include each id and all descendants.
+     *
+     * @param  array<int|string>  $categoryIds
+     * @return list<int>
+     */
+    public static function expandIdsToSubtrees(array $categoryIds): array
+    {
+        $ids = array_values(array_unique(array_filter(array_map('intval', $categoryIds))));
+
+        if ($ids === []) {
+            return [];
+        }
+
+        $expanded = $ids;
+        $frontier = $ids;
 
         while ($frontier) {
             $children = static::query()
@@ -181,11 +198,11 @@ class Category extends Model implements Sectionable
                 ->pluck('id')
                 ->all();
 
-            $ids = array_merge($ids, $children);
+            $expanded = array_merge($expanded, $children);
             $frontier = $children;
         }
 
-        return array_values(array_unique($ids));
+        return array_values(array_unique($expanded));
     }
 
     public function stores()
