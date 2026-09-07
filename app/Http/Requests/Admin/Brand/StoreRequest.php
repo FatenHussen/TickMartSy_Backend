@@ -40,7 +40,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'image'          => 'required|file',
+            'image'          => 'required|image|mimes:jpeg,jpg,png,webp|max:8192',
             'order'          => 'nullable|integer|min:0',
             'governorate_id' => 'nullable|integer|exists:governorates,id',
             'city_id'        => 'nullable|integer|exists:cities,id',

@@ -20,7 +20,7 @@ class StoreRequest extends FormRequest
             'is_active' => 'required|boolean',
             'is_default' => 'nullable|boolean',
             'order' => 'nullable|integer|min:0',
-            'flag_icon' => 'nullable|file',
+            'flag_icon' => 'nullable|image|mimes:jpeg,jpg,png,webp,svg|max:2048',
         ];
     }
 }

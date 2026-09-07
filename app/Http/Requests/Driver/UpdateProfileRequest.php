@@ -17,7 +17,7 @@ class UpdateProfileRequest extends FormRequest
             'name' => 'nullable|string|min:2|max:100',
             'address' => 'nullable|string|max:255',
             'rate_per_order' => 'nullable|numeric|min:0',
-            'image' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'vehicle_type' => 'nullable|in:car,motorcycle,bicycle',
             'vehicle_number' => 'nullable|string|max:50',
         ];

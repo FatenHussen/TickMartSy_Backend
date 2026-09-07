@@ -20,7 +20,7 @@ class StoreRequest extends FormRequest
             'description.*' => ['required', 'string'],
             'button_text' => ['nullable', 'array'],
             'button_text.*' => ['required', 'string', 'max:255'],
-            'image' => 'required|file|mimes:jpeg,png,jpg,gif,webp,mp4,mov,avi,webm',
+            'image' => 'required|file|mimes:jpeg,png,jpg,gif,webp,mp4,mov,avi,webm|max:8192',
             'link' => 'nullable|string|url',
             'is_active' => ['sometimes', 'boolean'],
             'expires_at' => ['required', 'date', 'after:now'],

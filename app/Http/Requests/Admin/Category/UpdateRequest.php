@@ -29,7 +29,7 @@ class UpdateRequest extends FormRequest
         $locales = Language::active()->pluck('code')->toArray();
 
         $rules = [
-            'icon' => 'nullable|file',
+            'icon' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:8192',
             'parent_id' => [
                 'nullable',
                 //'integer',

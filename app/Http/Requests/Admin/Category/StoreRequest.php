@@ -44,7 +44,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'icon' => 'nullable|file',
+            'icon' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:8192',
             'parent_id' => 'nullable|exists:categories,id',
             'order' => 'nullable|integer|min:0',
             'is_active' => 'nullable|boolean',

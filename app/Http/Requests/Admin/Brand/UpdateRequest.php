@@ -20,7 +20,7 @@ class UpdateRequest extends FormRequest
         $locales = Language::active()->pluck('code')->toArray();
 
         $rules = [
-            'image'          => 'nullable|file',
+            'image'          => 'nullable|image|mimes:jpeg,jpg,png,webp|max:8192',
             'order'          => 'nullable|integer|min:0',
             'governorate_id' => 'nullable|integer|exists:governorates,id',
             'city_id'        => 'nullable|integer|exists:cities,id',

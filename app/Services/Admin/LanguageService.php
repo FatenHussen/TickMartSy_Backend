@@ -80,6 +80,8 @@ class LanguageService extends BaseService
 
             $this->createLangFiles($language->code);
 
+            Language::forgetLocaleCache();
+
             DB::commit();
 
             return new $this->resource($language);

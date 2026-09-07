@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Cache;
 
 class Language extends Model
 {
@@ -27,6 +28,18 @@ class Language extends Model
         'order' => 'integer',
     ];
 
+    protected static function booted(): void
+    {
+        static::saved(fn () => static::forgetLocaleCache());
+        static::deleted(fn () => static::forgetLocaleCache());
+    }
+
+    public static function forgetLocaleCache(): void
+    {
+        Cache::forget('active_locales');
+        Cache::forget('languages_formatted');
+    }
+
     /* ------------------ Scopes ------------------ */
 
     public function scopeActive($query)
@@ -48,14 +61,14 @@ class Language extends Model
 
     public static function getActiveLocales(): array
     {
-        return cache()->remember('active_locales', 3600, function () {
+        return Cache::rememberForever('active_locales', function () {
             return static::active()->ordered()->pluck('code')->toArray();
         });
     }
 
     public static function getAllFormatted()
     {
-        return cache()->remember('languages_formatted', 3600, function () {
+        return Cache::rememberForever('languages_formatted', function () {
             return static::ordered()->get()->map(function ($language) {
                 return [
                     'id' => $language->id,

@@ -34,7 +34,7 @@ class StoreRequest extends FormRequest
                 Rule::exists('pages', 'slug'),
             ],
             'emoji' => 'nullable|string|max:10',
-            'media' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp',
+            'media' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:8192',
         ];
     }
 }
