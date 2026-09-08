@@ -50,6 +50,9 @@ class DatabaseSeeder extends Seeder
             LegalDocumentSeeder::class,
             DriverContactMethodSeeder::class,
             IconSeeder::class,
+
+            // Required for site product create (sale_channel=platform)
+            PlatformVendorSeeder::class,
         ]);
     }
 }

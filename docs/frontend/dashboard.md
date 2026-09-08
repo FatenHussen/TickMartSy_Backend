@@ -606,7 +606,8 @@ php artisan db:seed --class=SaleCountrySeeder
 ### قواعد
 
 - للموقع: `sale_channel=platform` و**لا ترسل** `shop_variants` ولا `vendor_id`
-- لمتجر: `sale_channel=shop` + `shop_variants` (فرع واحد على الأقل) وإلا **422**
+- لمتجر: `sale_channel=shop` + `shop_variants` (فرع واحد على الأقل) وإلا **422** — **لا ترسل** `vendor_id` (الباك يأخذه من الفرع)
+- توست «حقل vendor id غير موجود»: لا ترسلوا `0` / `""` / id مستخدم بائع — [`DASHBOARD_PRODUCT_VENDOR_ID.md`](DASHBOARD_PRODUCT_VENDOR_ID.md)
 - GET يرجع `sale_channel` للفورم والقائمة (badge: للموقع / متجر)
 - تحويل لموقع: أرسل `sale_channel=platform` فقط
 - تعديل اسم فقط: **لا ترسل** `sale_channel` ولا `shop_variants`
@@ -820,6 +821,9 @@ php artisan db:seed --class=CountrySeeder
 
 # 4) بلدان مبيع ناقصة + يعبّي icon إن فاضي فقط
 php artisan db:seed --class=SaleCountrySeeder
+
+# 5) بائع المنصة + فرع افتراضي — مطلوب لإنشاء منتج «للموقع»
+php artisan db:seed --class=PlatformVendorSeeder
 ```
 
 **لا تشغّلوا:**
