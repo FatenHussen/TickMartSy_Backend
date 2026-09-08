@@ -230,10 +230,20 @@ int maxBuy(ShopVariant v, ProductDetail p) {
 
 ## 9) التسجيل
 
+تفصيل: [`REGISTER_FLOW.md`](./REGISTER_FLOW.md) · مختصر Flutter: [`FLUTTER_REGISTER_FLOW.md`](./FLUTTER_REGISTER_FLOW.md)
+
+```
+Register → POST /auth/register (no token) → OTP → POST /auth/verify-otp → data.token
+```
+
 - `phone` مطلوب (`digitsOnly`).
 - `email` اختياري — لا ترسلوا `""`.
-- OTP SMS: `POST /api/user/auth/verify-otp`.
+- كلمة المرور: ≥ 8 + lower + upper + digit + symbol.
+- مدن: `GET /cities?governorate_id=` (الباراميتر إلزامي).
+- OTP SMS: `POST /api/user/auth/verify-otp` `{ phone, code }`.
+- إعادة الإرسال: `POST /auth/login` — **ليس** `/send-otp`.
 - كل الموديلات: `email` nullable.
+- بعد التوكن: `POST /auth/store-token` `{ deviceId, fcmToken }`.
 
 ---
 
@@ -323,7 +333,7 @@ int? asInt(dynamic v) {
 ### باقي التطبيق
 - [ ] Nav ديناميكي
 - [ ] فلاتر + chips الجذر
-- [ ] تسجيل: هاتف مطلوب
+- [ ] تسجيل: هاتف مطلوب — [`REGISTER_FLOW.md`](./REGISTER_FLOW.md)
 - [ ] أسعار من API
 - [ ] طلب سريع من `settings.quick_order`
 

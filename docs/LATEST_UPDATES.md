@@ -33,7 +33,7 @@
 | **نفس الحقول — Flutter** | [`frontend/FLUTTER_PRODUCT_PRICING_FIELDS.md`](./frontend/FLUTTER_PRODUCT_PRICING_FIELDS.md) | **8 أيلول — كارد من المنتج · التفاصيل من المتغيّر المختار** |
 | **باگ كمية المنتج (توست موجبة)** | [`frontend/DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md`](./frontend/DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md) | **5 أيلول** — الكمية رجعت لتاب المعلومات: الدليل الجديد فوق |
 | **ضمان المنتج — دروب داون + قسم مستقل** | [`frontend/DASHBOARD_PRODUCT_WARRANTY.md`](./frontend/DASHBOARD_PRODUCT_WARRANTY.md) | **5 أيلول** |
-| **متغيّرات — ويب + Flutter** | [`frontend/product-variants-storefront-update.md`](./frontend/product-variants-storefront-update.md) | **آخر تحديث 8 أيلول** |
+| **تسجيل المستخدم — تدفق كامل** | [`frontend/REGISTER_FLOW.md`](./frontend/REGISTER_FLOW.md) | **8 أيلول — ويب + Flutter** |
 | **متغيّرات — ويب (تفصيل)** | [`frontend/product-variants-web.md`](./frontend/product-variants-web.md) | |
 | **متغيّرات — ويب (دليل شامل + مقارنة tikmool-website)** | [`frontend/WEB_VARIANTS_COMPLETE.md`](./frontend/WEB_VARIANTS_COMPLETE.md) | **31 آب** — API حقيقي · types · gaps · سلة |
 | **متغيّرات — Flutter (تفصيل)** | [`frontend/product-variants-flutter.md`](./frontend/product-variants-flutter.md) | |
@@ -82,6 +82,23 @@
 > داشبورد: [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./frontend/DASHBOARD_PRODUCT_PRICING_FIELDS.md)  
 > ويب: [`WEB_PRODUCT_PRICING_FIELDS.md`](./frontend/WEB_PRODUCT_PRICING_FIELDS.md)  
 > Flutter: [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./frontend/FLUTTER_PRODUCT_PRICING_FIELDS.md)
+
+---
+
+## آخر نسخة (8 أيلول 2026) — تدفق التسجيل (ويب + Flutter)
+
+```
+GET /governorates → GET /cities?governorate_id=
+POST /auth/register  →  200 بدون توكن
+POST /auth/verify-otp { phone, code }  →  data.token
+إعادة الإرسال: POST /auth/login (403 = SMS جديد) — ليس /send-otp
+```
+
+`phone` مطلوب (أرقام فقط) · `email` اختياري (لا `""`) · كلمة المرور ≥ 8 + صغير + كبير + رقم + رمز.
+
+> الكامل: [`REGISTER_FLOW.md`](./frontend/REGISTER_FLOW.md)  
+> ويب: [`WEB_REGISTER_FLOW.md`](./frontend/WEB_REGISTER_FLOW.md)  
+> Flutter: [`FLUTTER_REGISTER_FLOW.md`](./frontend/FLUTTER_REGISTER_FLOW.md)
 
 ---
 

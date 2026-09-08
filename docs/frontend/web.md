@@ -4,6 +4,7 @@
 > يجمع **كل** التعديلات: Nav · أقسام · فئات · منتج · تسجيل · **فلاتر** · طلب سريع · أسعار · متغيّرات · **ضمان** · **كمية**.  
 > **آخر نسخة موحّدة (موصى بها للإرسال):** [`WEB_LATEST.md`](./WEB_LATEST.md)  
 > **سعر · خصم · كمية · باركود · SKU:** [`WEB_PRODUCT_PRICING_FIELDS.md`](./WEB_PRODUCT_PRICING_FIELDS.md)  
+> **تسجيل:** [`REGISTER_FLOW.md`](./REGISTER_FLOW.md) · [`WEB_REGISTER_FLOW.md`](./WEB_REGISTER_FLOW.md)  
 > **آخر تحديث | Last Updated:** 2026-09-08
 
 ---
@@ -307,7 +308,7 @@ if (attributesMap.length > 0) { /* اعرض picker */ }
 
 ## 6) التسجيل بدون إيميل
 
-> المرجع: `FRONTEND_WEB_REGISTER_EMAIL_OPTIONAL.md`
+> التدفق الكامل: [`REGISTER_FLOW.md`](./REGISTER_FLOW.md) · مختصر: [`WEB_REGISTER_FLOW.md`](./WEB_REGISTER_FLOW.md)
 
 ### التغيير
 

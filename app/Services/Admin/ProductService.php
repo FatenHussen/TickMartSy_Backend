@@ -6,6 +6,7 @@ use App\Models\AttributeValue;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Shop;
+use App\Models\Vendor;
 use App\Services\BaseService;
 use App\Http\Resources\Admin\Product\OneResource;
 use App\Http\Resources\Admin\Product\AllResource;
@@ -15,8 +16,33 @@ use Illuminate\Support\Facades\Log;
 
 class ProductService extends BaseService
 {
-    /** Tikmool platform vendor — used for site-owned products. */
+    /** Preferred Tikmool platform vendor id when that row exists. */
     public const PLATFORM_VENDOR_ID = 1;
+
+    /**
+     * Real vendors.id for site-owned products.
+     * Prefers id=1, then a vendor that owns the default shop, then the first vendor.
+     */
+    public static function resolvePlatformVendorId(): ?int
+    {
+        if (Vendor::query()->whereKey(self::PLATFORM_VENDOR_ID)->exists()) {
+            return self::PLATFORM_VENDOR_ID;
+        }
+
+        $fromDefaultShop = Shop::query()
+            ->where('is_default', true)
+            ->where('is_active', true)
+            ->orderBy('id')
+            ->value('vendor_id');
+
+        if ($fromDefaultShop) {
+            return (int) $fromDefaultShop;
+        }
+
+        $id = Vendor::query()->orderBy('id')->value('id');
+
+        return $id ? (int) $id : null;
+    }
 
     protected $model      = Product::class;
     protected $resource   = OneResource::class;
@@ -194,7 +220,10 @@ class ProductService extends BaseService
         $data['sale_channel'] = $channel;
 
         if ($channel === 'platform') {
-            $data['vendor_id'] = self::PLATFORM_VENDOR_ID;
+            $platformVendorId = self::resolvePlatformVendorId();
+            if ($platformVendorId) {
+                $data['vendor_id'] = $platformVendorId;
+            }
             // Clear any client-sent shops; ensureDefaultShopLinks attaches platform default.
             $data['shop_variants'] = [];
 
@@ -259,7 +288,7 @@ class ProductService extends BaseService
         if (!$defaultShop) {
             Log::warning('Platform product saved without shop links and no platform default shop found', [
                 'product_id' => $product->id,
-                'vendor_id' => self::PLATFORM_VENDOR_ID,
+                'vendor_id' => self::resolvePlatformVendorId(),
             ]);
 
             return;
@@ -275,8 +304,13 @@ class ProductService extends BaseService
 
     private function resolvePlatformDefaultShop(): ?Shop
     {
+        $vendorId = self::resolvePlatformVendorId();
+        if (!$vendorId) {
+            return null;
+        }
+
         $defaultShop = Shop::query()
-            ->where('vendor_id', self::PLATFORM_VENDOR_ID)
+            ->where('vendor_id', $vendorId)
             ->where('is_default', true)
             ->where('is_active', true)
             ->orderBy('id')
@@ -287,7 +321,7 @@ class ProductService extends BaseService
         }
 
         return Shop::query()
-            ->where('vendor_id', self::PLATFORM_VENDOR_ID)
+            ->where('vendor_id', $vendorId)
             ->where('is_active', true)
             ->orderByDesc('is_default')
             ->orderBy('id')

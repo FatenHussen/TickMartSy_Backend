@@ -9,6 +9,7 @@ use App\Models\Language;
 class StoreRequest extends FormRequest
 {
     use NormalizesEmptyIntegerIds;
+    use ResolvesProductVendorId;
 
     protected array $locales = [];
 
@@ -60,31 +61,13 @@ class StoreRequest extends FormRequest
             }
             $this->merge(['extra_details' => $data['extra_details']]);
         }
-        if (auth('vendor-user')->check()) {
-            $this->merge([
-                'sale_channel' => 'shop',
-                'vendor_id' => auth('vendor-user')->user()->id ?? 1,
-            ]);
-        } else {
-            $channel = $this->input('sale_channel', 'platform');
-            if (!in_array($channel, ['platform', 'shop'], true)) {
-                $channel = 'platform';
-            }
-            $merge = ['sale_channel' => $channel];
-            if ($channel === 'platform') {
-                $merge['vendor_id'] = 1;
-            } elseif (!$this->filled('vendor_id')) {
-                $merge['vendor_id'] = 1;
-            }
-            $this->merge($merge);
-        }
-
         $this->normalizeSypPriceInputs();
 
         $this->normalizeRestrictedFieldsForRestaurantCategory();
 
         $this->normalizeBlankUniqueStrings();
         $this->normalizeEmptyIntegerIds();
+        $this->resolveProductVendorId(defaultChannelToPlatform: true);
     }
 
     private function normalizeBlankUniqueStrings(): void
@@ -283,15 +266,22 @@ class StoreRequest extends FormRequest
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
-            if ($this->input('sale_channel') !== 'shop') {
+            if ($this->input('sale_channel') === 'shop') {
+                $shopVariants = $this->input('shop_variants');
+                if (!is_array($shopVariants) || count($shopVariants) < 1) {
+                    $validator->errors()->add(
+                        'shop_variants',
+                        'عند اختيار «ربط بمتجر» يجب اختيار فرع واحد على الأقل.'
+                    );
+                }
+
                 return;
             }
 
-            $shopVariants = $this->input('shop_variants');
-            if (!is_array($shopVariants) || count($shopVariants) < 1) {
+            if (!$this->input('vendor_id')) {
                 $validator->errors()->add(
-                    'shop_variants',
-                    'عند اختيار «ربط بمتجر» يجب اختيار فرع واحد على الأقل.'
+                    'vendor_id',
+                    'بائع المنصة غير موجود في النظام. أنشئ بائع المنصة ثم أعد المحاولة.'
                 );
             }
         });

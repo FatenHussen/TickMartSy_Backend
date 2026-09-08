@@ -10,6 +10,7 @@ use App\Models\Product;
 class UpdateRequest extends FormRequest
 {
     use NormalizesEmptyIntegerIds;
+    use ResolvesProductVendorId;
 
     protected array $locales = [];
 
@@ -80,29 +81,13 @@ class UpdateRequest extends FormRequest
             $this->merge(['extra_details' => $data['extra_details']]);
         }
 
-        if (auth('vendor-user')->check()) {
-            $this->merge([
-                'sale_channel' => 'shop',
-                'vendor_id' => auth('vendor-user')->id(),
-            ]);
-        } elseif ($this->filled('sale_channel')) {
-            $channel = $this->input('sale_channel');
-            if (!in_array($channel, ['platform', 'shop'], true)) {
-                $channel = 'platform';
-            }
-            $merge = ['sale_channel' => $channel];
-            if ($channel === 'platform') {
-                $merge['vendor_id'] = 1;
-            }
-            $this->merge($merge);
-        }
-
         $this->normalizeSypPriceInputs();
 
         $this->normalizeRestrictedFieldsForRestaurantCategory();
 
         $this->normalizeBlankUniqueStrings();
         $this->normalizeEmptyIntegerIds();
+        $this->resolveProductVendorId(defaultChannelToPlatform: false);
     }
 
     private function normalizeBlankUniqueStrings(): void

@@ -5,6 +5,7 @@
 > يجمع **كل** التعديلات: Nav · أقسام · فئات · منتج · فلاتر · أسعار · طلب سريع · متغيّرات · **ضمان** · **كمية**.  
 > **آخر نسخة موحّدة (موصى بها للإرسال):** [`FLUTTER_LATEST.md`](./FLUTTER_LATEST.md)  
 > **سعر · خصم · كمية · باركود · SKU:** [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md)  
+> **تسجيل:** [`REGISTER_FLOW.md`](./REGISTER_FLOW.md) · [`FLUTTER_REGISTER_FLOW.md`](./FLUTTER_REGISTER_FLOW.md)  
 > **آخر تحديث | Last Updated:** 2026-09-08
 
 ---
@@ -466,7 +467,7 @@ bool canAddToCart(ShopVariant? v) =>
 
 ## 9) التسجيل بدون إيميل
 
-> المرجع: `FRONTEND_FLUTTER_REGISTER_EMAIL_OPTIONAL.md`
+> التدفق الكامل: [`REGISTER_FLOW.md`](./REGISTER_FLOW.md) · مختصر: [`FLUTTER_REGISTER_FLOW.md`](./FLUTTER_REGISTER_FLOW.md)
 
 ### التغيير
 

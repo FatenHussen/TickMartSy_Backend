@@ -80,15 +80,11 @@ class UserProductShowTest extends TestCase
     public function test_admin_create_platform_sale_channel_links_platform_default_shop(): void
     {
         $platformVendor = $this->createVendor();
-        if ($platformVendor->id !== ProductService::PLATFORM_VENDOR_ID) {
-            $this->markTestSkipped('Platform sale_channel requires vendors.id = 1.');
-        }
-
         $category = $this->createCategory();
         $defaultShop = Shop::create([
             'name' => ['en' => 'Platform default', 'ar' => 'فرع المنصة'],
             'email' => 'platform-default@example.com',
-            'vendor_id' => ProductService::PLATFORM_VENDOR_ID,
+            'vendor_id' => $platformVendor->id,
             'is_active' => true,
             'is_default' => true,
         ]);
@@ -108,7 +104,7 @@ class UserProductShowTest extends TestCase
         $product = Product::with(['variants.shopVariants'])->findOrFail($resource->id);
 
         $this->assertSame('platform', $product->sale_channel);
-        $this->assertSame(ProductService::PLATFORM_VENDOR_ID, (int) $product->vendor_id);
+        $this->assertSame($platformVendor->id, (int) $product->vendor_id);
         $this->assertCount(1, $product->variants);
         $this->assertCount(1, $product->variants->first()->shopVariants);
         $this->assertSame($defaultShop->id, $product->variants->first()->shopVariants->first()->shop_id);

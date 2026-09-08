@@ -286,13 +286,22 @@ POST /api/user/cart/items
 
 ## 9) التسجيل
 
+تفصيل: [`REGISTER_FLOW.md`](./REGISTER_FLOW.md) · مختصر ويب: [`WEB_REGISTER_FLOW.md`](./WEB_REGISTER_FLOW.md)
+
+```
+فورم → POST /auth/register (بدون توكن) → OTP → POST /auth/verify-otp → data.token
+```
+
 ```http
 POST /api/user/auth/register
 ```
 
 - `phone` **مطلوب دائماً** (أرقام فقط).
 - `email` اختياري — **لا ترسلوا** `email: ""`.
-- OTP على الهاتف: `POST /api/user/auth/verify-otp`.
+- `password`: ≥ 8 + صغير + كبير + رقم + رمز.
+- `city_id` + `governorate_id` مطلوبان — المدن: `GET /cities?governorate_id=`.
+- OTP على الهاتف: `POST /api/user/auth/verify-otp` `{ phone, code }`.
+- إعادة الإرسال: `POST /auth/login` (403 = SMS جديد) — **ليس** `/send-otp`.
 
 ---
 
@@ -334,7 +343,7 @@ GET /api/user/settings
 - [ ] **كمية:** `shop_variants[].quantity` — تعاملوا مع `null`
 - [ ] سلة: `id` + `shop_id` + `quantity > 0`
 - [ ] لا Cartesian — تركيبات API فقط
-- [ ] تسجيل: هاتف مطلوب
+- [ ] تسجيل: هاتف مطلوب — التدفق: [`REGISTER_FLOW.md`](./REGISTER_FLOW.md)
 - [ ] طلب سريع من `settings.quick_order`
 - [ ] أسعار من الـ API فقط
 - [ ] سلل مجدولة: تبويبات `/schedules` + `schedule_id` + تخصيص بنفس الـ id
