@@ -12,6 +12,7 @@
 | **داشبورد** (إدخال) | [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./frontend/DASHBOARD_PRODUCT_PRICING_FIELDS.md) |
 | **ويب** (كارد + تفاصيل) | [`WEB_PRODUCT_PRICING_FIELDS.md`](./frontend/WEB_PRODUCT_PRICING_FIELDS.md) |
 | **Flutter** (كارد + تفاصيل) | [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./frontend/FLUTTER_PRODUCT_PRICING_FIELDS.md) |
+| **Nav — جدولة** | [`NAV_MENU_SCHEDULES.md`](./frontend/NAV_MENU_SCHEDULES.md) |
 
 ---
 
@@ -27,6 +28,7 @@
 | **سلة مخصصة — ويب** | [`frontend/WEB_CUSTOM_BASKET.md`](./frontend/WEB_CUSTOM_BASKET.md) | كروت + تخصيص + تأكيد |
 | **سلة مخصصة — Flutter** | [`frontend/FLUTTER_CUSTOM_BASKET.md`](./frontend/FLUTTER_CUSTOM_BASKET.md) | نفس العقد للشاشات |
 | **متغيّرات — داشبورد** | [`frontend/product-variants-dashboard.md`](./frontend/product-variants-dashboard.md) | **آخر تحديث 8 أيلول** |
+| **Nav — مفتاح `schedules` (جدولة)** | [`frontend/NAV_MENU_SCHEDULES.md`](./frontend/NAV_MENU_SCHEDULES.md) | **8 أيلول — ويب + Flutter** |
 | **إنشاء منتج — `vendor_id` (لا ترسلوه)** | [`frontend/DASHBOARD_PRODUCT_VENDOR_ID.md`](./frontend/DASHBOARD_PRODUCT_VENDOR_ID.md) | **8 أيلول — توست «حقل vendor id غير موجود»** |
 | **إنشاء منتج — صفات جزئية + حذف صور** | [`frontend/DASHBOARD_PRODUCT_CREATE_UX.md`](./frontend/DASHBOARD_PRODUCT_CREATE_UX.md) | **31 آب** |
 | **حقول السعر · الخصم · الكمية · باركود · SKU — داشبورد** | [`frontend/DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./frontend/DASHBOARD_PRODUCT_PRICING_FIELDS.md) | **8 أيلول — إدخال في تاب المعلومات + كارد المتغيّر** |

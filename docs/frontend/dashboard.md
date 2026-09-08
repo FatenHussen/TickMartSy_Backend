@@ -268,7 +268,7 @@ Content-Type: application/json
 ### قيم `route_key`
 
 ```
-home | categories | brands | shops | baskets | points | help | subscriptions
+home | categories | brands | shops | baskets | schedules | points | help | subscriptions
 ```
 
 ### حقول أخرى

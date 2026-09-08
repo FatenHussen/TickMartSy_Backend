@@ -71,7 +71,7 @@ class NavMenuItem {
 
 | `type` | الوجهة |
 |--------|--------|
-| `route` | `target.route_key` → `home` \| `categories` \| `brands` \| `shops` \| `baskets` \| `points` \| `help` \| `subscriptions` |
+| `route` | `target.route_key` → `home` \| `categories` \| `brands` \| `shops` \| `baskets` \| `schedules` \| `points` \| `help` \| `subscriptions` |
 | `category` | `CategoryPageScreen(categoryId: target.category_id)` |
 | `brand` | شاشة الماركة |
 | `page` | شاشة Page Builder (`slug` أو `page_id`) |

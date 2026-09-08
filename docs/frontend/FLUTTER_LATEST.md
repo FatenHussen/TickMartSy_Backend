@@ -72,7 +72,7 @@ Accept-Language: ar
 
 | `type` | الوجهة |
 |--------|--------|
-| `route` | `target.route_key` → شاشات ثابتة |
+| `route` | `target.route_key` → شاشات ثابتة — **أضيفوا `schedules`** (قائمة `GET /api/user/schedules`) |
 | `category` | `CategoryPageScreen(categoryId:)` |
 | `brand` | شاشة الماركة |
 | `page` | Page Builder (`slug`) |

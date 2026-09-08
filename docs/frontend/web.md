@@ -75,6 +75,7 @@ const ROUTE_MAP = {
   brands: "/brands",
   shops: "/shops",
   baskets: "/my-baskets",
+  schedules: "/schedules",
   points: "/points",
   help: "/help",
   subscriptions: "/subscription-packages",

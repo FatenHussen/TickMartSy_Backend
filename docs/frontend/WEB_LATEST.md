@@ -74,7 +74,7 @@ Accept-Language: ar
 
 | `type` | الوجهة |
 |--------|--------|
-| `route` | `target.route_key` → `home` \| `categories` \| `brands` \| `shops` \| `baskets` \| `points` \| `help` \| `subscriptions` |
+| `route` | `target.route_key` → `home` \| `categories` \| `brands` \| `shops` \| `baskets` \| `schedules` \| `points` \| `help` \| `subscriptions` |
 | `category` | `/categories/{target.category_id}` |
 | `brand` | `/brands/{target.brand_id}` |
 | `page` | `/pages/{target.slug}` |
@@ -333,7 +333,7 @@ GET /api/user/settings
 
 ## 12) Checklist
 
-- [ ] Nav من `/nav-menu` + خريطة `route_key`
+- [ ] Nav من `/nav-menu` + خريطة `route_key` (**أضيفوا `schedules` → `/schedules`**)
 - [ ] أقسام: `layout` ثم `variant` — لا فلترة `is_active`
 - [ ] منتجات الشجرة بدون فلتر محلي
 - [ ] فلاتر §4 كاملة

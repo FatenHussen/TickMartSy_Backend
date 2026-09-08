@@ -23,6 +23,7 @@ class NavMenuItem extends Model
         'brands',
         'shops',
         'baskets',
+        'schedules',
         'points',
         'help',
         'subscriptions',
