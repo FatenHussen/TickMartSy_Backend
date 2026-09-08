@@ -12,8 +12,5 @@ class PointSystemSeeder extends Seeder
     public function run(): void
     {
         $this->call(PointRuleSeeder::class);
-        $this->call(PointWalletSeeder::class);
-        $this->call(PointEventSeeder::class);
-        $this->call(PointTransactionSeeder::class);
     }
 }

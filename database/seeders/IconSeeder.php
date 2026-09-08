@@ -4,8 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Icon;
-use App\Models\Product;
-use Illuminate\Support\Facades\DB;
 
 class IconSeeder extends Seeder
 {
@@ -110,32 +108,5 @@ class IconSeeder extends Seeder
         }
 
         $this->command->info('Icons created successfully!');
-
-        // Attach icons to products
-        $this->attachIconsToProducts();
-    }
-
-    /**
-     * Attach icons to random products
-     */
-    private function attachIconsToProducts(): void
-    {
-        $icons = Icon::all();
-        $products = Product::limit(20)->get();
-
-        if ($icons->isEmpty() || $products->isEmpty()) {
-            $this->command->warn('No icons or products found to attach.');
-            return;
-        }
-
-        foreach ($products as $product) {
-            // Randomly select 1-3 icons for each product
-            $randomIcons = $icons->random(rand(1, min(3, $icons->count())));
-
-            // Attach icons to product
-            $product->icons()->sync($randomIcons->pluck('id')->toArray());
-        }
-
-        $this->command->info('Icons attached to products successfully!');
     }
 }
