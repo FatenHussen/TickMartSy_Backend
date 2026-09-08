@@ -2,7 +2,8 @@
 
 > **أرسلوا هذا الملف لفريق الداشبoard / Flutter Web فقط.**  
 > Base: `/api/admin` + Admin token.  
-> **آخر تحديث:** 2026-09-05
+> **آخر تحديث:** 2026-09-08  
+> **حقول الكارد (سعر $ · ل.س · خصم · كمية · باركود · SKU) + نفس البلوك في تاب المعلومات:** [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./DASHBOARD_PRODUCT_PRICING_FIELDS.md)
 
 ---
 
@@ -556,7 +557,8 @@ variants[1][sku]=PROD-GREEN-M
 - [ ] **لا** `map` على المقاسات → كروت متعددة
 - [ ] كارد المتغيّr: SKU + ($ · ل.س · خصm · بعد الخصm · كمية · باركود)
 - [ ] **كل حقول المتغيّr اختيارية** — SKU · سعر · خصm · كمية · باركود — **بدون** `required`
-- [ ] **`quantity` المنتج اختياري** — لا توست «موجبة» إذا كمية المتغيّr معبّاة والحقل المخفي فاضي ([DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md](./DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md))
+- [ ] **بلوك السعر في تاب المعلومات + كارد المتغيّر** — [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./DASHBOARD_PRODUCT_PRICING_FIELDS.md)
+- [ ] **`quantity` اختياري** — لا توست «موجبة» ([DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md](./DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md))
 - [ ] تكلفة → `shop_variants[].cost_price` إن `sale_channel=shop`
 - [ ] **تعديل فقط:** `PUT product-variants/{id}` أو `PUT products/{id}` + `variants[i][id]`
 - [ ] **SKU إنجlيزi فقط** — `SKU-27T4376` · لا `PROD-أخضر-XL`

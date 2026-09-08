@@ -2,10 +2,10 @@
 
 > **أرسلوا هذا الملف لفريق الداشبورد فقط.**  
 > Base: `/api/admin` + Admin token.  
-> **آخر تحديث:** 5 أيلول 2026 (مساءً)  
+> **آخر تحديث:** 8 أيلول 2026  
 > يجمع **كل** تعديلات الباك التي تحتاج تنفيذ في الداشبورد (مو بس المنتج).
 
-**اليوم:** تعديل فئة الجدولة = POST + `_method=PUT` · بدون Content-Type يدوي · خصم فاضي لا يُرسل · قسم الصفحة `schedule` ≠ `schedule-basket`. الدليل: [`DASHBOARD_CUSTOM_BASKET.md`](./DASHBOARD_CUSTOM_BASKET.md).
+**اليوم:** حقول السعر/الخصم/الكمية/الباركود/SKU في تاب المعلومات **و** كارد المتغيّر — [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./DASHBOARD_PRODUCT_PRICING_FIELDS.md).
 
 ---
 
@@ -31,6 +31,7 @@
 18. [باگ: كمية المنتج إلزامية والمخفية](#18-باگ-كمية-المنتج-إلزامية-والمخفية)
 19. [الضمان دروب داون](#19-الضمان-دروب-داون--لا-متغيّر-افتراضي)
 20. [السلل المجدولة + السلة المخصصة](#20-السلل-المجدولة--كتالوج-الجدولات)
+21. [حقول السعر · الخصم · الكمية · باركود · SKU](#21-حقول-السعر--الخصم--الكمية--باركود--sku)
 
 ---
 
@@ -886,13 +887,14 @@ php artisan migrate   # 2026_08_30_120000_add_discount_to_product_variants_table
 
 ## 18) باگ: كمية المنتج إلزامية والمخفية
 
-> الدليل الكامل: [`DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md`](./DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md) — **5 أيلول 2026**
+> **تحديث 8 أيلول:** الكمية **رجعت** لتاب معلومات المنتج مع السعر والخصم — [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./DASHBOARD_PRODUCT_PRICING_FIELDS.md)  
+> توست «موجبة» يبقى باگ: الحقول `.optional()` — [`DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md`](./DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md)
 
-توست «يجب أن تكون الكمية موجبة» مع كمية المتغيّر ظاهرة (`5`) = **باگ**. Zod يطلب `quantity` **المنتج** المخفي عندما الفئة إلها صفات.
+توست «يجب أن تكون الكمية موجبة» مع كمية المتغيّر ظاهرة (`5`) = **باگ**. Zod/validators يطلبون `quantity` إلزامي.
 
 - الباك: `quantity` و `variants.*.quantity` كلاهما `nullable|min:0`
-- الحل: `quantity` المنتج `.optional()` — لا ترسلوه إذا فاضي
-- كمية المتغيّر تبقى على `variants[].quantity`
+- الحل: كل الحقول `.optional()` — فارغ = لا ترسلوا
+- الكمية موجودة في تاب المعلومات **و** على كارد المتغيّر
 
 ---
 
@@ -983,6 +985,27 @@ POST /api/admin/scheduled-baskets
 الاستجابة فيها `schedule_id`، `schedule` (من الكتالوج)، `has_custom_discount`، و`discount` / `discount_type` = الخصم الفعلي المعروض.
 
 فلتر القائمة: `GET /api/admin/scheduled-baskets?schedule_id={id}`.
+
+---
+
+## 21) حقول السعر · الخصم · الكمية · باركود · SKU
+
+> **أرسلوا هذا الملف:** [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./DASHBOARD_PRODUCT_PRICING_FIELDS.md) — **8 أيلول 2026**
+
+نفس البلوك في تاب **معلومات المنتج** (دائماً) وعلى **كارد المتغيّر** (إذا أُضيفت متغيّرات).
+
+| الواجهة | API المنتج | API المتغيّر |
+|---------|------------|--------------|
+| سعر المتغير (دولار) | `price` | `variants[].price` |
+| سعر المتغيّر (ليرة سورية) | `price_syp` | `variants[].price_syp` |
+| نوع الخصم — لا يوجد خصم | `discount_type` = `none` | نفس |
+| قيمة الخصم | `discount` | `variants[].discount` |
+| السعر بعد الخصم | — عرض فقط | — عرض فقط |
+| الكمية المتوفرة | `quantity` | `variants[].quantity` |
+| الباركود | `barcode` | `variants[].barcode` |
+| رمز التخزين التعريفي للمتغير | `sku` | `variants[].sku` |
+
+بلا متغيّرات: الكارد والتفاصيل من معلومات المنتج. مع متغيّرات: الكارد من المنتج · صفحة التفاصيل تتبدّل عند اختيار المتغيّر.
 
 ---
 

@@ -1,11 +1,11 @@
 # آخر التعديلات والتحديثات — Tikmool Backend
 
 > **أرسلوا هذا الملف** — آخر نسخة شاملة (كل الفرق)  
-> **تاريخ:** 5 أيلول 2026 (مساءً)  
+> **تاريخ:** 8 أيلول 2026  
 > **النطاق:** من منتصف آب حتى اليوم — باك + داشبورد + ويب + Flutter  
 > **الحالة:** الباك جاهز بعد `git pull` + `php artisan migrate` + `php artisan config:clear`
 
-**آخر ما نزل اليوم:** حفظ صورة/بادجز الجدولة عند التعديل + عقد حقول الكرت الثابت (`image` / `images` / `top_badges`) + أنواع قسم الصفحة `schedule` ≠ `schedule-basket`.
+**آخر ما نزل اليوم:** حقول السعر/الخصم/الكمية/الباركود/SKU في تاب معلومات المنتج **و** كارد المتغيّر — دليل Flutter Web: [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./frontend/DASHBOARD_PRODUCT_PRICING_FIELDS.md).
 
 ---
 
@@ -20,9 +20,10 @@
 | **سلة مخصصة — داش** | [`frontend/DASHBOARD_CUSTOM_BASKET.md`](./frontend/DASHBOARD_CUSTOM_BASKET.md) | فئات + سلل جاهزة |
 | **سلة مخصصة — ويب** | [`frontend/WEB_CUSTOM_BASKET.md`](./frontend/WEB_CUSTOM_BASKET.md) | كروت + تخصيص + تأكيد |
 | **سلة مخصصة — Flutter** | [`frontend/FLUTTER_CUSTOM_BASKET.md`](./frontend/FLUTTER_CUSTOM_BASKET.md) | نفس العقد للشاشات |
-| **متغيّرات — داشبورد** | [`frontend/product-variants-dashboard.md`](./frontend/product-variants-dashboard.md) | **آخر تحديث 30 آب** |
+| **متغيّرات — داشبورد** | [`frontend/product-variants-dashboard.md`](./frontend/product-variants-dashboard.md) | **آخر تحديث 8 أيلول** |
 | **إنشاء منتج — صفات جزئية + حذف صور** | [`frontend/DASHBOARD_PRODUCT_CREATE_UX.md`](./frontend/DASHBOARD_PRODUCT_CREATE_UX.md) | **31 آب** |
-| **باگ كمية المنتج (توست موجبة)** | [`frontend/DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md`](./frontend/DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md) | **5 أيلول** |
+| **حقول السعر · الخصم · الكمية · باركود · SKU** | [`frontend/DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./frontend/DASHBOARD_PRODUCT_PRICING_FIELDS.md) | **8 أيلول — Flutter Web داشبورد** |
+| **باگ كمية المنتج (توست موجبة)** | [`frontend/DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md`](./frontend/DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md) | **5 أيلول** — الكمية رجعت لتاب المعلومات: الدليل الجديد فوق |
 | **ضمان المنتج — دروب داون + قسم مستقل** | [`frontend/DASHBOARD_PRODUCT_WARRANTY.md`](./frontend/DASHBOARD_PRODUCT_WARRANTY.md) | **5 أيلول** |
 | **متغيّرات — ويب + Flutter** | [`frontend/product-variants-storefront-update.md`](./frontend/product-variants-storefront-update.md) | **آخر تحديث 5 أيلول** |
 | **متغيّرات — ويب (تفصيل)** | [`frontend/product-variants-web.md`](./frontend/product-variants-web.md) | |
@@ -119,6 +120,20 @@ GET /api/user/schedules/{id}
 | لا | `{ "confirm_schedule": false }` | `cart_items` مرة — المسودة تُحذف |
 
 `cart_items`: `[{ shop_product_variant_id, quantity }]` → سلة الموقع / `POST /orders`.
+
+---
+
+## آخر تحديث (8 أيلول 2026) — حقول السعر على المنتج والمتغيّر (داشبورد Flutter Web)
+
+نفس البلوك يظهر في **تاب معلومات المنتج** (كل منتج) **و** على **كارد المتغيّر** إذا أُضيفت متغيّرات:
+
+سعر $ · سعر ل.س · نوع الخصم (لا يوجد خصم) · قيمة الخصم · السعر بعد الخصم (readonly) · الكمية المتوفرة · الباركود · رمز التخزين التعريفي للمتغير.
+
+- بلا متغيّرات → الكارد وصفحة التفاصيل من معلومات المنتج
+- مع متغيّرات → الكارد من معلومات المنتج · التفاصيل تتبدّل عند اختيار المتغيّر
+- لا كارد متغيّر تلقائي · لا `required` على الحقول
+
+> الدليل: [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./frontend/DASHBOARD_PRODUCT_PRICING_FIELDS.md)
 
 ---
 
