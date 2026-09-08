@@ -6,7 +6,9 @@ use App\Http\Controllers\BaseCRUDController;
 use App\Http\Requests\Admin\NavMenuItem\SortRequest;
 use App\Http\Requests\Admin\NavMenuItem\StoreRequest;
 use App\Http\Requests\Admin\NavMenuItem\UpdateRequest;
+use App\Models\NavMenuItem;
 use App\Services\Admin\NavMenuItemService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class NavMenuItemController extends BaseCRUDController
@@ -30,6 +32,11 @@ class NavMenuItemController extends BaseCRUDController
         ];
 
         return $this->sendResponse(data: $this->service->getAll([], $config));
+    }
+
+    public function routeKeys(): JsonResponse
+    {
+        return $this->sendResponse(data: NavMenuItem::routeKeyOptions());
     }
 
     public function sort(SortRequest $request)

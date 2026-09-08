@@ -29,6 +29,27 @@ class NavMenuItem extends Model
         'subscriptions',
     ];
 
+    /** Admin dropdown labels for route_key (جدولة is a screen, not a Page Builder page). */
+    public const ROUTE_KEY_LABELS = [
+        'home' => ['ar' => 'الرئيسية', 'en' => 'Home'],
+        'categories' => ['ar' => 'الفئات الرئيسية', 'en' => 'Main Categories'],
+        'brands' => ['ar' => 'الماركات', 'en' => 'Brands'],
+        'shops' => ['ar' => 'كل المتاجر', 'en' => 'All shops'],
+        'baskets' => ['ar' => 'سلالي', 'en' => 'My baskets'],
+        'schedules' => ['ar' => 'جدولة', 'en' => 'Schedules'],
+        'points' => ['ar' => 'النقاط والمكافآت', 'en' => 'Points & rewards'],
+        'help' => ['ar' => 'المساعدة والدعم', 'en' => 'Help & support'],
+        'subscriptions' => ['ar' => 'باقات الاشتراك', 'en' => 'Subscription packages'],
+    ];
+
+    public static function routeKeyOptions(): array
+    {
+        return collect(self::ROUTE_KEYS)->map(fn (string $key) => [
+            'key' => $key,
+            'label' => self::ROUTE_KEY_LABELS[$key] ?? ['ar' => $key, 'en' => $key],
+        ])->values()->all();
+    }
+
     protected $fillable = [
         'title',
         'type',

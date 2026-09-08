@@ -38,28 +38,22 @@ class NavMenuSeeder extends Seeder
                 'order' => 4,
             ],
             [
-                'title' => ['en' => 'Schedules', 'ar' => 'جدولة'],
-                'type' => 'route',
-                'route_key' => 'schedules',
-                'order' => 5,
-            ],
-            [
                 'title' => ['en' => 'Points & rewards', 'ar' => 'النقاط والمكافآت'],
                 'type' => 'route',
                 'route_key' => 'points',
-                'order' => 6,
+                'order' => 5,
             ],
             [
                 'title' => ['en' => 'Help & support', 'ar' => 'المساعدة والدعم'],
                 'type' => 'route',
                 'route_key' => 'help',
-                'order' => 7,
+                'order' => 6,
             ],
             [
                 'title' => ['en' => 'Subscription packages', 'ar' => 'باقات الاشتراك'],
                 'type' => 'route',
                 'route_key' => 'subscriptions',
-                'order' => 8,
+                'order' => 7,
             ],
         ];
 

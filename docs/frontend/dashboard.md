@@ -249,6 +249,7 @@ Content-Type: application/json
 | Method | Endpoint | الوصف |
 |--------|----------|--------|
 | GET | `/api/admin/nav-menu-items` | قائمة العناصر |
+| GET | `/api/admin/nav-menu-items/route-keys` | شاشات ثابتة للدروب داون (`schedules` = جدولة) |
 | POST | `/api/admin/nav-menu-items` | إنشاء عنصر (`multipart/form-data`) |
 | GET | `/api/admin/nav-menu-items/{id}` | عنصر واحد |
 | PUT/PATCH | `/api/admin/nav-menu-items/{id}` | تعديل |
@@ -270,6 +271,9 @@ Content-Type: application/json
 ```
 home | categories | brands | shops | baskets | schedules | points | help | subscriptions
 ```
+
+**جدولة** = `type=route` + `route_key=schedules` — ليست صفحة Page Builder.  
+القائمة من `GET /api/admin/nav-menu-items/route-keys`. التفاصيل: [`NAV_MENU_SCHEDULES.md`](NAV_MENU_SCHEDULES.md)
 
 ### حقول أخرى
 

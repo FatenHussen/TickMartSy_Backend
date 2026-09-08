@@ -331,6 +331,8 @@ Route::prefix('admin')->group(function () {
             ->middleware('admin.permission:pagesection.update');
         Route::apiResource('page-sections', PageSectionCrudController::class)->middleware('crud.permission:pagesection');
         // --- Navigation menu (top bar) ---
+        Route::get('nav-menu-items/route-keys', [NavMenuItemController::class, 'routeKeys'])
+            ->middleware('admin.permission:navmenuitem.view');
         Route::post('nav-menu-items/reorder', [NavMenuItemController::class, 'sort'])
             ->middleware('admin.permission:navmenuitem.update');
         Route::apiResource('nav-menu-items', NavMenuItemController::class)
