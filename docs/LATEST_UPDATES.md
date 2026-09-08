@@ -5,7 +5,13 @@
 > **النطاق:** من منتصف آب حتى اليوم — باك + داشبورد + ويب + Flutter  
 > **الحالة:** الباك جاهز بعد `git pull` + `php artisan migrate` + `php artisan config:clear`
 
-**آخر ما نزل اليوم:** حقول السعر/الخصم/الكمية/الباركود/SKU في تاب معلومات المنتج **و** كارد المتغيّر — دليل Flutter Web: [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./frontend/DASHBOARD_PRODUCT_PRICING_FIELDS.md).
+**آخر ما نزل اليوم:** حقول السعر · الخصم · الكمية · الباركود · SKU — ثلاثة أدلة حسب الفريق:
+
+| الفريق | الملف |
+|--------|--------|
+| **داشبورد** (إدخال) | [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./frontend/DASHBOARD_PRODUCT_PRICING_FIELDS.md) |
+| **ويب** (كارد + تفاصيل) | [`WEB_PRODUCT_PRICING_FIELDS.md`](./frontend/WEB_PRODUCT_PRICING_FIELDS.md) |
+| **Flutter** (كارد + تفاصيل) | [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./frontend/FLUTTER_PRODUCT_PRICING_FIELDS.md) |
 
 ---
 
@@ -22,10 +28,12 @@
 | **سلة مخصصة — Flutter** | [`frontend/FLUTTER_CUSTOM_BASKET.md`](./frontend/FLUTTER_CUSTOM_BASKET.md) | نفس العقد للشاشات |
 | **متغيّرات — داشبورد** | [`frontend/product-variants-dashboard.md`](./frontend/product-variants-dashboard.md) | **آخر تحديث 8 أيلول** |
 | **إنشاء منتج — صفات جزئية + حذف صور** | [`frontend/DASHBOARD_PRODUCT_CREATE_UX.md`](./frontend/DASHBOARD_PRODUCT_CREATE_UX.md) | **31 آب** |
-| **حقول السعر · الخصم · الكمية · باركود · SKU** | [`frontend/DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./frontend/DASHBOARD_PRODUCT_PRICING_FIELDS.md) | **8 أيلول — Flutter Web داشبورد** |
+| **حقول السعر · الخصم · الكمية · باركود · SKU — داشبورد** | [`frontend/DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./frontend/DASHBOARD_PRODUCT_PRICING_FIELDS.md) | **8 أيلول — إدخال في تاب المعلومات + كارد المتغيّر** |
+| **نفس الحقول — ويب** | [`frontend/WEB_PRODUCT_PRICING_FIELDS.md`](./frontend/WEB_PRODUCT_PRICING_FIELDS.md) | **8 أيلول — كارد من المنتج · التفاصيل من المتغيّر المختار** |
+| **نفس الحقول — Flutter** | [`frontend/FLUTTER_PRODUCT_PRICING_FIELDS.md`](./frontend/FLUTTER_PRODUCT_PRICING_FIELDS.md) | **8 أيلول — كارد من المنتج · التفاصيل من المتغيّر المختار** |
 | **باگ كمية المنتج (توست موجبة)** | [`frontend/DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md`](./frontend/DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md) | **5 أيلول** — الكمية رجعت لتاب المعلومات: الدليل الجديد فوق |
 | **ضمان المنتج — دروب داون + قسم مستقل** | [`frontend/DASHBOARD_PRODUCT_WARRANTY.md`](./frontend/DASHBOARD_PRODUCT_WARRANTY.md) | **5 أيلول** |
-| **متغيّرات — ويب + Flutter** | [`frontend/product-variants-storefront-update.md`](./frontend/product-variants-storefront-update.md) | **آخر تحديث 5 أيلول** |
+| **متغيّرات — ويب + Flutter** | [`frontend/product-variants-storefront-update.md`](./frontend/product-variants-storefront-update.md) | **آخر تحديث 8 أيلول** |
 | **متغيّرات — ويب (تفصيل)** | [`frontend/product-variants-web.md`](./frontend/product-variants-web.md) | |
 | **متغيّرات — ويب (دليل شامل + مقارنة tikmool-website)** | [`frontend/WEB_VARIANTS_COMPLETE.md`](./frontend/WEB_VARIANTS_COMPLETE.md) | **31 آب** — API حقيقي · types · gaps · سلة |
 | **متغيّرات — Flutter (تفصيل)** | [`frontend/product-variants-flutter.md`](./frontend/product-variants-flutter.md) | |
@@ -50,6 +58,30 @@
 | 8 | **Nav Menu ديناميكي** — `GET /api/user/nav-menu` | ويب + Flutter |
 | 9 | **الطلب السريع** — إعدادات + `quick_order_page_ids` + convert/cancel | الكل |
 | 10 | **استيراد Excel** + **قناة البيع** `sale_channel` | داشبورد |
+| 11 | **حقول السعر/الخصم/الكمية/الباركود/SKU** — تاب المعلومات + كارد المتغيّر · الكارد من المنتج · التفاصيل من المتغيّر | الكل |
+
+---
+
+## آخر نسخة (8 أيلول 2026) — حقول السعر · الخصم · الكمية · الباركود · SKU
+
+نفس البلوك في الداشبورد (إدخال) والمتجر (عرض):
+
+| الواجهة | داشبورد | كارد المتجر | صفحة/شاشة التفاصيل |
+|---------|---------|-------------|---------------------|
+| سعر المتغير (دولار) | `price` | `price_currencies.USD` من المنتج | من `shop_variants` المختار |
+| سعر المتغيّر (ليرة سورية) | `price_syp` | `price_currencies.SYP` | نفس |
+| نوع الخصم — **لا يوجد خصم** | `discount_type=none` | مقارنة السعر / بعد الخصم | `discount_type` |
+| قيمة الخصم | `discount` | — | `discount_value` |
+| السعر بعد الخصم | عرض فقط — لا يُرسل | `price_after_discount_currencies` | نفس من المتغيّر |
+| الكمية المتوفرة | `quantity` | `quantity` المنتج | `shop_variants[].quantity` |
+| الباركود `6291101234567` | `barcode` | لا على الكرت | `barcode` |
+| رمز التخزين التعريفي للمتغير | `sku` | لا على الكرت | `sku` |
+
+بلا متغيّرات: الكارد والتفاصيل من معلومات المنتج. مع متغيّرات: تغيير اللون/المقاس يبدّل كل الحقول.
+
+> داشبورد: [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./frontend/DASHBOARD_PRODUCT_PRICING_FIELDS.md)  
+> ويب: [`WEB_PRODUCT_PRICING_FIELDS.md`](./frontend/WEB_PRODUCT_PRICING_FIELDS.md)  
+> Flutter: [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./frontend/FLUTTER_PRODUCT_PRICING_FIELDS.md)
 
 ---
 

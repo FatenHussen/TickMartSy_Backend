@@ -3,7 +3,8 @@
 > **أرسلوا هذا الملف لفريق الداشبورد / Flutter Web فقط.**  
 > **آخر تحديث:** 8 أيلول 2026  
 > Base: `/api/admin` + Admin token  
-> **الباك جاهز — التعديل UI فقط**
+> **الباك جاهز — التعديل UI فقط**  
+> المتجر: ويب [`WEB_PRODUCT_PRICING_FIELDS.md`](./WEB_PRODUCT_PRICING_FIELDS.md) · Flutter [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md)
 
 يلغي قرار «احذفوا الكمية من تاب المعلومات» في [`DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md`](./DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md).  
 توست «يجب أن تكون الكمية موجبة» يبقى باگ فرونت: الحقول `.optional()` — **لا** `required`.
@@ -343,7 +344,10 @@ GET /api/admin/products/{id}
 
 ## 10) الكارد وصفحة التفاصيل (للمتجر)
 
-هذا **مو شغل فورم الداشبورد** — للتوافق مع نفس الحقول:
+هذا **مو شغل فورم الداشبورد** — للتوافق مع نفس الحقول. أدلة المتجر:
+
+- ويب: [`WEB_PRODUCT_PRICING_FIELDS.md`](./WEB_PRODUCT_PRICING_FIELDS.md)
+- Flutter: [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md)
 
 | سطح | المصدر |
 |-----|--------|

@@ -2,8 +2,9 @@
 
 > **أرسلوا هذا الملف لفريق Flutter فقط.**  
 > Base: `/api/user` + `Accept-Language: ar|en`.  
-> **آخر تحديث:** 2026-09-05  
-> **ملخص التغييرات:** [`product-variants-storefront-update.md`](product-variants-storefront-update.md)
+> **آخر تحديث:** 2026-09-08  
+> **ملخص التغييرات:** [`product-variants-storefront-update.md`](product-variants-storefront-update.md)  
+> **سعر · خصم · كمية · باركود · SKU:** [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md)
 
 ---
 

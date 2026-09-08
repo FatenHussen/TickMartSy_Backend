@@ -2,7 +2,7 @@
 
 > **أرسلوا هذا الملف لفريق Flutter و Web معاً.**  
 > Base: `/api/user` + `Accept-Language: ar|en`  
-> **آخر تحديث:** 2026-09-05
+> **آخر تحديث:** 2026-09-08
 
 ---
 
@@ -400,6 +400,9 @@ POST /api/user/cart/items
 | Dashboard (إدارة) | [`product-variants-dashboard.md`](product-variants-dashboard.md) |
 | Flutter (عام) | [`flutter.md`](flutter.md) §13 |
 | Web (عام) | [`web.md`](web.md) §10 |
+| **سعر · خصم · كمية · باركود · SKU — ويب** | [`WEB_PRODUCT_PRICING_FIELDS.md`](WEB_PRODUCT_PRICING_FIELDS.md) |
+| **سعر · خصم · كمية · باركود · SKU — Flutter** | [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](FLUTTER_PRODUCT_PRICING_FIELDS.md) |
+| **نفس الحقول — داشبورد** | [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](DASHBOARD_PRODUCT_PRICING_FIELDS.md) |
 | API Admin | [`../api/ADMIN_PRODUCT_VARIANTS_UPDATE_DELETE.md`](../api/ADMIN_PRODUCT_VARIANTS_UPDATE_DELETE.md) |
 
 ---

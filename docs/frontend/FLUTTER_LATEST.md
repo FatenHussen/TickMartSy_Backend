@@ -2,8 +2,10 @@
 
 > **أرسلوا هذا الملف لفريق Flutter.**  
 > Base: `/api/user` + `Accept-Language: ar|en`  
-> **آخر تحديث | Last Updated:** 2026-09-05 (مساءً)  
+> **آخر تحديث | Last Updated:** 2026-09-08  
 > الملف الشامل السابق يبقى: [`flutter.md`](./flutter.md)
+
+**اليوم:** سعر $ · ل.س · نوع الخصم (لا يوجد خصم) · قيمة الخصم · السعر بعد الخصم · الكمية المتوفرة · الباركود · SKU — [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md)
 
 يجمع **كل** ما يحتاجه التطبيق حتى اليوم: Nav · أقسام · فئات دائرية · فلاتر · تسجيل · طلب سريع · أسعار · متغيّرات · **ضمان** · **كمية** · **سلة مخصصة**.
 
@@ -11,7 +13,8 @@
 
 ## الفهرس
 
-0. [ماذا تغيّر في 5 أيلول 2026](#0-ماذا-تغيّر-في-5-أيلول-2026)
+0. [ماذا تغيّر في 8 أيلول 2026](#0-ماذا-تغيّر-في-8-أيلول-2026)
+0b. [ماذا تغيّر في 5 أيلول 2026](#0b-ماذا-تغيّر-في-5-أيلول-2026)
 1. [شريط التنقّل](#1-شريط-التنقّل)
 2. [الصفحات والأقسام](#2-الصفحات-والأقسام)
 3. [الفئات الدائرية والشجرة](#3-الفئات-الدائرية-والشجرة)
@@ -29,7 +32,22 @@
 
 ---
 
-## 0) ماذا تغيّر في 5 أيلول 2026
+## 0) ماذا تغيّر في 8 أيلول 2026
+
+نفس حقول الداشبورد على الكارد وشاشة المنتج:
+
+| تسمية الداشبورد | كارد القائمة | شاشة التفاصيل |
+|-----------------|--------------|----------------|
+| سعر المتغير (دولار) / ليرة | `price_currencies` من **المنتج** | من `ShopVariant` المختار |
+| نوع الخصم · لا يوجد خصم · قيمة الخصم · السعر بعد الخصم | مقارنة السعر / بعد الخصم | `discountType` · `discountValue` · `priceAfterDiscountCurrencies` |
+| الكمية المتوفرة | `quantity` المنتج (`int?`) | `ShopVariant.quantity` |
+| الباركود · رمز التخزين التعريفي للمتغير | لا على الكرت | `barcode` · `sku` |
+
+تغيير اللون/المقاس يبدّل كل الحقول. الدليل: [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md).
+
+---
+
+## 0b) ماذا تغيّر في 5 أيلول 2026
 
 | البند | قبل | بعد (التطبيق) |
 |-------|------|----------------|
@@ -199,7 +217,7 @@ int maxBuy(ShopVariant v, ProductDetail p) {
 
 ## 8) متغيّرات المنتج
 
-تفصيل: [`product-variants-flutter.md`](./product-variants-flutter.md) · [`product-variants-storefront-update.md`](./product-variants-storefront-update.md)
+تفصيل: [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md) · [`product-variants-flutter.md`](./product-variants-flutter.md) · [`product-variants-storefront-update.md`](./product-variants-storefront-update.md)
 
 - لا اسم متغيّر — `attributes` + `sku`.
 - لون → فلتر المقاسات المتاحة من `shop_variants` فقط.
@@ -297,6 +315,7 @@ int? asInt(dynamic v) {
 - [ ] لا `shopVariants[0]` بدون حماية
 - [ ] **ضمان:** `warranty.name` / `.description`
 - [ ] **كمية:** `ShopVariant.quantity` كـ `int?`
+- [ ] **سعر/خصم/باركود/SKU:** الكارد من المنتج · التفاصيل من المتغيّر — [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md)
 - [ ] `canAddToCart`: id + shopId + qty > 0
 - [ ] لا Cartesian
 - [ ] سلة مخصصة: قسم `display_type_id=11` + كروت `image`/`images`/`top_badges` + تخصيص `/schedules/{id}/custom-basket` — [`FLUTTER_CUSTOM_BASKET.md`](./FLUTTER_CUSTOM_BASKET.md)

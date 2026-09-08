@@ -4,7 +4,8 @@
 > Base: `/api/user` + `Accept-Language: ar|en`.  
 > يجمع **كل** التعديلات: Nav · أقسام · فئات · منتج · فلاتر · أسعار · طلب سريع · متغيّرات · **ضمان** · **كمية**.  
 > **آخر نسخة موحّدة (موصى بها للإرسال):** [`FLUTTER_LATEST.md`](./FLUTTER_LATEST.md)  
-> **آخر تحديث | Last Updated:** 2026-09-05
+> **سعر · خصم · كمية · باركود · SKU:** [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md)  
+> **آخر تحديث | Last Updated:** 2026-09-08
 
 ---
 

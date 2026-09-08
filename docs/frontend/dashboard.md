@@ -5,7 +5,7 @@
 > **آخر تحديث:** 8 أيلول 2026  
 > يجمع **كل** تعديلات الباك التي تحتاج تنفيذ في الداشبورد (مو بس المنتج).
 
-**اليوم:** حقول السعر/الخصم/الكمية/الباركود/SKU في تاب المعلومات **و** كارد المتغيّر — [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./DASHBOARD_PRODUCT_PRICING_FIELDS.md).
+**اليوم:** حقول السعر/الخصم/الكمية/الباركود/SKU — داشبورد [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./DASHBOARD_PRODUCT_PRICING_FIELDS.md) · ويب [`WEB_PRODUCT_PRICING_FIELDS.md`](./WEB_PRODUCT_PRICING_FIELDS.md) · Flutter [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md).
 
 ---
 
@@ -1006,6 +1006,8 @@ POST /api/admin/scheduled-baskets
 | رمز التخزين التعريفي للمتغير | `sku` | `variants[].sku` |
 
 بلا متغيّرات: الكارد والتفاصيل من معلومات المنتج. مع متغيّرات: الكارد من المنتج · صفحة التفاصيل تتبدّل عند اختيار المتغيّر.
+
+المتجر: [`WEB_PRODUCT_PRICING_FIELDS.md`](./WEB_PRODUCT_PRICING_FIELDS.md) · [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md)
 
 ---
 

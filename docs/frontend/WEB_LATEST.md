@@ -2,8 +2,10 @@
 
 > **أرسلوا هذا الملف لفريق الويب.**  
 > Base: `/api/user` + `Accept-Language: ar|en`  
-> **آخر تحديث | Last Updated:** 2026-09-05 (مساءً)  
+> **آخر تحديث | Last Updated:** 2026-09-08  
 > الملف الشامل السابق يبقى: [`web.md`](./web.md)
+
+**اليوم:** سعر $ · ل.س · نوع الخصم (لا يوجد خصم) · قيمة الخصم · السعر بعد الخصم · الكمية المتوفرة · الباركود · SKU — [`WEB_PRODUCT_PRICING_FIELDS.md`](./WEB_PRODUCT_PRICING_FIELDS.md)
 
 يجمع **كل** ما يحتاجه الموقع حتى اليوم: Nav · أقسام · فئات · فلاتر · تسجيل · طلب سريع · أسعار · متغيّرات · **ضمان** · **كمية** · **سلل مجدولة** · **سلة مخصصة**.
 
@@ -11,7 +13,8 @@
 
 ## الفهرس
 
-0. [ماذا تغيّر في 5 أيلول 2026](#0-ماذا-تغيّر-في-5-أيلول-2026)
+0. [ماذا تغيّر في 8 أيلول 2026](#0-ماذا-تغيّر-في-8-أيلول-2026)
+0b. [ماذا تغيّر في 5 أيلول 2026](#0b-ماذا-تغيّر-في-5-أيلول-2026)
 1. [شريط التنقّل](#1-شريط-التنقّل)
 2. [الصفحات والأقسام](#2-الصفحات-والأقسام)
 3. [الفئات ومنتجاتها](#3-الفئات-ومنتجاتها)
@@ -28,7 +31,22 @@
 
 ---
 
-## 0) ماذا تغيّر في 5 أيلول 2026
+## 0) ماذا تغيّر في 8 أيلول 2026
+
+حقول السعر والخصم والكمية والباركود وSKU — نفس اللي الأدمن بيملأها:
+
+| تسمية الداشبورد | كارد القائمة | صفحة التفاصيل |
+|-----------------|--------------|----------------|
+| سعر المتغير (دولار) / ليرة | `price_currencies` من **المنتج** | من `shop_variants` المختار |
+| نوع الخصم · لا يوجد خصم · قيمة الخصم · السعر بعد الخصم | بعد الخصم vs الأصلي على الكرت | `discount_type` · `discount_value` · `price_after_discount_currencies` |
+| الكمية المتوفرة | `quantity` المنتج (قد `null`) | `shop_variants[].quantity` |
+| الباركود · رمز التخزين التعريفي للمتغير | لا على الكرت | `barcode` · `sku` |
+
+اختيار لون/مقاس يبدّل **كل** الحقول دفعة واحدة. الدليل: [`WEB_PRODUCT_PRICING_FIELDS.md`](./WEB_PRODUCT_PRICING_FIELDS.md).
+
+---
+
+## 0b) ماذا تغيّر في 5 أيلول 2026
 
 | البند | قبل | بعد (الموقع) |
 |-------|------|----------------|
@@ -254,7 +272,7 @@ POST /api/user/cart/items
 
 ## 8) متغيّرات المنتج
 
-تفصيل: [`product-variants-web.md`](./product-variants-web.md) · [`product-variants-storefront-update.md`](./product-variants-storefront-update.md)
+تفصيل: [`WEB_PRODUCT_PRICING_FIELDS.md`](./WEB_PRODUCT_PRICING_FIELDS.md) · [`product-variants-web.md`](./product-variants-web.md) · [`product-variants-storefront-update.md`](./product-variants-storefront-update.md)
 
 - الهوية = `attributes` + `sku` — **لا اسم متغيّر**.
 - اعرضوا التركيبات الموجودة في API فقط (لا Cartesian).
@@ -321,6 +339,7 @@ GET /api/user/settings
 - [ ] أسعار من الـ API فقط
 - [ ] سلل مجدولة: تبويبات `/schedules` + `schedule_id` + تخصيص بنفس الـ id
 - [ ] كروت الجدولة من `image` + `images` + `top_badges` / `bottom_badges` (بدون aliases)
+- [ ] **سعر/خصم/كمية/باركود/SKU:** الكارد من المنتج · التفاصيل من المتغيّر المختار — [`WEB_PRODUCT_PRICING_FIELDS.md`](./WEB_PRODUCT_PRICING_FIELDS.md)
 
 ---
 
