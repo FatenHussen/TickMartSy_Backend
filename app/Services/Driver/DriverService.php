@@ -9,6 +9,7 @@ use App\Http\Resources\Driver\DriverProfileResource;
 use App\Jobs\SendOtpJob;
 use App\Models\Driver;
 use App\Models\Verification;
+use App\Support\OtpCode;
 use App\Traits\FileTrait;
 use Illuminate\Support\Facades\Hash;
 
@@ -50,7 +51,7 @@ class DriverService
         int $minutes = 60
     ): Verification {
         return Verification::create([
-            'code'    => rand(10000, 99999),
+            'code'    => OtpCode::generate(),
             'driver_id' => $driver->id,
             'type'    => $type,
             'end_at'  => now()->addMinutes($minutes),
@@ -177,7 +178,7 @@ class DriverService
     {
         $driver = auth('driver')->user();
 
-        $otp = rand(10000, 99999);
+        $otp = OtpCode::generate();
 
         $verification = Verification::create([
             'code' => $otp,

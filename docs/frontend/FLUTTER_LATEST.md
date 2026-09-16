@@ -2,10 +2,12 @@
 
 > **أرسلوا هذا الملف لفريق Flutter.**  
 > Base: `/api/user` + `Accept-Language: ar|en`  
-> **آخر تحديث | Last Updated:** 2026-09-08  
+> **آخر تحديث | Last Updated:** 2026-09-16  
 > الملف الشامل السابق يبقى: [`flutter.md`](./flutter.md)
 
-**اليوم:** سعر $ · ل.س · نوع الخصم (لا يوجد خصم) · قيمة الخصم · السعر بعد الخصم · الكمية المتوفرة · الباركود · SKU — [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md)
+**اليوم:** OTP مؤقت **`00000`** — ما في SMS. بعد التسجيل أدخلوا الأصفار على شاشة التحقق.
+
+**اليوم (صباحاً):** سعر $ · ل.س · نوع الخصم (لا يوجد خصم) · قيمة الخصم · السعر بعد الخصم · الكمية المتوفرة · الباركود · SKU — [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md)
 
 يجمع **كل** ما يحتاجه التطبيق حتى اليوم: Nav · أقسام · فئات دائرية · فلاتر · تسجيل · طلب سريع · أسعار · متغيّرات · **ضمان** · **كمية** · **سلة مخصصة**.
 
@@ -34,7 +36,9 @@
 
 ## 0) ماذا تغيّر في 8 أيلول 2026
 
-نفس حقول الداشبورد على الكارد وشاشة المنتج:
+**مساء — ناف جدولة:** إذا وصل `route_key=schedules` افتحوا شاشة قائمة `GET /api/user/schedules`. بدون خريطة العنصر يُتجاهل. الأدمن يضيف العنصر من الداشبورد (`type=route` مو صفحة). [`NAV_MENU_SCHEDULES.md`](./NAV_MENU_SCHEDULES.md)
+
+**صباحاً —** نفس حقول الداشبورد على الكارد وشاشة المنتج:
 
 | تسمية الداشبورد | كارد القائمة | شاشة التفاصيل |
 |-----------------|--------------|----------------|
@@ -240,7 +244,7 @@ Register → POST /auth/register (no token) → OTP → POST /auth/verify-otp �
 - `email` اختياري — لا ترسلوا `""`.
 - كلمة المرور: ≥ 8 + lower + upper + digit + symbol.
 - مدن: `GET /cities?governorate_id=` (الباراميتر إلزامي).
-- OTP SMS: `POST /api/user/auth/verify-otp` `{ phone, code }`.
+- OTP: `POST /api/user/auth/verify-otp` `{ phone, code }`. **مؤقت (16 أيلول):** الكود **`00000`** — ما في SMS.
 - إعادة الإرسال: `POST /auth/login` — **ليس** `/send-otp`.
 - كل الموديلات: `email` nullable.
 - بعد التوكن: `POST /auth/store-token` `{ deviceId, fcmToken }`.
@@ -331,7 +335,7 @@ int? asInt(dynamic v) {
 - [ ] سلة مخصصة: قسم `display_type_id=11` + كروت `image`/`images`/`top_badges` + تخصيص `/schedules/{id}/custom-basket` — [`FLUTTER_CUSTOM_BASKET.md`](./FLUTTER_CUSTOM_BASKET.md)
 
 ### باقي التطبيق
-- [ ] Nav ديناميكي
+- [ ] Nav ديناميكي + `schedules` → شاشة الجداول
 - [ ] فلاتر + chips الجذر
 - [ ] تسجيل: هاتف مطلوب — [`REGISTER_FLOW.md`](./REGISTER_FLOW.md)
 - [ ] أسعار من API

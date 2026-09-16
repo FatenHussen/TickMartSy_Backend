@@ -5,7 +5,9 @@
 > **آخر تحديث:** 8 أيلول 2026  
 > يجمع **كل** تعديلات الباك التي تحتاج تنفيذ في الداشبورد (مو بس المنتج).
 
-**اليوم:** حقول السعر/الخصم/الكمية/الباركود/SKU — داشبورد [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./DASHBOARD_PRODUCT_PRICING_FIELDS.md) · ويب [`WEB_PRODUCT_PRICING_FIELDS.md`](./WEB_PRODUCT_PRICING_FIELDS.md) · Flutter [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md).
+**اليوم (مساء):** ناف «جدولة» من الداشبورد (`type=route` + `schedules`) · إنشاء منتج بدون `vendor_id` — [`NAV_MENU_SCHEDULES.md`](./NAV_MENU_SCHEDULES.md) · [`DASHBOARD_PRODUCT_VENDOR_ID.md`](./DASHBOARD_PRODUCT_VENDOR_ID.md)
+
+**اليوم (صباحاً):** حقول السعر/الخصم/الكمية/الباركود/SKU — داشبورد [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./DASHBOARD_PRODUCT_PRICING_FIELDS.md) · ويب [`WEB_PRODUCT_PRICING_FIELDS.md`](./WEB_PRODUCT_PRICING_FIELDS.md) · Flutter [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md).
 
 ---
 
@@ -32,6 +34,7 @@
 19. [الضمان دروب داون](#19-الضمان-دروب-داون--لا-متغيّر-افتراضي)
 20. [السلل المجدولة + السلة المخصصة](#20-السلل-المجدولة--كتالوج-الجدولات)
 21. [حقول السعر · الخصم · الكمية · باركود · SKU](#21-حقول-السعر--الخصم--الكمية--باركود--sku)
+22. [ناف بار — جدولة + إنشاء منتج بدون vendor_id](#22-ناف-بار--جدولة--إنشاء-منتج)
 
 ---
 
@@ -791,6 +794,8 @@ file: <products.xlsx>
 
 ### Nav
 - [ ] CRUD + reorder لـ nav-menu-items
+- [ ] دروب داون الشاشات من `GET /nav-menu-items/route-keys` — جدولة = `schedules` (مو صفحة)
+- [ ] إنشاء منتج: **لا** `vendor_id`
 
 ### منتج / متغيّرات / فئات
 - [ ] منتج لأي مستوى فئة؛ صفات من الجذر
@@ -1016,6 +1021,20 @@ POST /api/admin/scheduled-baskets
 بلا متغيّرات: الكارد والتفاصيل من معلومات المنتج. مع متغيّرات: الكارد من المنتج · صفحة التفاصيل تتبدّل عند اختيار المتغيّر.
 
 المتجر: [`WEB_PRODUCT_PRICING_FIELDS.md`](./WEB_PRODUCT_PRICING_FIELDS.md) · [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md)
+
+---
+
+## 22) ناف بار — جدولة + إنشاء منتج
+
+> **8 أيلول مساءً** — [`NAV_MENU_SCHEDULES.md`](./NAV_MENU_SCHEDULES.md) · [`DASHBOARD_PRODUCT_VENDOR_ID.md`](./DASHBOARD_PRODUCT_VENDOR_ID.md)
+
+**جدولة في الناف:** ليست صفحة Page Builder. نوع `route` + `route_key=schedules`. القائمة: `GET /api/admin/nav-menu-items/route-keys`. لا سيدر تلقائي.
+
+**إنشاء منتج:** لا ترسلوا `vendor_id`. للموقع `sale_channel=platform`. للمتجر `shop_variants`. إذا «بائع المنصة غير موجود»:
+
+```bash
+php artisan db:seed --class=PlatformVendorSeeder
+```
 
 ---
 

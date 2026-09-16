@@ -1,18 +1,25 @@
 # آخر التعديلات والتحديثات — Tikmool Backend
 
 > **أرسلوا هذا الملف** — آخر نسخة شاملة (كل الفرق)  
-> **تاريخ:** 8 أيلول 2026  
+> **تاريخ:** 16 أيلول 2026  
 > **النطاق:** من منتصف آب حتى اليوم — باك + داشبورد + ويب + Flutter  
-> **الحالة:** الباك جاهز بعد `git pull` + `php artisan migrate` + `php artisan config:clear`
+> **الحالة:** الباك جاهز بعد `git pull` + `php artisan config:clear`
 
-**آخر ما نزل اليوم:** حقول السعر · الخصم · الكمية · الباركود · SKU — ثلاثة أدلة حسب الفريق:
+**آخر ما نزل اليوم (16 أيلول):** OTP مؤقت `00000` — توقف إرسال SMS عبر Octopus
 
 | الفريق | الملف |
 |--------|--------|
-| **داشبورد** (إدخال) | [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./frontend/DASHBOARD_PRODUCT_PRICING_FIELDS.md) |
-| **ويب** (كارد + تفاصيل) | [`WEB_PRODUCT_PRICING_FIELDS.md`](./frontend/WEB_PRODUCT_PRICING_FIELDS.md) |
-| **Flutter** (كارد + تفاصيل) | [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./frontend/FLUTTER_PRODUCT_PRICING_FIELDS.md) |
-| **Nav — جدولة** | [`NAV_MENU_SCHEDULES.md`](./frontend/NAV_MENU_SCHEDULES.md) |
+| **ويب + Flutter — OTP مؤقت** | [`REGISTER_FLOW.md`](./frontend/REGISTER_FLOW.md) · [`WEB_LATEST.md`](./frontend/WEB_LATEST.md) · [`FLUTTER_LATEST.md`](./frontend/FLUTTER_LATEST.md) |
+
+**آخر ما نزل (مساء 8 أيلول):** ناف بار «جدولة» من الداشبورد · إنشاء منتج بدون `vendor_id` · بائع المنصة
+
+| الفريق | الملف |
+|--------|--------|
+| **داشبورد — جدولة في الناف** | [`NAV_MENU_SCHEDULES.md`](./frontend/NAV_MENU_SCHEDULES.md) |
+| **داشبورد — إنشاء منتج `vendor_id`** | [`DASHBOARD_PRODUCT_VENDOR_ID.md`](./frontend/DASHBOARD_PRODUCT_VENDOR_ID.md) |
+| **داشبورد** (سعر/خصم/كمية) | [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./frontend/DASHBOARD_PRODUCT_PRICING_FIELDS.md) |
+| **ويب** | [`WEB_LATEST.md`](./frontend/WEB_LATEST.md) · [`WEB_PRODUCT_PRICING_FIELDS.md`](./frontend/WEB_PRODUCT_PRICING_FIELDS.md) |
+| **Flutter** | [`FLUTTER_LATEST.md`](./frontend/FLUTTER_LATEST.md) · [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./frontend/FLUTTER_PRODUCT_PRICING_FIELDS.md) |
 
 ---
 
@@ -28,8 +35,8 @@
 | **سلة مخصصة — ويب** | [`frontend/WEB_CUSTOM_BASKET.md`](./frontend/WEB_CUSTOM_BASKET.md) | كروت + تخصيص + تأكيد |
 | **سلة مخصصة — Flutter** | [`frontend/FLUTTER_CUSTOM_BASKET.md`](./frontend/FLUTTER_CUSTOM_BASKET.md) | نفس العقد للشاشات |
 | **متغيّرات — داشبورد** | [`frontend/product-variants-dashboard.md`](./frontend/product-variants-dashboard.md) | **آخر تحديث 8 أيلول** |
-| **Nav — مفتاح `schedules` (جدولة)** | [`frontend/NAV_MENU_SCHEDULES.md`](./frontend/NAV_MENU_SCHEDULES.md) | **8 أيلول — ويب + Flutter** |
-| **إنشاء منتج — `vendor_id` (لا ترسلوه)** | [`frontend/DASHBOARD_PRODUCT_VENDOR_ID.md`](./frontend/DASHBOARD_PRODUCT_VENDOR_ID.md) | **8 أيلول — توست «حقل vendor id غير موجود»** |
+| **Nav — جدولة من الداشبورد** (`route` مو صفحة) | [`frontend/NAV_MENU_SCHEDULES.md`](./frontend/NAV_MENU_SCHEDULES.md) | **8 أيلول مساءً** |
+| **إنشاء منتج — لا ترسلوا `vendor_id`** | [`frontend/DASHBOARD_PRODUCT_VENDOR_ID.md`](./frontend/DASHBOARD_PRODUCT_VENDOR_ID.md) | **8 أيلول** |
 | **إنشاء منتج — صفات جزئية + حذف صور** | [`frontend/DASHBOARD_PRODUCT_CREATE_UX.md`](./frontend/DASHBOARD_PRODUCT_CREATE_UX.md) | **31 آب** |
 | **حقول السعر · الخصم · الكمية · باركود · SKU — داشبورد** | [`frontend/DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./frontend/DASHBOARD_PRODUCT_PRICING_FIELDS.md) | **8 أيلول — إدخال في تاب المعلومات + كارد المتغيّر** |
 | **نفس الحقول — ويب** | [`frontend/WEB_PRODUCT_PRICING_FIELDS.md`](./frontend/WEB_PRODUCT_PRICING_FIELDS.md) | **8 أيلول — كارد من المنتج · التفاصيل من المتغيّر المختار** |
@@ -58,10 +65,43 @@
 | 5 | **إنشاء منتج** — متغيّرات في state محلي ثم `POST /products` مرة | داشبورد |
 | 6 | **Page Builder موحّد** — صفحات + أقسام + preview + reorder | الكل |
 | 7 | **Eye toggle** — إخفاء قسم بدون حذف (`is_active`) | الكل |
-| 8 | **Nav Menu ديناميكي** — `GET /api/user/nav-menu` | ويب + Flutter |
+| 8 | **Nav Menu** — `GET /nav-menu` + `route_key=schedules` (جدولة) من الداشبورد | ويب + Flutter + داش |
 | 9 | **الطلب السريع** — إعدادات + `quick_order_page_ids` + convert/cancel | الكل |
 | 10 | **استيراد Excel** + **قناة البيع** `sale_channel` | داشبورد |
-| 11 | **حقول السعر/الخصم/الكمية/الباركود/SKU** — تاب المعلومات + كارد المتغيّر · الكارد من المنتج · التفاصيل من المتغيّر | الكل |
+| 11 | **حقول السعر/الخصم/الكمية/الباركود/SKU** — تاب المعلومات + كارد المتغيّر | الكل |
+| 12 | **إنشاء منتج** — لا `vendor_id` من الداشبورد · بائع المنصة من السيدر | داشبورد |
+
+---
+
+## آخر نسخة (8 أيلول 2026 مساءً) — ناف «جدولة» + إنشاء منتج
+
+### ناف بار — جدولة من الداشبورد
+
+جدولة **ليست صفحة** Page Builder. الأدمن يضيفها يدوياً:
+
+- النوع: **شاشة ثابتة** `type=route` (مو `page`)
+- الشاشة: `route_key=schedules`
+- دروب داون الشاشات: `GET /api/admin/nav-menu-items/route-keys`
+
+**لا سيدر تلقائي.** ويب: `schedules` → `/schedules`. Flutter: شاشة `GET /api/user/schedules`.
+
+> [`NAV_MENU_SCHEDULES.md`](./frontend/NAV_MENU_SCHEDULES.md)
+
+### إنشاء منتج — `vendor_id`
+
+لا ترسلوا `vendor_id` (ولا `0`). للموقع: `sale_channel=platform`. للمتجر: `shop_variants` والباك يأخذ البائع من الفرع.
+
+إذا ظهر «بائع المنصة غير موجود» على داتا الإنتاج:
+
+```bash
+php artisan db:seed --class=PlatformVendorSeeder
+```
+
+> [`DASHBOARD_PRODUCT_VENDOR_ID.md`](./frontend/DASHBOARD_PRODUCT_VENDOR_ID.md)
+
+### سلة الضيف (ويب)
+
+ما في `POST /api/user/cart/items`. السلة بدون login محلية في المتصفح. الطلب `POST /api/user/orders` يحتاج توكن.
 
 ---
 
@@ -85,6 +125,18 @@
 > داشبورد: [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./frontend/DASHBOARD_PRODUCT_PRICING_FIELDS.md)  
 > ويب: [`WEB_PRODUCT_PRICING_FIELDS.md`](./frontend/WEB_PRODUCT_PRICING_FIELDS.md)  
 > Flutter: [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./frontend/FLUTTER_PRODUCT_PRICING_FIELDS.md)
+
+---
+
+## آخر نسخة (16 أيلول 2026) — OTP مؤقت بدون SMS
+
+**مؤقت حتى اشتراك بوابة SMS جديدة.** ما في رسالة عالهاتف.
+
+على شاشة OTP أدخلوا **`00000`** ثم `POST /auth/verify-otp` `{ phone, code: "00000" }`.
+
+نفس الكود لنسيت كلمة المرور وتحديث الهاتف/الإيميل والسائق.
+
+> [`REGISTER_FLOW.md`](./frontend/REGISTER_FLOW.md) · ويب [`WEB_LATEST.md`](./frontend/WEB_LATEST.md) · Flutter [`FLUTTER_LATEST.md`](./frontend/FLUTTER_LATEST.md)
 
 ---
 
@@ -466,7 +518,8 @@ php artisan db:seed --class=SaleCountrySeeder        # بلدان مبيع
 - [ ] ضمان: قسم مستقل + دروب داون `warranty_id` — لا كارد متغيّر افتراضي
 - [ ] كمية المنتج اختيارية (لا توست «موجبة» على الحقل المخفي)
 - [ ] Page Builder: صفحات + أقسام + reorder + preview + eye toggle
-- [ ] Nav Menu CRUD + reorder
+- [ ] Nav Menu CRUD + reorder + دروب داون من `GET /nav-menu-items/route-keys` (جدولة = `schedules` مو صفحة)
+- [ ] إنشاء منتج: **لا** `vendor_id` — [`DASHBOARD_PRODUCT_VENDOR_ID.md`](./frontend/DASHBOARD_PRODUCT_VENDOR_ID.md)
 - [ ] منتج: أي مستوى فئة · sale_channel · بلد منشأ · بلدان مبيع
 - [ ] متغيّرات: single select · state محلي عند الإنشاء · خصم per variant
 - [ ] حذف متغيّر/صفة/فئة مع confirm + 409
@@ -479,7 +532,8 @@ php artisan db:seed --class=SaleCountrySeeder        # بلدان مبيع
 - [ ] **سلة مخصصة:** كروت `/schedules` + تخصيص + تأكيد نعم/لا — [`WEB_CUSTOM_BASKET.md`](./frontend/WEB_CUSTOM_BASKET.md)
 - [ ] ضمان: `warranty.name` / `.description`
 - [ ] كمية: `shop_variants[].quantity` (ممكن `null`)
-- [ ] Nav من API · Page Builder · صفحات فئات
+- [ ] Nav من API · خريطة `schedules` → `/schedules` — [`NAV_MENU_SCHEDULES.md`](./frontend/NAV_MENU_SCHEDULES.md)
+- [ ] سلة الضيف محلية؛ الطلب يحتاج login
 - [ ] منتج: shop_variants picker · price_currencies · discount per variant
 - [ ] فلاتر · تسجيل بدون إيميل · أسعار USD/SYP
 - [ ] طلب سريع حسب `page_slugs` من settings
@@ -490,7 +544,7 @@ php artisan db:seed --class=SaleCountrySeeder        # بلدان مبيع
 - [ ] **سلة مخصصة:** قسم `display_type_id=11` + كروت + تخصيص نعم/لا — [`FLUTTER_CUSTOM_BASKET.md`](./frontend/FLUTTER_CUSTOM_BASKET.md)
 - [ ] ضمان: `warranty.name` / `.description`
 - [ ] كمية: `ShopVariant.quantity` كـ `int?`
-- [ ] نفس محاور الويب (Nav · صفحات · فئات · منتج · فلاتر)
+- [ ] نفس محاور الويب (Nav · `schedules` · صفحات · فئات · منتج · فلاتر)
 - [ ] shop_variants · attributes_map · quantity · discount
 - [ ] طلب سريع حسب الصفحة
 - [ ] Circular categories · layout/variant للأقسام

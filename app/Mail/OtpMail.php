@@ -45,7 +45,7 @@ class OtpMail extends Mailable
 
     public function build()
     {
-        return $this->from("no-replay@octopus-software.dev")->view('mail', [
+        return $this->from(config('mail.from.address'))->view('mail', [
             'user' => $this->user,
             'otp' => $this->otp,
             'validity' => $this->validity,

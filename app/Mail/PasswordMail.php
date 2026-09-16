@@ -46,7 +46,7 @@ class PasswordMail extends Mailable
 
     public function build()
     {
-        return $this->from("no-replay@octopus-software.dev")->view('password', [
+        return $this->from(config('mail.from.address'))->view('password', [
             'user' => $this->user,
             'password' => $this->password,
             'validity' => $this->validity,

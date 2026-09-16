@@ -14,6 +14,7 @@ use App\Mail\OtpMail;
 use App\Models\User;
 use App\Models\Verification;
 use App\Services\BaseService;
+use App\Support\OtpCode;
 use App\Traits\FileTrait;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -57,7 +58,7 @@ class UserService
         int $minutes = 60
     ): Verification {
         return Verification::create([
-            'code'    => rand(10000, 99999),
+            'code'    => OtpCode::generate(),
             'user_id' => $user->id,
             'type'    => $type,
             'end_at'  => now()->addMinutes($minutes),
@@ -376,7 +377,7 @@ class UserService
         $user = auth('user')->user();
 
 
-        $otp = rand(10000, 99999);
+        $otp = OtpCode::generate();
 
         $verification = Verification::create([
             'code' => $otp,
@@ -395,7 +396,7 @@ class UserService
     {
         $user = auth('user')->user();
 
-        $otp = rand(10000, 99999);
+        $otp = OtpCode::generate();
 
         $verification = Verification::create([
             'code' => $otp,

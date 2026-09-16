@@ -2,7 +2,7 @@
 
 > **أرسلوا هذا الملف لفريق Flutter.**  
 > الدليل الكامل (ويب + Flutter): [`REGISTER_FLOW.md`](./REGISTER_FLOW.md)  
-> **آخر تحديث:** 8 أيلول 2026  
+> **آخر تحديث:** 16 أيلول 2026  
 > Base: `/api/user` — بدون توكن حتى OTP
 
 ```
@@ -10,8 +10,10 @@ Register screen → POST /auth/register (200, no token)
      → OTP screen → POST /auth/verify-otp → save data.token
 ```
 
-Resend code: `POST /auth/login` with the same phone + password (`403` = new SMS).  
+Resend code: `POST /auth/login` with the same phone + password (`403` expected).  
 Do **not** call `/auth/send-otp` on this screen (that endpoint is password reset).
+
+**Temporary (16 Sep):** no SMS. On the OTP screen enter **`00000`**.
 
 | Field | Required |
 |--------|----------|

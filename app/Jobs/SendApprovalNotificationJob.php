@@ -7,7 +7,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class SendApprovalNotificationJob implements ShouldQueue
@@ -29,18 +28,10 @@ class SendApprovalNotificationJob implements ShouldQueue
         $html = view($this->view, $this->data)->render();
         $message = $this->htmlToWhatsAppText($html);
 
-        $response = Http::withHeaders([
-            'authorization' => 'a12f1ba8f6e805b2c4d0e8cb1dcc7d19a0e24fa3f97e9f679',
-            'Content-Type' => 'application/json',
-        ])->post('https://otp.octopus-software.online/send', [
-            'to' => $this->phone,
-            'message' => $message,
-        ]);
-
-        Log::info('Approval notification sent', [
+        Log::info('Approval SMS skipped (no provider)', [
             'phone' => $this->phone,
             'view' => $this->view,
-            'response' => $response->json(),
+            'message' => $message,
         ]);
     }
 
