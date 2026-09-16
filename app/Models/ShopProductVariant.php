@@ -47,6 +47,8 @@ class ShopProductVariant extends Model
             UserBasketScheduleItem::where('shop_product_variant_id', $shopVariant->id)
                 ->update(['shop_product_variant_id' => null]);
 
+            CartItem::where('shop_product_variant_id', $shopVariant->id)->delete();
+
             // 5. Unlink gifts (FK is nullable)
             Gift::where('shop_product_variant_id', $shopVariant->id)
                 ->update(['shop_product_variant_id' => null]);

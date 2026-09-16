@@ -81,7 +81,7 @@
 | 5 | **fallback بدون variant** | — | الباك **لا يرسل** `discount_value`/`discount_type` في fallback — استخدم defaults |
 | 6 | **endpoint الصفحات** | `/user/sections?page_slug=` | يعمل — `/user/pages/{slug}` **غير موجود** في routes الباك |
 | 7 | **Nav على الإنتاج** | 404 deploy | مشكلة باك/سيرفر — [`BACKEND_NAV_MENU_DEPLOY.md`] إن وُجد في repo الويب |
-| 8 | **إضافة للسلة** | قد يشير لـ `POST /cart/items` | الباك: `POST /orders/preview` + `POST /orders` بـ `shop_product_variant_id` |
+| 8 | **إضافة للسلة** | `POST /cart/items` | توكن · `{ shop_product_variant_id, quantity }` |
 
 ---
 
@@ -123,7 +123,7 @@
 | أقسام صفحة CMS | GET | `/api/user/sections?page_slug={slug}` | لا |
 | Nav | GET | `/api/user/nav-menu` | لا |
 
-> **لا يوجد** `GET /api/user/pages/{slug}` و **لا** `POST /api/user/cart/items` في routes الباك الحالي.
+> **لا يوجد** `GET /api/user/pages/{slug}`. السلة: `POST /api/user/cart/items` (توكن).
 
 ---
 

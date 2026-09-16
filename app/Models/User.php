@@ -199,6 +199,11 @@ class User extends Authenticatable
         return $this->hasMany(UserBasketSchedule::class);
     }
 
+    public function cartItems()
+    {
+        return $this->hasMany(CartItem::class);
+    }
+
     public function preferredPaymentMethod()
     {
         return $this->belongsTo(PaymentMethod::class, 'preferred_payment_method_id');

@@ -16,6 +16,7 @@ return [
     'inactive_account' => 'Account is inactive',
 
     'account_already_exists' => 'Account already exists.',
+    'cart_quantity_unavailable' => 'Requested quantity is not available.',
     // HTTP Status Codes
     'errors' => [
         400 => 'Bad request.',

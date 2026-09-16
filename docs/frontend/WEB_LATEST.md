@@ -5,7 +5,7 @@
 > **آخر تحديث | Last Updated:** 2026-09-16  
 > الملف الشامل السابق يبقى: [`web.md`](./web.md)
 
-**اليوم:** OTP مؤقت **`00000`** — ما في SMS. بعد التسجيل أدخلوا الأصفار على شاشة التحقق.
+**اليوم:** `POST /api/user/cart/items` صار موجود (توكن مطلوب) · OTP مؤقت **`00000`**.
 
 **اليوم (صباحاً):** سعر $ · ل.س · نوع الخصم (لا يوجد خصم) · قيمة الخصم · السعر بعد الخصم · الكمية المتوفرة · الباركود · SKU — [`WEB_PRODUCT_PRICING_FIELDS.md`](./WEB_PRODUCT_PRICING_FIELDS.md)
 
@@ -40,7 +40,7 @@
 | البند | المطلوب |
 |-------|---------|
 | `route_key=schedules` | أضيفوا للخريطة: `schedules: "/schedules"` — يظهر فقط إذا الأدمن أضاف العنصر من الداشبورد (`type=route`) |
-| سلة بدون login | محلية في المتصفح. ما في `POST /cart/items`. الطلب `POST /orders` يحتاج توكن |
+| سلة المستخدم | `POST /api/user/cart/items` يحتاج توكن. الضيف بدون login: سلة محلية ثم نفس الـ API بعد تسجيل الدخول |
 
 [`NAV_MENU_SCHEDULES.md`](./NAV_MENU_SCHEDULES.md)
 
@@ -270,14 +270,23 @@ const maxBuy = Math.min(
 | `quantity: 0` أو `null` | غير متوفر | معطّلة |
 | `id` أو `shop_id` = `null` | الصفحة تعرض | معطّلة |
 
-إضافة للسلة:
+إضافة للسلة (توكن مستخدم):
 
 ```http
 POST /api/user/cart/items
-{ "shop_product_variant_id": selected.id, "quantity": 1 }
+Authorization: Bearer {token}
+
+{ "shop_product_variant_id": selected.id, "quantity": 1, "note": "optional" }
 ```
 
-لا ترسلوا سعراً من الواجهة.
+| Method | Path |
+|--------|------|
+| GET | `/api/user/cart` |
+| POST | `/api/user/cart/items` |
+| PUT | `/api/user/cart/items/{id}` `{ quantity, note? }` |
+| DELETE | `/api/user/cart/items/{id}` |
+
+بدون توكن = 401. الطلب النهائي يبقى `POST /api/user/orders`.
 
 قائمة المنتجات (`GET /products`): `quantity` على الكرت قد تكون `null` — لا تكسروا الـ UI. التوفر الحقيقي في صفحة التفاصيل.
 

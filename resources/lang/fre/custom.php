@@ -14,6 +14,7 @@ return [
     'invalid_verification_code' => 'Invalid verification code',
     'invalid_coupon' => 'invalid coupon',
     'inactive_account' => 'Account is inactive',
+    'cart_quantity_unavailable' => 'Requested quantity is not available.',
     // HTTP Status Codes
     'errors' => [
         400 => 'Bad request.',

@@ -5,7 +5,7 @@
 > **النطاق:** من منتصف آب حتى اليوم — باك + داشبورد + ويب + Flutter  
 > **الحالة:** الباك جاهز بعد `git pull` + `php artisan config:clear`
 
-**آخر ما نزل اليوم (16 أيلول):** OTP مؤقت `00000` — توقف إرسال SMS عبر Octopus
+**آخر ما نزل اليوم (16 أيلول):** `POST /api/user/cart/items` · OTP مؤقت `00000`
 
 | الفريق | الملف |
 |--------|--------|
@@ -99,9 +99,15 @@ php artisan db:seed --class=PlatformVendorSeeder
 
 > [`DASHBOARD_PRODUCT_VENDOR_ID.md`](./frontend/DASHBOARD_PRODUCT_VENDOR_ID.md)
 
-### سلة الضيف (ويب)
+### سلة المستخدم (ويب)
 
-ما في `POST /api/user/cart/items`. السلة بدون login محلية في المتصفح. الطلب `POST /api/user/orders` يحتاج توكن.
+`POST /api/user/cart/items` يحتاج توكن. الجسم: `{ shop_product_variant_id, quantity, note? }`.
+
+- `GET /api/user/cart`
+- `PUT /api/user/cart/items/{id}`
+- `DELETE /api/user/cart/items/{id}`
+
+الطلب `POST /api/user/orders` كما هو.
 
 ---
 

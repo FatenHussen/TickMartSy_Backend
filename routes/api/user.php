@@ -234,10 +234,12 @@ Route::prefix('user')->group(
 
         Route::apiResource('addresses', AddressController::class)->middleware(['auth:user']);
 
-        Route::prefix('cart')->group(function () {
-            Route::middleware(['auth:user'])->group(function () {
-                Route::post('calculate-delivery-price', [CartController::class, 'calculateDeliveryPrice']);
-            });
+        Route::prefix('cart')->middleware(['auth:user'])->group(function () {
+            Route::get('/', [CartController::class, 'index']);
+            Route::post('items', [CartController::class, 'addItem']);
+            Route::put('items/{item}', [CartController::class, 'updateItem']);
+            Route::delete('items/{item}', [CartController::class, 'removeItem']);
+            Route::post('calculate-delivery-price', [CartController::class, 'calculateDeliveryPrice']);
         });
 
         Route::prefix('favorites')->group(function () {

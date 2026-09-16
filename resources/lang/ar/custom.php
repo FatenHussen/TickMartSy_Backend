@@ -16,6 +16,7 @@ return [
     'inactive_account' => 'الحساب غير مفعل',
 
     'account_already_exists' => 'الحساب موجود بالفعل.',
+    'cart_quantity_unavailable' => 'الكمية المطلوبة غير متوفرة.',
 
 
     'errors' => [
