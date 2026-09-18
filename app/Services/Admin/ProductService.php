@@ -57,6 +57,7 @@ class ProductService extends BaseService
         'originCountry',
         'saleCountry',
         'variants',
+        'variants.media',
         'variants.shopVariants',
         'categoryDetails.categoryDetail',
         'extraDetails.category',
@@ -227,7 +228,7 @@ class ProductService extends BaseService
         $this->ensureDefaultVariant($object);
         $this->ensureDefaultShopLinks($object);
 
-        $object->refresh();
+        $object->refresh()->load($this->relations);
 
         DB::commit();
 
@@ -618,8 +619,15 @@ class ProductService extends BaseService
                     continue;
                 }
 
-                $existingImagesIds = $variantItem['existing_images_ids'] ?? [];
-                $variantImages = $variantItem['images'] ?? [];
+                $hasExistingImagesKey = array_key_exists('existing_images_ids', $variantItem);
+                $existingImagesIds = array_values(array_map(
+                    'intval',
+                    (array) ($variantItem['existing_images_ids'] ?? [])
+                ));
+                $variantImages = is_array($variantItem['images'] ?? null) ? $variantItem['images'] : [];
+                $hasNewImages = collect($variantImages)->contains(
+                    fn ($file) => $file instanceof \Illuminate\Http\UploadedFile
+                );
                 $variantId = $variantItem['id'] ?? null;
                 unset(
                     $variantItem['existing_images_ids'],
@@ -660,20 +668,23 @@ class ProductService extends BaseService
                 $variantIndexMap[(int) $index] = $variant;
                 $keptIds[] = $variant->id;
 
-                if (!empty($existingImagesIds) || $variantId) {
+                if ($hasExistingImagesKey) {
                     $currentMedia = $variant->media()->get();
                     foreach ($currentMedia as $media) {
-                        if (!in_array($media->id, $existingImagesIds)) {
-                            $media->delete();
+                        if (!in_array((int) $media->id, $existingImagesIds, true)) {
+                            $mediaService->delete($media);
                         }
+                    }
+                } elseif ($hasNewImages) {
+                    $currentMedia = $variant->media()->get();
+                    foreach ($currentMedia as $media) {
+                        $mediaService->delete($media);
                     }
                 }
 
-                if (!empty($variantImages) && is_array($variantImages)) {
-                    foreach ($variantImages as $file) {
-                        if ($file instanceof \Illuminate\Http\UploadedFile) {
-                            $mediaService->upload($variant, $file, 'variant');
-                        }
+                foreach ($variantImages as $file) {
+                    if ($file instanceof \Illuminate\Http\UploadedFile) {
+                        $mediaService->upload($variant, $file, \App\Models\ProductMedia::COLLECTION_VARIANT);
                     }
                 }
             }

@@ -107,7 +107,7 @@ class UpdateRequest extends FormRequest
             }
         }
 
-        $variants = $this->input('variants');
+        $variants = $this->all()['variants'] ?? $this->input('variants');
         if (is_array($variants)) {
             foreach ($variants as $index => $variant) {
                 if (!is_array($variant)) {
@@ -281,6 +281,10 @@ class UpdateRequest extends FormRequest
             'variants.*.is_active' => 'nullable|boolean',
             'variants.*.attributes_values_ids' => 'nullable|array',
             'variants.*.attributes_values_ids.*' => 'required|integer|exists:attribute_values,id',
+            'variants.*.existing_images_ids' => 'nullable|array',
+            'variants.*.existing_images_ids.*' => 'integer',
+            'variants.*.images' => 'nullable|array',
+            'variants.*.images.*' => 'nullable|image|max:5120',
 
             'shop_variants' => 'nullable|array',
             'shop_variants.*.shop_id' => 'required|exists:shops,id',

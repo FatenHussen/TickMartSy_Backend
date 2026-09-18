@@ -5,6 +5,8 @@
 > **آخر تحديث:** 8 أيلول 2026  
 > يجمع **كل** تعديلات الباك التي تحتاج تنفيذ في الداشبورد (مو بس المنتج).
 
+**اليوم:** أيقونات المنتج تظهر على الموقع من `icons[]` — الداشبورد تربط فقط `icon_ids` — [`PRODUCT_ICONS_WEB_DASHBOARD.md`](./PRODUCT_ICONS_WEB_DASHBOARD.md)
+
 **اليوم (مساء):** ناف «جدولة» من الداشبورد (`type=route` + `schedules`) · إنشاء منتج بدون `vendor_id` — [`NAV_MENU_SCHEDULES.md`](./NAV_MENU_SCHEDULES.md) · [`DASHBOARD_PRODUCT_VENDOR_ID.md`](./DASHBOARD_PRODUCT_VENDOR_ID.md)
 
 **اليوم (صباحاً):** حقول السعر/الخصم/الكمية/الباركود/SKU — داشبورد [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./DASHBOARD_PRODUCT_PRICING_FIELDS.md) · ويب [`WEB_PRODUCT_PRICING_FIELDS.md`](./WEB_PRODUCT_PRICING_FIELDS.md) · Flutter [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md).

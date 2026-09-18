@@ -123,7 +123,7 @@ class ProductVariantService extends BaseService
             $mediaService = new MediaService();
             foreach ($data['images'] as $file) {
                 if ($file instanceof \Illuminate\Http\UploadedFile) {
-                    $mediaService->upload($variant, $file, 'variant_images');
+                    $mediaService->upload($variant, $file, \App\Models\ProductMedia::COLLECTION_VARIANT);
                 }
             }
             unset($data['images']);

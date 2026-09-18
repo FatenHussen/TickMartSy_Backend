@@ -5,7 +5,7 @@
 > **آخر تحديث | Last Updated:** 2026-09-16  
 > الملف الشامل السابق يبقى: [`flutter.md`](./flutter.md)
 
-**اليوم:** OTP مؤقت **`00000`** — ما في SMS. بعد التسجيل أدخلوا الأصفار على شاشة التحقق.
+**اليوم:** أيقونات المنتج `icons[].icon` أو `image` — [`PRODUCT_ICONS_WEB_DASHBOARD.md`](./PRODUCT_ICONS_WEB_DASHBOARD.md) · OTP مؤقت **`00000`** — ما في SMS. بعد التسجيل أدخلوا الأصفار على شاشة التحقق.
 
 **اليوم (صباحاً):** سعر $ · ل.س · نوع الخصم (لا يوجد خصم) · قيمة الخصم · السعر بعد الخصم · الكمية المتوفرة · الباركود · SKU — [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md)
 

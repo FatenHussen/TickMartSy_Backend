@@ -88,7 +88,7 @@ class StoreRequest extends FormRequest
             }
         }
 
-        $variants = $this->input('variants');
+        $variants = $this->all()['variants'] ?? $this->input('variants');
         if (is_array($variants)) {
             foreach ($variants as $index => $variant) {
                 if (!is_array($variant)) {

@@ -44,6 +44,12 @@ class OneResource extends JsonResource
                     'logo' => $this->product->brand->logo,
                 ] : null,
             ],
+            'images' => ($this->media ?? collect())->map(function ($img) {
+                return [
+                    'id' => $img->id,
+                    'url' => $img->url,
+                ];
+            })->values(),
             'attributes' => $this->getAttributesWithDetails(),
             'attributes_values_ids' => $this->attributes_values_ids,
             'is_trend' => $this->is_trend,

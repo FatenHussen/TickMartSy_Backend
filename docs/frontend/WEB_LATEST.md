@@ -5,7 +5,9 @@
 > **آخر تحديث | Last Updated:** 2026-09-16  
 > الملف الشامل السابق يبقى: [`web.md`](./web.md)
 
-**اليوم:** `POST /api/user/cart/items` صار موجود (توكن مطلوب) · OTP مؤقت **`00000`**.
+**اليوم:** أيقونات المنتج على صفحة `/product/{id}` من `icons[]` — الموقع يعرض · الداشبورد تربط `icon_ids` — [`PRODUCT_ICONS_WEB_DASHBOARD.md`](./PRODUCT_ICONS_WEB_DASHBOARD.md)
+
+**اليوم (سابقاً):** `POST /api/user/cart/items` صار موجود (توكن مطلوب) · OTP مؤقت **`00000`**.
 
 **اليوم (صباحاً):** سعر $ · ل.س · نوع الخصم (لا يوجد خصم) · قيمة الخصم · السعر بعد الخصم · الكمية المتوفرة · الباركود · SKU — [`WEB_PRODUCT_PRICING_FIELDS.md`](./WEB_PRODUCT_PRICING_FIELDS.md)
 
