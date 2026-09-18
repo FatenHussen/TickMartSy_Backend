@@ -8,7 +8,7 @@ class VariantAttributeResource extends JsonResource
 {
     public function toArray($request)
     {
-        $isColorType = ($this->categoryAttribute->type ?? null) === 'color';
+        $isColorType = ($this->categoryAttribute?->type ?? null) === 'color';
 
         return [
             'attribute' => $this->categoryAttribute?->name,

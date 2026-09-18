@@ -37,9 +37,13 @@ class Handler
             return $e->render();
         });
 
-        // 409 Foreign key constraint (delete restricted)
+        // Data errors only — other SQL failures stay 500 and get reported.
         $exceptions->render(function (QueryException $e, $request) {
-            $errorCode = $e->errorInfo[1] ?? null;
+            if (!$request->expectsJson()) {
+                return null;
+            }
+
+            $errorCode = (int) ($e->errorInfo[1] ?? 0);
 
             if ($errorCode === 1451) {
                 return response()->json([
@@ -48,6 +52,19 @@ class Handler
                     'errors' => [],
                 ], 409);
             }
+
+            // 1452 missing FK parent · 1364/1048 required column empty
+            if (in_array($errorCode, [1048, 1364, 1452], true)) {
+                report($e);
+
+                return response()->json([
+                    'status' => false,
+                    'message' => __('custom.cannot_save_missing_reference'),
+                    'errors' => [],
+                ], 422);
+            }
+
+            return null;
         });
 
         // 404 Model

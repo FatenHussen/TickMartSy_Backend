@@ -128,7 +128,7 @@ class OneResource extends JsonResource
                         return [
                             'attribute' => $value->categoryAttribute?->name,
                             'value' => $value->name,
-                            'type' => $value->categoryAttribute->type,
+                            'type' => $value->categoryAttribute?->type,
                         ];
                     }),
 
@@ -172,8 +172,8 @@ class OneResource extends JsonResource
                     ] : null,
                     'key' => $detail->getTranslations('detail_key') ?? [],
                     'value' => $detail->getTranslations('detail_value') ?? [],
-                    'quantity' => (int) $detail->pivot->quantity,
-                    'price' => (float) $detail->pivot->price,
+                    'quantity' => (int) ($detail->pivot->quantity ?? 0),
+                    'price' => (float) ($detail->pivot->price ?? 0),
                     'price_currencies' => $this->dualCurrency($detail->pivot->price),
                 ];
             })->values(),

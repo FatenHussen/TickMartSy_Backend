@@ -13,6 +13,7 @@ use App\Http\Resources\Admin\Product\AllResource;
 use App\Exceptions\CustomExceptionWithMessage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class ProductService extends BaseService
 {
@@ -129,34 +130,60 @@ class ProductService extends BaseService
 
     public function create($data)
     {
-        if (array_key_exists('unit_id', $data)) {
-            $unit = \App\Models\Unit::query()->find($data['unit_id']);
-            $data['unit'] = $unit?->getTranslation('name', app()->getLocale(), false)
-                ?? $unit?->getTranslation('name', 'en', false)
-                ?? $unit?->getTranslation('name', 'ar', false);
-        }
-
-        if (empty($data['sale_country_id'])) {
-            $syriaId = \App\Models\SaleCountry::query()
-                ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(name, '$.en')) = ?", ['Syria'])
-                ->value('id');
-            if ($syriaId) {
-                $data['sale_country_id'] = $syriaId;
+        return DB::transaction(function () use ($data) {
+            if (array_key_exists('unit_id', $data)) {
+                $unit = \App\Models\Unit::query()->find($data['unit_id']);
+                $data['unit'] = $unit?->getTranslation('name', app()->getLocale(), false)
+                    ?? $unit?->getTranslation('name', 'en', false)
+                    ?? $unit?->getTranslation('name', 'ar', false);
             }
-        }
 
-        $this->applySaleChannel($data);
+            if (empty($data['sale_country_id'])) {
+                $syriaId = \App\Models\SaleCountry::query()
+                    ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(name, '$.en')) = ?", ['Syria'])
+                    ->value('id');
+                if ($syriaId) {
+                    $data['sale_country_id'] = $syriaId;
+                }
+            }
 
-        $object = $this->model::create($data);
-        $this->handleSingleImages($object, $data);
-        $this->handleRelations($object, $data);
-        $this->handleMedia($object, $data);
-        $this->ensureDefaultVariant($object);
-        $this->ensureDefaultShopLinks($object);
+            $this->applySaleChannel($data);
 
-        $object->refresh();
+            $data['name'] = is_array($data['name'] ?? null) ? $data['name'] : [];
+            $data['description'] = is_array($data['description'] ?? null) ? $data['description'] : [];
 
-        return new $this->resource($object);
+            if (empty($data['vendor_id'])) {
+                throw ValidationException::withMessages([
+                    'vendor_id' => 'بائع المنصة غير موجود في النظام. أنشئ بائع المنصة ثم أعد المحاولة.',
+                ]);
+            }
+
+            $createData = collect($data)->except([
+                'thumbnail',
+                'seo_image',
+                'media',
+                'images',
+                'variant_images',
+                'variants',
+                'shop_variants',
+                'category_details',
+                'extra_details',
+                'badges',
+                'icon_ids',
+                'existing_media_ids',
+            ])->all();
+
+            $object = $this->model::create($createData);
+            $this->handleSingleImages($object, $data);
+            $this->handleRelations($object, $data);
+            $this->handleMedia($object, $data);
+            $this->ensureDefaultVariant($object);
+            $this->ensureDefaultShopLinks($object);
+
+            $object->refresh()->load($this->relations);
+
+            return new $this->resource($object);
+        });
     }
 
     public function update($id, array $data)
@@ -551,6 +578,15 @@ class ProductService extends BaseService
                 $relationObj->delete();
 
                 foreach ($items as $item) {
+                    if (!is_array($item)) {
+                        continue;
+                    }
+
+                    // Dashboard often posts empty category-detail rows; null FK is a 500.
+                    if ($requestKey === 'category_details' && empty($item['category_detail_id'])) {
+                        continue;
+                    }
+
                     $relationObj->create($item);
                 }
             }

@@ -5,6 +5,7 @@ namespace App\Http\Requests\Admin\Product;
 use App\Models\Shop;
 use App\Models\Vendor;
 use App\Services\Admin\ProductService;
+use Illuminate\Validation\Rule;
 
 trait ResolvesProductVendorId
 {
@@ -45,6 +46,15 @@ trait ResolvesProductVendorId
         }
 
         $this->merge($merge);
+    }
+
+    protected function vendorIdRules(): array
+    {
+        return [
+            'nullable',
+            'integer',
+            Rule::exists('vendors', 'id')->whereNull('deleted_at'),
+        ];
     }
 
     private function vendorIdFromShopVariants(): ?int

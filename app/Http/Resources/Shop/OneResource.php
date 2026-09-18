@@ -50,7 +50,7 @@ class OneResource extends JsonResource
                 $this->badges->where('position', 'bottom')->values()
             ),
 
-            'area'                 => $this->area->name,
+            'area'                 => $this->area?->name,
             'categories'           => $this->getShopCategories(),
             'services'              => $this->whenLoaded('services', fn() => $this->services),
             'restaurant_meta'        => $this->when($this->is_restaurant, function () use ($request) {

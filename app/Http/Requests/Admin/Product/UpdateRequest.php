@@ -9,6 +9,7 @@ use App\Models\Product;
 
 class UpdateRequest extends FormRequest
 {
+    use DropsEmptyProductRelationRows;
     use NormalizesEmptyIntegerIds;
     use ResolvesProductVendorId;
 
@@ -87,6 +88,7 @@ class UpdateRequest extends FormRequest
 
         $this->normalizeBlankUniqueStrings();
         $this->normalizeEmptyIntegerIds();
+        $this->dropEmptyProductRelationRows();
         $this->resolveProductVendorId(defaultChannelToPlatform: false);
     }
 
@@ -203,6 +205,9 @@ class UpdateRequest extends FormRequest
 
         $rules = [
             'category_id'           => 'nullable|exists:categories,id',
+            'name'                  => 'nullable|array',
+            'description'           => 'nullable|array',
+            'full_description'      => 'nullable|array',
             'product_number'        => 'nullable|string|max:255|unique:products,product_number,' . $productId,
             'sku'                   => 'nullable|string|unique:products,sku,' . $productId,
             'model'                 => 'nullable|string|unique:products,model,' . $productId,
@@ -229,7 +234,7 @@ class UpdateRequest extends FormRequest
             'is_visible'            => 'nullable|boolean',
             'thumbnail'             => 'nullable|image',
             'sale_channel'          => 'nullable|in:platform,shop',
-            'vendor_id'             => 'nullable|integer|exists:vendors,id',
+            'vendor_id'             => $this->vendorIdRules(),
 
             // Variants
             // 'variants'                      => 'nullable|array',
@@ -249,9 +254,9 @@ class UpdateRequest extends FormRequest
 
             // Extra Details (select from existing pool)
             'extra_details'                       => 'nullable|array',
-            'extra_details.*.product_extra_detail_id' => 'required|exists:product_extra_details,id',
-            'extra_details.*.quantity'            => 'required|integer|min:0',
-            'extra_details.*.price'               => 'required|numeric|min:0',
+            'extra_details.*.product_extra_detail_id' => 'nullable|exists:product_extra_details,id',
+            'extra_details.*.quantity'            => 'nullable|integer|min:0',
+            'extra_details.*.price'               => 'nullable|numeric|min:0',
 
             // Media
             'existing_media_ids' => 'nullable|array',

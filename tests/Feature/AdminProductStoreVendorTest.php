@@ -147,6 +147,61 @@ class AdminProductStoreVendorTest extends TestCase
         $this->assertSame('platform', $product->sale_channel);
     }
 
+    public function test_product_service_creates_without_description_and_skips_empty_category_details(): void
+    {
+        $vendor = $this->createVendor();
+        $category = $this->createCategory();
+
+        $resource = app(ProductService::class)->create([
+            'category_id' => $category->id,
+            'sale_channel' => 'platform',
+            'name' => ['en' => 'Site product', 'ar' => 'منتج الموقع'],
+            'price' => 10,
+            'quantity' => 1,
+            'approval_status' => ProductApprovalStatus::APPROVED,
+            'is_active' => true,
+            'category_details' => [
+                ['detail_value' => ['ar' => null, 'en' => null]],
+                ['category_detail_id' => null, 'detail_value' => ['ar' => 'x']],
+            ],
+            'extra_details' => [
+                [],
+            ],
+            'time_prepare' => 'فوري',
+        ]);
+
+        $product = Product::with('categoryDetails', 'variants')->findOrFail($resource->id);
+        $this->assertSame($vendor->id, (int) $product->vendor_id);
+        $this->assertSame(0, $product->categoryDetails->count());
+        $this->assertNotNull($product->variants->first());
+        $this->assertNull($product->time_prepare);
+
+        $payload = $resource->toArray(request());
+        $this->assertSame($product->id, $payload['id']);
+        $this->assertSame('منتج الموقع', $payload['name']['ar'] ?? $payload['name']);
+    }
+
+    public function test_store_request_accepts_empty_extra_and_category_detail_rows(): void
+    {
+        $this->seedLanguages();
+        $this->createVendor();
+        $category = $this->createCategory();
+
+        $request = $this->validateStore([
+            'category_id' => $category->id,
+            'sale_channel' => 'platform',
+            'name' => ['en' => 'Site product', 'ar' => 'منتج الموقع'],
+            'category_details' => [
+                ['detail_value' => ['ar' => null, 'en' => null]],
+            ],
+            'extra_details' => [
+                [],
+            ],
+        ]);
+
+        $this->assertSame($category->id, (int) $request->input('category_id'));
+    }
+
     private function validateStore(array $payload): StoreRequest
     {
         $request = StoreRequest::create('/api/admin/products', 'POST', $payload);

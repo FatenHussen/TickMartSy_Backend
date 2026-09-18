@@ -70,6 +70,11 @@ class Product extends Model implements Sectionable
         'seo_keywords',
     ];
 
+    protected $attributes = [
+        'description' => null,
+        'full_description' => null,
+    ];
+
     protected $casts = [
         'bought_with' => 'array',
         'time_prepare' => 'datetime:H:i',
@@ -116,6 +121,36 @@ class Product extends Model implements Sectionable
             $this->attributes['expiry_date'] = Carbon::parse($value)->format('Y-m-d');
         } catch (\Throwable $e) {
             $this->attributes['expiry_date'] = null;
+        }
+    }
+
+    public function setTimePrepareAttribute($value): void
+    {
+        if ($value === null || $value === '') {
+            $this->attributes['time_prepare'] = null;
+            return;
+        }
+
+        if (is_string($value)) {
+            $normalized = trim($value);
+            if ($normalized === '' || strtolower($normalized) === 'null') {
+                $this->attributes['time_prepare'] = null;
+                return;
+            }
+
+            try {
+                $this->attributes['time_prepare'] = Carbon::parse($normalized)->format('H:i:s');
+                return;
+            } catch (\Throwable $e) {
+                $this->attributes['time_prepare'] = null;
+                return;
+            }
+        }
+
+        try {
+            $this->attributes['time_prepare'] = Carbon::parse($value)->format('H:i:s');
+        } catch (\Throwable $e) {
+            $this->attributes['time_prepare'] = null;
         }
     }
 
