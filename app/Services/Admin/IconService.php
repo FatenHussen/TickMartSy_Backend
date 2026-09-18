@@ -54,7 +54,6 @@ class IconService extends BaseService
 
     protected function uploadImage($file): string
     {
-        $path = $file->store('icons', 'public');
-        return 'storage/' . $path;
+        return $file->store('icons', 'public');
     }
 }

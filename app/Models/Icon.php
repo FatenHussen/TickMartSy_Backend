@@ -39,6 +39,11 @@ class Icon extends Model
             return $this->image;
         }
 
-        return asset('storage/' . ltrim($this->image, '/'));
+        $path = ltrim($this->image, '/');
+        if (str_starts_with($path, 'storage/')) {
+            $path = substr($path, strlen('storage/'));
+        }
+
+        return asset('storage/' . $path);
     }
 }

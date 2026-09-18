@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Icon;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\File;
 
 class IconSeeder extends Seeder
 {
@@ -12,101 +13,115 @@ class IconSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create icons
+        $sourceDir = database_path('seeders/assets/icons');
+        $publicDir = storage_path('app/public/icons');
+        File::ensureDirectoryExists($publicDir);
+
         $icons = [
             [
                 'name'        => ['ar' => 'جديد', 'en' => 'New'],
-                'image'       => 'icons/secure-delivery.png',
+                'file'        => 'new.svg',
                 'description' => ['ar' => 'منتج جديد', 'en' => 'New product'],
-                'is_active'   => true,
             ],
             [
                 'name'        => ['ar' => 'عرض خاص', 'en' => 'Special Offer'],
-                'image'       => 'icons/secure-delivery.png',
+                'file'        => 'special-offer.svg',
                 'description' => ['ar' => 'عرض لفترة محدودة', 'en' => 'Limited time offer'],
-                'is_active'   => true,
             ],
             [
                 'name'        => ['ar' => 'الأكثر مبيعاً', 'en' => 'Best Seller'],
-                'image'       => 'icons/secure-delivery.png',
+                'file'        => 'best-seller.svg',
                 'description' => ['ar' => 'من أكثر المنتجات مبيعاً', 'en' => 'One of the best selling products'],
-                'is_active'   => true,
             ],
             [
                 'name'        => ['ar' => 'توصيل مجاني', 'en' => 'Free Delivery'],
-                'image'       => 'icons/secure-delivery.png',
+                'file'        => 'free-delivery.svg',
                 'description' => ['ar' => 'توصيل مجاني للمنتج', 'en' => 'Free delivery for this product'],
-                'is_active'   => true,
+            ],
+            [
+                'name'        => ['ar' => 'توصيل سريع', 'en' => 'Fast Delivery'],
+                'file'        => 'fast-delivery.svg',
+                'description' => ['ar' => 'يصل طلبك بسرعة مع متابعة واضحة للشحنة.', 'en' => 'Your order arrives quickly with clear shipment tracking.'],
             ],
             [
                 'name'        => ['ar' => 'خصم', 'en' => 'Discount'],
-                'image'       => 'icons/secure-delivery.png',
+                'file'        => 'discount.svg',
                 'description' => ['ar' => 'منتج عليه خصم', 'en' => 'Product on discount'],
-                'is_active'   => true,
             ],
             [
                 'name'        => ['ar' => 'محدود', 'en' => 'Limited'],
-                'image'       => 'icons/secure-delivery.png',
+                'file'        => 'limited.svg',
                 'description' => ['ar' => 'كمية محدودة', 'en' => 'Limited quantity'],
-                'is_active'   => true,
             ],
             [
                 'name'        => ['ar' => 'عضوي', 'en' => 'Organic'],
-                'image'       => 'icons/secure-delivery.png',
+                'file'        => 'organic.svg',
                 'description' => ['ar' => 'منتج عضوي طبيعي', 'en' => 'Natural organic product'],
-                'is_active'   => true,
             ],
             [
                 'name'        => ['ar' => 'مستورد', 'en' => 'Imported'],
-                'image'       => 'icons/secure-delivery.png',
+                'file'        => 'imported.svg',
                 'description' => ['ar' => 'منتج مستورد', 'en' => 'Imported product'],
-                'is_active'   => true,
             ],
             [
                 'name'        => ['ar' => 'دفع عند الاستلام', 'en' => 'Cash on Delivery'],
-                'image'       => 'icons/cod.png',
+                'file'        => 'cod.svg',
                 'description' => [
                     'ar' => 'تتيح لك طريقة الدفع عند الاستلام (COD) الدفع نقداً عند باب منزلك أو عملك مقابل المنتجات التي يتم تسليمها بواسطة تيك موول أو بواسطة البائع.',
                     'en' => 'Cash on Delivery (COD) allows you to pay in cash at your doorstep or workplace for products delivered by Tikmool or the seller.',
                 ],
-                'is_active'   => true,
             ],
             [
                 'name'        => ['ar' => 'منتج مكفول', 'en' => 'Warranted Product'],
-                'image'       => 'icons/warranty.png',
+                'file'        => 'warranty.svg',
                 'description' => [
-                    'ar' => 'تضمن تيك موول جودة منتجاتها المعروضة، بالإضافة إلى أن بعض المنتجات تشمل ضمان وكفالة لمدد مختلفة من قبل الجهة الموردة أو المصنعة، ويتم ذكر ذلك في بطاقة المنتج عند توفره. يخضع الضمان لسياسة الضمان المعتمدة لدينا. يمكنك الاتصال بالشركة المصنعة أو العلامة التجارية أو البائع لمزيد من التفاصيل في حال كان المنتج يحمل بطاقة ضمان.',
-                    'en' => 'Tikmool guarantees the quality of its listed products. Some products also include a warranty for various durations from the supplier or manufacturer, which is mentioned on the product card when available. The warranty is subject to our approved warranty policy. You may contact the manufacturer, brand, or seller for more details if the product carries a warranty card.',
+                    'ar' => 'تضمن تيك موول جودة منتجاتها المعروضة، بالإضافة إلى أن بعض المنتجات تشمل ضمان وكفالة لمدد مختلفة من قبل الجهة الموردة أو المصنعة، ويتم ذكر ذلك في بطاقة المنتج عند توفره.',
+                    'en' => 'Tikmool guarantees the quality of its listed products. Some products also include a warranty from the supplier or manufacturer, mentioned on the product card when available.',
                 ],
-                'is_active'   => true,
             ],
             [
                 'name'        => ['ar' => 'توصيل آمن', 'en' => 'Secure Delivery'],
-                'image'       => 'icons/secure-delivery.png',
+                'file'        => 'secure-delivery.svg',
                 'description' => [
                     'ar' => 'عملية التوصيل مضمونة ونراعي إجراءات السلامة لنتأكد من ذلك.',
                     'en' => 'The delivery process is guaranteed and we follow safety procedures to ensure that.',
                 ],
-                'is_active'   => true,
             ],
             [
                 'name'        => ['ar' => 'معاملتك آمنة', 'en' => 'Secure Transaction'],
-                'image'       => 'icons/secure-transaction.png',
+                'file'        => 'secure-transaction.svg',
                 'description' => [
-                    'ar' => 'نعمل دائماً لحماية أمنك وخصوصيتك. يقوم نظام أمان الدفع الخاص بنا بتشفير معلوماتك أثناء النقل. ولا يتم مشاركة تفاصيل بطاقتك الائتمانية مع بائعين تابعين لجهات خارجية، ولا نبيع معلوماتك إلى جهات أخرى.',
-                    'en' => 'We always work to protect your security and privacy. Our payment security system encrypts your information during transmission. Your credit card details are not shared with third-party sellers, and we do not sell your information to others.',
+                    'ar' => 'نعمل دائماً لحماية أمنك وخصوصيتك. يقوم نظام أمان الدفع الخاص بنا بتشفير معلوماتك أثناء النقل.',
+                    'en' => 'We always work to protect your security and privacy. Our payment security system encrypts your information during transmission.',
                 ],
-                'is_active'   => true,
             ],
         ];
 
         foreach ($icons as $iconData) {
-            Icon::updateOrCreate(
-                ['image' => $iconData['image']],
-                $iconData
-            );
+            $source = $sourceDir . DIRECTORY_SEPARATOR . $iconData['file'];
+            $relative = 'icons/' . $iconData['file'];
+            $destination = $publicDir . DIRECTORY_SEPARATOR . $iconData['file'];
+
+            if (File::exists($source)) {
+                File::copy($source, $destination);
+            }
+
+            $payload = [
+                'name' => $iconData['name'],
+                'image' => $relative,
+                'description' => $iconData['description'],
+                'is_active' => true,
+            ];
+
+            $existing = Icon::query()->where('name->en', $iconData['name']['en'])->first();
+
+            if ($existing) {
+                $existing->update($payload);
+            } else {
+                Icon::create($payload);
+            }
         }
 
-        $this->command->info('Icons created successfully!');
+        $this->command?->info('Professional product icons seeded.');
     }
 }
