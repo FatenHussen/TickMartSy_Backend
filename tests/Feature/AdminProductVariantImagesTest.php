@@ -118,13 +118,13 @@ class AdminProductVariantImagesTest extends TestCase
         $request->headers->set('Accept', 'application/json');
         $request->setContainer($this->app);
         $request->setRedirector($this->app->make(Redirector::class));
-        $request->setRouteResolver(fn () => tap(new \Illuminate\Routing\Route('POST', 'products/{product}', []), function ($route) use ($product) {
-            $route->bind($GLOBALS['__request'] ?? request());
+        $request->setRouteResolver(function () use ($product, $request) {
+            $route = new \Illuminate\Routing\Route('POST', 'products/{product}', []);
+            $route->bind($request);
             $route->setParameter('product', $product);
-        }));
 
-        $request->setUserResolver(fn () => null);
-        $this->app->instance('request', $request);
+            return $route;
+        });
         $request->validateResolved();
 
         $validated = $request->validated();
