@@ -85,6 +85,27 @@ class AdminProductVariantImagesTest extends TestCase
         $this->assertIsArray($images);
         $this->assertNotEmpty($images);
         $this->assertNotNull($images[0]['path'] ?? null);
+        $this->assertTrue($response->json('data.shop_variants.0.has_variant_images'));
+    }
+
+    public function test_user_api_falls_back_to_product_images_when_variant_has_none(): void
+    {
+        $product = $this->createProductWithVariant();
+        $product->media()->create([
+            'collection' => ProductMedia::COLLECTION_PRODUCT,
+            'path' => 'product/product/main.png',
+            'order' => 0,
+        ]);
+
+        $response = $this->getJson("/api/user/products/{$product->id}");
+        $response->assertOk();
+
+        $this->assertFalse($response->json('data.shop_variants.0.has_variant_images'));
+        $this->assertNotEmpty($response->json('data.images'));
+        $this->assertSame(
+            $response->json('data.images.0.path'),
+            $response->json('data.shop_variants.0.images.0.path')
+        );
     }
 
     public function test_update_request_keeps_variant_image_files_in_validated_payload(): void

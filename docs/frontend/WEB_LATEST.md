@@ -5,7 +5,7 @@
 > **آخر تحديث | Last Updated:** 2026-09-16  
 > الملف الشامل السابق يبقى: [`web.md`](./web.md)
 
-**اليوم:** صور المتغيّر — المعرض من `shop_variants[].images[].path` عند تبديل اللون — [`PRODUCT_VARIANT_IMAGES_WEB_DASHBOARD.md`](./PRODUCT_VARIANT_IMAGES_WEB_DASHBOARD.md)
+**اليوم:** صور المتغيّر — المعرض من `shop_variants[].images[].path` عند تبديل اللون، وإلا صور المنتج — [`PRODUCT_VARIANT_IMAGES_WEB_DASHBOARD.md`](./PRODUCT_VARIANT_IMAGES_WEB_DASHBOARD.md)
 
 **اليوم (سابقاً):** أيقونات المنتج على صفحة `/product/{id}` من `icons[]` — الموقع يعرض · الداشبورد تربط `icon_ids` — [`PRODUCT_ICONS_WEB_DASHBOARD.md`](./PRODUCT_ICONS_WEB_DASHBOARD.md)
 

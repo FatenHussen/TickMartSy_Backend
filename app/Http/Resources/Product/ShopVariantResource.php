@@ -30,10 +30,11 @@ class ShopVariantResource extends JsonResource
             $shopVariant = $this->shopVariants->first();
         }
 
-        $images = $this->media;
-        if (!$images || $images->isEmpty()) {
-            $images = $this->product?->media ?? collect();
-        }
+        $ownImages = $this->media;
+        $hasVariantImages = $ownImages && $ownImages->isNotEmpty();
+        $images = $hasVariantImages
+            ? $ownImages
+            : ($this->product?->media ?? collect());
 
         $imagePayload = ($images && $images->isNotEmpty())
             ? MediaResource::collection($images)
@@ -61,6 +62,7 @@ class ShopVariantResource extends JsonResource
             'shop_id'  => $shopVariant?->shop_id,
             'is_restaurant' => (bool) ($shopVariant?->shop?->is_restaurant ?? $this->product?->is_restaurant ?? false),
             'city_id' => $shopVariant?->shop?->city_id ?? $shopVariant?->shop?->area?->city_id,
+            'has_variant_images' => (bool) $hasVariantImages,
             'images'   => $imagePayload,
         ];
     }

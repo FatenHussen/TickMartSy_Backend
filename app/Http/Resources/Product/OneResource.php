@@ -129,6 +129,7 @@ class OneResource extends JsonResource
             'shop_id' => null,
             'is_restaurant' => (bool) ($this->is_restaurant ?? $this->category?->is_restaurant ?? false),
             'city_id' => null,
+            'has_variant_images' => false,
             'images' => $this->imagesPayload($this->media ?? collect(), $this->thumbnail_url),
         ];
     }
