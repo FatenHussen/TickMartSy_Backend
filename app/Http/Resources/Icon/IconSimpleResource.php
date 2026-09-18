@@ -12,7 +12,8 @@ class IconSimpleResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'image' => $this->image_url ?? null,
+            'image' => $this->image_url,
+            'icon' => $this->image_url,
             'description' => $this->description,
         ];
     }

@@ -25,6 +25,7 @@ class ProductService extends BaseService
         'variants.shopVariants',
         'variants.shopVariants.shop',
         'variants.media',
+        'media',
         'categoryDetails.categoryDetail',
         'extraDetails.category',
         'favorites',

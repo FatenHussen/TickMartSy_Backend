@@ -29,8 +29,16 @@ class Icon extends Model
         return $this->belongsToMany(Product::class, 'icon_product');
     }
 
-    public function getImageUrlAttribute()
+    public function getImageUrlAttribute(): ?string
     {
-        return asset('storage/' . $this->image);
+        if (!$this->image) {
+            return null;
+        }
+
+        if (str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://')) {
+            return $this->image;
+        }
+
+        return asset('storage/' . ltrim($this->image, '/'));
     }
 }

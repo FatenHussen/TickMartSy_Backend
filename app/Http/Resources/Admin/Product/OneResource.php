@@ -206,7 +206,8 @@ class OneResource extends JsonResource
                 return [
                     'id' => $icon->id,
                     'name' => $icon->name,
-                    'icon' => $icon->icon ? asset('storage/' . $icon->icon) : null,
+                    'icon' => $icon->image_url,
+                    'image' => $icon->image_url,
                 ];
             })->values(),
 

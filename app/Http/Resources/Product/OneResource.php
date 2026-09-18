@@ -73,9 +73,7 @@ class OneResource extends JsonResource
                 $this->extraDetails
             ),
 
-            'images' => MediaResource::collection(
-                $this->media
-            ),
+            'images' => $this->imagesPayload($this->media, $this->thumbnail_url),
 
             'available_shops' => $this->getAvailableShops()->map(function ($shop) {
                 return [
@@ -131,7 +129,22 @@ class OneResource extends JsonResource
             'shop_id' => null,
             'is_restaurant' => (bool) ($this->is_restaurant ?? $this->category?->is_restaurant ?? false),
             'city_id' => null,
-            'images' => MediaResource::collection($this->media ?? collect()),
+            'images' => $this->imagesPayload($this->media ?? collect(), $this->thumbnail_url),
         ];
+    }
+
+    private function imagesPayload($media, ?string $thumbnailUrl = null)
+    {
+        if ($media && $media->isNotEmpty()) {
+            return MediaResource::collection($media);
+        }
+
+        if ($thumbnailUrl) {
+            return [
+                ['id' => null, 'path' => $thumbnailUrl],
+            ];
+        }
+
+        return [];
     }
 }

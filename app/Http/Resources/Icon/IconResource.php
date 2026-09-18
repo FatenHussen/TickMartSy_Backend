@@ -12,7 +12,8 @@ class IconResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'image' => $this->image_url ?? null,
+            'image' => $this->image_url,
+            'icon' => $this->image_url,
             'description' => $this->description,
             'is_active' => (bool) $this->is_active,
             'created_at' => $this->created_at?->toDateTimeString(),

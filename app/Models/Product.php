@@ -285,7 +285,11 @@ class Product extends Model implements Sectionable
             return $main->url;
         }
 
-        return $this->productMedia()->first()?->url;
+        $fromGallery = $this->relationLoaded('media')
+            ? $this->media->first()?->url
+            : $this->productMedia()->first()?->url;
+
+        return $fromGallery ?? $this->thumbnail_url;
     }
 
     public function getThumbnailUrlAttribute(): ?string
