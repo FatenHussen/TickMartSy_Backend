@@ -35,7 +35,7 @@ class ProductVariant extends Model
         'attributes_values_ids' => 'array',
         'is_active' => 'boolean',
         'price' => 'float',
-        'discount' => 'integer',
+        'discount' => 'float',
         'quantity' => 'integer',
     ];
 

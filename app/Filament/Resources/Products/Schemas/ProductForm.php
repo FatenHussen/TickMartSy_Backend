@@ -380,6 +380,8 @@ class ProductForm
                                         ->label(__('custom.products.form.discount_label'))
                                         ->numeric()
                                         ->minValue(0)
+                                        ->step(0.01)
+                                        ->maxValue(fn (callable $get) => $get('discount_type') === 'percentage' ? 100 : null)
                                         ->suffix(fn(callable $get) => $get('discount_type') === 'percentage' ? '%' : '$')
                                         ->visible(fn(callable $get) => $get('discount_type') !== 'none')
                                         ->columnSpan(1),

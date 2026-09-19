@@ -83,6 +83,7 @@ class Product extends Model implements Sectionable
         'is_active' => 'boolean',
         'price' => 'float',
         'cost_price' => 'float',
+        'discount' => 'float',
         'is_restaurant' => 'boolean',
         'flash_sale_id' => 'integer',
         'unit_id' => 'integer',

@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Admin\ProductVariant;
 
 use App\Http\Requests\BaseRequest;
+use App\Models\ProductVariant;
+use App\Support\ProductDiscountRules;
 
 class UpdateRequest extends BaseRequest
 {
@@ -28,6 +30,11 @@ class UpdateRequest extends BaseRequest
 
     public function rules(): array
     {
+        $routeVariant = $this->route('product_variant');
+        $existingType = $routeVariant instanceof ProductVariant
+            ? $routeVariant->discount_type
+            : ProductVariant::query()->whereKey($routeVariant)->value('discount_type');
+
         return [
             'name'                    => 'sometimes|array',
             'name.ar'                 => 'nullable|string|max:255',
@@ -36,7 +43,10 @@ class UpdateRequest extends BaseRequest
             'model'                   => 'sometimes|nullable|string|max:255',
             'barcode'                 => 'sometimes|nullable|string|max:255',
             'price'                   => 'sometimes|nullable|numeric|min:0',
-            'discount'                => 'sometimes|nullable|integer|min:0|max:100',
+            'discount'                => ProductDiscountRules::value(
+                $this->input('discount_type', $existingType),
+                sometimes: true
+            ),
             'discount_type'           => 'sometimes|nullable|in:none,percentage,fixed',
             'quantity'                => 'sometimes|nullable|integer|min:0',
             'attributes_values_ids'   => 'sometimes|array',

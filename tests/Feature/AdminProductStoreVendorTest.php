@@ -13,6 +13,7 @@ use App\Models\VendorUser;
 use App\Services\Admin\ProductService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Routing\Redirector;
+use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
 class AdminProductStoreVendorTest extends TestCase
@@ -200,6 +201,84 @@ class AdminProductStoreVendorTest extends TestCase
         ]);
 
         $this->assertSame($category->id, (int) $request->input('category_id'));
+    }
+
+    public function test_store_request_accepts_fixed_discount_decimals_and_values_over_100(): void
+    {
+        $this->seedLanguages();
+        $this->createVendor();
+        $category = $this->createCategory();
+
+        $request = $this->validateStore([
+            'category_id' => $category->id,
+            'sale_channel' => 'platform',
+            'name' => ['en' => 'Site product', 'ar' => 'منتج الموقع'],
+            'price' => 200,
+            'discount_type' => 'fixed',
+            'discount' => 150.75,
+            'variants' => [
+                [
+                    'price' => 200,
+                    'discount_type' => 'fixed',
+                    'discount' => 120.5,
+                ],
+            ],
+        ]);
+
+        $this->assertEquals(150.75, (float) $request->input('discount'));
+        $this->assertEquals(120.5, (float) data_get($request->input('variants'), '0.discount'));
+    }
+
+    public function test_store_request_rejects_percentage_discount_over_100(): void
+    {
+        $this->seedLanguages();
+        $this->createVendor();
+        $category = $this->createCategory();
+
+        try {
+            $this->validateStore([
+                'category_id' => $category->id,
+                'sale_channel' => 'platform',
+                'name' => ['en' => 'Site product', 'ar' => 'منتج الموقع'],
+                'discount_type' => 'percentage',
+                'discount' => 150,
+            ]);
+            $this->fail('Percentage discount above 100 should fail validation.');
+        } catch (ValidationException $e) {
+            $this->assertArrayHasKey('discount', $e->errors());
+        }
+    }
+
+    public function test_create_persists_fixed_discount_decimals_over_100(): void
+    {
+        $this->seedLanguages();
+        $this->createVendor();
+        $category = $this->createCategory();
+
+        $resource = app(ProductService::class)->create([
+            'category_id' => $category->id,
+            'sale_channel' => 'platform',
+            'name' => ['en' => 'Fixed discount', 'ar' => 'خصم ثابت'],
+            'price' => 200,
+            'discount_type' => 'fixed',
+            'discount' => 150.75,
+            'approval_status' => ProductApprovalStatus::APPROVED,
+            'is_active' => true,
+            'variants' => [
+                [
+                    'price' => 200,
+                    'discount_type' => 'fixed',
+                    'discount' => 120.5,
+                ],
+            ],
+        ]);
+
+        $product = Product::with('variants')->findOrFail($resource->id);
+
+        $this->assertSame('fixed', $product->discount_type);
+        $this->assertEquals(150.75, (float) $product->discount);
+        $this->assertEquals(120.5, (float) $product->variants->first()->discount);
+        $this->assertEquals(49.25, (float) $product->price_after_discount);
     }
 
     private function validateStore(array $payload): StoreRequest

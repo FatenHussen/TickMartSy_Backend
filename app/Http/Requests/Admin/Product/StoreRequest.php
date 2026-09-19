@@ -5,6 +5,7 @@ namespace App\Http\Requests\Admin\Product;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Category;
 use App\Models\Language;
+use App\Support\ProductDiscountRules;
 
 class StoreRequest extends FormRequest
 {
@@ -178,7 +179,7 @@ class StoreRequest extends FormRequest
             'sale_country_id'       => 'nullable|exists:sale_countries,id',
             'price'                 => 'nullable|numeric|min:0',
             'cost_price'            => 'nullable|numeric|min:0',
-            'discount'              => 'nullable|integer|min:0|max:100',
+            'discount'              => ProductDiscountRules::value($this->input('discount_type')),
             'discount_type'         => 'nullable|in:none,percentage,fixed',
             'quantity'              => 'nullable|integer|min:0',
             'unit'                  => 'nullable|string|max:50',
@@ -209,7 +210,6 @@ class StoreRequest extends FormRequest
             'variants.*.model'              => 'nullable|string|max:255',
             'variants.*.barcode'            => 'nullable|string|max:255',
             'variants.*.price'              => 'nullable|numeric|min:0',
-            'variants.*.discount'           => 'nullable|integer|min:0|max:100',
             'variants.*.discount_type'      => 'nullable|in:none,percentage,fixed',
             'variants.*.quantity'           => 'nullable|integer|min:0',
             'variants.*.is_trend'           => 'nullable|boolean',
@@ -271,7 +271,7 @@ class StoreRequest extends FormRequest
             $rules["seo_keywords.$locale"] = 'nullable|array';
         }
 
-        return $rules;
+        return array_merge($rules, ProductDiscountRules::forVariants($this->input('variants')));
     }
 
     public function withValidator($validator): void

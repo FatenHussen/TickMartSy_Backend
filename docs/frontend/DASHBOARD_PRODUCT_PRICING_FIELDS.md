@@ -1,9 +1,9 @@
 # الداشبورد (Flutter Web) — حقول السعر · الخصم · الكمية · الباركود · SKU
 
 > **أرسلوا هذا الملف لفريق الداشبورد / Flutter Web فقط.**  
-> **آخر تحديث:** 8 أيلول 2026  
+> **آخر تحديث:** 20 أيلول 2026  
 > Base: `/api/admin` + Admin token  
-> **الباك جاهز — التعديل UI فقط**  
+> **الباك جاهز بعد `git pull` + migrate**  
 > المتجر: ويب [`WEB_PRODUCT_PRICING_FIELDS.md`](./WEB_PRODUCT_PRICING_FIELDS.md) · Flutter [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md)
 
 يلغي قرار «احذفوا الكمية من تاب المعلومات» في [`DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md`](./DASHBOARD_PRODUCT_QUANTITY_VALIDATION.md).  
@@ -108,7 +108,8 @@
 | مبلغ ثابت ($) | `fixed` |
 
 - إذا `none` → اخفوا **قيمة الخصم** أو خلّوها `0` ولا ترسلوا خصم.
-- `discount` عدد صحيح `0…100` (حتى مع `fixed`).
+- `percentage`: رقم `0…100` — كسور مسموحة (`10.5`).
+- `fixed`: مبلغ بالدولار — كسور مسموحة وأكبر من `100` (`150.75`). **لا** تطبقوا حد 100 ولا `int`.
 
 ### السعر بعد الخصم — عرض فقط · يُحسب حيّاً
 
@@ -116,7 +117,7 @@
 double priceAfterDiscount({
   required double price,
   required String discountType,
-  required int discount,
+  required num discount,
 }) {
   if (price <= 0 || discountType == 'none' || discount <= 0) {
     return price;
@@ -212,7 +213,7 @@ class ProductPricingFields extends StatelessWidget {
   final double? priceUsd;
   final double? priceSyp;
   final String discountType;
-  final int discount;
+  final num discount;
   final int? quantity;
   final String? barcode;
   final String? sku;
@@ -368,6 +369,7 @@ GET /api/admin/products/{id}
 - [ ] السعر بعد الخصم **readonly** — لا يُرسل
 - [ ] مزامنة `$` ↔ `ل.س` من `GET /currencies`
 - [ ] `discount_type`: `none` \| `percentage` \| `fixed`
+- [ ] `fixed`: كسور + أكبر من 100 · `percentage`: حتى 100 فقط
 - [ ] كل الحقول `.optional()` — لا توست «الكمية موجبة»
 - [ ] SKU المتغيّر إنجليزي فقط
 - [ ] باركود placeholder `6291101234567`

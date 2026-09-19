@@ -1023,7 +1023,7 @@ POST /api/admin/scheduled-baskets
 | سعر المتغير (دولار) | `price` | `variants[].price` |
 | سعر المتغيّر (ليرة سورية) | `price_syp` | `variants[].price_syp` |
 | نوع الخصم — لا يوجد خصم | `discount_type` = `none` | نفس |
-| قيمة الخصم | `discount` | `variants[].discount` |
+| قيمة الخصم | `discount` — نسبة `0…100` · ثابت كسور و>100 | `variants[].discount` |
 | السعر بعد الخصم | — عرض فقط | — عرض فقط |
 | الكمية المتوفرة | `quantity` | `variants[].quantity` |
 | الباركود | `barcode` | `variants[].barcode` |
