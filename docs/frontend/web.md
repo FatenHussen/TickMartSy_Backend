@@ -7,7 +7,7 @@
 > **تسجيل:** [`REGISTER_FLOW.md`](./REGISTER_FLOW.md) · [`WEB_REGISTER_FLOW.md`](./WEB_REGISTER_FLOW.md)  
 > **آخر تحديث | Last Updated:** 2026-09-20
 
-**اليوم:** لا دروب داون Branch / اسم متجر على صفحة المنتج — [`WEB_FLUTTER_HIDE_SHOP_NAME.md`](./WEB_FLUTTER_HIDE_SHOP_NAME.md)
+**اليوم:** لا دروب داون Branch / اسم متجر على صفحة المنتج — [`WEB_NO_SHOP_BRANCHES.md`](./WEB_NO_SHOP_BRANCHES.md)
 
 **اليوم (سابقاً):** متغيّران على صفحة المنتج — الصف المختار من `shop_variants` مو `[0]` — [`WEB_PRODUCT_ALL_VARIANTS.md`](./WEB_PRODUCT_ALL_VARIANTS.md)
 
@@ -283,7 +283,7 @@ GET /api/user/products/{id}
 }
 ```
 
-**لا تعرضوا اسم المتجر.** `available_shops` دائماً `[]`. احذفوا دروب داون Branch / «فرعة المنصة».
+**لا تعرضوا اسم المتجر.** الدليل: [`WEB_NO_SHOP_BRANCHES.md`](./WEB_NO_SHOP_BRANCHES.md)
 
 ### المطلوب
 

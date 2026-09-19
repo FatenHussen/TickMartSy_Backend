@@ -8,7 +8,7 @@
 > **تسجيل:** [`REGISTER_FLOW.md`](./REGISTER_FLOW.md) · [`FLUTTER_REGISTER_FLOW.md`](./FLUTTER_REGISTER_FLOW.md)  
 > **آخر تحديث | Last Updated:** 2026-09-20
 
-**اليوم:** لا اسم متجر / Branch على شاشة المنتج — [`WEB_FLUTTER_HIDE_SHOP_NAME.md`](./WEB_FLUTTER_HIDE_SHOP_NAME.md)
+**اليوم:** لا اسم متجر / Branch على شاشة المنتج — [`FLUTTER_NO_SHOP_BRANCHES.md`](./FLUTTER_NO_SHOP_BRANCHES.md)
 
 **اليوم (سابقاً):** متغيّران على شاشة المنتج — مو `shopVariants.first` فقط — [`FLUTTER_PRODUCT_ALL_VARIANTS.md`](./FLUTTER_PRODUCT_ALL_VARIANTS.md)
 
@@ -400,7 +400,7 @@ GET /api/user/products/{id}
 
 نفس تغيير `country` على `GET /api/user/products` (قائمة).
 
-**لا تعرضوا اسم المتجر.** `available_shops` دائماً `[]`. احذفوا دروب داون Branch / «فرعة المنصة».
+**لا تعرضوا اسم المتجر.** الدليل: [`FLUTTER_NO_SHOP_BRANCHES.md`](./FLUTTER_NO_SHOP_BRANCHES.md)
 
 ### Models
 

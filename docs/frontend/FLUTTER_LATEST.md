@@ -5,11 +5,9 @@
 > **آخر تحديث | Last Updated:** 2026-09-20  
 > الملف الشامل السابق يبقى: [`flutter.md`](./flutter.md)
 
-**اليوم:** لا اسم متجر / Branch على شاشة المنتج — `available_shops` دائماً `[]` — [`WEB_FLUTTER_HIDE_SHOP_NAME.md`](./WEB_FLUTTER_HIDE_SHOP_NAME.md)
+**اليوم:** لا اسم متجر / Branch على شاشة المنتج — [`FLUTTER_NO_SHOP_BRANCHES.md`](./FLUTTER_NO_SHOP_BRANCHES.md)
 
 **اليوم (سابقاً):** قيم الصفات بالـ ID — فلتر و picker من `options[].id`، الاسم يتبدّل والمتغيّر يبقى — [`FLUTTER_CATEGORY_ATTRIBUTE_VALUE_IDS.md`](./FLUTTER_CATEGORY_ATTRIBUTE_VALUE_IDS.md)
-
-**اليوم (سابقاً):** فروع المتاجر ملغاة — `shop_id` = متجر البائع الواحد — [`DASHBOARD_NO_SHOP_BRANCHES.md`](./DASHBOARD_NO_SHOP_BRANCHES.md)
 
 **اليوم (سابقاً):** متغيّران على شاشة المنتج — `findVariant` مو `shopVariants.first`، المقاس يتبدل مع اللون — [`FLUTTER_PRODUCT_ALL_VARIANTS.md`](./FLUTTER_PRODUCT_ALL_VARIANTS.md)
 

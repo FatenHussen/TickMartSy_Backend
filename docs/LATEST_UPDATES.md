@@ -5,7 +5,7 @@
 > **النطاق:** من منتصف آب حتى اليوم — باك + داشبورد + ويب + Flutter  
 > **الحالة:** الباك جاهز بعد `git pull` + `php artisan config:clear`
 
-**آخر ما نزل اليوم (20 أيلول):** فروع المتاجر ملغاة — بائع = متجر واحد — [`DASHBOARD_NO_SHOP_BRANCHES.md`](./frontend/DASHBOARD_NO_SHOP_BRANCHES.md)
+**آخر ما نزل اليوم (20 أيلول):** فروع المتاجر واسم المتجر ملغيان — داش [`DASHBOARD_NO_SHOP_BRANCHES.md`](./frontend/DASHBOARD_NO_SHOP_BRANCHES.md) · ويب [`WEB_NO_SHOP_BRANCHES.md`](./frontend/WEB_NO_SHOP_BRANCHES.md) · Flutter [`FLUTTER_NO_SHOP_BRANCHES.md`](./frontend/FLUTTER_NO_SHOP_BRANCHES.md)
 
 **آخر ما نزل (16 أيلول):** `POST /api/user/cart/items` · OTP مؤقت `00000`
 

@@ -5,11 +5,9 @@
 > **آخر تحديث | Last Updated:** 2026-09-20  
 > الملف الشامل السابق يبقى: [`web.md`](./web.md)
 
-**اليوم:** لا دروب داون Branch / اسم متجر على صفحة المنتج — `available_shops` دائماً `[]` — [`WEB_FLUTTER_HIDE_SHOP_NAME.md`](./WEB_FLUTTER_HIDE_SHOP_NAME.md)
+**اليوم:** لا دروب داون Branch / اسم متجر على صفحة المنتج — [`WEB_NO_SHOP_BRANCHES.md`](./WEB_NO_SHOP_BRANCHES.md)
 
 **اليوم (سابقاً):** قيم الصفات بالـ ID — فلتر و picker من `options[].id`، الاسم يتبدّل بعد إعادة التسمية والمتغيّر يبقى — [`WEB_CATEGORY_ATTRIBUTE_VALUE_IDS.md`](./WEB_CATEGORY_ATTRIBUTE_VALUE_IDS.md)
-
-**اليوم (سابقاً):** فروع المتاجر ملغاة في الباك — `shop_id` = متجر واحد للبائع، مو فرع — [`DASHBOARD_NO_SHOP_BRANCHES.md`](./DASHBOARD_NO_SHOP_BRANCHES.md)
 
 **اليوم (سابقاً):** متغيّران على صفحة المنتج (أزرق S و أسود L) — اختاروا الصف من `shop_variants` مو `[0]`، وغيّروا المقاس مع اللون — [`WEB_PRODUCT_ALL_VARIANTS.md`](./WEB_PRODUCT_ALL_VARIANTS.md)
 

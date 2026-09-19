@@ -5,9 +5,9 @@
 > **آخر تحديث:** 20 أيلول 2026  
 > يجمع **كل** تعديلات الباك التي تحتاج تنفيذ في الداشبورد (مو بس المنتج).
 
-**اليوم:** قيم الصفات على المنتج بالـ ID — select لكل صفة، الحفظ ما يمسح القياس — [`DASHBOARD_CATEGORY_ATTRIBUTE_VALUE_IDS.md`](./DASHBOARD_CATEGORY_ATTRIBUTE_VALUE_IDS.md)
+**اليوم:** فروع المتاجر واسم الفرع ملغيان من فورم المنتج — [`DASHBOARD_NO_SHOP_BRANCHES.md`](./DASHBOARD_NO_SHOP_BRANCHES.md)
 
-**اليوم (سابقاً):** فروع المتاجر ملغاة — بائع واحد = متجر واحد، والباك يربط المنتج تلقائياً — [`DASHBOARD_NO_SHOP_BRANCHES.md`](./DASHBOARD_NO_SHOP_BRANCHES.md)
+**اليوم (سابقاً):** قيم الصفات على المنتج بالـ ID — select لكل صفة، الحفظ ما يمسح القياس — [`DASHBOARD_CATEGORY_ATTRIBUTE_VALUE_IDS.md`](./DASHBOARD_CATEGORY_ATTRIBUTE_VALUE_IDS.md)
 
 **اليوم (سابقاً):** كل متغيّر لازم ينحفظ بـ `attributes_values_ids` — مو بس الأول يشتغل على الموقع — [`DASHBOARD_PRODUCT_ALL_VARIANTS.md`](./DASHBOARD_PRODUCT_ALL_VARIANTS.md)
 
