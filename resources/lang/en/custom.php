@@ -78,6 +78,7 @@ return [
     'category_attribute_must_be_root' => 'Attributes can only be assigned to a main (root) category. Subcategories inherit the same attributes and values.',
     'cannot_delete_category_related' => 'Cannot delete this category because it is linked to other records.',
     'cannot_save_missing_reference' => 'Could not save the record. Check required fields and that the platform vendor exists.',
+    'duplicate_unique_value' => 'This value is already in use (SKU or another unique field). Change it and try again.',
     'cannot_delete_category_has_items' => 'Cannot delete this category: linked to :products product(s) and :baskets basket(s). Move or delete them first.',
     'category_delete_impact' => [
         'requires_confirmation' => 'Deleting this category affects linked items. Review the details and resend the request with confirm=true.',

@@ -119,8 +119,13 @@ class ProductVariant extends Model
             ->get();
 
         return $attributeValues->map(function ($attributeValue) {
-            $isColorType = ($attributeValue->categoryAttribute->type ?? null) === 'color';
-            $attributeName = $attributeValue->categoryAttribute->name ?? null;
+            $attribute = $attributeValue->categoryAttribute;
+            if (!$attribute) {
+                return null;
+            }
+
+            $isColorType = ($attribute->type ?? null) === 'color';
+            $attributeName = $attribute->name ?? null;
 
             if ($isColorType) {
                 $colorName = $attributeValue->color?->getTranslation('name', app()->getLocale(), false)
@@ -140,9 +145,9 @@ class ProductVariant extends Model
                         'hex' => $hex,
                     ] : null,
                     'category_attribute' => [
-                        'id' => $attributeValue->categoryAttribute->id,
+                        'id' => $attribute->id,
                         'name' => $attributeName,
-                        'type' => $attributeValue->categoryAttribute->type ?? null,
+                        'type' => $attribute->type ?? null,
                     ],
                 ];
             }
@@ -154,12 +159,12 @@ class ProductVariant extends Model
                 'hex' => null,
                 'color' => null,
                 'category_attribute' => [
-                    'id' => $attributeValue->categoryAttribute->id,
+                    'id' => $attribute->id,
                     'name' => $attributeName,
-                    'type' => $attributeValue->categoryAttribute->type ?? null,
+                    'type' => $attribute->type ?? null,
                 ],
             ];
-        });
+        })->filter()->values();
     }
 
     public function attributeValues()

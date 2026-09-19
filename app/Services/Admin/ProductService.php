@@ -5,6 +5,7 @@ namespace App\Services\Admin;
 use App\Models\AttributeValue;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\Shop;
 use App\Models\Vendor;
 use App\Services\BaseService;
@@ -161,23 +162,7 @@ class ProductService extends BaseService
                 ]);
             }
 
-            $createData = collect($data)->except([
-                'thumbnail',
-                'seo_image',
-                'media',
-                'images',
-                'variant_images',
-                'variants',
-                'shop_variants',
-                'category_details',
-                'extra_details',
-                'badges',
-                'icon_ids',
-                'existing_media_ids',
-                'shop_id',
-            ])->all();
-
-            $object = $this->model::create($createData);
+            $object = $this->model::create($this->productColumnData($data));
             $this->handleSingleImages($object, $data);
             $this->handleRelations($object, $data);
             $this->handleMedia($object, $data);
@@ -201,41 +186,47 @@ class ProductService extends BaseService
 
         DB::beginTransaction();
 
-        $object = $this->applyAdminCityRestriction($this->model::query())->findOrFail($id);
-        if (property_exists($object, 'translatable')) {
-            foreach ($object->translatable as $field) {
-                if (isset($data[$field])) {
-                    $incomingTranslations = is_array($data[$field]) ? $data[$field] : [];
-                    $existingTranslations = method_exists($object, 'getTranslations')
-                        ? $object->getTranslations($field)
-                        : [];
+        try {
+            $object = $this->applyAdminCityRestriction($this->model::query())->findOrFail($id);
+            if (property_exists($object, 'translatable')) {
+                foreach ($object->translatable as $field) {
+                    if (isset($data[$field])) {
+                        $incomingTranslations = is_array($data[$field]) ? $data[$field] : [];
+                        $existingTranslations = method_exists($object, 'getTranslations')
+                            ? $object->getTranslations($field)
+                            : [];
 
-                    $object->setTranslations($field, array_merge($existingTranslations, $incomingTranslations));
-                    unset($data[$field]);
+                        $object->setTranslations($field, array_merge($existingTranslations, $incomingTranslations));
+                        unset($data[$field]);
+                    }
                 }
             }
-        }
 
-        $this->handleSingleImages($object, $data);
+            $this->handleSingleImages($object, $data);
 
-        if (array_key_exists('sale_channel', $data) || array_key_exists('shop_variants', $data) || array_key_exists('shop_id', $data)) {
-            if (!array_key_exists('sale_channel', $data)) {
-                $data['sale_channel'] = $object->sale_channel ?? 'platform';
+            if (array_key_exists('sale_channel', $data) || array_key_exists('shop_variants', $data) || array_key_exists('shop_id', $data)) {
+                if (!array_key_exists('sale_channel', $data)) {
+                    $data['sale_channel'] = $object->sale_channel ?? 'platform';
+                }
+                $this->applySaleChannel($data);
             }
-            $this->applySaleChannel($data);
+
+            unset($data['shop_id']);
+
+            $object->update($this->productColumnData($data));
+            $this->handleRelations($object, $data);
+            $this->handleMedia($object, $data);
+            $this->ensureDefaultVariant($object);
+            $this->ensureDefaultShopLinks($object);
+
+            $object->refresh()->load($this->relations);
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            throw $e;
         }
-
-        unset($data['shop_id']);
-
-        $object->update($data);
-        $this->handleRelations($object, $data);
-        $this->handleMedia($object, $data);
-        $this->ensureDefaultVariant($object);
-        $this->ensureDefaultShopLinks($object);
-
-        $object->refresh()->load($this->relations);
-
-        DB::commit();
 
         return new $this->resource($object);
     }
@@ -257,7 +248,9 @@ class ProductService extends BaseService
             if ($platformVendorId) {
                 $data['vendor_id'] = $platformVendorId;
             }
-            $data['shop_variants'] = [];
+            // Keep existing shop links. An empty list is treated as "replace all"
+            // and would delete + recreate rows (new IDs, unique collisions, 500).
+            unset($data['shop_variants']);
 
             return;
         }
@@ -673,9 +666,14 @@ class ProductService extends BaseService
                     $payload['price'] = $product->price ?? 0;
                 }
 
-                $variant = $variantId
-                    ? $product->variants()->whereKey($variantId)->first()
-                    : null;
+                $variant = $this->findExistingVariant(
+                    $product,
+                    $variantId,
+                    $payload,
+                    (int) $index,
+                    count($variantsData),
+                    $keptIds
+                );
 
                 if ($attributeValueIds !== null) {
                     $payload['attributes_values_ids'] = $variant
@@ -697,6 +695,17 @@ class ProductService extends BaseService
                     }
                     if (!array_key_exists('attributes_values_ids', $payload)) {
                         $payload['attributes_values_ids'] = [];
+                    }
+                    $sku = $payload['sku'] ?? null;
+                    if (is_string($sku) && trim($sku) !== '') {
+                        $skuTaken = ProductVariant::withTrashed()
+                            ->where('sku', trim($sku))
+                            ->exists();
+                        if ($skuTaken) {
+                            throw ValidationException::withMessages([
+                                "variants.{$index}.sku" => __('custom.duplicate_unique_value'),
+                            ]);
+                        }
                     }
                     $variant = $product->variants()->create($payload);
                 }
@@ -747,20 +756,8 @@ class ProductService extends BaseService
         $canonicalShopId = collect($shopVariantsData)->pluck('shop_id')->filter()->first()
             ?? Shop::forVendor($product->vendor_id)?->id;
 
-        if ($canonicalShopId) {
-            $shopVariantsData = collect($shopVariantsData)->map(function ($item) use ($canonicalShopId) {
-                if (!is_array($item)) {
-                    return $item;
-                }
-
-                $item['shop_id'] = $canonicalShopId;
-
-                return $item;
-            })->all();
-        }
-
-        foreach ($variantIndexMap as $variant) {
-            $variant->shopVariants()->delete();
+        if (!$canonicalShopId) {
+            return;
         }
 
         foreach ($shopVariantsData as $svItem) {
@@ -773,15 +770,109 @@ class ProductService extends BaseService
                 continue;
             }
 
-            if (empty($svItem['shop_id'])) {
-                continue;
-            }
-
-            $variantIndexMap[(int) $variantIndex]->shopVariants()->create([
-                'shop_id' => $svItem['shop_id'],
-                'cost_price' => $svItem['cost_price'] ?? null,
-            ]);
+            $this->upsertShopLink(
+                $variantIndexMap[(int) $variantIndex],
+                (int) $canonicalShopId,
+                $svItem['cost_price'] ?? null
+            );
         }
+    }
+
+    /**
+     * @param  list<int>  $claimedIds
+     */
+    private function findExistingVariant(
+        Product $product,
+        mixed $variantId,
+        array $payload,
+        int $index,
+        int $incomingCount,
+        array $claimedIds
+    ): ?ProductVariant {
+        if ($variantId && is_numeric($variantId)) {
+            $variant = $product->variants()->whereKey((int) $variantId)->first();
+            if ($variant && !in_array($variant->id, $claimedIds, true)) {
+                return $variant;
+            }
+        }
+
+        $sku = $payload['sku'] ?? null;
+        if (is_string($sku) && trim($sku) !== '') {
+            $variant = $product->variants()
+                ->withTrashed()
+                ->where('sku', trim($sku))
+                ->whereNotIn('id', $claimedIds)
+                ->first();
+            if ($variant) {
+                if ($variant->trashed()) {
+                    $variant->restore();
+                }
+
+                return $variant;
+            }
+        }
+
+        $existing = $product->variants()
+            ->whereNotIn('id', $claimedIds)
+            ->orderBy('id')
+            ->get();
+
+        if ($incomingCount === $existing->count() + count($claimedIds) && isset($existing[$index - count($claimedIds)])) {
+            return $existing[$index - count($claimedIds)];
+        }
+
+        if ($incomingCount === 1 && $existing->count() === 1) {
+            return $existing->first();
+        }
+
+        if ($index === 0 && $existing->count() >= 1 && $incomingCount >= 1) {
+            return $existing->first();
+        }
+
+        return null;
+    }
+
+    private function upsertShopLink(ProductVariant $variant, int $shopId, mixed $costPrice): void
+    {
+        $existing = $variant->shopVariants()->withTrashed()->where('shop_id', $shopId)->first();
+        if ($existing) {
+            if ($existing->trashed()) {
+                $existing->restore();
+            }
+            $existing->update(['cost_price' => $costPrice]);
+
+            return;
+        }
+
+        $variant->shopVariants()->create([
+            'shop_id' => $shopId,
+            'cost_price' => $costPrice,
+        ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    private function productColumnData(array $data): array
+    {
+        return collect($data)->except([
+            'thumbnail',
+            'seo_image',
+            'media',
+            'images',
+            'variant_images',
+            'variants',
+            'shop_variants',
+            'category_details',
+            'extra_details',
+            'badges',
+            'icon_ids',
+            'existing_media_ids',
+            'shop_id',
+            'price_syp',
+            'cost_price_syp',
+        ])->all();
     }
 
     /**

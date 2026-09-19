@@ -85,6 +85,7 @@ return [
     'category_attribute_must_be_root' => 'يمكن إسناد المتغيرات (الصفات) للفئة الرئيسية فقط. الفئات الفرعية ترث نفس الصفات والقيم.',
     'cannot_delete_category_related' => 'لا يمكن حذف هذا التصنيف لأنه مرتبط بعناصر أخرى.',
     'cannot_save_missing_reference' => 'تعذر حفظ البيانات. تأكد من الحقول المطلوبة وأن بائع المنصة موجود.',
+    'duplicate_unique_value' => 'هذه القيمة مستخدمة مسبقاً (SKU أو حقل فريد). غيّرها ثم أعد المحاولة.',
     'cannot_delete_category_has_items' => 'لا يمكن حذف هذا التصنيف: مرتبط بـ :products منتج و :baskets سلة. انقل أو احذف العناصر أولاً.',
     'category_delete_impact' => [
         'requires_confirmation' => 'حذف هذه الفئة سيؤثر على عناصر مرتبطة. راجع التفاصيل ثم أعد إرسال الطلب مع confirm=true للتأكيد.',

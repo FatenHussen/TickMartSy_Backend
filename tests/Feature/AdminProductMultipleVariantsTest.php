@@ -174,6 +174,120 @@ class AdminProductMultipleVariantsTest extends TestCase
         $this->assertNotNull($response->json('data.shop_variants.1.id'));
     }
 
+    public function test_dashboard_update_without_variant_id_reuses_existing_sku(): void
+    {
+        $platformVendor = $this->createVendor();
+        $category = $this->createCategory();
+        Shop::create([
+            'name' => ['en' => 'Platform default', 'ar' => 'فرع المنصة'],
+            'email' => 'platform-sku@example.com',
+            'vendor_id' => $platformVendor->id,
+            'is_active' => true,
+            'is_default' => true,
+        ]);
+        [$blue, $black, $small, $large] = $this->createColorAndSizeValues($category);
+
+        $resource = app(ProductService::class)->create([
+            'category_id' => $category->id,
+            'sale_channel' => 'platform',
+            'name' => ['en' => 'Jeans', 'ar' => 'جينز'],
+            'description' => ['en' => 'Desc', 'ar' => 'وصف'],
+            'sku' => 'SKLU-CPMGH/WW-1-000000',
+            'price' => 25,
+            'quantity' => 10,
+            'barcode' => '6291101234567',
+            'approval_status' => ProductApprovalStatus::APPROVED,
+            'is_active' => true,
+            'variants' => [
+                [
+                    'sku' => 'SKLU-CPMGH/WW-1-000000',
+                    'price' => 25,
+                    'quantity' => 10,
+                    'attributes_values_ids' => [$blue->id, $small->id],
+                ],
+            ],
+        ]);
+
+        $product = Product::with('variants.shopVariants')->findOrFail($resource->id);
+        $variantId = $product->variants->first()->id;
+        $shopVariantId = $product->variants->first()->shopVariants->first()?->id;
+        $this->assertNotNull($shopVariantId);
+
+        $updated = app(ProductService::class)->update($product->id, [
+            'sale_channel' => 'platform',
+            'sku' => 'SKLU-CPMGH/WW-1-000000',
+            'price' => 32.5,
+            'discount' => 25,
+            'discount_type' => 'percentage',
+            'quantity' => 10,
+            'barcode' => '6291101234567',
+            'variants' => [
+                [
+                    'sku' => 'SKLU-CPMGH/WW-1-000000',
+                    'price' => 32.5,
+                    'quantity' => 10,
+                    'is_active' => true,
+                    'attributes' => [
+                        ['id' => $black->id],
+                        ['id' => $large->id],
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->assertSame($product->id, $updated->id);
+
+        $product->refresh()->load('variants.shopVariants');
+        $this->assertCount(1, $product->variants);
+        $this->assertSame($variantId, $product->variants->first()->id);
+        $this->assertSame($shopVariantId, $product->variants->first()->shopVariants->first()?->id);
+        $this->assertEqualsCanonicalizing(
+            [$black->id, $large->id],
+            $product->variants->first()->attributes_values_ids
+        );
+    }
+
+    public function test_platform_update_keeps_shop_link_when_dashboard_omits_shop_variants(): void
+    {
+        $platformVendor = $this->createVendor();
+        $category = $this->createCategory();
+        Shop::create([
+            'name' => ['en' => 'Platform default', 'ar' => 'فرع المنصة'],
+            'email' => 'platform-keep@example.com',
+            'vendor_id' => $platformVendor->id,
+            'is_active' => true,
+            'is_default' => true,
+        ]);
+
+        $resource = app(ProductService::class)->create([
+            'category_id' => $category->id,
+            'sale_channel' => 'platform',
+            'name' => ['en' => 'Jeans', 'ar' => 'جينز'],
+            'description' => ['en' => 'Desc', 'ar' => 'وصف'],
+            'sku' => 'KEEP-LINK',
+            'price' => 20,
+            'quantity' => 3,
+            'approval_status' => ProductApprovalStatus::APPROVED,
+            'is_active' => true,
+        ]);
+
+        $product = Product::with('variants.shopVariants')->findOrFail($resource->id);
+        $shopVariantId = $product->variants->first()->shopVariants->first()?->id;
+        $this->assertNotNull($shopVariantId);
+
+        app(ProductService::class)->update($product->id, [
+            'sale_channel' => 'platform',
+            'sku' => 'KEEP-LINK',
+            'price' => 21,
+            'quantity' => 4,
+            'shop_variants' => [],
+        ]);
+
+        $product->refresh()->load('variants.shopVariants');
+        $this->assertSame($shopVariantId, $product->variants->first()->shopVariants->first()?->id);
+        $this->assertSame(21.0, (float) $product->price);
+    }
+
     public function test_update_request_copies_attribute_ids_from_attributes_objects(): void
     {
         $this->seedLanguages();

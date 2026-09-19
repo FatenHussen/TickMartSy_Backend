@@ -64,6 +64,16 @@ class Handler
                 ], 422);
             }
 
+            if ($errorCode === 1062) {
+                report($e);
+
+                return response()->json([
+                    'status' => false,
+                    'message' => __('custom.duplicate_unique_value'),
+                    'errors' => [],
+                ], 422);
+            }
+
             return null;
         });
 
