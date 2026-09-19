@@ -1,9 +1,10 @@
 # الويب — سعر · خصم · كمية · باركود · SKU (كارد + تفاصيل المنتج)
 
 > **أرسلوا هذا الملف لفريق الويب فقط.**  
-> **آخر تحديث:** 8 أيلول 2026  
+> **آخر تحديث:** 20 أيلول 2026  
 > Base: `/api/user` + `Accept-Language: ar|en`  
-> **الباك جاهز — التعديل UI فقط**  
+> **الباك جاهز بعد `git pull`**  
+> خصم ثابت (كسور و>100): [`WEB_FIXED_DISCOUNT.md`](./WEB_FIXED_DISCOUNT.md)  
 > الداشبورد (إدخال الحقول): [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./DASHBOARD_PRODUCT_PRICING_FIELDS.md)  
 > Flutter: [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md)
 
@@ -48,7 +49,7 @@
 | 2 | سعر المتغيّر (ليرة سورية) | `price_currencies.SYP` | `price_currencies.SYP` |
 | 3 | نوع الخصم | لا يُرسل على الكرت | `discount_type` |
 | 4 | لا يوجد خصم | `price === price_after_discount` | `discount_type === 'none'` أو `discount_value === 0` |
-| 5 | قيمة الخصم | لا تعتمدوا على `discount` في الكرت (سترينغ فاضي) | `discount_value` (10 = 10% أو 10$) |
+| 5 | قيمة الخصم | لا تعتمدوا على `discount` في الكرت (سترينغ فاضي) | `discount_value` (`number` — نسبة أو مبلغ؛ `fixed` قد يكون `150.75`) |
 | 6 | السعر بعد الخصم | `price_after_discount_currencies` | `price_after_discount_currencies` |
 | 7 | الكمية المتوفرة | `quantity` (قد تكون `null`) | `quantity` (قد تكون `null`) |
 | 8 | الباركود | **غير موجود على الكرت** | `barcode` |
@@ -58,7 +59,7 @@
 
 | المفتاح | المعنى |
 |---------|--------|
-| `discount_value` | القيمة اللي أدمنها الأدمن (10) |
+| `discount_value` | القيمة اللي أدمنها الأدمن (`10` أو `10.5` أو `150.75`) |
 | `discount_type` | `none` \| `percentage` \| `fixed` |
 | `discount` + `discount_currencies` | **مبلغ التوفير** بالدولار/الليرة — للعرض «وفّرت X» |
 
@@ -178,7 +179,7 @@ const sypAfter = money(v.price_after_discount_currencies, 'SYP');
 |-----------------|--------|
 | `none` أو ناقص (fallback) | **لا يوجد خصم** — أخفوا قيمة الخصم · لا تشطبوا السعر |
 | `percentage` | قيمة الخصم + `%` — السعر الأصلي مشطوب · بعد الخصم أساسي |
-| `fixed` | قيمة الخصم كمبلغ `$` |
+| `fixed` | قيمة الخصم كمبلغ `$` — كسور و>100 (`150.75`) |
 
 ```js
 const hasDiscount =
@@ -282,7 +283,7 @@ function ProductPricingDisplay({ variant, product }) {
 - [ ] تغيير المتغيّر يبدّل: سعر $ · ل.س · خصم · بعد الخصم · كمية · باركود · SKU · صور
 - [ ] `*_currencies` فقط — لا تحويل محلي
 - [ ] `discount_type === 'none'` → لا يوجد خصم
-- [ ] `discount_value` = قيمة الإدخال · `discount` = مبلغ التوفير
+- [ ] `discount_value` = `number` (كسور و`fixed` > 100) · `discount` = مبلغ التوفير
 - [ ] باركود / SKU: أخفوا إذا `null`
 - [ ] سلة: `shop_product_variant_id` = `selected.id` — لا سعر من الفرونت
 - [ ] `quantity` nullable على الكرت والتفاصيل

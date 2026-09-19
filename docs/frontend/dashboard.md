@@ -5,7 +5,9 @@
 > **آخر تحديث:** 20 أيلول 2026  
 > يجمع **كل** تعديلات الباك التي تحتاج تنفيذ في الداشبورد (مو بس المنتج).
 
-**اليوم:** فروع المتاجر واسم الفرع ملغيان من فورم المنتج — [`DASHBOARD_NO_SHOP_BRANCHES.md`](./DASHBOARD_NO_SHOP_BRANCHES.md)
+**اليوم:** خصم ثابت يقبل كسور وأكبر من 100 — [`DASHBOARD_FIXED_DISCOUNT.md`](./DASHBOARD_FIXED_DISCOUNT.md)
+
+**اليوم (سابقاً):** فروع المتاجر واسم الفرع ملغيان من فورم المنتج — [`DASHBOARD_NO_SHOP_BRANCHES.md`](./DASHBOARD_NO_SHOP_BRANCHES.md)
 
 **اليوم (سابقاً):** قيم الصفات على المنتج بالـ ID — select لكل صفة، الحفظ ما يمسح القياس — [`DASHBOARD_CATEGORY_ATTRIBUTE_VALUE_IDS.md`](./DASHBOARD_CATEGORY_ATTRIBUTE_VALUE_IDS.md)
 
@@ -1014,7 +1016,8 @@ POST /api/admin/scheduled-baskets
 
 ## 21) حقول السعر · الخصم · الكمية · باركود · SKU
 
-> **أرسلوا هذا الملف:** [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./DASHBOARD_PRODUCT_PRICING_FIELDS.md) — **8 أيلول 2026**
+> **أرسلوا هذا الملف:** [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./DASHBOARD_PRODUCT_PRICING_FIELDS.md)  
+> **خصم ثابت (كسور و>100):** [`DASHBOARD_FIXED_DISCOUNT.md`](./DASHBOARD_FIXED_DISCOUNT.md) — **20 أيلول 2026**
 
 نفس البلوك في تاب **معلومات المنتج** (دائماً) وعلى **كارد المتغيّر** (إذا أُضيفت متغيّرات).
 

@@ -1,9 +1,10 @@
 # Flutter — سعر · خصم · كمية · باركود · SKU (كارد + تفاصيل المنتج)
 
 > **أرسلوا هذا الملف لفريق Flutter (التطبيق) فقط.**  
-> **آخر تحديث:** 8 أيلول 2026  
+> **آخر تحديث:** 20 أيلول 2026  
 > Base: `/api/user` + `Accept-Language: ar|en`  
-> **الباك جاهز — التعديل UI فقط**  
+> **الباك جاهز بعد `git pull`**  
+> خصم ثابت (كسور و>100): [`FLUTTER_FIXED_DISCOUNT.md`](./FLUTTER_FIXED_DISCOUNT.md)  
 > الداشبورد (إدخال الحقول): [`DASHBOARD_PRODUCT_PRICING_FIELDS.md`](./DASHBOARD_PRODUCT_PRICING_FIELDS.md)  
 > الويب: [`WEB_PRODUCT_PRICING_FIELDS.md`](./WEB_PRODUCT_PRICING_FIELDS.md)
 
@@ -201,7 +202,7 @@ final sypAfter = currencyOf(variant.priceAfterDiscountCurrencies, 'SYP');
 |----------------|--------|
 | `none` أو `null` (fallback) | **لا يوجد خصم** — أخفوا قيمة الخصم |
 | `percentage` | `discountValue%` — الأصلي مشطوب |
-| `fixed` | مبلغ ثابت — الأصلي مشطوب |
+| `fixed` | مبلغ ثابت — كسور و>100 (`150.75`) — الأصلي مشطوب |
 
 السعر الأساسي المعروض = بعد الخصم إن وُجد، وإلا الأصلي.
 
@@ -264,7 +265,7 @@ class ShopVariant {
   final String? barcode;
   final num price;
   final num? priceAfterDiscount;
-  final int? discountValue;
+  final num? discountValue;
   final String? discountType; // none | percentage | fixed
   final int? quantity;
   final Map<String, dynamic>? priceCurrencies;
@@ -281,7 +282,7 @@ class ShopVariant {
       barcode: json['barcode'] as String?,
       price: (json['price'] as num?) ?? 0,
       priceAfterDiscount: json['price_after_discount'] as num?,
-      discountValue: asInt(json['discount_value']),
+      discountValue: asNum(json['discount_value']),
       discountType: json['discount_type'] as String?,
       quantity: asInt(json['quantity']),
       priceCurrencies: json['price_currencies'] as Map<String, dynamic>?,
@@ -299,6 +300,12 @@ int? asInt(dynamic v) {
   if (v == null) return null;
   if (v is int) return v;
   return int.tryParse('$v');
+}
+
+num? asNum(dynamic v) {
+  if (v == null) return null;
+  if (v is num) return v;
+  return num.tryParse('$v');
 }
 ```
 
@@ -352,7 +359,7 @@ class ProductPricingReadout extends StatelessWidget {
 - [ ] تغيير اللون/المقاس يبدّل سعر $ · ل.س · خصم · بعد الخصم · كمية · باركود · SKU · صور
 - [ ] `*_currencies` فقط — لا تحويل سعر صرف
 - [ ] `none` = لا يوجد خصم
-- [ ] `discountValue` ≠ مبلغ `discount_currencies`
+- [ ] `discountValue` نوع `num?` (مو `int` / `asInt`) — `fixed` كسور و>100
 - [ ] باركود مثال الشكل `6291101234567` — أخفوا إذا null
 - [ ] SKU إنجليزي — أخفوا إذا null
 - [ ] `canAddToCart`: `id` + `shopId` + `quantity > 0`

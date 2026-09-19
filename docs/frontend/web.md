@@ -7,7 +7,9 @@
 > **تسجيل:** [`REGISTER_FLOW.md`](./REGISTER_FLOW.md) · [`WEB_REGISTER_FLOW.md`](./WEB_REGISTER_FLOW.md)  
 > **آخر تحديث | Last Updated:** 2026-09-20
 
-**اليوم:** لا دروب داون Branch / اسم متجر على صفحة المنتج — [`WEB_NO_SHOP_BRANCHES.md`](./WEB_NO_SHOP_BRANCHES.md)
+**اليوم:** خصم ثابت (`fixed`) كسور وأكبر من 100 — اقرأوا `discount_value` كـ `number` — [`WEB_FIXED_DISCOUNT.md`](./WEB_FIXED_DISCOUNT.md)
+
+**اليوم (سابقاً):** لا دروب داون Branch / اسم متجر على صفحة المنتج — [`WEB_NO_SHOP_BRANCHES.md`](./WEB_NO_SHOP_BRANCHES.md)
 
 **اليوم (سابقاً):** متغيّران على صفحة المنتج — الصف المختار من `shop_variants` مو `[0]` — [`WEB_PRODUCT_ALL_VARIANTS.md`](./WEB_PRODUCT_ALL_VARIANTS.md)
 

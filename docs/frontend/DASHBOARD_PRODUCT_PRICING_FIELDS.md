@@ -83,7 +83,7 @@
 | 1 | سعر المتغير (دولار) | `price` | `variants[i][price]` | `number` ≥ 0 | يُخزَّن USD |
 | 2 | سعر المتغيّر (ليرة سورية) | `price_syp` | `variants[i][price_syp]` | `number` ≥ 0 | **ما ينحفظ** — يتحوّل لـ `price` |
 | 3 | نوع الخصم | `discount_type` | `variants[i][discount_type]` | enum | افتراضي `none` |
-| 4 | قيمة الخصم | `discount` | `variants[i][discount]` | `int` 0–100 | تظهر إذا النوع ≠ لا يوجد خصم |
+| 4 | قيمة الخصم | `discount` | `variants[i][discount]` | `number` | `percentage` 0…100 · `fixed` كسور و>100 — [`DASHBOARD_FIXED_DISCOUNT.md`](./DASHBOARD_FIXED_DISCOUNT.md) |
 | 5 | السعر بعد الخصم | — | — | readonly | **لا ترسلوه** |
 | 6 | الكمية المتوفرة | `quantity` | `variants[i][quantity]` | `int` ≥ 0 | |
 | 7 | الباركود | `barcode` | `variants[i][barcode]` | string | placeholder `6291101234567` |
@@ -270,6 +270,13 @@ sku=LIG-8188-BASE
 ```
 
 لا ترسلوا `variants[]`. الباك ينشئ متغيّر افتراضي **مخفي** من هالبيانات — الواجهة ما تعرض كارد.
+
+خصم ثابت (كسور و>100):
+
+```text
+discount_type=fixed
+discount=150.75
+```
 
 ### ب) منتج مع متغيّرات — المعلومات + الكروت
 

@@ -5,7 +5,9 @@
 > **آخر تحديث | Last Updated:** 2026-09-20  
 > الملف الشامل السابق يبقى: [`flutter.md`](./flutter.md)
 
-**اليوم:** لا اسم متجر / Branch على شاشة المنتج — [`FLUTTER_NO_SHOP_BRANCHES.md`](./FLUTTER_NO_SHOP_BRANCHES.md)
+**اليوم:** خصم ثابت (`fixed`) كسور وأكبر من 100 — `discountValue` = `num?` مو `asInt` — [`FLUTTER_FIXED_DISCOUNT.md`](./FLUTTER_FIXED_DISCOUNT.md)
+
+**اليوم (سابقاً):** لا اسم متجر / Branch على شاشة المنتج — [`FLUTTER_NO_SHOP_BRANCHES.md`](./FLUTTER_NO_SHOP_BRANCHES.md)
 
 **اليوم (سابقاً):** قيم الصفات بالـ ID — فلتر و picker من `options[].id`، الاسم يتبدّل والمتغيّر يبقى — [`FLUTTER_CATEGORY_ATTRIBUTE_VALUE_IDS.md`](./FLUTTER_CATEGORY_ATTRIBUTE_VALUE_IDS.md)
 

@@ -5,7 +5,9 @@
 > **آخر تحديث | Last Updated:** 2026-09-20  
 > الملف الشامل السابق يبقى: [`web.md`](./web.md)
 
-**اليوم:** لا دروب داون Branch / اسم متجر على صفحة المنتج — [`WEB_NO_SHOP_BRANCHES.md`](./WEB_NO_SHOP_BRANCHES.md)
+**اليوم:** خصم ثابت (`fixed`) كسور وأكبر من 100 — `discount_value` = `number` — [`WEB_FIXED_DISCOUNT.md`](./WEB_FIXED_DISCOUNT.md)
+
+**اليوم (سابقاً):** لا دروب داون Branch / اسم متجر على صفحة المنتج — [`WEB_NO_SHOP_BRANCHES.md`](./WEB_NO_SHOP_BRANCHES.md)
 
 **اليوم (سابقاً):** قيم الصفات بالـ ID — فلتر و picker من `options[].id`، الاسم يتبدّل بعد إعادة التسمية والمتغيّر يبقى — [`WEB_CATEGORY_ATTRIBUTE_VALUE_IDS.md`](./WEB_CATEGORY_ATTRIBUTE_VALUE_IDS.md)
 

@@ -8,7 +8,9 @@
 > **تسجيل:** [`REGISTER_FLOW.md`](./REGISTER_FLOW.md) · [`FLUTTER_REGISTER_FLOW.md`](./FLUTTER_REGISTER_FLOW.md)  
 > **آخر تحديث | Last Updated:** 2026-09-20
 
-**اليوم:** لا اسم متجر / Branch على شاشة المنتج — [`FLUTTER_NO_SHOP_BRANCHES.md`](./FLUTTER_NO_SHOP_BRANCHES.md)
+**اليوم:** خصم ثابت (`fixed`) كسور وأكبر من 100 — `discountValue` نوع `num?` مو `int` — [`FLUTTER_FIXED_DISCOUNT.md`](./FLUTTER_FIXED_DISCOUNT.md)
+
+**اليوم (سابقاً):** لا اسم متجر / Branch على شاشة المنتج — [`FLUTTER_NO_SHOP_BRANCHES.md`](./FLUTTER_NO_SHOP_BRANCHES.md)
 
 **اليوم (سابقاً):** متغيّران على شاشة المنتج — مو `shopVariants.first` فقط — [`FLUTTER_PRODUCT_ALL_VARIANTS.md`](./FLUTTER_PRODUCT_ALL_VARIANTS.md)
 
