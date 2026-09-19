@@ -18,17 +18,14 @@ class ShopSeeder extends Seeder
             return;
         }
 
-        $shops = [
-            'Tikmool Damascus',
-            'Tikmool Aleppo',
-            'Tikmool Homs',
-        ];
+        if (Shop::query()->where('vendor_id', $vendor->id)->exists()) {
+            return;
+        }
 
-        foreach ($shops as $index => $shopName) {
-            $shop =  Shop::create([
+        $shop = Shop::create([
                 'name' => [
-                    'ar' => 'تيكمول - فرع ' . ($index + 1),
-                    'en' => $shopName,
+                    'ar' => 'تيكمول',
+                    'en' => 'Tikmool',
                 ],
 
                 'description' => [
@@ -41,9 +38,9 @@ class ShopSeeder extends Seeder
                     'en' => 'Syria - Damascus',
                 ],
 
-                'phone' => '011000000' . $index,
-                'mobile' => '099000000' . $index,
-                'email' => 'shop' . ($index + 1) . '@tikmool.com',
+                'phone' => '0110000001',
+                'mobile' => '0990000001',
+                'email' => 'shop@tikmool.com',
 
                 'lat' => 33.5138,
                 'lng' => 36.2765,
@@ -76,7 +73,6 @@ class ShopSeeder extends Seeder
             ]);
 
 
-            $shop->badges()->sync([1, 2, 3]);
-        }
+        $shop->badges()->sync([1, 2, 3]);
     }
 }

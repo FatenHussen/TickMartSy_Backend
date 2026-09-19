@@ -202,11 +202,6 @@ class ShopForm
                                         Forms\Components\Toggle::make('is_free_delivery')
                                             ->label(__('custom.shops.is_free_delivery'))
                                             ->default(false),
-
-                                        Forms\Components\Toggle::make('is_default')
-                                            ->label(__('custom.shops.is_default'))
-                                            ->default(false)
-                                            ->helperText(__('custom.shops.is_default_help')),
                                     ])
                                     ->columns(2),
                             ]),

@@ -41,7 +41,8 @@ trait ResolvesProductVendorId
         if ($channel === 'platform') {
             $merge['vendor_id'] = ProductService::resolvePlatformVendorId();
         } else {
-            $merge['vendor_id'] = $this->vendorIdFromShopVariants()
+            $merge['vendor_id'] = $this->vendorIdFromShopId()
+                ?? $this->vendorIdFromShopVariants()
                 ?? $this->validExistingVendorId($this->input('vendor_id'));
         }
 
@@ -55,6 +56,18 @@ trait ResolvesProductVendorId
             'integer',
             Rule::exists('vendors', 'id')->whereNull('deleted_at'),
         ];
+    }
+
+    private function vendorIdFromShopId(): ?int
+    {
+        $shopId = $this->input('shop_id');
+        if (!$shopId || !is_numeric($shopId)) {
+            return null;
+        }
+
+        $vendorId = Shop::query()->whereKey($shopId)->value('vendor_id');
+
+        return $vendorId ? (int) $vendorId : null;
     }
 
     private function vendorIdFromShopVariants(): ?int
@@ -72,6 +85,31 @@ trait ResolvesProductVendorId
         $vendorId = Shop::query()->whereKey($firstShopId)->value('vendor_id');
 
         return $vendorId ? (int) $vendorId : null;
+    }
+
+    protected function resolvedShopForProductRequest(): ?Shop
+    {
+        if ($this->filled('shop_id') && is_numeric($this->input('shop_id'))) {
+            $shop = Shop::query()->find((int) $this->input('shop_id'));
+            if ($shop) {
+                return $shop;
+            }
+        }
+
+        $fromVariants = collect((array) $this->input('shop_variants'))
+            ->pluck('shop_id')
+            ->filter()
+            ->first();
+        if ($fromVariants) {
+            $shop = Shop::query()->find((int) $fromVariants);
+            if ($shop) {
+                return $shop;
+            }
+        }
+
+        $vendorId = $this->validExistingVendorId($this->input('vendor_id'));
+
+        return Shop::forVendor($vendorId);
     }
 
     private function validExistingVendorId(mixed $value): ?int

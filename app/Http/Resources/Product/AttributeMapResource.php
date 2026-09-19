@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Product;
 
+use App\Models\AttributeValue;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Collection;
 
@@ -16,24 +17,74 @@ class AttributeMapResource extends JsonResource
             ? $this->resource
             : collect([$this->resource]);
 
-        foreach ($variants as $variant) {
-            foreach ($variant->attributesValues as $attr) {
+        $valueIds = $variants
+            ->filter(fn ($variant) => $variant->is_active !== false)
+            ->flatMap(fn ($variant) => $variant->attributes_values_ids ?? [])
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
 
-                $name = $attr?->categoryAttribute?->name;
-                if (!$name) {
+        $values = $valueIds === []
+            ? collect()
+            : AttributeValue::with(['categoryAttribute', 'color'])
+                ->whereIn('id', $valueIds)
+                ->get()
+                ->keyBy('id');
+
+        foreach ($variants as $variant) {
+            if ($variant->is_active === false) {
+                continue;
+            }
+
+            foreach ($variant->attributes_values_ids ?? [] as $valueId) {
+                $attr = $values->get((int) $valueId);
+                $attribute = $attr?->categoryAttribute;
+                if (!$attr || !$attribute) {
                     continue;
                 }
 
-                if (!isset($map[$name])) {
-                    $map[$name] = [
-                        'attribute' => $name,
-                        'type'      => $attr->categoryAttribute->type,
+                $attributeLabel = $attribute->getTranslation('name', app()->getLocale(), false)
+                    ?: $attribute->getTranslation('name', 'ar', false)
+                    ?: $attribute->getTranslation('name', 'en', false);
+
+                if (!is_string($attributeLabel) || $attributeLabel === '') {
+                    continue;
+                }
+
+                $isColorType = ($attribute->type ?? null) === 'color';
+                $valueName = $isColorType
+                    ? ($attr->color?->name ?? $attr->name)
+                    : $attr->name;
+
+                if (!is_string($valueName) || $valueName === '') {
+                    continue;
+                }
+
+                $key = $attribute->id;
+
+                if (!isset($map[$key])) {
+                    $map[$key] = [
+                        'id'        => $attribute->id,
+                        'attribute' => $attributeLabel,
+                        'type'      => $attribute->type,
                         'values'    => [],
+                        'options'   => [],
                     ];
                 }
 
-                if (!in_array($attr->name, $map[$name]['values'], true)) {
-                    $map[$name]['values'][] = $attr->name;
+                if (!in_array($valueName, $map[$key]['values'], true)) {
+                    $map[$key]['values'][] = $valueName;
+                }
+
+                $already = collect($map[$key]['options'])->contains(fn ($option) => $option['id'] === $attr->id);
+                if (!$already) {
+                    $map[$key]['options'][] = [
+                        'id'   => $attr->id,
+                        'name' => $valueName,
+                        'hex'  => $isColorType ? ($attr->color?->hex ?? null) : null,
+                    ];
                 }
             }
         }

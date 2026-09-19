@@ -199,6 +199,8 @@ class CreateProduct extends CreateRecord
 
         $this->syncBadges($product);
 
+        app(\App\Services\Admin\ProductService::class)->linkProductToVendorShop($product);
+
         $this->notifyRemainingQuota();
         $this->notifyProductCreated();
 

@@ -10,6 +10,7 @@ class StoreRequest extends FormRequest
 {
     use DropsEmptyProductRelationRows;
     use NormalizesEmptyIntegerIds;
+    use NormalizesVariantAttributeIds;
     use ResolvesProductVendorId;
 
     protected array $locales = [];
@@ -69,6 +70,7 @@ class StoreRequest extends FormRequest
         $this->normalizeRestrictedFieldsForRestaurantCategory();
 
         $this->normalizeBlankUniqueStrings();
+        $this->normalizeVariantAttributeIds();
         $this->normalizeEmptyIntegerIds();
         $this->resolveProductVendorId(defaultChannelToPlatform: true);
     }
@@ -196,6 +198,7 @@ class StoreRequest extends FormRequest
             'thumbnail'             => 'nullable|image',
             'sale_channel'          => 'nullable|in:platform,shop',
             'vendor_id'             => $this->vendorIdRules(),
+            'shop_id'               => 'nullable|integer|exists:shops,id',
 
             // Variants
             'variants'                      => 'nullable|array',
@@ -213,6 +216,8 @@ class StoreRequest extends FormRequest
             'variants.*.is_active'          => 'nullable|boolean',
             'variants.*.attributes_values_ids' => 'nullable|array',
             'variants.*.attributes_values_ids.*' => 'required|integer|exists:attribute_values,id',
+            'variants.*.attributes' => 'nullable|array',
+            'variants.*.attributes.*.id' => 'nullable|integer|exists:attribute_values,id',
             'variants.*.images' => 'nullable|array',
             'variants.*.images.*' => 'nullable|image',
 
@@ -273,11 +278,10 @@ class StoreRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             if ($this->input('sale_channel') === 'shop') {
-                $shopVariants = $this->input('shop_variants');
-                if (!is_array($shopVariants) || count($shopVariants) < 1) {
+                if (!$this->resolvedShopForProductRequest()) {
                     $validator->errors()->add(
-                        'shop_variants',
-                        'عند اختيار «ربط بمتجر» يجب اختيار فرع واحد على الأقل.'
+                        'shop_id',
+                        'عند اختيار «ربط بمتجر» يجب اختيار متجر، أو أن يكون للبائع متجر واحد.'
                     );
                 }
 

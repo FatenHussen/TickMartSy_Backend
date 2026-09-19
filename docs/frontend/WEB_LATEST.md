@@ -2,10 +2,18 @@
 
 > **أرسلوا هذا الملف لفريق الويب.**  
 > Base: `/api/user` + `Accept-Language: ar|en`  
-> **آخر تحديث | Last Updated:** 2026-09-16  
+> **آخر تحديث | Last Updated:** 2026-09-20  
 > الملف الشامل السابق يبقى: [`web.md`](./web.md)
 
-**اليوم:** صور المتغيّر — المعرض من `shop_variants[].images[].path` عند تبديل اللون، وإلا صور المنتج — [`PRODUCT_VARIANT_IMAGES_WEB_DASHBOARD.md`](./PRODUCT_VARIANT_IMAGES_WEB_DASHBOARD.md)
+**اليوم:** لا دروب داون Branch / اسم متجر على صفحة المنتج — `available_shops` دائماً `[]` — [`WEB_FLUTTER_HIDE_SHOP_NAME.md`](./WEB_FLUTTER_HIDE_SHOP_NAME.md)
+
+**اليوم (سابقاً):** قيم الصفات بالـ ID — فلتر و picker من `options[].id`، الاسم يتبدّل بعد إعادة التسمية والمتغيّر يبقى — [`WEB_CATEGORY_ATTRIBUTE_VALUE_IDS.md`](./WEB_CATEGORY_ATTRIBUTE_VALUE_IDS.md)
+
+**اليوم (سابقاً):** فروع المتاجر ملغاة في الباك — `shop_id` = متجر واحد للبائع، مو فرع — [`DASHBOARD_NO_SHOP_BRANCHES.md`](./DASHBOARD_NO_SHOP_BRANCHES.md)
+
+**اليوم (سابقاً):** متغيّران على صفحة المنتج (أزرق S و أسود L) — اختاروا الصف من `shop_variants` مو `[0]`، وغيّروا المقاس مع اللون — [`WEB_PRODUCT_ALL_VARIANTS.md`](./WEB_PRODUCT_ALL_VARIANTS.md)
+
+**اليوم (سابقاً):** صور المتغيّر — المعرض من `shop_variants[].images[].path` عند تبديل اللون، وإلا صور المنتج — [`PRODUCT_VARIANT_IMAGES_WEB_DASHBOARD.md`](./PRODUCT_VARIANT_IMAGES_WEB_DASHBOARD.md)
 
 **اليوم (سابقاً):** أيقونات المنتج على صفحة `/product/{id}` من `icons[]` — الموقع يعرض · الداشبورد تربط `icon_ids` — [`PRODUCT_ICONS_WEB_DASHBOARD.md`](./PRODUCT_ICONS_WEB_DASHBOARD.md)
 
@@ -141,7 +149,7 @@ GET /api/user/categories/{id}/attributes
 | Param | مثال |
 |-------|------|
 | `category_id` | شجرة كاملة |
-| `brand_id` / `shop_id` | ماركة / فرع |
+| `brand_id` / `shop_id` | ماركة / متجر |
 | `price_min` / `price_max` | بعملة العرض |
 | `search` | اسم + وصف — **ليس** `name` |
 | `country` | نص البلد — **ليس** `country_id` |

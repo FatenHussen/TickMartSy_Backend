@@ -93,8 +93,7 @@ class OneResource extends JsonResource
                 'name' => $this->vendor->name,
             ] : null,
 
-            // platform = للموقع (بدون اختيار متجر في الواجهة)
-            // shop = مربوط بمتجر/فرع يختاره الأدمن
+            // platform = للموقع · shop = مربوط بمتجر البائع (متجر واحد، بدون فروع)
             'sale_channel' => $this->sale_channel ?? 'platform',
 
             'approval_status' => $this->approval_status?->value,
@@ -124,13 +123,22 @@ class OneResource extends JsonResource
                     'quantity' => $variant->quantity,
                     'is_trend' => (bool) $variant->is_trend,
                     'is_active' => (bool) $variant->is_active,
-                    'attributes' => collect($variant->attributesValues)->map(function ($value) {
+                    'attributes_values_ids' => array_values(array_map(
+                        'intval',
+                        $variant->attributes_values_ids ?? []
+                    )),
+                    'attributes' => collect($variant->getAttributesWithDetails())->map(function ($attr) {
                         return [
-                            'attribute' => $value->categoryAttribute?->name,
-                            'value' => $value->name,
-                            'type' => $value->categoryAttribute?->type,
+                            'id' => $attr['id'],
+                            'attribute' => $attr['category_attribute']['name'] ?? null,
+                            'value' => $attr['name'],
+                            'display_name' => $attr['display_name'],
+                            'type' => $attr['category_attribute']['type'] ?? null,
+                            'hex' => $attr['hex'] ?? null,
+                            'category_attribute_id' => $attr['category_attribute']['id'] ?? null,
+                            'category_attribute' => $attr['category_attribute'] ?? null,
                         ];
-                    }),
+                    })->values(),
 
                     'shops' => ($variant->shopVariants ?? collect())->map(function ($sv) {
                         return [

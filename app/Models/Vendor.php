@@ -50,6 +50,11 @@ class Vendor extends Model
         return $this->hasMany(Shop::class);
     }
 
+    public function shop()
+    {
+        return $this->hasOne(Shop::class)->oldestOfMany();
+    }
+
     public function drivers()
     {
         return $this->belongsToMany(Driver::class, 'driver_vendor');

@@ -44,7 +44,7 @@ class ShopVariantResource extends JsonResource
 
         return [
             'id' => $shopVariant?->id,
-            'variant_id' => $shopVariant?->id ?? $this->id,
+            'variant_id' => $this->id,
             'sku' => $this->sku,
             'model' => $this->model,
             'barcode' => $this->barcode,

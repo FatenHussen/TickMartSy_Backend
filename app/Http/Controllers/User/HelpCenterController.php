@@ -3,17 +3,10 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Contactus\StoreRequest;
-use App\Http\Resources\Branch\AllResource as BranchAllResource;
 use App\Http\Resources\Faq\AllResource;
-use App\Http\Resources\ServiceCenter\AllResource as ServiceCenterAllResource;
-use App\Models\Branch;
-use App\Models\Contact;
 use App\Models\Faq;
 use App\Models\Page;
-use App\Models\ServiceCenter;
 use App\Models\Setting;
-use App\Models\Tire;
 use Illuminate\Http\Request;
 
 class HelpCenterController extends Controller

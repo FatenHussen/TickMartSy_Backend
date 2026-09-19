@@ -77,7 +77,7 @@ class RecipeSeeder extends Seeder
          * ======================= */
 
         $shop = Shop::create([
-            'name' => ['ar' => 'فرع المزة', 'en' => 'Al-Mazza Branch'],
+            'name' => ['ar' => 'متجر المزة', 'en' => 'Al-Mazza Shop'],
             'mobile' => '0998888888',
             'email' => 'mazza@kabsa.com',
             'area_id' => 1,

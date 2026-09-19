@@ -22,7 +22,7 @@ class AdminProductStoreVendorTest extends TestCase
     public function test_store_request_accepts_platform_product_without_vendor_id(): void
     {
         $this->seedLanguages();
-        $vendor = $this->createVendor();
+        $this->createVendor();
         $category = $this->createCategory();
 
         $request = $this->validateStore([
@@ -31,14 +31,14 @@ class AdminProductStoreVendorTest extends TestCase
             'name' => ['en' => 'Site product', 'ar' => 'منتج الموقع'],
         ]);
 
-        $this->assertSame($vendor->id, (int) $request->input('vendor_id'));
+        $this->assertSame(ProductService::resolvePlatformVendorId(), (int) $request->input('vendor_id'));
     }
 
     public function test_store_request_ignores_missing_vendor_one_and_uses_existing_vendor(): void
     {
         $this->seedLanguages();
-        $first = $this->createVendor();
-        $first->forceDelete();
+        Vendor::query()->whereKey(ProductService::PLATFORM_VENDOR_ID)->forceDelete();
+        Shop::query()->where('vendor_id', ProductService::PLATFORM_VENDOR_ID)->forceDelete();
         $vendor = $this->createVendor();
         $this->assertNotSame(ProductService::PLATFORM_VENDOR_ID, $vendor->id);
 
@@ -61,8 +61,8 @@ class AdminProductStoreVendorTest extends TestCase
         $vendor = $this->createVendor();
         $category = $this->createCategory();
         $shop = Shop::create([
-            'name' => ['en' => 'Branch', 'ar' => 'فرع'],
-            'email' => 'branch-vendor@example.com',
+            'name' => ['en' => 'Store', 'ar' => 'متجر'],
+            'email' => 'store-vendor@example.com',
             'vendor_id' => $vendor->id,
             'is_active' => true,
             'is_default' => true,
@@ -101,8 +101,8 @@ class AdminProductStoreVendorTest extends TestCase
         $vendor = $this->createVendor();
         $category = $this->createCategory();
         $shop = Shop::create([
-            'name' => ['en' => 'Branch', 'ar' => 'فرع'],
-            'email' => 'branch@example.com',
+            'name' => ['en' => 'Store', 'ar' => 'متجر'],
+            'email' => 'store@example.com',
             'vendor_id' => $vendor->id,
             'is_active' => true,
             'is_default' => true,
@@ -126,8 +126,8 @@ class AdminProductStoreVendorTest extends TestCase
 
     public function test_product_service_creates_platform_product_when_vendor_one_is_missing(): void
     {
-        $first = $this->createVendor();
-        $first->forceDelete();
+        Vendor::query()->whereKey(ProductService::PLATFORM_VENDOR_ID)->forceDelete();
+        Shop::query()->where('vendor_id', ProductService::PLATFORM_VENDOR_ID)->forceDelete();
         $vendor = $this->createVendor();
         $category = $this->createCategory();
 
@@ -149,7 +149,7 @@ class AdminProductStoreVendorTest extends TestCase
 
     public function test_product_service_creates_without_description_and_skips_empty_category_details(): void
     {
-        $vendor = $this->createVendor();
+        $this->createVendor();
         $category = $this->createCategory();
 
         $resource = app(ProductService::class)->create([
@@ -171,7 +171,7 @@ class AdminProductStoreVendorTest extends TestCase
         ]);
 
         $product = Product::with('categoryDetails', 'variants')->findOrFail($resource->id);
-        $this->assertSame($vendor->id, (int) $product->vendor_id);
+        $this->assertSame(ProductService::resolvePlatformVendorId(), (int) $product->vendor_id);
         $this->assertSame(0, $product->categoryDetails->count());
         $this->assertNotNull($product->variants->first());
         $this->assertNull($product->time_prepare);

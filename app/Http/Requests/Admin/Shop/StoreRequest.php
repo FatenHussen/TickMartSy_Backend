@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin\Shop;
 
 use App\Http\Requests\Concerns\ValidatesShopAreaCityScope;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
 class StoreRequest extends FormRequest
@@ -56,7 +57,11 @@ class StoreRequest extends FormRequest
             'is_recommended'       => 'sometimes|boolean',
 
             'area_id'           => 'nullable|exists:areas,id',
-            'vendor_id' => 'required|exists:vendors,id',
+            'vendor_id' => [
+                'required',
+                'exists:vendors,id',
+                Rule::unique('shops', 'vendor_id')->whereNull('deleted_at'),
+            ],
 
             'service_ids'          => 'nullable|array',
             'service_ids.*.id'  => 'required|integer|exists:services,id',
@@ -81,6 +86,13 @@ class StoreRequest extends FormRequest
             'owner_name' => 'اسم المالك',
             'owner_phone' => 'هاتف المالك',
             'address.ar' => 'العنوان (عربي)',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'vendor_id.unique' => __('custom.shops.vendor_already_has_shop'),
         ];
     }
 }

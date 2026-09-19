@@ -18,7 +18,6 @@ use App\Observers\VendorWithdrawRequestObserver;
 use App\Policies\AdminPolicy;
 use App\Policies\DriverPolicy;
 use App\Policies\ShopPolicy;
-use App\Filament\Widgets\ShopSwitcher;
 use BezhanSalleh\LanguageSwitch\LanguageSwitch;
 // use BezhanSalleh\LanguageSwitch\LanguageSwitch;
 use Filament\Facades\Filament;

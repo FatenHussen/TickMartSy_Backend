@@ -5,11 +5,9 @@ namespace App\Services\Admin;
 use App\Authorization\CityAccess;
 use App\Models\Admin;
 use App\Models\Shop;
-use App\Models\Store;
-use App\Services\Base\MediaService;
 use App\Services\BaseService;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use App\Http\Resources\Shop\AllResource;
 use App\Http\Resources\Shop\AdminOneResource;
 
@@ -47,6 +45,18 @@ class ShopService extends BaseService
         $this->singleImages = [
             'logo'  => 'logo',
         ];
+    }
+
+    public function create($data)
+    {
+        $vendorId = $data['vendor_id'] ?? null;
+        if ($vendorId && Shop::query()->where('vendor_id', $vendorId)->exists()) {
+            throw ValidationException::withMessages([
+                'vendor_id' => [__('custom.shops.vendor_already_has_shop')],
+            ]);
+        }
+
+        return parent::create($data);
     }
 
     public function queryBuilder($query, $filters = [], $config = [])

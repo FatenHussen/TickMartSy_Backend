@@ -19,8 +19,8 @@ class FaqSeeder extends Seeder
                     'ar' => 'كيف يمكنني تقديم طلب؟',
                 ],
                 'answer' => [
-                    'en' => 'You can place an order through our website or by contacting our branches directly.',
-                    'ar' => 'يمكنك تقديم الطلب عبر موقعنا الإلكتروني أو بالتواصل مع فروعنا مباشرة.',
+                    'en' => 'You can place an order through our website or by contacting the store directly.',
+                    'ar' => 'يمكنك تقديم الطلب عبر موقعنا الإلكتروني أو بالتواصل مع المتجر مباشرة.',
                 ],
             ],
             [
@@ -39,8 +39,8 @@ class FaqSeeder extends Seeder
                     'ar' => 'هل تقدمون خدمات التوصيل؟',
                 ],
                 'answer' => [
-                    'en' => 'Yes, we provide delivery to all our branch locations and some surrounding areas.',
-                    'ar' => 'نعم، نقدم التوصيل لجميع فروعنا وبعض المناطق المحيطة.',
+                    'en' => 'Yes, we provide delivery from our store and to some surrounding areas.',
+                    'ar' => 'نعم، نقدم التوصيل من متجرنا وبعض المناطق المحيطة.',
                 ],
             ],
             [

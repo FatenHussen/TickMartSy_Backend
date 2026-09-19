@@ -111,6 +111,8 @@ class ProductService extends BaseService
         'seo_keywords',
     ];
 
+    private ?int $forcedShopId = null;
+
     protected $sortableFields = [
         'id',
         'product_number',
@@ -172,6 +174,7 @@ class ProductService extends BaseService
                 'badges',
                 'icon_ids',
                 'existing_media_ids',
+                'shop_id',
             ])->all();
 
             $object = $this->model::create($createData);
@@ -215,12 +218,14 @@ class ProductService extends BaseService
 
         $this->handleSingleImages($object, $data);
 
-        if (array_key_exists('sale_channel', $data) || array_key_exists('shop_variants', $data)) {
+        if (array_key_exists('sale_channel', $data) || array_key_exists('shop_variants', $data) || array_key_exists('shop_id', $data)) {
             if (!array_key_exists('sale_channel', $data)) {
                 $data['sale_channel'] = $object->sale_channel ?? 'platform';
             }
             $this->applySaleChannel($data);
         }
+
+        unset($data['shop_id']);
 
         $object->update($data);
         $this->handleRelations($object, $data);
@@ -236,8 +241,8 @@ class ProductService extends BaseService
     }
 
     /**
-     * platform → site product (vendor Tikmool + default platform shop, no shop picker).
-     * shop → must send shop_variants; vendor taken from the first selected shop.
+     * platform → site product (Tikmool vendor + that vendor's store).
+     * shop → one store per vendor; vendor taken from shop_id / shop_variants / vendor_id.
      */
     private function applySaleChannel(array &$data): void
     {
@@ -252,25 +257,43 @@ class ProductService extends BaseService
             if ($platformVendorId) {
                 $data['vendor_id'] = $platformVendorId;
             }
-            // Clear any client-sent shops; ensureDefaultShopLinks attaches platform default.
             $data['shop_variants'] = [];
 
             return;
         }
 
-        if (!empty($data['shop_variants']) && is_array($data['shop_variants'])) {
-            $firstShopId = collect($data['shop_variants'])
-                ->pluck('shop_id')
-                ->filter()
-                ->first();
+        $shop = $this->resolveProductShop($data);
+        if ($shop) {
+            $data['vendor_id'] = $shop->vendor_id;
+            $this->forcedShopId = $shop->id;
+        }
+    }
 
+    private function resolveProductShop(array $data): ?Shop
+    {
+        $shopId = $data['shop_id'] ?? null;
+        if ($shopId && is_numeric($shopId)) {
+            $shop = Shop::query()->find((int) $shopId);
+            if ($shop) {
+                return $shop;
+            }
+        }
+
+        if (!empty($data['shop_variants']) && is_array($data['shop_variants'])) {
+            $firstShopId = collect($data['shop_variants'])->pluck('shop_id')->filter()->first();
             if ($firstShopId) {
-                $vendorId = Shop::query()->whereKey($firstShopId)->value('vendor_id');
-                if ($vendorId) {
-                    $data['vendor_id'] = $vendorId;
+                $shop = Shop::query()->find((int) $firstShopId);
+                if ($shop) {
+                    return $shop;
                 }
             }
         }
+
+        $vendorId = isset($data['vendor_id']) && is_numeric($data['vendor_id'])
+            ? (int) $data['vendor_id']
+            : null;
+
+        return Shop::forVendor($vendorId);
     }
 
     private function ensureDefaultVariant(Product $product): void
@@ -291,16 +314,15 @@ class ProductService extends BaseService
     }
 
     /**
-     * Platform products without a shop link get the Tikmool default branch.
-     * Shop-channel products only use explicitly sent shop_variants.
+     * Every variant must be sellable at the vendor's single store.
      */
+    public function linkProductToVendorShop(Product $product): void
+    {
+        $this->ensureDefaultShopLinks($product);
+    }
+
     private function ensureDefaultShopLinks(Product $product): void
     {
-        $channel = $product->sale_channel ?? 'platform';
-        if ($channel === 'shop') {
-            return;
-        }
-
         $product->unsetRelation('variants');
         $product->load('variants.shopVariants');
 
@@ -309,22 +331,38 @@ class ProductService extends BaseService
         );
 
         if ($unlinkedVariants->isEmpty()) {
+            $this->forcedShopId = null;
+
             return;
         }
 
-        $defaultShop = $this->resolvePlatformDefaultShop();
-        if (!$defaultShop) {
-            Log::warning('Platform product saved without shop links and no platform default shop found', [
-                'product_id' => $product->id,
-                'vendor_id' => self::resolvePlatformVendorId(),
-            ]);
+        $shopId = $this->forcedShopId
+            ?? $product->variants
+                ->flatMap(fn ($variant) => $variant->shopVariants->pluck('shop_id'))
+                ->filter()
+                ->first();
+
+        if (!$shopId) {
+            $shop = Shop::forVendor($product->vendor_id) ?? $this->resolvePlatformDefaultShop();
+            $shopId = $shop?->id;
+        }
+
+        $this->forcedShopId = null;
+
+        if (!$shopId) {
+            if (($product->sale_channel ?? 'platform') !== 'shop') {
+                Log::warning('Product saved without shop links and no vendor store found', [
+                    'product_id' => $product->id,
+                    'vendor_id' => $product->vendor_id,
+                ]);
+            }
 
             return;
         }
 
         foreach ($unlinkedVariants as $variant) {
             $variant->shopVariants()->create([
-                'shop_id' => $defaultShop->id,
+                'shop_id' => $shopId,
                 'cost_price' => null,
             ]);
         }
@@ -332,28 +370,7 @@ class ProductService extends BaseService
 
     private function resolvePlatformDefaultShop(): ?Shop
     {
-        $vendorId = self::resolvePlatformVendorId();
-        if (!$vendorId) {
-            return null;
-        }
-
-        $defaultShop = Shop::query()
-            ->where('vendor_id', $vendorId)
-            ->where('is_default', true)
-            ->where('is_active', true)
-            ->orderBy('id')
-            ->first();
-
-        if ($defaultShop) {
-            return $defaultShop;
-        }
-
-        return Shop::query()
-            ->where('vendor_id', $vendorId)
-            ->where('is_active', true)
-            ->orderByDesc('is_default')
-            ->orderBy('id')
-            ->first();
+        return Shop::forVendor(self::resolvePlatformVendorId());
     }
 
     public function queryBuilder($query, $filters = [], $config = [])
@@ -629,6 +646,7 @@ class ProductService extends BaseService
                     fn ($file) => $file instanceof \Illuminate\Http\UploadedFile
                 );
                 $variantId = $variantItem['id'] ?? null;
+                $attributeValueIds = $this->normalizeAttributeValueIds($variantItem);
                 unset(
                     $variantItem['existing_images_ids'],
                     $variantItem['images'],
@@ -659,9 +677,27 @@ class ProductService extends BaseService
                     ? $product->variants()->whereKey($variantId)->first()
                     : null;
 
+                if ($attributeValueIds !== null) {
+                    $payload['attributes_values_ids'] = $variant
+                        ? $this->mergeIncomingAttributeValueIds(
+                            $variant->attributes_values_ids ?? [],
+                            $attributeValueIds
+                        )
+                        : $attributeValueIds;
+                }
+
                 if ($variant) {
                     $variant->update($payload);
                 } else {
+                    $payload['is_active'] = array_key_exists('is_active', $payload)
+                        ? (bool) $payload['is_active']
+                        : true;
+                    if (!array_key_exists('quantity', $payload) || $payload['quantity'] === null) {
+                        $payload['quantity'] = $product->quantity ?? 0;
+                    }
+                    if (!array_key_exists('attributes_values_ids', $payload)) {
+                        $payload['attributes_values_ids'] = [];
+                    }
                     $variant = $product->variants()->create($payload);
                 }
 
@@ -708,6 +744,21 @@ class ProductService extends BaseService
             return;
         }
 
+        $canonicalShopId = collect($shopVariantsData)->pluck('shop_id')->filter()->first()
+            ?? Shop::forVendor($product->vendor_id)?->id;
+
+        if ($canonicalShopId) {
+            $shopVariantsData = collect($shopVariantsData)->map(function ($item) use ($canonicalShopId) {
+                if (!is_array($item)) {
+                    return $item;
+                }
+
+                $item['shop_id'] = $canonicalShopId;
+
+                return $item;
+            })->all();
+        }
+
         foreach ($variantIndexMap as $variant) {
             $variant->shopVariants()->delete();
         }
@@ -731,6 +782,89 @@ class ProductService extends BaseService
                 'cost_price' => $svItem['cost_price'] ?? null,
             ]);
         }
+    }
+
+    /**
+     * @param  array<string, mixed>  $variantItem
+     * @return list<int>|null
+     */
+    private function normalizeAttributeValueIds(array $variantItem): ?array
+    {
+        if (array_key_exists('attributes_values_ids', $variantItem)) {
+            return collect((array) $variantItem['attributes_values_ids'])
+                ->flatMap(function ($value) {
+                    if (is_array($value)) {
+                        return [$value['id'] ?? $value['attribute_value_id'] ?? null];
+                    }
+
+                    return [$value];
+                })
+                ->filter(fn ($id) => is_numeric($id))
+                ->map(fn ($id) => (int) $id)
+                ->unique()
+                ->values()
+                ->all();
+        }
+
+        if (!array_key_exists('attributes', $variantItem) || !is_array($variantItem['attributes'])) {
+            return null;
+        }
+
+        $ids = collect($variantItem['attributes'])
+            ->map(function ($attribute) {
+                if (is_numeric($attribute)) {
+                    return (int) $attribute;
+                }
+
+                if (!is_array($attribute)) {
+                    return null;
+                }
+
+                return $attribute['id'] ?? $attribute['attribute_value_id'] ?? null;
+            })
+            ->filter(fn ($id) => is_numeric($id))
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values()
+            ->all();
+
+        return $ids === [] ? null : $ids;
+    }
+
+    /**
+     * Dashboard often sends only the color dropdown. Keep size/other values
+     * already stored on the variant unless the payload replaces that attribute.
+     *
+     * @param  list<int|string>  $existing
+     * @param  list<int>  $incoming
+     * @return list<int>
+     */
+    private function mergeIncomingAttributeValueIds(array $existing, array $incoming): array
+    {
+        $existing = collect($existing)->map(fn ($id) => (int) $id)->filter()->unique()->values();
+        $incoming = collect($incoming)->map(fn ($id) => (int) $id)->filter()->unique()->values();
+
+        if ($incoming->isEmpty()) {
+            return $existing->all();
+        }
+
+        $values = AttributeValue::query()
+            ->whereIn('id', $existing->merge($incoming)->unique()->all())
+            ->get()
+            ->keyBy('id');
+
+        $coveredAttributeIds = $incoming
+            ->map(fn ($id) => $values->get($id)?->category_attribute_id)
+            ->filter()
+            ->unique();
+
+        $kept = $existing->filter(function ($id) use ($values, $coveredAttributeIds) {
+            $attributeId = $values->get($id)?->category_attribute_id;
+
+            return $attributeId !== null && !$coveredAttributeIds->contains($attributeId);
+        });
+
+        return $incoming->merge($kept)->unique()->values()->all();
     }
 
     /**

@@ -2,10 +2,18 @@
 
 > **أرسلوا هذا الملف لفريق Flutter.**  
 > Base: `/api/user` + `Accept-Language: ar|en`  
-> **آخر تحديث | Last Updated:** 2026-09-16  
+> **آخر تحديث | Last Updated:** 2026-09-20  
 > الملف الشامل السابق يبقى: [`flutter.md`](./flutter.md)
 
-**اليوم:** صور المتغيّر `has_variant_images` + `images[].path` وإلا صور المنتج — [`PRODUCT_VARIANT_IMAGES_WEB_DASHBOARD.md`](./PRODUCT_VARIANT_IMAGES_WEB_DASHBOARD.md) · أيقونات `icons[].icon` أو `image` — [`PRODUCT_ICONS_WEB_DASHBOARD.md`](./PRODUCT_ICONS_WEB_DASHBOARD.md) · OTP مؤقت **`00000`** — ما في SMS. بعد التسجيل أدخلوا الأصفار على شاشة التحقق.
+**اليوم:** لا اسم متجر / Branch على شاشة المنتج — `available_shops` دائماً `[]` — [`WEB_FLUTTER_HIDE_SHOP_NAME.md`](./WEB_FLUTTER_HIDE_SHOP_NAME.md)
+
+**اليوم (سابقاً):** قيم الصفات بالـ ID — فلتر و picker من `options[].id`، الاسم يتبدّل والمتغيّر يبقى — [`FLUTTER_CATEGORY_ATTRIBUTE_VALUE_IDS.md`](./FLUTTER_CATEGORY_ATTRIBUTE_VALUE_IDS.md)
+
+**اليوم (سابقاً):** فروع المتاجر ملغاة — `shop_id` = متجر البائع الواحد — [`DASHBOARD_NO_SHOP_BRANCHES.md`](./DASHBOARD_NO_SHOP_BRANCHES.md)
+
+**اليوم (سابقاً):** متغيّران على شاشة المنتج — `findVariant` مو `shopVariants.first`، المقاس يتبدل مع اللون — [`FLUTTER_PRODUCT_ALL_VARIANTS.md`](./FLUTTER_PRODUCT_ALL_VARIANTS.md)
+
+**اليوم (سابقاً):** صور المتغيّر `has_variant_images` + `images[].path` وإلا صور المنتج — [`PRODUCT_VARIANT_IMAGES_WEB_DASHBOARD.md`](./PRODUCT_VARIANT_IMAGES_WEB_DASHBOARD.md) · أيقونات `icons[].icon` أو `image` — [`PRODUCT_ICONS_WEB_DASHBOARD.md`](./PRODUCT_ICONS_WEB_DASHBOARD.md) · OTP مؤقت **`00000`** — ما في SMS. بعد التسجيل أدخلوا الأصفار على شاشة التحقق.
 
 **اليوم (صباحاً):** سعر $ · ل.س · نوع الخصم (لا يوجد خصم) · قيمة الخصم · السعر بعد الخصم · الكمية المتوفرة · الباركود · SKU — [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md)
 
@@ -166,7 +174,7 @@ Accept-Language: ar
 | `icons` / `top_badges` / `bottom_badges` | كما هي |
 | `bought_with` | منتجات مقترنة |
 
-ربط المنصة بفرع افتراضي يتم من الأدمن — **لا endpoint جديد**. خلّوا حماية `null`.
+ربط المنصة بمتجر البائع يتم من الأدمن — **لا endpoint جديد**. خلّوا حماية `null`.
 
 ---
 

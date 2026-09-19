@@ -161,6 +161,8 @@ class EditProduct extends EditRecord
 
         $this->syncBadges($product, $topBadgeId, $bottomBadgeIds);
 
+        app(\App\Services\Admin\ProductService::class)->linkProductToVendorShop($product);
+
         return $product;
     }
 

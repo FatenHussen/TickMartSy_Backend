@@ -49,6 +49,23 @@ class Shop extends Model implements Sectionable
     {
         return $this->belongsTo(Vendor::class);
     }
+
+    /**
+     * One vendor = one store. If leftover extra rows exist, use the first active shop.
+     */
+    public static function forVendor(?int $vendorId): ?self
+    {
+        if (!$vendorId) {
+            return null;
+        }
+
+        return static::query()
+            ->where('vendor_id', $vendorId)
+            ->orderByDesc('is_active')
+            ->orderByDesc('is_default')
+            ->orderBy('id')
+            ->first();
+    }
     public function area()
     {
         return $this->belongsTo(Area::class);

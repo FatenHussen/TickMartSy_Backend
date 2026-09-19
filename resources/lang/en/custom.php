@@ -162,8 +162,9 @@ return [
         'vendor' => 'Vendor',
         'services' => 'Services',
         'cover_images' => 'Cover Images',
-        'is_default' => 'Default Shop',
-        'is_default_help' => 'Mark this as the default shop for the vendor',
+        'is_default' => 'Shop',
+        'is_default_help' => 'Each vendor has only one shop',
+        'vendor_already_has_shop' => 'Each vendor can have only one shop.',
         'hours' => 'Hours',
         'add_day' => 'Add Day',
         'working_hours_help' => 'Format: {"monday": {"open": "09:00", "close": "18:00", "closed": false}}',
@@ -504,8 +505,8 @@ return [
     'dashboard' => [
         'title' => 'Dashboard',
         'welcome' => 'Welcome',
-        'branch' => 'Branch',
-        'select_branch' => 'Select Branch',
+        'branch' => 'Shop',
+        'select_branch' => 'Select Shop',
     ],
 
     // Navigation

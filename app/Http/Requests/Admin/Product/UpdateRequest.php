@@ -11,6 +11,7 @@ class UpdateRequest extends FormRequest
 {
     use DropsEmptyProductRelationRows;
     use NormalizesEmptyIntegerIds;
+    use NormalizesVariantAttributeIds;
     use ResolvesProductVendorId;
 
     protected array $locales = [];
@@ -87,9 +88,18 @@ class UpdateRequest extends FormRequest
         $this->normalizeRestrictedFieldsForRestaurantCategory();
 
         $this->normalizeBlankUniqueStrings();
+        $this->normalizeVariantAttributeIds();
         $this->normalizeEmptyIntegerIds();
         $this->dropEmptyProductRelationRows();
         $this->resolveProductVendorId(defaultChannelToPlatform: false);
+
+        if (
+            $this->input('sale_channel') === 'shop'
+            && !$this->filled('vendor_id')
+            && $existingProduct?->vendor_id
+        ) {
+            $this->merge(['vendor_id' => $existingProduct->vendor_id]);
+        }
     }
 
     private function normalizeBlankUniqueStrings(): void
@@ -235,6 +245,7 @@ class UpdateRequest extends FormRequest
             'thumbnail'             => 'nullable|image',
             'sale_channel'          => 'nullable|in:platform,shop',
             'vendor_id'             => $this->vendorIdRules(),
+            'shop_id'               => 'nullable|integer|exists:shops,id',
 
             // Variants
             // 'variants'                      => 'nullable|array',
@@ -281,6 +292,8 @@ class UpdateRequest extends FormRequest
             'variants.*.is_active' => 'nullable|boolean',
             'variants.*.attributes_values_ids' => 'nullable|array',
             'variants.*.attributes_values_ids.*' => 'required|integer|exists:attribute_values,id',
+            'variants.*.attributes' => 'nullable|array',
+            'variants.*.attributes.*.id' => 'nullable|integer|exists:attribute_values,id',
             'variants.*.existing_images_ids' => 'nullable|array',
             'variants.*.existing_images_ids.*' => 'integer',
             'variants.*.images' => 'nullable|array',
@@ -331,11 +344,10 @@ class UpdateRequest extends FormRequest
                 return;
             }
 
-            $shopVariants = $this->input('shop_variants');
-            if (!is_array($shopVariants) || count($shopVariants) < 1) {
+            if (!$this->resolvedShopForProductRequest()) {
                 $validator->errors()->add(
-                    'shop_variants',
-                    'عند اختيار «ربط بمتجر» يجب اختيار فرع واحد على الأقل.'
+                    'shop_id',
+                    'عند اختيار «ربط بمتجر» يجب اختيار متجر، أو أن يكون للبائع متجر واحد.'
                 );
             }
         });

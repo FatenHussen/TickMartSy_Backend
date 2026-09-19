@@ -75,12 +75,8 @@ class OneResource extends JsonResource
 
             'images' => $this->imagesPayload($this->media, $this->thumbnail_url),
 
-            'available_shops' => $this->getAvailableShops()->map(function ($shop) {
-                return [
-                    'id' => $shop->id,
-                    'name' => $shop->name,
-                ];
-            }),
+            // Shop/branch picker is cancelled — never send names for the storefront.
+            'available_shops' => [],
             'is_favorite' => (bool) ($this->is_favorite ?? false),
 
 
@@ -102,6 +98,7 @@ class OneResource extends JsonResource
     private function shopVariantsPayload($request)
     {
         $variants = ($this->variants ?? collect())
+            ->filter(fn ($variant) => $variant->is_active !== false)
             ->map(fn ($variant) => (new ShopVariantResource($variant))->resolve($request))
             ->filter()
             ->values();

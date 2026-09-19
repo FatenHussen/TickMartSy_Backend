@@ -77,6 +77,11 @@ class ShopResource extends Resource
         return parent::getEloquentQuery()->whereIn('id', $shopIds);
     }
 
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
     public static function getPages(): array
     {
         return [

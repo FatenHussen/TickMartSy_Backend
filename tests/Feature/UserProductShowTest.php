@@ -79,15 +79,10 @@ class UserProductShowTest extends TestCase
 
     public function test_admin_create_platform_sale_channel_links_platform_default_shop(): void
     {
-        $platformVendor = $this->createVendor();
+        $platformVendor = Vendor::query()->findOrFail(ProductService::resolvePlatformVendorId());
         $category = $this->createCategory();
-        $defaultShop = Shop::create([
-            'name' => ['en' => 'Platform default', 'ar' => 'فرع المنصة'],
-            'email' => 'platform-default@example.com',
-            'vendor_id' => $platformVendor->id,
-            'is_active' => true,
-            'is_default' => true,
-        ]);
+        $defaultShop = Shop::forVendor($platformVendor->id);
+        $this->assertNotNull($defaultShop);
 
         $resource = app(ProductService::class)->create([
             'category_id' => $category->id,
@@ -113,6 +108,7 @@ class UserProductShowTest extends TestCase
         $response->assertOk();
         $this->assertSame($defaultShop->id, $response->json('data.shop_variants.0.shop_id'));
         $this->assertNotNull($response->json('data.shop_variants.0.id'));
+        $this->assertSame([], $response->json('data.available_shops'));
     }
 
     public function test_admin_create_shop_sale_channel_requires_explicit_shop_link(): void
@@ -120,8 +116,8 @@ class UserProductShowTest extends TestCase
         $vendor = $this->createVendor();
         $category = $this->createCategory();
         $shop = Shop::create([
-            'name' => ['en' => 'Branch', 'ar' => 'فرع'],
-            'email' => 'branch@example.com',
+            'name' => ['en' => 'Store', 'ar' => 'متجر'],
+            'email' => 'store@example.com',
             'vendor_id' => $vendor->id,
             'is_active' => true,
             'is_default' => true,

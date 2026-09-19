@@ -6,7 +6,13 @@
 > **آخر نسخة موحّدة (موصى بها للإرسال):** [`FLUTTER_LATEST.md`](./FLUTTER_LATEST.md)  
 > **سعر · خصم · كمية · باركود · SKU:** [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md)  
 > **تسجيل:** [`REGISTER_FLOW.md`](./REGISTER_FLOW.md) · [`FLUTTER_REGISTER_FLOW.md`](./FLUTTER_REGISTER_FLOW.md)  
-> **آخر تحديث | Last Updated:** 2026-09-08
+> **آخر تحديث | Last Updated:** 2026-09-20
+
+**اليوم:** لا اسم متجر / Branch على شاشة المنتج — [`WEB_FLUTTER_HIDE_SHOP_NAME.md`](./WEB_FLUTTER_HIDE_SHOP_NAME.md)
+
+**اليوم (سابقاً):** متغيّران على شاشة المنتج — مو `shopVariants.first` فقط — [`FLUTTER_PRODUCT_ALL_VARIANTS.md`](./FLUTTER_PRODUCT_ALL_VARIANTS.md)
+
+**اليوم (سابقاً):** قيم الصفات مربوطة بالـ ID — `attribute_values=31` والاسم من الـ GET — [`FLUTTER_CATEGORY_ATTRIBUTE_VALUE_IDS.md`](./FLUTTER_CATEGORY_ATTRIBUTE_VALUE_IDS.md)
 
 ---
 
@@ -19,13 +25,14 @@
 5. [منتجات شجرة الفئة (Category Subtree)](#5-منتجات-شجرة-الفئة)
 6. [وراثة صفات الفئة](#6-وراثة-صفات-الفئة)
 7. [صفحة المنتج (shop_variants + country)](#7-صفحة-المنتج)
-8. [ربط تلقائي بفرع المنصة (آخر تحديث)](#8-ربط-تلقائي-بفرع-المنصة)
+8. [ربط تلقائي بمتجر المنصة (آخر تحديث)](#8-ربط-تلقائي-بمتجر-المنصة)
 9. [التسجيل بدون إيميل](#9-التسجيل-بدون-إيميل)
 10. [فلاتر المنتجات](#10-فلاتر-المنتجات)
 11. [عرض الأسعار دولار + ليرة](#11-عرض-الأسعار)
 12. [قسم الطلب السريع (حسب الصفحة) — **آخر تحديث**](#12-قسم-الطلب-السريع-حسب-الصفحة--آخر-تحديث)
 13. [متغيّرات المنتج — عرض واختيار](#13-متغيّرات-المنتج--عرض-واختيار)
 14. [الضمان + الكمية (5 أيلول 2026)](#14-الضمان--الكمية-5-أيلول-2026)
+15. [قيم الصفات بالـ ID](#15-قيم-الصفات-بالـ-id)
 
 ---
 
@@ -363,8 +370,8 @@ GET /api/user/categories/{categoryId}/attributes
 
 - اجلب الصفات عند فتح **أي** فئة (حتى الجذر)
 - **لا** تعيد الطلب عند drill-down بنفس الشجرة — استخدم `root_category_id` ككاش
-- فلترة المنتجات: `GET /api/user/products?category_id={id}&attribute_values=31,40`
-- صفحة المنتج: بعدها `attributes_map` / `shop_variants` (بدون تغيير)
+- فلترة المنتجات: `GET /api/user/products?category_id={id}&attribute_values=31,40` — **IDs** مو أسماء
+- صفحة المنتج: بعدها `attributes_map` / `shop_variants` — الاسم يتحدّث إذا الأدمن غيّر القيمة؛ الاختيار يبقى بـ `shop_variants[].id`
 
 ### Checklist
 
@@ -392,6 +399,8 @@ GET /api/user/products/{id}
 | `shop_variants[].id` | موجود دائمًا | ممكن **`null`** |
 
 نفس تغيير `country` على `GET /api/user/products` (قائمة).
+
+**لا تعرضوا اسم المتجر.** `available_shops` دائماً `[]`. احذفوا دروب داون Branch / «فرعة المنصة».
 
 ### Models
 
@@ -434,23 +443,22 @@ product.country // "تركيا" أو null — مو country.name.ar
 
 ---
 
-## 8) ربط تلقائي بفرع المنصة (آخر تحديث — مهم)
+## 8) ربط تلقائي بمتجر المنصة (آخر تحديث — مهم)
 
-عند **إنشاء / تحديث منتج من الأدمن** بدون فرع (أو `sale_channel=platform`):
+عند **إنشاء / تحديث منتج من الأدمن** (`sale_channel=platform` أو متجر البائع):
 
 1. متغيّر افتراضي إن لزم
-2. ربط بفرع `shops.is_default = true`
-3. وإلا أول فرع نشط لنفس البائع
+2. ربط بمتجر البائع (متجر واحد — **ما في فروع**)
 
 **لا endpoints جديدة** — نفس `GET /api/user/products/{id}`.
 
 | قبل | بعد (بعد حفظ الأدمن) |
 |-----|----------------------|
-| `shop_id: null` | فرع المنصة/البائع الافتراضي |
+| `shop_id: null` | متجر المنصة/البائع |
 | `id: null` | `shop_product_variant_id` حقيقي |
 | السلة معطّلة | السلة تشتغل |
 
-**خلّوا حماية null** — منتجات قديمة أو بائع بلا فرع:
+**خلّوا حماية null** — منتجات قديمة أو بائع بلا متجر:
 
 ```dart
 bool canAddToCart(ShopVariant? v) =>
@@ -815,7 +823,7 @@ php artisan db:seed --class=NavMenuSeeder
 ### منتج + سلة + تسجيل + أسعار
 - [ ] `country` string
 - [ ] `shop_variants` nullable ids + حماية canAddToCart
-- [ ] بعد ربط الأدمن بالفرع الافتراضي → السلة تشتغل
+- [ ] بعد ربط الأدمن بالمتجر → السلة تشتغل
 - [ ] تسجيل: phone مطلوب، email اختياري
 - [ ] أسعار من `*_formatted` / `*_currencies`
 
@@ -886,4 +894,15 @@ bool canAddToCart(ShopVariant? v) =>
 
 ---
 
-**آخر تحديث | Last Updated:** 2026-09-05
+## 15) قيم الصفات بالـ ID
+
+> **20 أيلول 2026** — الدليل: [`FLUTTER_CATEGORY_ATTRIBUTE_VALUE_IDS.md`](./FLUTTER_CATEGORY_ATTRIBUTE_VALUE_IDS.md)
+
+إعادة تسمية قيمة من الداش (صغير → XS) **ما تحذف** المتغيّر. الـ ID يبقى. اعرضوا الاسم الجديد من آخر GET.
+
+- chips: `ValueKey(value.id)` وفلتر `attribute_values=31,40`
+- السلة / التفاصيل: `shop_variants[].id` — لا تخزّنوا «صغير» في `SharedPreferences`
+
+---
+
+**آخر تحديث | Last Updated:** 2026-09-20

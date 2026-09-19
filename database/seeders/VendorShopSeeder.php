@@ -85,14 +85,11 @@ class VendorShopSeeder extends Seeder
                 'is_active' => true,
             ]);
 
-            $shopsCount = fake()->numberBetween(2, 5);
-
-            for ($i = 1; $i <= $shopsCount; $i++) {
-                Shop::create([
+            Shop::create([
                     'vendor_id' => $vendor->id,
                     'name' => [
-                        'ar' => $vendorData['name']['ar'] . " - فرع {$i}",
-                        'en' => $vendorData['name']['en'] . " - Branch {$i}",
+                        'ar' => $vendorData['name']['ar'],
+                        'en' => $vendorData['name']['en'],
                     ],
                     'description' => [
                         'ar' => 'متجر متكامل يقدم جميع المنتجات الغذائية والاستهلاكية بأسعار منافسة وجودة عالية.',
@@ -133,7 +130,6 @@ class VendorShopSeeder extends Seeder
                     'cover_images' => [],
                     'is_active' => fake()->boolean(95),
                 ]);
-            }
         }
 
     }

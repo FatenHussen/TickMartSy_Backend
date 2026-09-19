@@ -24,9 +24,7 @@ class CategoryAttributeService extends BaseService
         'values.color',
     ];
 
-    protected $syncRelations = [
-        'values' => 'values',
-    ];
+    protected $syncRelations = [];
 
     protected $searchableFields = [
         'id',
@@ -178,5 +176,68 @@ class CategoryAttributeService extends BaseService
         $this->deleteWithConfirmation($id, request()->boolean('confirm'));
 
         return true;
+    }
+
+    /**
+     * Values are referenced by product variants via attributes_values_ids.
+     * Rename must update the same row; delete+create would orphan those IDs.
+     */
+    protected function handleRelations($object, array &$data)
+    {
+        if (array_key_exists('values', $data)) {
+            $this->syncAttributeValues($object, $data['values'] ?? []);
+            unset($data['values']);
+        }
+
+        parent::handleRelations($object, $data);
+    }
+
+    protected function syncAttributeValues(CategoryAttribute $attribute, array $items): void
+    {
+        $items = array_values($items);
+        $existing = $attribute->values()->orderBy('id')->get();
+        $existingById = $existing->keyBy('id');
+        $keepIds = [];
+
+        $hasAnyId = collect($items)->contains(
+            fn ($item) => is_array($item) && !empty($item['id'])
+        );
+
+        foreach ($items as $index => $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+
+            $id = isset($item['id']) ? (int) $item['id'] : null;
+            $payload = array_intersect_key($item, array_flip(['name', 'color_id']));
+
+            if ($id && $existingById->has($id)) {
+                $existingById->get($id)->update($payload);
+                $keepIds[] = $id;
+                continue;
+            }
+
+            if (!$hasAnyId && ($existingValue = $existing->get($index))) {
+                $existingValue->update($payload);
+                $keepIds[] = $existingValue->id;
+                continue;
+            }
+
+            $created = $attribute->values()->create($payload);
+            $keepIds[] = $created->id;
+        }
+
+        $removedIds = $existingById->keys()
+            ->map(fn ($id) => (int) $id)
+            ->diff($keepIds)
+            ->values()
+            ->all();
+
+        if ($removedIds === []) {
+            return;
+        }
+
+        (new CategoryAttributeDeleteImpactService())->detachValuesFromVariants($removedIds);
+        $attribute->values()->whereIn('id', $removedIds)->delete();
     }
 }

@@ -2,10 +2,16 @@
 
 > **أرسلوا هذا الملف لفريق الداشبورد فقط.**  
 > Base: `/api/admin` + Admin token.  
-> **آخر تحديث:** 8 أيلول 2026  
+> **آخر تحديث:** 20 أيلول 2026  
 > يجمع **كل** تعديلات الباك التي تحتاج تنفيذ في الداشبورد (مو بس المنتج).
 
-**اليوم:** أيقونات المنتج تظهر على الموقع من `icons[]` — الداشبورد تربط فقط `icon_ids` — [`PRODUCT_ICONS_WEB_DASHBOARD.md`](./PRODUCT_ICONS_WEB_DASHBOARD.md)
+**اليوم:** قيم الصفات على المنتج بالـ ID — select لكل صفة، الحفظ ما يمسح القياس — [`DASHBOARD_CATEGORY_ATTRIBUTE_VALUE_IDS.md`](./DASHBOARD_CATEGORY_ATTRIBUTE_VALUE_IDS.md)
+
+**اليوم (سابقاً):** فروع المتاجر ملغاة — بائع واحد = متجر واحد، والباك يربط المنتج تلقائياً — [`DASHBOARD_NO_SHOP_BRANCHES.md`](./DASHBOARD_NO_SHOP_BRANCHES.md)
+
+**اليوم (سابقاً):** كل متغيّر لازم ينحفظ بـ `attributes_values_ids` — مو بس الأول يشتغل على الموقع — [`DASHBOARD_PRODUCT_ALL_VARIANTS.md`](./DASHBOARD_PRODUCT_ALL_VARIANTS.md)
+
+**اليوم (سابقاً):** أيقونات المنتج تظهر على الموقع من `icons[]` — الداشبورد تربط فقط `icon_ids` — [`PRODUCT_ICONS_WEB_DASHBOARD.md`](./PRODUCT_ICONS_WEB_DASHBOARD.md)
 
 **اليوم (مساء):** ناف «جدولة» من الداشبورد (`type=route` + `schedules`) · إنشاء منتج بدون `vendor_id` — [`NAV_MENU_SCHEDULES.md`](./NAV_MENU_SCHEDULES.md) · [`DASHBOARD_PRODUCT_VENDOR_ID.md`](./DASHBOARD_PRODUCT_VENDOR_ID.md)
 
@@ -22,7 +28,7 @@
 5. [إسناد المنتج لأي مستوى فئة](#5-إسناد-المنتج-لأي-مستوى-فئة)
 6. [وراثة صفات الفئة من الرئيسية](#6-وراثة-صفات-الفئة-من-الرئيسية)
 7. [سعر وكمية المتغيّر (Variant)](#7-سعر-وكمية-المتغيّر)
-8. [حفظ المتغيّرات وربط الفروع](#8-حفظ-المتغيّرات-وربط-الفروع)
+8. [حفظ المتغيّرات وربط المتجر](#8-حفظ-المتغيّرات-وربط-المتجر)
 9. [حذف المتغيّرات مع تأكيد](#9-حذف-المتغيّرات-مع-تأكيد)
 10. [حذف صفات الفئة مع تأكيد](#10-حذف-صفات-الفئة-مع-تأكيد)
 11. [أسعار المنتج (USD/SYP) + حذف الفئات بتأكيد](#11-أسعار-المنتج-وحذف-الفئات)
@@ -37,6 +43,9 @@
 20. [السلل المجدولة + السلة المخصصة](#20-السلل-المجدولة--كتالوج-الجدولات)
 21. [حقول السعر · الخصم · الكمية · باركود · SKU](#21-حقول-السعر--الخصم--الكمية--باركود--sku)
 22. [ناف بار — جدولة + إنشاء منتج بدون vendor_id](#22-ناف-بار--جدولة--إنشاء-منتج)
+23. [تعديل قيم الصفات بالـ ID](#23-تعديل-قيم-الصفات-بالـ-id)
+24. [كل المتغيّرات تُحفظ وتُربط بالمتجر](#24-كل-المتغيّرات-تحفظ-وتربط-بالمتجر)
+25. [إلغاء فروع المتاجر](#25-إلغاء-فروع-المتاجر)
 
 ---
 
@@ -343,6 +352,7 @@ GET /api/admin/category-attributes?category_id={rootCategoryId}
 - `category_id` لازم فئة رئيسية → إذا فرعية → **422**
 - Select الفئة: اعرض الرئيسية فقط (`is_root === true`)
 - `GET /api/admin/category-attributes?category_id={id}` — أي id بالشجرة يرجع صفات الجذر
+- **تعديل اسم قيمة:** أرسلوا `values[i][id]` — انظر §23 و [`DASHBOARD_CATEGORY_ATTRIBUTE_VALUE_IDS.md`](./DASHBOARD_CATEGORY_ATTRIBUTE_VALUE_IDS.md)
 
 ### فورم المنتج
 
@@ -371,17 +381,17 @@ GET /api/admin/category-attributes?category_id={rootCategoryId}
 - Input سعر على كل variant
 - Input كمية (integer) على كل variant
 
-### قسم توفر الفروع
+### توفر المتجر
 
-- `shop_variants.*.shop_id` → مطلوب
-- `shop_variants.*.variant_index` → مطلوب
-- `shop_variants.*.cost_price` → اختياري (تكلفة شراء)
-- `shop_variants.*.price` → **محذوف — لا ترسله**
-- `shop_variants.*.quantity` → **محذوف — لا ترسله**
+**لا قسم فروع.** الباك يربط كل المتغيّرات بمتجر البائع.
+
+- `shop_id` (اختياري على مستوى المنتج) عند `sale_channel=shop`
+- `shop_variants` **غير مطلوب** — للتوافق فقط (`cost_price`)
+- `shop_variants.*.price` / `quantity` → **محذوف — لا ترسلوهما**
 
 ---
 
-## 8) حفظ المتغيّرات وربط الفروع
+## 8) حفظ المتغيّرات وربط المتجر
 
 > المرجع: `FRONTEND_DASHBOARD_PRODUCT_VARIANTS_SAVE.md`
 
@@ -398,10 +408,10 @@ GET /api/admin/category-attributes?category_id={rootCategoryId}
    - صف بدون `id` → إنشاء جديد
    - متغيّر موجود بالـ DB وما أُرسل → **soft delete**
 
-2. **`shop_variants` كذلك replace:**
-   - إذا أرسلتها → تُستبدل بالمرسل
-   - إذا ما أرسلتها → تبقى كما هي
-   - `shop_variants: []` → تُحذف الروابط ثم يُعاد الربط بفرع البائع الافتراضي (`is_default`)
+2. **`shop_variants` اختياري:**
+   - إذا ما أرسلتها → الباك يربط بمتجر البائع (متجر واحد)
+   - إذا أرسلتها → يُستخدم أول `shop_id` فقط (باقي الفروع تُتجاهل)
+   - `shop_variants: []` → تُحذف الروابط ثم يُعاد الربط بمتجر البائع
 
 3. **لا ترسل `variants` إذا الفورم ما فيه تاب متغيّرات**
 
@@ -604,8 +614,8 @@ php artisan db:seed --class=SaleCountrySeeder
 
 | واجهة | `sale_channel` | السلوك |
 |-------|----------------|--------|
-| **للموقع** (افتراضي) | `platform` | لا متجر/بائع؛ ربط تلقائي بفرع المنصة |
-| **ربط بمتجر** | `shop` | بائع اختياري للفلترة + فرع إلزامي عبر `shop_variants` |
+| **للموقع** (افتراضي) | `platform` | لا متجر/بائع؛ ربط تلقائي بمتجر المنصة |
+| **ربط بمتجر** | `shop` | اختاروا المتجر (`shop_id`) أو البائع — **بدون** قائمة فروع |
 
 | القناة | وقت التسليم |
 |--------|-------------|
@@ -615,13 +625,13 @@ php artisan db:seed --class=SaleCountrySeeder
 ### قواعد
 
 - للموقع: `sale_channel=platform` و**لا ترسل** `shop_variants` ولا `vendor_id`
-- لمتجر: `sale_channel=shop` + `shop_variants` (فرع واحد على الأقل) وإلا **422** — **لا ترسل** `vendor_id` (الباك يأخذه من الفرع)
+- لمتجر: `sale_channel=shop` + `shop_id` (أو بائع له متجر) وإلا **422** — **لا ترسل** `vendor_id` إلا إذا هو `vendors.id`
 - توست «حقل vendor id غير موجود»: لا ترسلوا `0` / `""` / id مستخدم بائع — [`DASHBOARD_PRODUCT_VENDOR_ID.md`](DASHBOARD_PRODUCT_VENDOR_ID.md)
 - GET يرجع `sale_channel` للفورم والقائمة (badge: للموقع / متجر)
 - تحويل لموقع: أرسل `sale_channel=platform` فقط
 - تعديل اسم فقط: **لا ترسل** `sale_channel` ولا `shop_variants`
-- شرط التشغيل: فرع لبائع المنصة (`vendor_id=1`) مع `is_default`
-- تحذير «غير مرتبط بفرع» فقط لـ `shop` بدون روابط
+- شرط التشغيل: متجر لبائع المنصة
+- **لا** تحذير «غير مرتبط بفرع» — الفروع ملغاة
 
 ```text
 # موقع
@@ -631,8 +641,7 @@ quantity=10
 
 # متجر
 sale_channel=shop
-shop_variants[0][shop_id]=5
-shop_variants[0][variant_index]=0
+shop_id=5
 ```
 
 ---
@@ -802,7 +811,7 @@ file: <products.xlsx>
 ### منتج / متغيّرات / فئات
 - [ ] منتج لأي مستوى فئة؛ صفات من الجذر
 - [ ] سعر وكمية على الـ variant؛ لا price/qty داخل shop_variants
-- [ ] variants/shop_variants = replace؛ احفظ variant.id
+- [ ] variants = replace؛ احفظ variant.id — **لا** UI فروع
 - [ ] حذف متغيّر/صفة/فئة مع confirm + 409
 - [ ] أسعار: بعد الخصم حيّ؛ USD↔SYP؛ لا ترسل currencies
 - [ ] بلد المنشأ Select؛ media اختياري
@@ -833,7 +842,7 @@ php artisan db:seed --class=CountrySeeder
 # 4) بلدان مبيع ناقصة + يعبّي icon إن فاضي فقط
 php artisan db:seed --class=SaleCountrySeeder
 
-# 5) بائع المنصة + فرع افتراضي — مطلوب لإنشاء منتج «للموقع»
+# 5) بائع المنصة + متجره — مطلوب لإنشاء منتج «للموقع»
 php artisan db:seed --class=PlatformVendorSeeder
 ```
 
@@ -1032,11 +1041,45 @@ POST /api/admin/scheduled-baskets
 
 **جدولة في الناف:** ليست صفحة Page Builder. نوع `route` + `route_key=schedules`. القائمة: `GET /api/admin/nav-menu-items/route-keys`. لا سيدر تلقائي.
 
-**إنشاء منتج:** لا ترسلوا `vendor_id`. للموقع `sale_channel=platform`. للمتجر `shop_variants`. إذا «بائع المنصة غير موجود»:
+**إنشاء منتج:** لا ترسلوا `vendor_id`. للموقع `sale_channel=platform`. للمتجر `shop_id`. إذا «بائع المنصة غير موجود»:
 
 ```bash
 php artisan db:seed --class=PlatformVendorSeeder
 ```
 
 ---
+
+## 23) تعديل قيم الصفات بالـ ID
+
+> **20 أيلول 2026** — الدليل: [`DASHBOARD_CATEGORY_ATTRIBUTE_VALUE_IDS.md`](./DASHBOARD_CATEGORY_ATTRIBUTE_VALUE_IDS.md)
+
+المنتج مربوط بـ `attributes_values_ids` (IDs)، مو بالاسم. إعادة تسمية «صغير → XS» لازم تبقي نفس `values[].id`.
+
+```text
+PUT /api/admin/category-attributes/{id}
+values[0][id]=31
+values[0][name][ar]=XS
+values[0][name][en]=XS
+```
+
+قيمة جديدة = بدون `id`. حذف قيمة = لا ترسلوا صفها (تتشال من المتغيّرات، المنتج يبقى).  
+إذا ما انرسل `id`، القيم كانت تنمسح وتُنشأ من جديد والمنتج يفقد القياس.
+
+---
+
+## 24) كل المتغيّرات تُحفظ وتُربط بالمتجر
+
+> **20 أيلول 2026** — الدليل: [`DASHBOARD_PRODUCT_ALL_VARIANTS.md`](./DASHBOARD_PRODUCT_ALL_VARIANTS.md)
+
+كل صف = تركيبة (أزرق S ≠ أسود L). أرسلوا `attributes_values_ids` و `is_active=1` **لكل** صف.  
+الباك يربط **كل** المتغيّرات بمتجر البائع — لا ترسلوا قائمة فروع.
+
+---
+
+## 25) إلغاء فروع المتاجر
+
+> **20 أيلول 2026** — الدليل: [`DASHBOARD_NO_SHOP_BRANCHES.md`](./DASHBOARD_NO_SHOP_BRANCHES.md)
+
+بائع واحد = متجر واحد. احذفوا قسم الفروع من فورم المنتج والمتجر.  
+`sale_channel=shop` + `shop_id` (أو البائع). إنشاء متجر ثانٍ لنفس البائع → **422**.
 

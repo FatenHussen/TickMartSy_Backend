@@ -5,7 +5,13 @@
 > **آخر نسخة موحّدة (موصى بها للإرسال):** [`WEB_LATEST.md`](./WEB_LATEST.md)  
 > **سعر · خصم · كمية · باركود · SKU:** [`WEB_PRODUCT_PRICING_FIELDS.md`](./WEB_PRODUCT_PRICING_FIELDS.md)  
 > **تسجيل:** [`REGISTER_FLOW.md`](./REGISTER_FLOW.md) · [`WEB_REGISTER_FLOW.md`](./WEB_REGISTER_FLOW.md)  
-> **آخر تحديث | Last Updated:** 2026-09-08
+> **آخر تحديث | Last Updated:** 2026-09-20
+
+**اليوم:** لا دروب داون Branch / اسم متجر على صفحة المنتج — [`WEB_FLUTTER_HIDE_SHOP_NAME.md`](./WEB_FLUTTER_HIDE_SHOP_NAME.md)
+
+**اليوم (سابقاً):** متغيّران على صفحة المنتج — الصف المختار من `shop_variants` مو `[0]` — [`WEB_PRODUCT_ALL_VARIANTS.md`](./WEB_PRODUCT_ALL_VARIANTS.md)
+
+**اليوم (سابقاً):** قيم الصفات (قياس / لون) مربوطة بالـ ID — الفلتر `attribute_values=31` والاسم من الـ GET — [`WEB_CATEGORY_ATTRIBUTE_VALUE_IDS.md`](./WEB_CATEGORY_ATTRIBUTE_VALUE_IDS.md)
 
 ---
 
@@ -22,6 +28,7 @@
 9. [نص تحميل التطبيق + عرض الأسعار](#9-نص-تحميل-التطبيق-وعرض-الأسعار)
 10. [متغيّرات المنتج — عرض واختيار](#10-متغيّرات-المنتج--عرض-واختيار)
 11. [الضمان + الكمية (5 أيلول 2026)](#11-الضمان--الكمية-5-أيلول-2026)
+12. [قيم الصفات بالـ ID](#12-قيم-الصفات-بالـ-id)
 
 ---
 
@@ -250,7 +257,7 @@ GET /api/user/products/{id}
 | `shop_variants[].shop_id` | موجود دائمًا | ممكن **`null`** |
 | `shop_variants[].id` | موجود دائمًا | ممكن **`null`** |
 
-### الحالة العادية (مربوط بفرع)
+### الحالة العادية (مربوط بمتجر)
 
 ```json
 {
@@ -264,7 +271,7 @@ GET /api/user/products/{id}
 }
 ```
 
-### حالة الـ fallback (بدون فرع)
+### حالة الـ fallback (بدون متجر)
 
 ```json
 {
@@ -275,6 +282,8 @@ GET /api/user/products/{id}
   }]
 }
 ```
+
+**لا تعرضوا اسم المتجر.** `available_shops` دائماً `[]`. احذفوا دروب داون Branch / «فرعة المنصة».
 
 ### المطلوب
 
@@ -380,7 +389,7 @@ POST /api/user/auth/verify-otp
 |-------|------|--------|
 | `category_id` | `12` | الفئة + كل الأحفاد |
 | `brand_id` | `7` | ماركة |
-| `shop_id` | `3` | متوفر في الفرع |
+| `shop_id` | `3` | متوفر في المتجر |
 | `price_min` / `price_max` | `100` | بعملة العرض؛ الباك يحوّل |
 | `search` | `أرز` | اسم + وصف |
 | `country` | `تركيا` | تطابق جزئي على نص البلد |
@@ -650,4 +659,15 @@ const canAddToCart =
 
 ---
 
-**آخر تحديث | Last Updated:** 2026-09-05
+## 12) قيم الصفات بالـ ID
+
+> **20 أيلول 2026** — الدليل: [`WEB_CATEGORY_ATTRIBUTE_VALUE_IDS.md`](./WEB_CATEGORY_ATTRIBUTE_VALUE_IDS.md)
+
+إعادة تسمية قيمة من الداش (صغير → XS) **ما تحذف** المتغيّر. الـ ID يبقى. اعرضوا الاسم الجديد من آخر GET.
+
+- chips: `key={value.id}` وفلتر `attribute_values=31,40`
+- صفحة المنتج / السلة: `shop_variants[].id` — لا تخزّنوا «صغير» محلياً
+
+---
+
+**آخر تحديث | Last Updated:** 2026-09-20

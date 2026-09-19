@@ -1,20 +1,21 @@
 # الداشبورد — إنشاء منتج: `vendor_id` (توست «حقل vendor id غير موجود»)
 
 > **الجمهور:** فريق الداشبورد  
-> **تاريخ:** 8 أيلول 2026  
+> **تاريخ:** 20 أيلول 2026  
 > **الباك:** جاهز بعد `git pull` — **لا حقل جديد في الفورم**  
-> Base: `POST /api/admin/products`
+> Base: `POST /api/admin/products`  
+> الفروع ملغاة: [`DASHBOARD_NO_SHOP_BRANCHES.md`](./DASHBOARD_NO_SHOP_BRANCHES.md)
 
 ---
 
 ## هل نغيّر شيء في الداشبورد؟
 
-**لا.** إنشاء المنتج يبقى كما هو. الباك هو اللي يضبط `vendor_id`.
+إنشاء المنتج يبقى بدون `vendor_id`. الباك هو اللي يضبطه.
 
 | القناة | ماذا ترسلون | ماذا **لا** ترسلون |
 |--------|-------------|---------------------|
 | **للموقع** (افتراضي) | `sale_channel=platform` | `vendor_id` · `shop_variants` |
-| **ربط بمتجر** | `sale_channel=shop` + `shop_variants[0][shop_id]=…` | `vendor_id` — الباك يأخذه من الفرع |
+| **ربط بمتجر** | `sale_channel=shop` + `shop_id` | `vendor_id` — الباك يأخذه من المتجر |
 
 نفس القواعد في [`dashboard.md` §14](./dashboard.md#14-قناة-البيع--للموقع-أو-ربط-بمتجر).
 
@@ -43,10 +44,9 @@ category_id=20
 name[ar]=...
 name[en]=...
 
-# ✅ متجر — بدون vendor_id؛ الفرع يكفي
+# ✅ متجر — بدون vendor_id؛ المتجر يكفي
 sale_channel=shop
-shop_variants[0][shop_id]=5
-shop_variants[0][variant_index]=0
+shop_id=5
 ```
 
 ```js
@@ -59,7 +59,7 @@ body.vendor_id = selectedVendorUserId; // هذا vendor_users.id مو vendors.id
 if (vendorId) formData.append('vendor_id', vendorId); // اختياري للمتجر فقط — والباك ما يحتاجه
 ```
 
-دروب داون «بائع» إن وجد: **لفلترة قائمة الفروع فقط**. لا تضيفوه على `POST /products`.
+دروب داون «بائع» إن وجد: لاختيار المتجر (واحد لكل بائع). لا تضيفوه على `POST /products`.
 
 ---
 
@@ -84,9 +84,9 @@ if (vendorId) formData.append('vendor_id', vendorId); // اختياري للمت
 ## Checklist
 
 - [ ] إنشاء منتج **للموقع**: `sale_channel=platform` — **بدون** `vendor_id` وبدون `shop_variants`
-- [ ] إنشاء منتج **متجر**: `sale_channel=shop` + فرع واحد على الأقل — **بدون** `vendor_id`
+- [ ] إنشاء منتج **متجر**: `sale_channel=shop` + `shop_id` — **بدون** `vendor_id` وبدون قائمة فروع
 - [ ] لا `vendor_id=0` ولا `""` ولا id من `vendor_users`
 - [ ] توست 422: رسائل `errors` مرة واحدة (لا توستان بنفس النص)
-- [ ] بائع في الواجهة = فلتر فروع فقط، مو حقل حفظ
+- [ ] بائع في الواجهة = اختيار المتجر، مو حقل حفظ
 
-**الباك جاهز. الداشبورد: لا حقل جديد — فقط لا ترسلوا `vendor_id`.**
+**الباك جاهز. الداشبورد: لا حقل جديد — فقط لا ترسلوا `vendor_id` ولا تعرضوا فروع.**
