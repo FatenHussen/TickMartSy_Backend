@@ -2,27 +2,30 @@
 
 > **أرسلوا هذا الملف لفريق Flutter.**  
 > Base: `/api/user` + `Accept-Language: ar|en`  
-> **آخر تحديث | Last Updated:** 2026-09-20  
+> **آخر تحديث | Last Updated:** 2026-09-21  
 > الملف الشامل السابق يبقى: [`flutter.md`](./flutter.md)
 
-**اليوم:** خصم ثابت (`fixed`) كسور وأكبر من 100 — `discountValue` = `num?` مو `asInt` — [`FLUTTER_FIXED_DISCOUNT.md`](./FLUTTER_FIXED_DISCOUNT.md)
+**اليوم (21 أيلول) — دفعة واحدة أرسلوا:**
 
-**اليوم (سابقاً):** لا اسم متجر / Branch على شاشة المنتج — [`FLUTTER_NO_SHOP_BRANCHES.md`](./FLUTTER_NO_SHOP_BRANCHES.md)
+| # | الموضوع | الملف |
+|---|---------|--------|
+| 1 | تكبير صورة المنتج (pinch / lightbox) | [`FLUTTER_PRODUCT_IMAGE_ZOOM.md`](./FLUTTER_PRODUCT_IMAGE_ZOOM.md) |
+| 2 | دوائر اللون من `hex` | [`FLUTTER_PRODUCT_COLOR_HEX.md`](./FLUTTER_PRODUCT_COLOR_HEX.md) |
+| 3 | جدول التفاصيل بلا ترويسة + فاصل | [`FLUTTER_PRODUCT_CATEGORY_DETAILS_TABLE.md`](./FLUTTER_PRODUCT_CATEGORY_DETAILS_TABLE.md) |
+| 4 | السلة بدون مدة التوصيل | [`FLUTTER_CART_NO_DELIVERY_TIME.md`](./FLUTTER_CART_NO_DELIVERY_TIME.md) |
+| 5 | لوحة المسوق فقط بعد الموافقة | [`FLUTTER_MARKETER_DASHBOARD_GATE.md`](./FLUTTER_MARKETER_DASHBOARD_GATE.md) |
 
-**اليوم (سابقاً):** قيم الصفات بالـ ID — فلتر و picker من `options[].id`، الاسم يتبدّل والمتغيّر يبقى — [`FLUTTER_CATEGORY_ATTRIBUTE_VALUE_IDS.md`](./FLUTTER_CATEGORY_ATTRIBUTE_VALUE_IDS.md)
+**إصلاحات باك + تطبيق (نفس اليوم):** فئة 422 من فلاتر boolean · `bought_with` تنقّل بـ `id` · عنوان بعد التسجيل بدون شاشة سوداء — انظر [§0c](#0c-ماذا-تغيّر-في-21-أيلول-2026).
 
-**اليوم (سابقاً):** متغيّران على شاشة المنتج — `findVariant` مو `shopVariants.first`، المقاس يتبدل مع اللون — [`FLUTTER_PRODUCT_ALL_VARIANTS.md`](./FLUTTER_PRODUCT_ALL_VARIANTS.md)
+**اليوم (سابقاً):** خصم ثابت (`fixed`) كسور وأكبر من 100 — [`FLUTTER_FIXED_DISCOUNT.md`](./FLUTTER_FIXED_DISCOUNT.md) · لا Branch — [`FLUTTER_NO_SHOP_BRANCHES.md`](./FLUTTER_NO_SHOP_BRANCHES.md) · صفات بالـ ID — [`FLUTTER_CATEGORY_ATTRIBUTE_VALUE_IDS.md`](./FLUTTER_CATEGORY_ATTRIBUTE_VALUE_IDS.md) · كل المتغيّرات — [`FLUTTER_PRODUCT_ALL_VARIANTS.md`](./FLUTTER_PRODUCT_ALL_VARIANTS.md) · أسعار — [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md)
 
-**اليوم (سابقاً):** صور المتغيّر `has_variant_images` + `images[].path` وإلا صور المنتج — [`PRODUCT_VARIANT_IMAGES_WEB_DASHBOARD.md`](./PRODUCT_VARIANT_IMAGES_WEB_DASHBOARD.md) · أيقونات `icons[].icon` أو `image` — [`PRODUCT_ICONS_WEB_DASHBOARD.md`](./PRODUCT_ICONS_WEB_DASHBOARD.md) · OTP مؤقت **`00000`** — ما في SMS. بعد التسجيل أدخلوا الأصفار على شاشة التحقق.
-
-**اليوم (صباحاً):** سعر $ · ل.س · نوع الخصم (لا يوجد خصم) · قيمة الخصم · السعر بعد الخصم · الكمية المتوفرة · الباركود · SKU — [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md)
-
-يجمع **كل** ما يحتاجه التطبيق حتى اليوم: Nav · أقسام · فئات دائرية · فلاتر · تسجيل · طلب سريع · أسعار · متغيّرات · **ضمان** · **كمية** · **سلة مخصصة**.
+يجمع **كل** ما يحتاجه التطبيق حتى اليوم: Nav · أقسام · فئات · فلاتر · تسجيل · طلب سريع · أسعار · متغيّرات · لون hex · جدول تفاصيل · تكبير صور · سلة بلا delivery_time · بوابة مسوّق · ضمان · كمية · سلة مخصصة.
 
 ---
 
 ## الفهرس
 
+0c. [ماذا تغيّر في 21 أيلول 2026](#0c-ماذا-تغيّر-في-21-أيلول-2026)
 0. [ماذا تغيّر في 8 أيلول 2026](#0-ماذا-تغيّر-في-8-أيلول-2026)
 0b. [ماذا تغيّر في 5 أيلول 2026](#0b-ماذا-تغيّر-في-5-أيلول-2026)
 1. [شريط التنقّل](#1-شريط-التنقّل)
@@ -39,6 +42,24 @@
 12. [Dart — الضمان والكمية](#12-dart--الضمان-والكمية)
 13. [Checklist](#13-checklist)
 14. [السلة المخصصة](#14-السلة-المخصصة)
+15. [لوحة المسوق](#15-لوحة-المسوق)
+
+---
+
+## 0c) ماذا تغيّر في 21 أيلول 2026
+
+| البند | المطلوب في التطبيق |
+|-------|---------------------|
+| **تكبير الصورة** | ضغط صورة المنتج → fullscreen + pinch zoom + pan — [`FLUTTER_PRODUCT_IMAGE_ZOOM.md`](./FLUTTER_PRODUCT_IMAGE_ZOOM.md) |
+| **دوائر اللون** | من `hex` (`options[].hex` / `attributes[].hex` / `values[].hex`) — مو اسم «أسود» — [`FLUTTER_PRODUCT_COLOR_HEX.md`](./FLUTTER_PRODUCT_COLOR_HEX.md) |
+| **جدول التفاصيل** | بدون صف «الاسم/القيمة» + فاصل عمودي بين الاسم والقيمة — [`FLUTTER_PRODUCT_CATEGORY_DETAILS_TABLE.md`](./FLUTTER_PRODUCT_CATEGORY_DETAILS_TABLE.md) |
+| **منتجات مشابهة** | `onTap` → `ProductDetail(bought_with[i].id)` — **لا** تشترطوا `shop_product_variant_id` |
+| **فلاتر فئة / منتجات** | لا ترسلوا params فاضي؛ booleans كـ `1`/`0` أو احذفوا المفتاح؛ `attribute_values` = IDs |
+| **السلة** | **لا** `delivery_time` داخل السلة/الدفع — فقط على صفحة المنتج — [`FLUTTER_CART_NO_DELIVERY_TIME.md`](./FLUTTER_CART_NO_DELIVERY_TIME.md) |
+| **التسجيل + عنوان** | بعد OTP → الرئيسية دائماً؛ عنوان اختياري: `GET /areas?city_id=` ثم `POST /addresses`؛ `area.name` = **String**؛ فشل العنوان ما يوقف الدخول |
+| **لوحة المسوق** | فقط إذا مترقّى + موافقة أدمن — [`FLUTTER_MARKETER_DASHBOARD_GATE.md`](./FLUTTER_MARKETER_DASHBOARD_GATE.md) |
+
+**الباك بعد `git pull`:** `on_sale`/`in_stock_only=true` ما عادوا 422 · `hex` على صفات الفئة والمنتج · رد العنوان `area.name` نص.
 
 ---
 
@@ -150,6 +171,9 @@ products.where((p) => p.categoryId == selectedId); // خطأ
 - لا `name` ولا `country_id` على `/products`
 - أي فلتر → `page = 1`
 - empty state من `pagination.total == 0`
+- chips اللون من `/categories/{id}/attributes` → `values[].hex` عند `type=color`
+- لا ترسلوا مفاتيح فاضي/`null`؛ booleans: احذفوا المفتاح أو `1`/`0` (الباك يقبل `true`/`false` بعد التحديث)
+- `attribute_values=31,40` — **IDs** مو أسماء
 
 ---
 
@@ -166,15 +190,25 @@ Accept-Language: ar
 | `warranty` | `{ id, name, description }` أو `null` |
 | `warranty_period` | `int?` — قديم |
 | `quantity` | `int?` على المنتج — **ليس المخزون** |
-| `delivery_time` | `String?` على المنتج |
+| `delivery_time` | `String?` على المنتج — **هنا فقط** (مو بالسلة) |
 | `shop_variants` | دائماً عنصر واحد على الأقل |
 | `shop_variants[].id` / `shop_id` | `int?` |
 | `shop_variants[].quantity` | `int?` — المخزون |
+| `shop_variants[].attributes[].hex` | `String?` — للون |
 | `attributes_map` | قائمة؛ فاضية → أخفوا الـ picker |
+| `attributes_map[].options[].hex` | للون — [`FLUTTER_PRODUCT_COLOR_HEX.md`](./FLUTTER_PRODUCT_COLOR_HEX.md) |
+| `category_details` | `{ id, name, value }[]` — جدول بلا ترويسة — [`FLUTTER_PRODUCT_CATEGORY_DETAILS_TABLE.md`](./FLUTTER_PRODUCT_CATEGORY_DETAILS_TABLE.md) |
+| `images` / `shop_variants[].images` | معرض؛ ضغط → zoom — [`FLUTTER_PRODUCT_IMAGE_ZOOM.md`](./FLUTTER_PRODUCT_IMAGE_ZOOM.md) |
 | `icons` / `top_badges` / `bottom_badges` | كما هي |
-| `bought_with` | منتجات مقترنة |
+| `bought_with` | كروت AllResource — تنقّل بـ **`id`** |
 
 ربط المنصة بمتجر البائع يتم من الأدمن — **لا endpoint جديد**. خلّوا حماية `null`.
+
+**منتجات مشابهة:** `Navigator → ProductDetail(id: item.id)` — لا تعتمدوا على `shop_product_variant_id` (ممكن `null`).
+
+**تكبير الصورة:** onTap على المعرض → fullscreen + pinch + pan بين `images[].path` (مع احترام `has_variant_images`).
+
+**جدول التفاصيل:** صفوف `name | value` فقط + فاصل عمودي — **بدون** «الاسم» / «القيمة».
 
 ---
 
@@ -225,14 +259,18 @@ int maxBuy(ShopVariant v, ProductDetail p) {
 
 قائمة المنتجات: `quantity` على الكرت ممكن `null` — لا تعملوا `quantity!`.
 
+**مدة التوصيل في السلة:** ❌ ممنوع — [`FLUTTER_CART_NO_DELIVERY_TIME.md`](./FLUTTER_CART_NO_DELIVERY_TIME.md).  
+`delivery_time` يظهر على **صفحة المنتج فقط**.
+
 ---
 
 ## 8) متغيّرات المنتج
 
-تفصيل: [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md) · [`product-variants-flutter.md`](./product-variants-flutter.md) · [`product-variants-storefront-update.md`](./product-variants-storefront-update.md)
+تفصيل: [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md) · [`FLUTTER_PRODUCT_ALL_VARIANTS.md`](./FLUTTER_PRODUCT_ALL_VARIANTS.md) · [`FLUTTER_PRODUCT_COLOR_HEX.md`](./FLUTTER_PRODUCT_COLOR_HEX.md) · [`product-variants-flutter.md`](./product-variants-flutter.md)
 
 - لا اسم متغيّر — `attributes` + `sku`.
 - لون → فلتر المقاسات المتاحة من `shop_variants` فقط.
+- دوائر اللون من **`hex`** — [`FLUTTER_PRODUCT_COLOR_HEX.md`](./FLUTTER_PRODUCT_COLOR_HEX.md).
 - لا تفترضوا كل لون × كل مقاس.
 - السعر/الخصم من المتغيّر المختار (`*_currencies`).
 - `delivery_time` مرة واحدة على المنتج.
@@ -245,17 +283,26 @@ int maxBuy(ShopVariant v, ProductDetail p) {
 تفصيل: [`REGISTER_FLOW.md`](./REGISTER_FLOW.md) · مختصر Flutter: [`FLUTTER_REGISTER_FLOW.md`](./FLUTTER_REGISTER_FLOW.md)
 
 ```
-Register → POST /auth/register (no token) → OTP → POST /auth/verify-otp → data.token
+Register → POST /auth/register (no token) → OTP → POST /auth/verify-otp → data.token → الرئيسية
 ```
 
 - `phone` مطلوب (`digitsOnly`).
 - `email` اختياري — لا ترسلوا `""`.
 - كلمة المرور: ≥ 8 + lower + upper + digit + symbol.
 - مدن: `GET /cities?governorate_id=` (الباراميتر إلزامي).
-- OTP: `POST /api/user/auth/verify-otp` `{ phone, code }`. **مؤقت (16 أيلول):** الكود **`00000`** — ما في SMS.
+- OTP: `POST /api/user/auth/verify-otp` `{ phone, code }`. **مؤقت:** الكود **`00000`** — ما في SMS.
 - إعادة الإرسال: `POST /auth/login` — **ليس** `/send-otp`.
 - كل الموديلات: `email` nullable.
 - بعد التوكن: `POST /auth/store-token` `{ deviceId, fcmToken }`.
+
+**عنوان توصيل (اختياري بعد OTP):**
+
+1. احفظوا التوكن وادخلوا الرئيسية **دائماً** — حتى لو فشل العنوان.
+2. `GET /api/user/areas?city_id={user.city_id}` — `city_id` **مطلوب**.
+3. `POST /api/user/addresses` — `label` · `area_id` · `street_name` · `contact_phone`.
+4. رد العنوان: `area.name` = **String** (حسب اللغة) — مو `{ar,en}`.
+
+لا تكمّشوا الـ UI على parsing العنوان (كانت تسبب شاشة سوداء).
 
 ---
 
@@ -331,6 +378,7 @@ int? asInt(dynamic v) {
 - [ ] ويدجت أقسام موحّد (`layout` ثم `variant`)
 - [ ] دوائر لكل مستوى + منتجات معها
 - [ ] لا فلترة محلية على `category_id`
+- [ ] chips اللون من `values[].hex`
 
 ### منتج + سلة
 - [ ] `country` كـ `String?`
@@ -338,6 +386,11 @@ int? asInt(dynamic v) {
 - [ ] **ضمان:** `warranty.name` / `.description`
 - [ ] **كمية:** `ShopVariant.quantity` كـ `int?`
 - [ ] **سعر/خصم/باركود/SKU:** الكارد من المنتج · التفاصيل من المتغيّر — [`FLUTTER_PRODUCT_PRICING_FIELDS.md`](./FLUTTER_PRODUCT_PRICING_FIELDS.md)
+- [ ] **لون:** دوائر من `hex` — [`FLUTTER_PRODUCT_COLOR_HEX.md`](./FLUTTER_PRODUCT_COLOR_HEX.md)
+- [ ] **جدول التفاصيل:** بلا ترويسة + فاصل — [`FLUTTER_PRODUCT_CATEGORY_DETAILS_TABLE.md`](./FLUTTER_PRODUCT_CATEGORY_DETAILS_TABLE.md)
+- [ ] **تكبير الصورة:** pinch lightbox — [`FLUTTER_PRODUCT_IMAGE_ZOOM.md`](./FLUTTER_PRODUCT_IMAGE_ZOOM.md)
+- [ ] **مشابهة:** تنقّل بـ `bought_with[].id`
+- [ ] **السلة:** بلا `delivery_time` — [`FLUTTER_CART_NO_DELIVERY_TIME.md`](./FLUTTER_CART_NO_DELIVERY_TIME.md)
 - [ ] `canAddToCart`: id + shopId + qty > 0
 - [ ] لا Cartesian
 - [ ] سلة مخصصة: قسم `display_type_id=11` + كروت `image`/`images`/`top_badges` + تخصيص `/schedules/{id}/custom-basket` — [`FLUTTER_CUSTOM_BASKET.md`](./FLUTTER_CUSTOM_BASKET.md)
@@ -345,9 +398,11 @@ int? asInt(dynamic v) {
 ### باقي التطبيق
 - [ ] Nav ديناميكي + `schedules` → شاشة الجداول
 - [ ] فلاتر + chips الجذر
-- [ ] تسجيل: هاتف مطلوب — [`REGISTER_FLOW.md`](./REGISTER_FLOW.md)
+- [ ] تسجيل: هاتف مطلوب + بعد OTP للرئيسية دائماً — [`REGISTER_FLOW.md`](./REGISTER_FLOW.md)
+- [ ] عنوان: `areas?city_id=` · `area.name` String · فشل ما يجمّد التطبيق
 - [ ] أسعار من API
 - [ ] طلب سريع من `settings.quick_order`
+- [ ] لوحة المسوق فقط بعد الموافقة — [`FLUTTER_MARKETER_DASHBOARD_GATE.md`](./FLUTTER_MARKETER_DASHBOARD_GATE.md)
 
 ---
 
@@ -374,4 +429,13 @@ int? asInt(dynamic v) {
 لا: `{ "confirm_schedule": false }` → `cart_items` مرة — المسودة تُحذف
 
 `summary.savingsFormatted` = وفّرت. لا تحسبوا الخصم على الجهاز. مسودة لكل `scheduleId`.
+
+---
+
+## 15) لوحة المسوق
+
+تفصيل: [`FLUTTER_MARKETER_DASHBOARD_GATE.md`](./FLUTTER_MARKETER_DASHBOARD_GATE.md)
+
+لوحة المسوق (رصيد · طلبات · أرباح · إنشاء طلب) تظهر **فقط** بعد ترقية الحساب وموافقة الأدمن.  
+قبلها: زر/شاشة «كن مسوقاً» فقط — لا تعرضوا لوحة المسوق لليوزر العادي.
 

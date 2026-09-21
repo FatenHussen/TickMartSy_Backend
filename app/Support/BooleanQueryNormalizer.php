@@ -29,7 +29,9 @@ class BooleanQueryNormalizer
 
     public static function isBooleanKey(string $key): bool
     {
-        return str_starts_with($key, 'is_') || $key === 'active';
+        return str_starts_with($key, 'is_')
+            || $key === 'active'
+            || in_array($key, ['on_sale', 'in_stock_only'], true);
     }
 
     public static function normalizeValue(mixed $value): mixed

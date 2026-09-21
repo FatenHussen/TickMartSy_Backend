@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources\Address;
 
-use App\Http\Resources\Area\OneResource as AreaOneResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -26,7 +25,11 @@ class OneResource extends JsonResource
             'lat' => $this->lat,
             'lng' => $this->lng,
             'is_default' => $this->is_default,
-            'area' => AreaOneResource::make($this->area),
+            // Locale string (same as Area\AllResource) — not {ar,en} translations.
+            'area' => $this->when($this->area, fn () => [
+                'id' => $this->area->id,
+                'name' => $this->area->name,
+            ]),
             'created_at' => $this->created_at?->toDateTimeString(),
         ];
     }

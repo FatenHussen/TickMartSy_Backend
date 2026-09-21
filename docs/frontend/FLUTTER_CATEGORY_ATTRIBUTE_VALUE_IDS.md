@@ -59,8 +59,8 @@ Accept-Language: ar
       "name": "القياس",
       "type": "square",
       "values": [
-        { "id": 31, "name": "XS" },
-        { "id": 32, "name": "XL" }
+        { "id": 31, "name": "XS", "hex": null },
+        { "id": 32, "name": "XL", "hex": null }
       ]
     }
   ]

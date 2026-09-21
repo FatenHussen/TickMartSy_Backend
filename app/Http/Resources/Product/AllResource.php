@@ -17,15 +17,8 @@ class AllResource extends JsonResource
         $user = auth('user')->user();
         $currencyId = $user?->currency_id;
 
-        // Get first shop_product_variant_id for this product
-        $shopProductVariantId = null;
-        $firstVariant = $this->variants()->first();
-        if ($firstVariant) {
-            $firstShopVariant = $firstVariant->shopVariants()->first();
-            if ($firstShopVariant) {
-                $shopProductVariantId = $firstShopVariant->id;
-            }
-        }
+        // Prefer an active shop link; skip variants that have none.
+        $shopProductVariantId = $this->resolveShopProductVariantId();
 
         return [
             'id'                    => $this->id,
@@ -58,5 +51,30 @@ class AllResource extends JsonResource
             ),
 
         ];
+    }
+
+    private function resolveShopProductVariantId(): ?int
+    {
+        $variants = $this->relationLoaded('variants')
+            ? $this->variants
+            : $this->variants()->with('shopVariants')->get();
+
+        foreach ($variants as $variant) {
+            if ($variant->is_active === false) {
+                continue;
+            }
+
+            $shopVariants = $variant->relationLoaded('shopVariants')
+                ? $variant->shopVariants
+                : $variant->shopVariants()->get();
+
+            $shopVariant = $shopVariants->first();
+
+            if ($shopVariant) {
+                return (int) $shopVariant->id;
+            }
+        }
+
+        return null;
     }
 }

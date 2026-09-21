@@ -5,7 +5,11 @@
 > **آخر تحديث | Last Updated:** 2026-09-21  
 > الملف الشامل السابق يبقى: [`web.md`](./web.md)
 
-**اليوم:** إضافات المنتج = اسم (`key`) + سعر (`price_currencies`) — [`WEB_PRODUCT_EXTRA_DETAILS.md`](./WEB_PRODUCT_EXTRA_DETAILS.md)
+**اليوم:** تكبير صورة المنتج (lightbox / zoom) — [`WEB_PRODUCT_IMAGE_ZOOM.md`](./WEB_PRODUCT_IMAGE_ZOOM.md)
+
+**اليوم (سابقاً):** جدول تفاصيل المنتج — بلا ترويسة «الاسم/القيمة» + فاصل عمودي — [`WEB_PRODUCT_CATEGORY_DETAILS_TABLE.md`](./WEB_PRODUCT_CATEGORY_DETAILS_TABLE.md)
+
+**اليوم (سابقاً):** إضافات المنتج = اسم (`key`) + سعر (`price_currencies`) — [`WEB_PRODUCT_EXTRA_DETAILS.md`](./WEB_PRODUCT_EXTRA_DETAILS.md)
 
 **اليوم (سابقاً):** خصم ثابت (`fixed`) كسور وأكبر من 100 — `discount_value` = `number` — [`WEB_FIXED_DISCOUNT.md`](./WEB_FIXED_DISCOUNT.md)
 

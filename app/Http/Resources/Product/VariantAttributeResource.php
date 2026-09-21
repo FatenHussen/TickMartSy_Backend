@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Product;
 
+use App\Support\AttributeColorHex;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class VariantAttributeResource extends JsonResource
@@ -17,7 +18,7 @@ class VariantAttributeResource extends JsonResource
                 ? ($this->color?->name ?? $this->name)
                 : $this->name,
             'type'      => $this->categoryAttribute?->type,
-            'hex'       => $isColorType ? ($this->color?->hex ?? null) : null,
+            'hex'       => $isColorType ? AttributeColorHex::forValue($this->resource) : null,
         ];
     }
 }

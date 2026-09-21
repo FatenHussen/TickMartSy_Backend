@@ -23,7 +23,7 @@ class UpdateRequest extends FormRequest
             'contact_phone' => 'required|string|max:20',
             'lat' => 'nullable|numeric',
             'lng' => 'nullable|numeric',
-            'is_default' => 'boolean',
+            'is_default' => 'nullable|boolean',
         ];
     }
 }

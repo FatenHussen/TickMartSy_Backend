@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Product;
 
 use App\Models\AttributeValue;
+use App\Support\AttributeColorHex;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Collection;
 
@@ -83,7 +84,7 @@ class AttributeMapResource extends JsonResource
                     $map[$key]['options'][] = [
                         'id'   => $attr->id,
                         'name' => $valueName,
-                        'hex'  => $isColorType ? ($attr->color?->hex ?? null) : null,
+                        'hex'  => $isColorType ? AttributeColorHex::forValue($attr) : null,
                     ];
                 }
             }
