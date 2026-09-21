@@ -16,6 +16,7 @@ class OneResource extends JsonResource
             ] : null,
             'detail_key' => $this->getTranslations('detail_key') ?? [],
             'detail_value' => $this->getTranslations('detail_value') ?? [],
+            'price' => (float) ($this->price ?? 0),
             'is_active' => (bool) $this->is_active,
             'products_count' => $this->products_count ?? 0,
             'created_at' => $this->created_at,

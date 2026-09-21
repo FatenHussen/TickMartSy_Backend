@@ -49,10 +49,16 @@ class UpdateRequest extends FormRequest
             }
         }
 
-        $this->merge([
+        $merge = [
             'detail_key' => $detailKey,
-            'detail_value' => $detailValue,
-        ]);
+            'detail_value' => $detailValue === [] ? null : $detailValue,
+        ];
+
+        if (array_key_exists('price', $data)) {
+            $merge['price'] = $data['price'];
+        }
+
+        $this->merge($merge);
     }
 
     public function rules(): array
@@ -60,7 +66,8 @@ class UpdateRequest extends FormRequest
         $rules = [
             'category_id' => 'required|exists:categories,id',
             'detail_key' => 'required|array',
-            'detail_value' => 'required|array',
+            'detail_value' => 'nullable|array',
+            'price' => 'sometimes|required|numeric|min:0',
             'is_active' => 'nullable|boolean',
         ];
 

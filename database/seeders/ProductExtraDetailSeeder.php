@@ -16,10 +16,11 @@ class ProductExtraDetailSeeder extends Seeder
             ProductExtraDetail::firstOrCreate(
                 [
                     'category_id' => $category->id,
-                    'detail_key' => ['en' => 'Material', 'ar' => 'الخامة'],
-                    'detail_value' => ['en' => 'Cotton', 'ar' => 'قطن'],
+                    'detail_key' => ['en' => 'Gift Wrapping', 'ar' => 'تغليف هدايا'],
                 ],
                 [
+                    'detail_value' => ['en' => 'Premium wrap', 'ar' => 'تغليف فاخر'],
+                    'price' => 50,
                     'is_active' => true,
                 ]
             );
@@ -27,10 +28,11 @@ class ProductExtraDetailSeeder extends Seeder
             ProductExtraDetail::firstOrCreate(
                 [
                     'category_id' => $category->id,
-                    'detail_key' => ['en' => 'Warranty', 'ar' => 'الضمان'],
-                    'detail_value' => ['en' => '2 Years', 'ar' => 'سنتين'],
+                    'detail_key' => ['en' => 'Extended Warranty', 'ar' => 'ضمان إضافي'],
                 ],
                 [
+                    'detail_value' => ['en' => 'One extra year', 'ar' => 'سنة إضافية'],
+                    'price' => 100,
                     'is_active' => true,
                 ]
             );

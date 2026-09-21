@@ -29,6 +29,7 @@ class ProductExtraDetailService extends BaseService
     protected $sortableFields = [
         'id',
         'category_id',
+        'price',
         'created_at',
     ];
 

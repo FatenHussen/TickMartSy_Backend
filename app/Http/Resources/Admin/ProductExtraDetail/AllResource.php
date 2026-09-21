@@ -18,6 +18,7 @@ class AllResource extends JsonResource
             ] : null,
             'detail_key' => $this->getTranslation('detail_key', $locale),
             'detail_value' => $this->getTranslation('detail_value', $locale),
+            'price' => (float) ($this->price ?? 0),
             'is_active' => (bool) $this->is_active,
         ];
     }

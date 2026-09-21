@@ -2,10 +2,12 @@
 
 > **أرسلوا هذا الملف لفريق الويب.**  
 > Base: `/api/user` + `Accept-Language: ar|en`  
-> **آخر تحديث | Last Updated:** 2026-09-20  
+> **آخر تحديث | Last Updated:** 2026-09-21  
 > الملف الشامل السابق يبقى: [`web.md`](./web.md)
 
-**اليوم:** خصم ثابت (`fixed`) كسور وأكبر من 100 — `discount_value` = `number` — [`WEB_FIXED_DISCOUNT.md`](./WEB_FIXED_DISCOUNT.md)
+**اليوم:** إضافات المنتج = اسم (`key`) + سعر (`price_currencies`) — [`WEB_PRODUCT_EXTRA_DETAILS.md`](./WEB_PRODUCT_EXTRA_DETAILS.md)
+
+**اليوم (سابقاً):** خصم ثابت (`fixed`) كسور وأكبر من 100 — `discount_value` = `number` — [`WEB_FIXED_DISCOUNT.md`](./WEB_FIXED_DISCOUNT.md)
 
 **اليوم (سابقاً):** لا دروب داون Branch / اسم متجر على صفحة المنتج — [`WEB_NO_SHOP_BRANCHES.md`](./WEB_NO_SHOP_BRANCHES.md)
 

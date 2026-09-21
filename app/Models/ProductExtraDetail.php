@@ -14,10 +14,12 @@ class ProductExtraDetail extends Model
         'category_id',
         'detail_key',
         'detail_value',
+        'price',
         'is_active',
     ];
 
     protected $casts = [
+        'price' => 'float',
         'is_active' => 'boolean',
     ];
 

@@ -5,6 +5,7 @@ namespace App\Services\Admin;
 use App\Models\AttributeValue;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductExtraDetail;
 use App\Models\ProductVariant;
 use App\Models\Shop;
 use App\Models\Vendor;
@@ -574,11 +575,28 @@ class ProductService extends BaseService
             // Handle many-to-many relationships with pivot data (like extra_details)
             if ($requestKey === 'extra_details') {
                 $syncData = [];
+                $extraIds = collect($items)
+                    ->pluck('product_extra_detail_id')
+                    ->filter()
+                    ->unique()
+                    ->values()
+                    ->all();
+                $defaultPrices = $extraIds === []
+                    ? []
+                    : ProductExtraDetail::query()
+                        ->whereIn('id', $extraIds)
+                        ->pluck('price', 'id')
+                        ->all();
+
                 foreach ($items as $item) {
                     if (isset($item['product_extra_detail_id'])) {
-                        $syncData[$item['product_extra_detail_id']] = [
+                        $extraId = $item['product_extra_detail_id'];
+                        $syncData[$extraId] = [
                             'quantity' => $item['quantity'] ?? 0,
-                            'price' => $item['price'] ?? 0,
+                            // Prefer explicit product price; else pool default price
+                            'price' => array_key_exists('price', $item) && $item['price'] !== null && $item['price'] !== ''
+                                ? $item['price']
+                                : ($defaultPrices[$extraId] ?? 0),
                         ];
                     }
                 }

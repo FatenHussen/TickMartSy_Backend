@@ -35,7 +35,8 @@ class StoreRequest extends FormRequest
 
         $this->merge([
             'detail_key' => $detailKey,
-            'detail_value' => $detailValue,
+            'detail_value' => $detailValue === [] ? null : $detailValue,
+            'price' => $data['price'] ?? 0,
         ]);
     }
 
@@ -44,7 +45,8 @@ class StoreRequest extends FormRequest
         $rules = [
             'category_id' => 'required|exists:categories,id',
             'detail_key' => 'required|array',
-            'detail_value' => 'required|array',
+            'detail_value' => 'nullable|array',
+            'price' => 'required|numeric|min:0',
             'is_active' => 'nullable|boolean',
         ];
 

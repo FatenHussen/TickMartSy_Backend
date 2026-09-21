@@ -2,10 +2,12 @@
 
 > **أرسلوا هذا الملف لفريق الداشبورد فقط.**  
 > Base: `/api/admin` + Admin token.  
-> **آخر تحديث:** 20 أيلول 2026  
+> **آخر تحديث:** 21 أيلول 2026  
 > يجمع **كل** تعديلات الباك التي تحتاج تنفيذ في الداشبورد (مو بس المنتج).
 
-**اليوم:** خصم ثابت يقبل كسور وأكبر من 100 — [`DASHBOARD_FIXED_DISCOUNT.md`](./DASHBOARD_FIXED_DISCOUNT.md)
+**اليوم:** إضافات المنتجات = اسم + سعر (مو عنوان/قيمة قطن) — [`DASHBOARD_PRODUCT_EXTRA_DETAILS.md`](./DASHBOARD_PRODUCT_EXTRA_DETAILS.md)
+
+**اليوم (سابقاً):** خصم ثابت يقبل كسور وأكبر من 100 — [`DASHBOARD_FIXED_DISCOUNT.md`](./DASHBOARD_FIXED_DISCOUNT.md)
 
 **اليوم (سابقاً):** فروع المتاجر واسم الفرع ملغيان من فورم المنتج — [`DASHBOARD_NO_SHOP_BRANCHES.md`](./DASHBOARD_NO_SHOP_BRANCHES.md)
 
@@ -48,6 +50,7 @@
 23. [تعديل قيم الصفات بالـ ID](#23-تعديل-قيم-الصفات-بالـ-id)
 24. [كل المتغيّرات تُحفظ وتُربط بالمتجر](#24-كل-المتغيّرات-تحفظ-وتربط-بالمتجر)
 25. [إلغاء فروع المتاجر](#25-إلغاء-فروع-المتاجر)
+26. [إضافات المنتجات — اسم + سعر](#26-إضافات-المنتجات--اسم--سعر)
 
 ---
 
@@ -1085,4 +1088,13 @@ values[0][name][en]=XS
 
 بائع واحد = متجر واحد. احذفوا قسم الفروع من فورم المنتج والمتجر.  
 `sale_channel=shop` + `shop_id` (أو البائع). إنشاء متجر ثانٍ لنفس البائع → **422**.
+
+---
+
+## 26) إضافات المنتجات — اسم + سعر
+
+> **21 أيلول 2026** — الدليل: [`DASHBOARD_PRODUCT_EXTRA_DETAILS.md`](./DASHBOARD_PRODUCT_EXTRA_DETAILS.md) · ويب: [`WEB_PRODUCT_EXTRA_DETAILS.md`](./WEB_PRODUCT_EXTRA_DETAILS.md)
+
+فورم `/categories/extra-details` صار: **اسم الإضافة** (`detail_key`) + **سعر** (`price`).  
+`detail_value` وصف اختياري فقط — مو بديل عن السعر. لا تستخدموا placeholder «قطن».
 

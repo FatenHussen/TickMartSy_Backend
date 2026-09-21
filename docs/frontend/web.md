@@ -5,9 +5,11 @@
 > **آخر نسخة موحّدة (موصى بها للإرسال):** [`WEB_LATEST.md`](./WEB_LATEST.md)  
 > **سعر · خصم · كمية · باركود · SKU:** [`WEB_PRODUCT_PRICING_FIELDS.md`](./WEB_PRODUCT_PRICING_FIELDS.md)  
 > **تسجيل:** [`REGISTER_FLOW.md`](./REGISTER_FLOW.md) · [`WEB_REGISTER_FLOW.md`](./WEB_REGISTER_FLOW.md)  
-> **آخر تحديث | Last Updated:** 2026-09-20
+> **آخر تحديث | Last Updated:** 2026-09-21
 
-**اليوم:** خصم ثابت (`fixed`) كسور وأكبر من 100 — اقرأوا `discount_value` كـ `number` — [`WEB_FIXED_DISCOUNT.md`](./WEB_FIXED_DISCOUNT.md)
+**اليوم:** إضافات المنتج = اسم + سعر من `extra_details` — [`WEB_PRODUCT_EXTRA_DETAILS.md`](./WEB_PRODUCT_EXTRA_DETAILS.md)
+
+**اليوم (سابقاً):** خصم ثابت (`fixed`) كسور وأكبر من 100 — اقرأوا `discount_value` كـ `number` — [`WEB_FIXED_DISCOUNT.md`](./WEB_FIXED_DISCOUNT.md)
 
 **اليوم (سابقاً):** لا دروب داون Branch / اسم متجر على صفحة المنتج — [`WEB_NO_SHOP_BRANCHES.md`](./WEB_NO_SHOP_BRANCHES.md)
 
@@ -31,6 +33,7 @@
 10. [متغيّرات المنتج — عرض واختيار](#10-متغيّرات-المنتج--عرض-واختيار)
 11. [الضمان + الكمية (5 أيلول 2026)](#11-الضمان--الكمية-5-أيلول-2026)
 12. [قيم الصفات بالـ ID](#12-قيم-الصفات-بالـ-id)
+13. [إضافات المنتج — اسم + سعر](#13-إضافات-المنتج--اسم--سعر)
 
 ---
 
@@ -672,4 +675,13 @@ const canAddToCart =
 
 ---
 
-**آخر تحديث | Last Updated:** 2026-09-20
+## 13) إضافات المنتج — اسم + سعر
+
+> **21 أيلول 2026** — الدليل: [`WEB_PRODUCT_EXTRA_DETAILS.md`](./WEB_PRODUCT_EXTRA_DETAILS.md)
+
+من `extra_details` على `GET /api/user/products/{id}`: الاسم = `key` · السعر = `price_currencies`.  
+عند الطلب: `extras: [{ id, quantity }]`. أخفوا القسم إذا المصفوفة فارغة.
+
+---
+
+**آخر تحديث | Last Updated:** 2026-09-21
