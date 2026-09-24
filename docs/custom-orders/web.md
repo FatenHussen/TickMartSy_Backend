@@ -115,6 +115,8 @@ Accept-Language: ar
 
 ```json
 {
+  "show_header": true,
+  "show_section": true,
   "is_enabled": true,
   "page_ids": [1],
   "page_slugs": ["home"],
@@ -140,7 +142,9 @@ Accept-Language: ar
 
 | حقل | استخدام |
 |-----|---------|
-| `is_enabled` | إن `false`: أخفِ زر الهيدر **وقسم** الطلب السريع بالكامل |
+| `show_header` | زر الهيدر فقط — مستقل عن القسم |
+| `show_section` | القسم مفعّل — مستقل عن الزر |
+| `is_enabled` | = `show_section` (توافق خلفي — لا تستخدمه للزر) |
 | `page_ids` / `page_slugs` | اعرض القسم فقط على هذه الصفحات (افتراضي: `home`) |
 | `background_image` | صورة خلفية القسم (URL) — `background-size: cover` |
 | `background_color` | لون احتياطي تحت/بدل الصورة |
@@ -155,15 +159,17 @@ Accept-Language: ar
 ```jsx
 const { data } = await api.get('/user/settings');
 const qo = data.quick_order;
-const showSection = qo?.is_enabled && qo.page_slugs?.includes(currentPageSlug);
+const showHeader = qo?.show_header === true;
+const showSection =
+  qo?.show_section === true && qo.page_slugs?.includes(currentPageSlug);
 
-// زر الهيدر عام عند التفعيل؛ القسم حسب الصفحة:
-{qo?.is_enabled && <QuickOrderHeaderButton label={qo.badge} />}
+{showHeader && <QuickOrderHeaderButton label={qo.badge} />}
 {showSection && <QuickOrderSection config={qo} />}
 ```
 
 - زر الهيدر ينقل إلى `/custom-orders/new` (أو يفتح Modal الإنشاء).
-- لا تُظهر القسم إن `is_enabled === false` أو الصفحة الحالية ليست ضمن `page_slugs`.
+- لا تُظهر القسم إن `show_section === false` أو الصفحة الحالية ليست ضمن `page_slugs`.
+- الزر والقسم مستقلان — انظر [`../frontend/QUICK_ORDER_HEADER_VS_SECTION.md`](../frontend/QUICK_ORDER_HEADER_VS_SECTION.md).
 
 ### خلفية القسم (CSS)
 
@@ -254,7 +260,7 @@ const showSection = qo?.is_enabled && qo.page_slugs?.includes(currentPageSlug);
 
 ## Checklist ويب
 
-- [ ] جلب `GET /settings` وعرض `quick_order` إن `is_enabled` والصفحة ضمن `page_slugs`
+- [ ] جلب `GET /settings` وعرض الزر إن `show_header` والقسم إن `show_section` والصفحة ضمن `page_slugs`
 - [ ] زر هيدر عام + قسم حسب الصفحات المختارة
 - [ ] خلفية صورة أو لون
 - [ ] كروت بـ `card_background_color` + `card_variant`

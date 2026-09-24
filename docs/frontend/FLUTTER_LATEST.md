@@ -5,7 +5,9 @@
 > **آخر تحديث | Last Updated:** 2026-09-25  
 > الملف الشامل السابق يبقى: [`flutter.md`](./flutter.md)
 
-**اليوم (25 أيلول):** بنر — اعرضوا `title` · `desc` · `button_text` · `link` (مو صورة فقط) — [`FLUTTER_BANNER_REQUIRED_FIELDS.md`](./FLUTTER_BANNER_REQUIRED_FIELDS.md)
+**اليوم (25 أيلول):** طلب سريع — **زر الهيدر منفصل عن القسم** (`show_header` / `show_section`) — [`QUICK_ORDER_HEADER_VS_SECTION.md`](./QUICK_ORDER_HEADER_VS_SECTION.md)
+
+**اليوم (سابقاً):** بنر — اعرضوا `title` · `desc` · `button_text` · `link` (مو صورة فقط) — [`FLUTTER_BANNER_REQUIRED_FIELDS.md`](./FLUTTER_BANNER_REQUIRED_FIELDS.md)
 
 **اليوم (سابقاً):** جدولة التسليم **مطوية** — سطر + زر «عرض تفاصيل الجدولة» — [`FLUTTER_SCHEDULE_UI_COLLAPSED.md`](./FLUTTER_SCHEDULE_UI_COLLAPSED.md)
 
@@ -316,9 +318,12 @@ Register → POST /auth/register (no token) → OTP → POST /auth/verify-otp �
 
 `GET /api/user/settings` → `quick_order`:
 
-- `is_enabled == false` → لا زر ولا قسم.
-- الزر عام عند التفعيل؛ **القسم** فقط إذا الصفحة ∈ `page_slugs` (افتراضي `home`).
+- `show_header` → زر الهيدر فقط.
+- `show_section` → القسم؛ اعرضوه فقط إذا الصفحة ∈ `page_slugs` (افتراضي `home`).
+- `is_enabled` = `show_section` (توافق خلفي — لا تستخدموه للزر).
 - CTA → `POST /api/user/custom-order-requests` (`description` ≥ 10، `address_id`).
+
+تفصيل الفصل: [`QUICK_ORDER_HEADER_VS_SECTION.md`](./QUICK_ORDER_HEADER_VS_SECTION.md)
 
 ---
 

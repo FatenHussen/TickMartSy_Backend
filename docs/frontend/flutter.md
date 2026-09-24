@@ -579,8 +579,10 @@ POST /api/user/auth/verify-otp
 | قبل | بعد |
 |-----|-----|
 | القسم ثابت على الهوم فقط | يظهر على **الصفحات التي يختارها الأدمن** (افتراضي: `home`) |
-| — | زر الهيدر عام عند `is_enabled == true` |
+| سويتش واحد يخفي الزر والقسم معاً | **`show_header` و `show_section` منفصلان** |
 | — | القسم نفسه **حسب الصفحة** (`page_slugs`) |
+
+> تفصيل الفصل: [`QUICK_ORDER_HEADER_VS_SECTION.md`](./QUICK_ORDER_HEADER_VS_SECTION.md)
 
 ### Endpoint
 
@@ -593,6 +595,8 @@ Accept-Language: ar
 
 ```json
 {
+  "show_header": true,
+  "show_section": true,
   "is_enabled": true,
   "page_ids": [1],
   "page_slugs": ["home"],
@@ -618,7 +622,9 @@ Accept-Language: ar
 
 | حقل | استخدام |
 |-----|---------|
-| `is_enabled` | إن `false`: أخفِ زر الهيدر **وقسم** الطلب السريع بالكامل |
+| `show_header` | زر الهيدر فقط |
+| `show_section` | القسم مفعّل |
+| `is_enabled` | = `show_section` (توافق خلفي — لا تستخدمه للزر) |
 | `page_ids` | IDs الصفحات المعتمدة |
 | `page_slugs` | نفس الصفحات كـ slug — **موصى للمطابقة** مع الصفحة الحالية |
 | `background_image` | URL صورة خلفية — `BoxFit.cover` |
@@ -633,7 +639,9 @@ Accept-Language: ar
 
 ```dart
 class QuickOrderSettings {
-  final bool isEnabled;
+  final bool showHeader;
+  final bool showSection;
+  final bool isEnabled; // = showSection (BC)
   final List<int> pageIds;
   final List<String> pageSlugs;
   final String? backgroundImage;
@@ -648,6 +656,9 @@ class QuickOrderSettings {
 
   factory QuickOrderSettings.fromJson(Map<String, dynamic> json) =>
       QuickOrderSettings(
+        showHeader: json['show_header'] == true,
+        showSection: json['show_section'] == true ||
+            (json['show_section'] == null && json['is_enabled'] == true),
         isEnabled: json['is_enabled'] == true,
         pageIds: (json['page_ids'] as List?)?.cast<int>() ?? [],
         pageSlugs: (json['page_slugs'] as List?)?.cast<String>() ?? [],
@@ -679,8 +690,8 @@ class QuickOrderStep {
 
 ```dart
 final qo = settings.quickOrder;
-final showHeader = qo.isEnabled;
-final showSection = qo.isEnabled &&
+final showHeader = qo.showHeader;
+final showSection = qo.showSection &&
     (qo.pageSlugs.contains(currentPageSlug) ||
         qo.pageIds.contains(currentPageId));
 
@@ -691,10 +702,10 @@ if (showHeader) QuickOrderHeaderButton(label: qo.badge);
 if (showSection) QuickOrderSection(config: qo);
 ```
 
-1. `is_enabled == false` → لا زر ولا قسم على أي صفحة
-2. `is_enabled == true` → زر الهيدر **عام** (كل الشاشات)
-3. **القسم** فقط إن الصفحة الحالية ∈ `page_slugs` (أو `page_ids`)
-4. الافتراضي من الباك = `home` فقط؛ `page_ids: []` → لا قسم (الزر يبقى حسب `is_enabled`)
+1. `show_header` يتحكم بزر الهيدر فقط (عام على كل الشاشات)
+2. `show_section` يتحكم بالقسم + مطابقة `page_slugs` / `page_ids`
+3. الافتراضي من الباك = `home` فقط؛ `page_ids: []` → لا قسم (الزر يبقى حسب `show_header`)
+4. يمكن إخفاء القسم وإبقاء الزر، أو العكس
 
 ### خلفية القسم
 
@@ -787,7 +798,7 @@ Navigator.pushNamed(context, Routes.customOrderCreate);
 ### Checklist — طلب سريع
 
 - [ ] `GET /settings` → parse `quick_order` (كاش مع invalidation عند تغيير اللغة)
-- [ ] `is_enabled` يتحكم بزر الهيدر + القسم
+- [ ] الزر ← `show_header` · القسم ← `show_section` + مطابقة الصفحة
 - [ ] القسم يظهر فقط إن `page_slugs` / `page_ids` تطابق الصفحة الحالية
 - [ ] خلفية صورة (`NetworkImage` + `cover`) أو لون
 - [ ] كروت بـ `card_background_color` + `card_variant`
@@ -836,7 +847,7 @@ php artisan db:seed --class=NavMenuSeeder
 - [ ] `GET /nav-menu` ديناميكي
 - [ ] chips + `/products` + toggles + ترتيب
 - [ ] `GET /settings` → `quick_order`
-- [ ] `is_enabled`: زر الهيدر عام + إخفاء كامل عند `false`
+- [ ] `show_header` للزر · `show_section` + `page_slugs` للقسم (منفصلان)
 - [ ] `page_slugs` / `page_ids`: القسم حسب الصفحة (افتراضي `home`)
 - [ ] خلفية صورة/لون + `card_variant` + ريسبونسيف
 - [ ] CTA → `POST /custom-order-requests` (فلو كامل: [`../custom-orders/flutter.md`](../custom-orders/flutter.md))

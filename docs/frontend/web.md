@@ -529,7 +529,9 @@ Accept-Language: ar
 
 | حقل | معنى |
 |-----|------|
-| `is_enabled` | أخفِ الزر والقسم إن `false` |
+| `show_header` | زر الهيدر فقط |
+| `show_section` | القسم مفعّل |
+| `is_enabled` | = `show_section` (توافق خلفي — لا تستخدمه للزر) |
 | `page_ids` / `page_slugs` | اعرض القسم فقط إن الصفحة الحالية ضمن القائمة (افتراضي: `home`) |
 | `background_image` / `background_color` | خلفية القسم |
 | `card_background_color` / `card_variant` | تصميم كروت الخطوات |
@@ -537,19 +539,22 @@ Accept-Language: ar
 
 ```jsx
 const qo = settings.quick_order;
+const showHeader = qo?.show_header === true;
 const showSection =
-  qo?.is_enabled && qo.page_slugs?.includes(currentPageSlug);
+  qo?.show_section === true && qo.page_slugs?.includes(currentPageSlug);
 
-{qo?.is_enabled && <QuickOrderHeaderButton />}
+{showHeader && <QuickOrderHeaderButton />}
 {showSection && <QuickOrderSection config={qo} />}
 ```
 
 الـ CTA يفتح إنشاء طلب: `POST /api/user/custom-order-requests` (تفاصيل الفلو في المرجع أعلاه).
 
+> فصل الزر عن القسم: [`QUICK_ORDER_HEADER_VS_SECTION.md`](./QUICK_ORDER_HEADER_VS_SECTION.md)
+
 ### Checklist
 
 - [ ] قراءة `quick_order` من settings
-- [ ] احترام `is_enabled` (زر الهيدر + القسم)
+- [ ] الزر ← `show_header` · القسم ← `show_section` + `page_slugs`
 - [ ] احترام `page_slugs` / `page_ids` حسب الصفحة الحالية
 - [ ] خلفية صورة أو لون + ريسبونسيف
 
@@ -592,7 +597,7 @@ function formatDual(currencies) {
 - [ ] صفحة منتج: حماية `shop_variants` null + `country` string
 - [ ] تسجيل: phone مطلوب، email اختياري، OTP SMS
 - [ ] **فلاتر كاملة** (§7): attributes + toggles + سعر + ترتيب + كاش جذر
-- [ ] طلب سريع من `settings.quick_order` (`is_enabled` + `page_slugs`)
+- [ ] طلب سريع من `settings.quick_order` (`show_header` + `show_section` + `page_slugs`)
 - [ ] نص تحميل بدون «ومنتجات طازجة»
 - [ ] أسعار من `*_formatted` / `*_currencies` فقط
 - [ ] ضمان: `warranty.name` / `warranty.description` (fallback `warranty_period`)

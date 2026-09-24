@@ -5,7 +5,9 @@
 > **آخر تحديث | Last Updated:** 2026-09-25  
 > الملف الشامل السابق يبقى: [`web.md`](./web.md)
 
-**اليوم (25 أيلول):** على `/home` — **الهيدر الإعلاني (بنر) فوق** كرت تتبع الطلب — [`WEB_HOME_BANNER_BEFORE_TRACK.md`](./WEB_HOME_BANNER_BEFORE_TRACK.md)
+**اليوم (25 أيلول):** طلب سريع — **زر الهيدر منفصل عن القسم** (`show_header` / `show_section`) — [`QUICK_ORDER_HEADER_VS_SECTION.md`](./QUICK_ORDER_HEADER_VS_SECTION.md)
+
+**اليوم (سابقاً):** على `/home` — **الهيدر الإعلاني (بنر) فوق** كرت تتبع الطلب — [`WEB_HOME_BANNER_BEFORE_TRACK.md`](./WEB_HOME_BANNER_BEFORE_TRACK.md)
 
 **اليوم (سابقاً):** بنر — اعرضوا `title` · `desc` · `button_text` · `link` (مو صورة فقط) — [`WEB_BANNER_REQUIRED_FIELDS.md`](./WEB_BANNER_REQUIRED_FIELDS.md)
 
@@ -361,9 +363,12 @@ GET /api/user/settings
 
 `data.quick_order`:
 
-- `is_enabled === false` → أخفوا الزر والقسم.
-- القسم فقط إذا `page_slugs` تضم الصفحة الحالية (افتراضي `home`).
+- `show_header` → زر الهيدر فقط.
+- `show_section` → القسم مفعّل؛ اعرضوه فقط إذا `page_slugs` تضم الصفحة الحالية (افتراضي `home`).
+- `is_enabled` = `show_section` (توافق خلفي — لا تستخدموه للزر).
 - CTA → `POST /api/user/custom-order-requests`.
+
+تفصيل الفصل: [`QUICK_ORDER_HEADER_VS_SECTION.md`](./QUICK_ORDER_HEADER_VS_SECTION.md)
 
 ---
 

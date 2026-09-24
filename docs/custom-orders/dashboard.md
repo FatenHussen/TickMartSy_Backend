@@ -175,7 +175,8 @@ Content-Type: application/json
 
 | Key | Type | وصف |
 |-----|------|-----|
-| `quick_order_enabled` | boolean | إظهار/إخفاء القسم + زر الهيدر في التطبيق |
+| `quick_order_header_enabled` | boolean | إظهار/إخفاء **زر الهيدر فقط** |
+| `quick_order_enabled` | boolean | إظهار/إخفاء **القسم فقط** |
 | `quick_order_page_ids` | json | مصفوفة `pages.id` — الصفحات التي يظهر عليها القسم (افتراضي: `home`). `[]` = لا يظهر على أي صفحة |
 | `quick_order_background_image` | file | صورة خلفية القسم (`multipart` حقل `value`) |
 | `quick_order_background_color` | string | لون احتياطي إن لم تُرفع صورة (مثال `#FFE8D6`) |
@@ -186,6 +187,13 @@ Content-Type: application/json
 | `quick_order_subtitle` | json | الوصف |
 | `quick_order_cta` | json | نص زر CTA |
 | `quick_order_steps` | json | مصفوفة خطوات (حتى 6) |
+
+```http
+PUT /api/admin/settings/quick_order_header_enabled
+Content-Type: application/json
+
+{ "value": false }
+```
 
 ```http
 PUT /api/admin/settings/quick_order_enabled
@@ -213,9 +221,11 @@ PUT /api/admin/settings/quick_order_card_variant
 { "value": "horizontal" }
 ```
 
-التطبيق يقرأ النتيجة مجمّعة من `GET /api/user/settings` → `data.quick_order` (`page_ids` + `page_slugs`).
+التطبيق يقرأ النتيجة مجمّعة من `GET /api/user/settings` → `data.quick_order` (`show_header` + `show_section` + `page_ids` + `page_slugs`).
 
-**UI لوحة مقترح:** تبويب «طلب سريع» ضمن الإعدادات: سويتش تفعيل، multi-select صفحات، رفع صورة خلفية، اختيار لون القسم ولون الكارد، قائمة منسدلة لشكل الكارد، حقول نصوص AR/EN، محرر الخطوات.
+**UI لوحة مقترح:** تبويب «طلب سريع»: سويتش زر الهيدر، سويتش القسم، multi-select صفحات، رفع صورة خلفية، ألوان، شكل الكارد، نصوص AR/EN، محرر الخطوات.
+
+> تفصيل الفصل: [`../frontend/QUICK_ORDER_HEADER_VS_SECTION.md`](../frontend/QUICK_ORDER_HEADER_VS_SECTION.md)
 
 ---
 

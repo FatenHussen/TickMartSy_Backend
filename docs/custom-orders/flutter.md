@@ -130,7 +130,9 @@ Accept-Language: ar
 
 | حقل | نوع | استخدام |
 |-----|-----|---------|
-| `is_enabled` | bool | إن `false`: أخفِ زر الهيدر **وقسم** الطلب السريع بالكامل |
+| `show_header` | bool | زر الهيدر فقط — مستقل عن القسم |
+| `show_section` | bool | القسم مفعّل — مستقل عن الزر |
+| `is_enabled` | bool | = `show_section` (توافق خلفي — لا تستخدمه للزر) |
 | `page_ids` | int[] | IDs الصفحات التي يظهر عليها القسم |
 | `page_slugs` | string[] | نفس الصفحات كـ slug (موصى للمطابقة مع الصفحة الحالية) |
 | `background_image` | string\|null | صورة خلفية القسم (URL كامل) — إن وُجدت غطِّ القسم بها |
@@ -147,15 +149,15 @@ Accept-Language: ar
 ### سلوك الإظهار / الإخفاء
 
 1. اقرأ `quick_order` من الإعدادات (أو من الكاش).
-2. إن `is_enabled == false` → لا تعرض زر «طلب سريع / Urgent» في الهيدر ولا القسم بأي صفحة.
-3. إن `is_enabled == true` → اعرض زر الهيدر (عام).
-4. اعرض **قسم** الطلب السريع فقط إذا `page_slugs` تحتوي slug الصفحة الحالية (أو `page_ids` تحتوي id الصفحة).
-5. الافتراضي من الباك = صفحة `home` فقط.
+2. زر الهيدر ← `show_header` فقط (عام على كل الشاشات عند التفعيل).
+3. القسم ← `show_section` **و** الصفحة الحالية ∈ `page_slugs` (أو `page_ids`).
+4. الافتراضي من الباك = صفحة `home` فقط للقسم.
+5. التفصيل: [`../frontend/QUICK_ORDER_HEADER_VS_SECTION.md`](../frontend/QUICK_ORDER_HEADER_VS_SECTION.md)
 
 ```dart
-final showHeader = qo.isEnabled;
+final showHeader = qo.showHeader; // show_header
 final showSection =
-    qo.isEnabled && qo.pageSlugs.contains(currentPageSlug);
+    qo.showSection && qo.pageSlugs.contains(currentPageSlug);
 ```
 
 ### خلفية القسم

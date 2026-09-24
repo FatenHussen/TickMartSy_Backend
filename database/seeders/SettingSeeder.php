@@ -129,6 +129,7 @@ class SettingSeeder extends Seeder
         // قسم الطلب السريع — أضف المفاتيح الناقصة فقط (لا تعِد كتابة قيم الأدمن)
         $quickOrderDefaults = [
             ['key' => 'quick_order_enabled', 'value' => true, 'type' => 'boolean'],
+            ['key' => 'quick_order_header_enabled', 'value' => true, 'type' => 'boolean'],
             ['key' => 'quick_order_background_image', 'value' => null, 'type' => 'file'],
             ['key' => 'quick_order_background_color', 'value' => '#FFE8D6', 'type' => 'string'],
             ['key' => 'quick_order_card_background_color', 'value' => '#FFFFFF', 'type' => 'string'],

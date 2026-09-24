@@ -2,7 +2,7 @@
 
 > **أرسلوا هذا الملف لفريق الداشبورد فقط.**  
 > Base: `/api/admin` + Admin token.  
-> **آخر تحديث:** 21 أيلول 2026  
+> **آخر تحديث:** 25 أيلول 2026  
 > يجمع **كل** تعديلات الباك التي تحتاج تنفيذ في الداشبورد (مو بس المنتج).
 
 **اليوم:** إضافات المنتجات = اسم + سعر (مو عنوان/قيمة قطن) — [`DASHBOARD_PRODUCT_EXTRA_DETAILS.md`](./DASHBOARD_PRODUCT_EXTRA_DETAILS.md)
@@ -661,9 +661,12 @@ shop_id=5
 
 المحتوى والشكل **مركزي من Settings** (ليس قسم Page Builder).  
 الأدمن يختار:
-1. تفعيل/إيقاف الميزة (`quick_order_enabled`) — يشمل زر الهيدر
-2. **أي صفحات يظهر عليها القسم** (`quick_order_page_ids`)
-3. خلفية، ألوان، شكل الكروت، نصوص AR/EN، خطوات
+1. **إظهار/إخفاء زر الهيدر** (`quick_order_header_enabled`) — مستقل
+2. **إظهار/إخفاء القسم** (`quick_order_enabled`) — مستقل
+3. **أي صفحات يظهر عليها القسم** (`quick_order_page_ids`)
+4. خلفية، ألوان، شكل الكروت، نصوص AR/EN، خطوات
+
+> **تحديث 25 أيلول 2026:** الزر والقسم مفصولان — [`QUICK_ORDER_HEADER_VS_SECTION.md`](./QUICK_ORDER_HEADER_VS_SECTION.md)
 
 ### Endpoints
 
@@ -673,7 +676,8 @@ shop_id=5
 
 | Key | Type | وصف |
 |-----|------|-----|
-| `quick_order_enabled` | boolean | **إظهار/إخفاء** القسم + زر الهيدر |
+| `quick_order_header_enabled` | boolean | **إظهار/إخفاء زر الهيدر فقط** |
+| `quick_order_enabled` | boolean | **إظهار/إخفاء القسم فقط** |
 | `quick_order_page_ids` | json | مصفوفة `pages.id` — الصفحات التي يظهر عليها القسم. الافتراضي = صفحة `home` فقط. `[]` = لا يظهر على أي صفحة |
 | `quick_order_background_image` | file | صورة خلفية (`multipart` حقل `value`) |
 | `quick_order_background_color` | string | لون احتياطي (مثال `#FFE8D6`) |
@@ -681,6 +685,11 @@ shop_id=5
 | `quick_order_card_variant` | string | `horizontal` \| `vertical` \| `square` |
 | `quick_order_badge` / `title` / `subtitle` / `cta` | json | `{ "ar": "...", "en": "..." }` |
 | `quick_order_steps` | json | مصفوفة خطوات (حتى 6) |
+
+```http
+PUT /api/admin/settings/quick_order_header_enabled
+{ "value": false }
+```
 
 ```http
 PUT /api/admin/settings/quick_order_enabled
@@ -706,17 +715,20 @@ GET /api/user/settings → data.quick_order
 
 | حقل | معنى |
 |-----|------|
-| `is_enabled` | ماستر سويتش (قسم + زر الهيدر) |
+| `show_header` | زر الهيدر |
+| `show_section` | القسم مفعّل |
+| `is_enabled` | = `show_section` (توافق خلفي) |
 | `page_ids` | IDs الصفحات المعتمدة |
 | `page_slugs` | نفس الصفحات كـ slug |
 
-**قاعدة العرض عند العميل:** إن `is_enabled` و (الصفحة الحالية ∈ `page_slugs` أو ∈ `page_ids`) → اعرض القسم.
+**قاعدة العرض:** الزر ← `show_header` · القسم ← `show_section` و (الصفحة ∈ `page_slugs` أو ∈ `page_ids`).
 
 ### UI مقترح
 
 تبويب «طلب سريع» ضمن الإعدادات:
-- سويتش تفعيل
-- **multi-select صفحات** من `GET /api/admin/pages`
+- سويتش **إظهار زر الهيدر**
+- سويتش **إظهار القسم**
+- **multi-select صفحات** من `GET /api/admin/pages` (للقسم فقط)
 - صورة خلفية + ألوان
 - شكل الكارد
 - نصوص AR/EN
@@ -827,8 +839,9 @@ file: <products.xlsx>
 - [ ] استيراد Excel: تنزيل قالب + رفع + ملخص created/updated/failed
 
 ### طلب سريع
-- [ ] إعدادات: سويتش `quick_order_enabled` + multi-select `quick_order_page_ids` + خلفية + كروت + نصوص
+- [ ] إعدادات: سويتش `quick_order_header_enabled` + سويتش `quick_order_enabled` + multi-select `quick_order_page_ids` + خلفية + كروت + نصوص
 - [ ] قائمة الصفحات من `GET /api/admin/pages`
+- [ ] حفظ `PUT /api/admin/settings/quick_order_header_enabled` و `quick_order_enabled` بشكل منفصل
 - [ ] حفظ `PUT /api/admin/settings/quick_order_page_ids` بمصفوفة IDs
 - [ ] شاشة قائمة/تفاصيل custom-order-requests + convert/cancel
 

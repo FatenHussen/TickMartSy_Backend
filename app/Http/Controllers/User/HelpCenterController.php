@@ -120,8 +120,13 @@ class HelpCenterController extends Controller
      */
     private function formatQuickOrderSettings($settings, string $locale): array
     {
-        $enabledRaw = $settings['quick_order_enabled']->value ?? true;
-        $isEnabled = filter_var($enabledRaw, FILTER_VALIDATE_BOOLEAN);
+        // Section visibility (page body). Independent from the header button.
+        $sectionRaw = $settings['quick_order_enabled']->value ?? true;
+        $showSection = filter_var($sectionRaw, FILTER_VALIDATE_BOOLEAN);
+
+        // Header / nav button — separate admin switch.
+        $headerRaw = $settings['quick_order_header_enabled']?->value ?? true;
+        $showHeader = filter_var($headerRaw, FILTER_VALIDATE_BOOLEAN);
 
         $bgImage = $settings['quick_order_background_image']->value ?? null;
         if (is_array($bgImage)) {
@@ -143,7 +148,10 @@ class HelpCenterController extends Controller
         );
 
         return [
-            'is_enabled' => $isEnabled,
+            // BC: is_enabled = section only (was previously master for header+section).
+            'is_enabled' => $showSection,
+            'show_header' => $showHeader,
+            'show_section' => $showSection,
             'page_ids' => $pageIds,
             'page_slugs' => $pageSlugs,
             'background_image' => $bgImage
@@ -174,7 +182,7 @@ class HelpCenterController extends Controller
     /**
      * Normalize stored page IDs and resolve slugs for clients.
      * Missing setting → home only (backward compatible).
-     * Explicit empty array → no pages (section hidden; header still follows is_enabled).
+     * Explicit empty array → no pages (section hidden; header still follows show_header).
      *
      * @return array{0: list<int>, 1: list<string>}
      */
