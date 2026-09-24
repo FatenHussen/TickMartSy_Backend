@@ -16,9 +16,9 @@ class OneResource extends JsonResource
     {
         return [
             'id'                    => $this->id,
-            'title'                  => $this->getTranslations('title'),
-            'description'            => $this->getTranslations('description'),
-            'button_text'            => $this->getTranslations('button_text'),
+            'title'                  => $this->translationPair('title'),
+            'description'            => $this->translationPair('description'),
+            'button_text'            => $this->translationPair('button_text'),
             'image_url'                => $this->image_url,
             'link' =>                  $this->link,
             'expires_at' =>           $this->expires_at?->format('Y-m-d H:i'),
@@ -27,5 +27,31 @@ class OneResource extends JsonResource
             'is_active'             => $this->is_active,
             'created_at'            => $this->created_at?->format('Y-m-d H:i'),
         ];
+    }
+
+    /**
+     * Always return both locales so a cleared field comes back as null, not [].
+     *
+     * @return array{ar: ?string, en: ?string}
+     */
+    private function translationPair(string $field): array
+    {
+        $translations = $this->getTranslations($field);
+
+        return [
+            'ar' => $this->filledTranslation($translations['ar'] ?? null),
+            'en' => $this->filledTranslation($translations['en'] ?? null),
+        ];
+    }
+
+    private function filledTranslation(mixed $value): ?string
+    {
+        if (! is_string($value)) {
+            return null;
+        }
+
+        $value = trim($value);
+
+        return $value === '' ? null : $value;
     }
 }
