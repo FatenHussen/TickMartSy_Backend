@@ -2,10 +2,14 @@
 
 > **أرسلوا هذا الملف لفريق الويب.**  
 > Base: `/api/user` + `Accept-Language: ar|en`  
-> **آخر تحديث | Last Updated:** 2026-09-21  
+> **آخر تحديث | Last Updated:** 2026-09-25  
 > الملف الشامل السابق يبقى: [`web.md`](./web.md)
 
-**اليوم:** تكبير صورة المنتج (lightbox / zoom) — [`WEB_PRODUCT_IMAGE_ZOOM.md`](./WEB_PRODUCT_IMAGE_ZOOM.md)
+**اليوم (25 أيلول):** بنر — اعرضوا `title` · `desc` · `button_text` · `link` (مو صورة فقط) — [`WEB_BANNER_REQUIRED_FIELDS.md`](./WEB_BANNER_REQUIRED_FIELDS.md)
+
+**اليوم (سابقاً):** جدولة التسليم **مطوية** — سطر + زر «عرض تفاصيل الجدولة» (مو بلوك مفتوح) — [`WEB_SCHEDULE_UI_COLLAPSED.md`](./WEB_SCHEDULE_UI_COLLAPSED.md)
+
+**اليوم (سابقاً):** تكبير صورة المنتج (lightbox / zoom) — [`WEB_PRODUCT_IMAGE_ZOOM.md`](./WEB_PRODUCT_IMAGE_ZOOM.md)
 
 **اليوم (سابقاً):** جدول تفاصيل المنتج — بلا ترويسة «الاسم/القيمة» + فاصل عمودي — [`WEB_PRODUCT_CATEGORY_DETAILS_TABLE.md`](./WEB_PRODUCT_CATEGORY_DETAILS_TABLE.md)
 
@@ -423,6 +427,8 @@ Accept-Language: ar
 **تخصيص** (Auth) — `GET /api/user/schedules/{id}/custom-basket` ثم items + confirm.  
 إضافة: `{ shop_product_variant_id, quantity }` من `shop_variants[].id`.  
 `summary.savings_formatted` = وفّرت. نعم: `{ confirm_schedule: true, start_date }` · لا: `{ confirm_schedule: false }` → `cart_items`.
+
+**واجهة التأكيد مطوية:** سطر «هل ترغب بجدولة…» + زر «عرض تفاصيل الجدولة» — التفاصيل بعد الضغط فقط. [`WEB_SCHEDULE_UI_COLLAPSED.md`](./WEB_SCHEDULE_UI_COLLAPSED.md)
 
 التفاصيل والعقد الكامل: [`WEB_CUSTOM_BASKET.md`](./WEB_CUSTOM_BASKET.md)
 

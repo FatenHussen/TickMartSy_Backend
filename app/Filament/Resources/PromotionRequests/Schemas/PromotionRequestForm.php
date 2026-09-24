@@ -188,6 +188,7 @@ class PromotionRequestForm
                                         ->url()
                                         ->placeholder('https://example.com')
                                         ->helperText(__('custom.banner_link_helper'))
+                                        ->required(fn(Get $get) => $get('type') === 'banner')
                                         ->columnSpan(1),
 
                                     Forms\Components\DatePicker::make('banner_starts_at')

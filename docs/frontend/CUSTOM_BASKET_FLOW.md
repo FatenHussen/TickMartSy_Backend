@@ -79,6 +79,9 @@ DELETE /api/user/schedules/{id}/custom-basket/items/{itemId}
 
 **تأكيد نعم / لا**
 
+الواجهة **مطوية** افتراضياً (سطر + زر «عرض تفاصيل الجدولة») — مو بلوك جدولة مفتوح.  
+ويب: [`WEB_SCHEDULE_UI_COLLAPSED.md`](./WEB_SCHEDULE_UI_COLLAPSED.md) · Flutter: [`FLUTTER_SCHEDULE_UI_COLLAPSED.md`](./FLUTTER_SCHEDULE_UI_COLLAPSED.md).
+
 ```http
 POST /api/user/schedules/{id}/custom-basket/confirm
 ```

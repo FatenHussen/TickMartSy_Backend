@@ -180,7 +180,8 @@ function hrefFor(item) {
 - `type: "manual"` مع عناصر بانرات
 - الصورة في `item.image` **عرضية** — نسبة ≈ 16:6
 - عنصر واحد = إعلان ثابت، عدة عناصر = سلايدر
-- الضغط يفتح `item.link`
+- الضغط يفتح `items[i].link`
+- اعرضوا أيضاً `item.title` · `item.desc` · `item.button_text` — [`WEB_BANNER_REQUIRED_FIELDS.md`](./WEB_BANNER_REQUIRED_FIELDS.md)
 - استخدم `background_color` للقسم و `background_card_color` للكارد
 - تجاهل قسمًا `items` فارغة
 

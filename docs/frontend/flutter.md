@@ -200,7 +200,8 @@ Widget buildSection(Section section) {
 - غالباً `layout: slider` + `variant: horizontal`
 - صورة **عرضية** → `AspectRatio` ≈ 16/6
 - عنصر واحد = بانر ثابت، عدة = `PageView`/carousel
-- الضغط → `item.link`
+- الضغط → `item.link` على مستوى عنصر القسم (`items[i].link`)
+- اعرضوا أيضاً `item.title` · `item.desc` · `item.button_text` — [`FLUTTER_BANNER_REQUIRED_FIELDS.md`](./FLUTTER_BANNER_REQUIRED_FIELDS.md)
 
 ### Checklist
 

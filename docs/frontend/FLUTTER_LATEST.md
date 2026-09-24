@@ -2,8 +2,12 @@
 
 > **أرسلوا هذا الملف لفريق Flutter.**  
 > Base: `/api/user` + `Accept-Language: ar|en`  
-> **آخر تحديث | Last Updated:** 2026-09-21  
+> **آخر تحديث | Last Updated:** 2026-09-25  
 > الملف الشامل السابق يبقى: [`flutter.md`](./flutter.md)
+
+**اليوم (25 أيلول):** بنر — اعرضوا `title` · `desc` · `button_text` · `link` (مو صورة فقط) — [`FLUTTER_BANNER_REQUIRED_FIELDS.md`](./FLUTTER_BANNER_REQUIRED_FIELDS.md)
+
+**اليوم (سابقاً):** جدولة التسليم **مطوية** — سطر + زر «عرض تفاصيل الجدولة» — [`FLUTTER_SCHEDULE_UI_COLLAPSED.md`](./FLUTTER_SCHEDULE_UI_COLLAPSED.md)
 
 **اليوم (21 أيلول) — دفعة واحدة أرسلوا:**
 
@@ -427,6 +431,8 @@ int? asInt(dynamic v) {
 
 نعم: `{ "confirm_schedule": true, "start_date": "2026-09-08" }` → طلباتي المجدولة + `cart_items`  
 لا: `{ "confirm_schedule": false }` → `cart_items` مرة — المسودة تُحذف
+
+**واجهة التأكيد مطوية:** سطر + زر «عرض تفاصيل الجدولة» — [`FLUTTER_SCHEDULE_UI_COLLAPSED.md`](./FLUTTER_SCHEDULE_UI_COLLAPSED.md)
 
 `summary.savingsFormatted` = وفّرت. لا تحسبوا الخصم على الجهاز. مسودة لكل `scheduleId`.
 

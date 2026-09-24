@@ -163,7 +163,11 @@ DELETE /api/user/schedules/{id}/custom-basket/items/{itemId}
 
 ## 5) تأكيد — نعم / لا
 
-بعد عرض السلة، السؤال:
+**واجهة مطوية افتراضياً** — لا تعرضوا كروت «مرة واحدة / جدولة» والتقويم مفتوحين من أول ما تفتح الشاشة.  
+سطر + زر «عرض تفاصيل الجدولة»؛ التفاصيل بعد الضغط فقط.  
+التفاصيل: [`WEB_SCHEDULE_UI_COLLAPSED.md`](./WEB_SCHEDULE_UI_COLLAPSED.md).
+
+بعد عرض السلة، السؤال (بعد فتح التفاصيل أو كنص السطر المطوي):
 
 > بدك تطلب هالسلة كل **{schedule.name}** ونبعت تذكير قبل الموعد؟
 
@@ -223,6 +227,7 @@ POST /api/user/schedules/{id}/custom-basket/confirm
 - [ ] صفحة التخصيص: هيدر من `schedule` + فئات + بحث + براند
 - [ ] إضافة بـ `shop_variants[].id` فور اختيار الكمية
 - [ ] عرض السلة من `items` + `summary` (وفّرت من الـ API)
+- [ ] تأكيد مطوي: سطر + زر «عرض تفاصيل الجدولة» — [`WEB_SCHEDULE_UI_COLLAPSED.md`](./WEB_SCHEDULE_UI_COLLAPSED.md)
 - [ ] نعم يحتاج `start_date` · لا يحذف المسودة
 - [ ] `cart_items` → سلة / `POST /orders`
 - [ ] أسبوعي وشهري مسودتان منفصلتان

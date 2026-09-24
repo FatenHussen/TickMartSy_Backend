@@ -171,6 +171,9 @@ summary.finalPriceFormatted
 
 ## 5) تأكيد نعم / لا
 
+**واجهة مطوية افتراضياً** — سطر + زر «عرض تفاصيل الجدولة»؛ لا تفتحوا اختيار التكرار/التقويم من أول الشاشة.  
+[`FLUTTER_SCHEDULE_UI_COLLAPSED.md`](./FLUTTER_SCHEDULE_UI_COLLAPSED.md).
+
 > بدك تطلب هالسلة كل **{schedule.name}** ونبعت تذكير قبل الموعد؟
 
 ```http
@@ -220,6 +223,7 @@ POST /api/user/schedules/{id}/custom-basket/confirm
 - [ ] `shop_variants[].id` + `shop_id != null` قبل الإضافة
 - [ ] `itemId` = `items[].id`
 - [ ] `summary` بدون حساب محلي
+- [ ] تأكيد مطوي: سطر + زر «عرض تفاصيل الجدولة» — [`FLUTTER_SCHEDULE_UI_COLLAPSED.md`](./FLUTTER_SCHEDULE_UI_COLLAPSED.md)
 - [ ] نعم يحتاج `start_date` · لا يحذف المسودة
 - [ ] `cart_items` → سلة / `POST /orders`
 - [ ] مسودة لكل `scheduleId`

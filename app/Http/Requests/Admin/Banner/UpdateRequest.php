@@ -22,16 +22,19 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => ['nullable', 'array'],
-            'title.*' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'array'],
-            'description.*' => ['required', 'string', 'max:255'],
-            'button_text' => ['nullable', 'array'],
-            'button_text.*' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'array'],
+            'title.en' => ['required', 'string', 'max:255'],
+            'title.ar' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'array'],
+            'description.en' => ['required', 'string', 'max:255'],
+            'description.ar' => ['required', 'string', 'max:255'],
+            'button_text' => ['required', 'array'],
+            'button_text.en' => ['required', 'string', 'max:255'],
+            'button_text.ar' => ['required', 'string', 'max:255'],
             'image' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,mp4,mov,avi,webm|max:8192',
             'is_active' => ['nullable', 'boolean'],
-            'link' => 'nullable|string|url',
-            'expires_at' => ['nullable', 'date', 'after:now'],
+            'link' => ['required', 'string', 'url'],
+            'expires_at' => ['required', 'date', 'after:now'],
         ];
     }
 }
