@@ -135,7 +135,14 @@ class OrderService extends BaseService
             $order->items()->update([
                 'item_status' => $newStatus,
             ]);
-            $order = $order->fresh('items');
+            $order = $order->fresh([
+                'items.shopProductVariant.shop',
+                'user',
+                'driver',
+                'address',
+                'paymentMethod',
+                'coupon',
+            ]);
 
             OrderStatusChanged::dispatch(
                 $order,

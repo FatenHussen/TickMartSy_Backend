@@ -5,7 +5,9 @@
 > **آخر تحديث | Last Updated:** 2026-09-25  
 > الملف الشامل السابق يبقى: [`web.md`](./web.md)
 
-**اليوم (25 أيلول):** طلب سريع — **زر الهيدر منفصل عن القسم** (`show_header` / `show_section`) — [`QUICK_ORDER_HEADER_VS_SECTION.md`](./QUICK_ORDER_HEADER_VS_SECTION.md)
+**اليوم (25 أيلول):** حالة الطلب — اعرضوا `out_delivery` / `status_label` (مو fallback `pending`) — [`WEB_ORDER_STATUS.md`](./WEB_ORDER_STATUS.md)
+
+**اليوم (سابقاً):** طلب سريع — **زر الهيدر منفصل عن القسم** (`show_header` / `show_section`) — [`QUICK_ORDER_HEADER_VS_SECTION.md`](./QUICK_ORDER_HEADER_VS_SECTION.md)
 
 **اليوم (سابقاً):** على `/home` — **الهيدر الإعلاني (بنر) فوق** كرت تتبع الطلب — [`WEB_HOME_BANNER_BEFORE_TRACK.md`](./WEB_HOME_BANNER_BEFORE_TRACK.md)
 

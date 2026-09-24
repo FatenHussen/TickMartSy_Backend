@@ -9,6 +9,7 @@ use App\Http\Resources\Driver\AllResource as DriverAllResource;
 use App\Http\Resources\EndUser\AllResource;
 use App\Http\Resources\SectionItem\AllResource as SectionItemAllResource;
 use App\Traits\HasCurrencyConversion;
+use App\Enums\OrderStatus;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -24,10 +25,14 @@ class OneResource extends JsonResource
     public function toArray(Request $request): array
     {
 
+        $status = $this->status;
+        $statusEnum = is_string($status) ? OrderStatus::tryFrom($status) : null;
+
         return [
             'id' => $this->id,
             'order_code' => $this->order_code ?? $this->id,
-            'status' => $this->status,
+            'status' => $status,
+            'status_label' => $statusEnum?->labelAr(),
             'rejection_reason' => $this->rejection_reason,
             'cart_type' => $this->cart_type,
             'custom_order_request_id' => $this->custom_order_request_id,

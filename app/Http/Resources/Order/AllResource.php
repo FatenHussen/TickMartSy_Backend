@@ -7,6 +7,7 @@ use App\Traits\HasCurrencyConversion;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\Address\AllResource as AddressOneResource;
+use App\Enums\OrderStatus;
 
 class AllResource extends JsonResource
 {
@@ -20,9 +21,8 @@ class AllResource extends JsonResource
     public function toArray(Request $request): array
     {
         $groupedItems = $this->items
-            ->groupBy(function ($item) {
-                return $item->shopProductVariant->shop_id;
-            })
+            ->filter(fn ($item) => $item->shopProductVariant?->shop)
+            ->groupBy(fn ($item) => $item->shopProductVariant->shop_id)
             ->map(function ($items) {
                 $shop = $items->first()->shopProductVariant->shop;
 
@@ -34,10 +34,15 @@ class AllResource extends JsonResource
                 ];
             })
             ->values();
+
+        $status = $this->status;
+        $statusEnum = is_string($status) ? OrderStatus::tryFrom($status) : null;
+
         return [
             'id' => $this->id,
             'order_code' => $this->order_code ?? $this->id,
-            'status' => $this->status,
+            'status' => $status,
+            'status_label' => $statusEnum?->labelAr(),
             'rejection_reason' => $this->rejection_reason,
             'cart_type' => $this->cart_type,
             'is_instant_delivery' => $this->is_instant_delivery,

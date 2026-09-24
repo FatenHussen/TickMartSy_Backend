@@ -27,6 +27,11 @@ class OrderController extends BaseIndexController
     ======================= */
     public function changeStatus(Request $request, int $orderId)
     {
+        // Dashboard sometimes sends out_for_delivery; canonical value is out_delivery
+        if ($request->input('status') === 'out_for_delivery') {
+            $request->merge(['status' => OrderStatus::OUT_DELIVERY->value]);
+        }
+
         $data = $request->validate([
             'status' => 'required|in:' . implode(',', array_column(OrderStatus::cases(), 'value')),
             'rejection_reason' => 'nullable|string|max:1000|required_if:status,' . OrderStatus::CANCELLED_BY_ADMIN->value,

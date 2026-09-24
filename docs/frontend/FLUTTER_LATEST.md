@@ -5,7 +5,9 @@
 > **آخر تحديث | Last Updated:** 2026-09-25  
 > الملف الشامل السابق يبقى: [`flutter.md`](./flutter.md)
 
-**اليوم (25 أيلول):** طلب سريع — **زر الهيدر منفصل عن القسم** (`show_header` / `show_section`) — [`QUICK_ORDER_HEADER_VS_SECTION.md`](./QUICK_ORDER_HEADER_VS_SECTION.md)
+**اليوم (25 أيلول):** حالة الطلب — اعرضوا `out_delivery` / `status_label` (مو fallback `pending`) — [`FLUTTER_ORDER_STATUS.md`](./FLUTTER_ORDER_STATUS.md)
+
+**اليوم (سابقاً):** طلب سريع — **زر الهيدر منفصل عن القسم** (`show_header` / `show_section`) — [`QUICK_ORDER_HEADER_VS_SECTION.md`](./QUICK_ORDER_HEADER_VS_SECTION.md)
 
 **اليوم (سابقاً):** بنر — اعرضوا `title` · `desc` · `button_text` · `link` (مو صورة فقط) — [`FLUTTER_BANNER_REQUIRED_FIELDS.md`](./FLUTTER_BANNER_REQUIRED_FIELDS.md)
 

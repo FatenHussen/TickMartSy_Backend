@@ -5,7 +5,9 @@
 > **آخر تحديث:** 25 أيلول 2026  
 > يجمع **كل** تعديلات الباك التي تحتاج تنفيذ في الداشبورد (مو بس المنتج).
 
-**اليوم:** إضافات المنتجات = اسم + سعر (مو عنوان/قيمة قطن) — [`DASHBOARD_PRODUCT_EXTRA_DETAILS.md`](./DASHBOARD_PRODUCT_EXTRA_DETAILS.md)
+**اليوم:** حالة الطلب — `out_delivery` (مو `out_for_delivery`) + `status_label` — [`DASHBOARD_ORDER_STATUS.md`](./DASHBOARD_ORDER_STATUS.md)
+
+**اليوم (سابقاً):** إضافات المنتجات = اسم + سعر (مو عنوان/قيمة قطن) — [`DASHBOARD_PRODUCT_EXTRA_DETAILS.md`](./DASHBOARD_PRODUCT_EXTRA_DETAILS.md)
 
 **اليوم (سابقاً):** خصم ثابت يقبل كسور وأكبر من 100 — [`DASHBOARD_FIXED_DISCOUNT.md`](./DASHBOARD_FIXED_DISCOUNT.md)
 
