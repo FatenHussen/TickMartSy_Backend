@@ -5,7 +5,9 @@
 > **آخر تحديث | Last Updated:** 2026-09-25  
 > الملف الشامل السابق يبقى: [`web.md`](./web.md)
 
-**اليوم (25 أيلول):** بنر — اعرضوا `title` · `desc` · `button_text` · `link` (مو صورة فقط) — [`WEB_BANNER_REQUIRED_FIELDS.md`](./WEB_BANNER_REQUIRED_FIELDS.md)
+**اليوم (25 أيلول):** على `/home` — **الهيدر الإعلاني (بنر) فوق** كرت تتبع الطلب — [`WEB_HOME_BANNER_BEFORE_TRACK.md`](./WEB_HOME_BANNER_BEFORE_TRACK.md)
+
+**اليوم (سابقاً):** بنر — اعرضوا `title` · `desc` · `button_text` · `link` (مو صورة فقط) — [`WEB_BANNER_REQUIRED_FIELDS.md`](./WEB_BANNER_REQUIRED_FIELDS.md)
 
 **اليوم (سابقاً):** جدولة التسليم **مطوية** — سطر + زر «عرض تفاصيل الجدولة» (مو بلوك مفتوح) — [`WEB_SCHEDULE_UI_COLLAPSED.md`](./WEB_SCHEDULE_UI_COLLAPSED.md)
 
