@@ -8,7 +8,8 @@
 > Flutter: [`FLUTTER_BANNER_REQUIRED_FIELDS.md`](./FLUTTER_BANNER_REQUIRED_FIELDS.md)
 
 **كل حقول البنر اختيارية** ما عدا الصورة عند **الإنشاء**.  
-بدون `expires_at` → البنر **دائم** (ما ينحذف تلقائياً).
+بدون `expires_at` → البنر **دائم** (ما ينحذف تلقائياً).  
+مسح الحقول عند التعديل: [`DASHBOARD_BANNER_CLEAR_FIELDS.md`](./DASHBOARD_BANNER_CLEAR_FIELDS.md)
 
 ---
 

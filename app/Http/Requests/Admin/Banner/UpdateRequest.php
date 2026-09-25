@@ -16,8 +16,41 @@ class UpdateRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        if ($this->has('expires_at') && $this->input('expires_at') === '') {
-            $this->merge(['expires_at' => null]);
+        $merge = [];
+
+        foreach (['title', 'description', 'button_text'] as $field) {
+            if (! $this->exists($field)) {
+                continue;
+            }
+
+            $value = $this->input($field);
+            if (! is_array($value)) {
+                $merge[$field] = ['ar' => null, 'en' => null];
+                continue;
+            }
+
+            foreach ($value as $locale => $text) {
+                if (is_string($text) && trim($text) === '') {
+                    $value[$locale] = null;
+                }
+            }
+
+            $merge[$field] = $value;
+        }
+
+        foreach (['link', 'expires_at'] as $field) {
+            if (! $this->exists($field)) {
+                continue;
+            }
+
+            $value = $this->input($field);
+            if ($value === null || (is_string($value) && trim($value) === '')) {
+                $merge[$field] = null;
+            }
+        }
+
+        if ($merge !== []) {
+            $this->merge($merge);
         }
     }
 

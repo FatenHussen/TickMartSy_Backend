@@ -18,9 +18,9 @@ class AllResource extends JsonResource
     {
         return [
             'id'                    => $this->id,
-            'title'                  => $this->title,
-            'description'            => $this->description,
-            'button_text'            => $this->button_text,
+            'title'                  => $this->localeText('title'),
+            'description'            => $this->localeText('description'),
+            'button_text'            => $this->localeText('button_text'),
             'image_url'                => $this->image_url,
             'link' =>                  $this->link,
             'expires_at' =>           $this->expires_at?->format('Y-m-d H:i'),
@@ -29,5 +29,18 @@ class AllResource extends JsonResource
             'is_active'             => $this->is_active,
             'created_at'            => $this->created_at?->format('Y-m-d H:i'),
         ];
+    }
+
+    private function localeText(string $field): ?string
+    {
+        $value = $this->getTranslation($field, app()->getLocale(), false);
+
+        if (! is_string($value)) {
+            return null;
+        }
+
+        $value = trim($value);
+
+        return $value === '' ? null : $value;
     }
 }

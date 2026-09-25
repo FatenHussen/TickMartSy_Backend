@@ -35,37 +35,78 @@ class BannerService extends BaseService
         DB::beginTransaction();
 
         $object = $this->model::query()->findOrFail($id);
+        $data = $this->withPresentRequestFields($data);
+        $clears = [];
 
         foreach ($object->translatable as $field) {
             if (! array_key_exists($field, $data)) {
                 continue;
             }
 
-            $incoming = is_array($data[$field]) ? $data[$field] : null;
-            $cleaned = $incoming === null
-                ? []
-                : $this->cleanedTranslations($object->getTranslations($field), $incoming);
-            $raw = $object->getAttributes();
-            $raw[$field] = $cleaned === []
+            $incoming = $data[$field];
+            $cleaned = is_array($incoming)
+                ? $this->cleanedTranslations($object->getTranslations($field), $incoming)
+                : [];
+
+            $clears[$field] = $cleaned === []
                 ? null
                 : json_encode($cleaned, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-            $object->setRawAttributes($raw);
             unset($data[$field]);
         }
 
         foreach (['link', 'expires_at'] as $field) {
-            if (array_key_exists($field, $data) && ($data[$field] === null || $data[$field] === '')) {
-                $data[$field] = null;
+            if (! array_key_exists($field, $data)) {
+                continue;
+            }
+
+            $value = $data[$field];
+            if (is_string($value)) {
+                $value = trim($value);
+            }
+
+            if ($value === null || $value === '') {
+                $clears[$field] = null;
+                unset($data[$field]);
             }
         }
 
         $this->handleSingleImages($object, $data);
-        $object->update($data);
+
+        if ($data !== []) {
+            $object->update($data);
+        }
+
+        if ($clears !== []) {
+            $this->model::query()->whereKey($object->id)->update($clears);
+        }
+
         $object->refresh();
 
         DB::commit();
 
         return new $this->resource($object);
+    }
+
+    /**
+     * Empty multipart values are present keys. Keep them even when validation drops nulls.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    private function withPresentRequestFields(array $data): array
+    {
+        $request = request();
+        if ($request === null) {
+            return $data;
+        }
+
+        foreach (['title', 'description', 'button_text', 'link', 'expires_at'] as $field) {
+            if ($request->exists($field)) {
+                $data[$field] = $request->input($field);
+            }
+        }
+
+        return $data;
     }
 
     /**
