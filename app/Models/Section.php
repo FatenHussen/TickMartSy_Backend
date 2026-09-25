@@ -200,4 +200,14 @@ class Section extends Model
     {
         return $this->hasMany(SectionItem::class)->orderBy('order');
     }
+
+    public function firstBannerItem()
+    {
+        return $this->hasOne(SectionItem::class)->ofMany(
+            ['order' => 'min', 'id' => 'min'],
+            function ($query) {
+                $query->where('item_type', Banner::class);
+            }
+        );
+    }
 }

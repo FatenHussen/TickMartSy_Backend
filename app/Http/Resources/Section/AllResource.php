@@ -23,6 +23,21 @@ class AllResource extends JsonResource
             'background_card_color' => $this->background_card_color,
             'is_active' => (bool) $this->is_active,
             'pages_count' => $this->whenCounted('pages'),
+            'image_url' => $this->when(
+                $this->contentType() === 'banner',
+                fn () => $this->firstBannerImageUrl()
+            ),
         ];
+    }
+
+    private function firstBannerImageUrl(): ?string
+    {
+        $banner = $this->firstBannerItem?->item;
+
+        if (! $banner instanceof \App\Models\Banner || ! is_string($banner->image) || $banner->image === '') {
+            return null;
+        }
+
+        return $banner->image_url;
     }
 }

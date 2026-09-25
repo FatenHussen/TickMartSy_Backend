@@ -113,6 +113,7 @@ class PageService extends BaseService
 
         $query = Section::query()
             ->where('is_active', true)
+            ->with(['firstBannerItem.item'])
             ->withCount('pages');
 
         if (!empty($config['search'])) {

@@ -21,7 +21,7 @@ class SectionService extends BaseService
         $this->collection = AllResource::class;
         $this->pagination = true;
         $this->searchableFields = ['id', 'name'];
-        $this->relations = ['sectionItems.item'];
+        $this->relations = ['sectionItems.item', 'firstBannerItem.item'];
         $this->syncRelations = [
             'sectionItems'   => 'item_ids',
         ];
