@@ -173,7 +173,8 @@ Content-Type: application/json
 
 قسم البانرات **يدوي** ويختار من البانرات الموجودة (`GET /api/admin/banners`). الصورة **عرضية** (≈ 16:6). بانر واحد = إعلان ثابت، عدة بانرات = سلايدر.
 
-> **إنشاء/تعديل البنر:** كل الحقول **اختيارية** ما عدا `image` عند الإنشاء. بدون `expires_at` = دائم — [`DASHBOARD_BANNER_REQUIRED_FIELDS.md`](./DASHBOARD_BANNER_REQUIRED_FIELDS.md).
+> **إنشاء/تعديل البنر:** كل الحقول **اختيارية** ما عدا `image` عند الإنشاء. بدون `expires_at` = دائم — [`DASHBOARD_BANNER_REQUIRED_FIELDS.md`](./DASHBOARD_BANNER_REQUIRED_FIELDS.md).  
+> **بطاقة البنر** في إضافة قسم وصفحة التفاصيل: صورة + اسم فقط، وبدون اسم تبقى الصورة — [`DASHBOARD_SECTION_BANNER_CARD.md`](./DASHBOARD_SECTION_BANNER_CARD.md).
 
 ---
 

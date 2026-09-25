@@ -92,7 +92,9 @@ expires_at=
 
 ## 4) الرد
 
-`GET` ورد التعديل نفس الشكل. المفاتيح **دايماً موجودة**:
+### تفاصيل / بعد التعديل — `GET /api/admin/banners/{id}`
+
+المفاتيح **دايماً موجودة**:
 
 ```json
 {
@@ -108,6 +110,23 @@ expires_at=
 
 - `null` = الحقل ممسوح. عبّوا الإنبت فاضي.
 - لا تتعاملوا مع `[]` كـ «ما في تغيير» — الباك ما عاد يرجّع مصفوفة فاضية.
+
+### القائمة — `GET /api/admin/banners`
+
+`title` / `description` / `button_text` هنا **String أو null** حسب `Accept-Language`، مو `{ ar, en }`.
+
+```json
+{
+  "title": null,
+  "description": null,
+  "button_text": null,
+  "link": null,
+  "expires_at": null,
+  "image_url": "https://…/storage/….jpg"
+}
+```
+
+`null` في الجدول = خلية فاضية (`-`). لا تبقوا نص الصف القديم بعد توست النجاح.
 
 ---
 
@@ -144,7 +163,7 @@ formData.append('button_text[ar]', buttonText.ar ?? '');
 formData.append('button_text[en]', buttonText.en ?? '');
 formData.append('link', link ?? '');
 formData.append('expires_at', expiresAt ?? '');
-formData.append('_method', 'PUT');
+formData.append('_method', 'PATCH');
 
 setTitle({
   ar: data.title?.ar ?? '',

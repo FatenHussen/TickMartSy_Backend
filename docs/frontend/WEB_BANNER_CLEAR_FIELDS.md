@@ -8,7 +8,7 @@
 > Flutter: [`FLUTTER_BANNER_CLEAR_FIELDS.md`](./FLUTTER_BANNER_CLEAR_FIELDS.md)  
 > عرض الحقول: [`WEB_BANNER_REQUIRED_FIELDS.md`](./WEB_BANNER_REQUIRED_FIELDS.md)
 
-الأدمن يقدر يمسح عنوان البنر ووصفه ونص الزر والرابط.  
+الأدمن يقدر يمسح عنوان البنر ووصفه ونص الزر والرابط، والباك يحفظهم `null`.  
 الصورة تبقى. النص الممسوح يوصل `null` أو `""` — لا تعرضوه ولا تحتفظوا بالنص السابق من الكاش.
 
 ما في endpoint جديد: نفس أقسام الصفحة.
