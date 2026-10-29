@@ -5,6 +5,8 @@
 > **آخر تحديث | Last Updated:** 2026-09-27  
 > الملف الشامل السابق يبقى: [`web.md`](./web.md)
 
+**اليوم (29 تشرين الأول):** مدة توصيل تيك مول تتبع اللغة — إنجليزي `12-48 hours`، عربي `12-48 ساعة`. اعرضوا `delivery_time` كما هو، بلا لاحقة — [`WEB_DELIVERY_TIME_LOCALE.md`](./WEB_DELIVERY_TIME_LOCALE.md)
+
 **اليوم (29 تشرين الأول):** دوائر اللون من `hex` فقط. ما في طلب جديد على الموقع: الدرجة تُحفظ من الداشبورد (متغير الفئة أو باليت المنتج)، و`hex: null` دائرة رمادية `rgb(161 161 170)` بلا تخمين من الاسم. الاختيار بـ `options[].id` والسلة بـ `shop_variants[].id` — [`WEB_PRODUCT_COLOR_HEX.md`](./WEB_PRODUCT_COLOR_HEX.md)
 
 **اليوم (27 أيلول):** السلة: أقل طلب + أقرب توصيل + سعر التوصيل. المطعم لحاله فوري (سائق المطعم أو تيك مارت) — [`WEB_CART_CHECKOUT_DELIVERY.md`](./WEB_CART_CHECKOUT_DELIVERY.md)
@@ -361,7 +363,7 @@ Authorization: Bearer {token}
 - لون: swatches. مقاس: أزرار للقيم المتاحة بعد اختيار اللون.
 - السعر من المتغيّر المختار: `price_currencies` / `price_after_discount_currencies`.
 - خصم المتغيّر أولاً ثم خصم المنتج / flash sale (محسوب في الباك).
-- `delivery_time` على **المنتج** مرة واحدة.
+- `delivery_time` على **المنتج** مرة واحدة. تيك مول يرجع `12-48 hours` أو `12-48 ساعة` حسب `Accept-Language` — [`WEB_DELIVERY_TIME_LOCALE.md`](./WEB_DELIVERY_TIME_LOCALE.md)
 - `attributes_map` فاضي → منتج بلا صفات — استخدموا `shop_variants[0]` مباشرة.
 
 ---
