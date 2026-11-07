@@ -90,24 +90,24 @@ class HelpCenterController extends Controller
             'color' => [
                 'main_color' => isset($settings['main_color'])
                     ? $settings['main_color']->value
-                    : '#E4F0FB',
+                    : '#FFA000',
                 'text_color' => isset($settings['text_color'])
                     ? $settings['text_color']->value
-                    : '#2A2A2A',
+                    : '#1F2937',
                 'second_color' => isset($settings['second_color'])
                     ? $settings['second_color']->value
-                    : '#e27676',
+                    : '#F3F4F6',
             ],
             'dark_color' => [
                 'main_color' => isset($settings['dark_main_color'])
                     ? $settings['dark_main_color']->value
-                    : '#0D1117',
+                    : '#F1F1F1',
                 'text_color' => isset($settings['dark_text_color'])
                     ? $settings['dark_text_color']->value
-                    : '#FFFFFF',
+                    : '#FFE8A3',
                 'second_color' => isset($settings['dark_second_color'])
                     ? $settings['dark_second_color']->value
-                    : '#9CA3AF',
+                    : '#FFF4CC',
             ],
         ]);
     }
