@@ -349,15 +349,13 @@ class CartSyncAcrossDevicesTest extends TestCase
 
     private function extraDetailId(ShopProductVariant $offer): int
     {
-        return (int) \Illuminate\Support\Facades\DB::table('product_extra_details')->insertGetId([
+        return (int) \App\Models\ProductExtraDetail::create([
             'category_id' => $offer->productVariant->product->category_id,
-            'detail_key' => 'Size',
-            'detail_value' => 'Large',
+            'detail_key' => ['en' => 'Size'],
+            'detail_value' => ['en' => 'Large'],
             'price' => 2,
             'is_active' => true,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        ])->id;
     }
 
     private function offer(
