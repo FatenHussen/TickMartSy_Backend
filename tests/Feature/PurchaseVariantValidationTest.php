@@ -13,6 +13,7 @@ use App\Models\Governorate;
 use App\Models\Order;
 use App\Models\PaymentMethod;
 use App\Models\Product;
+use App\Models\ProductMedia;
 use App\Models\Shop;
 use App\Models\ShopProductVariant;
 use App\Models\User;
@@ -82,6 +83,7 @@ class PurchaseVariantValidationTest extends TestCase
     {
         $cases = [
             fn ($offer) => $offer->productVariant->update(['quantity' => 0]),
+            fn ($offer) => $offer->productVariant->update(['quantity' => null]),
             fn ($offer) => $offer->productVariant->update(['is_active' => false]),
             fn ($offer) => $offer->productVariant->product->update(['is_active' => false]),
             fn ($offer) => $offer->productVariant->product->update(['is_visible' => false]),
@@ -179,6 +181,10 @@ class PurchaseVariantValidationTest extends TestCase
     {
         $unselected = $this->offer(stock: 9);
         $selected = $this->offer(stock: 7);
+        $selected->productVariant->media()->create([
+            'collection' => ProductMedia::COLLECTION_VARIANT,
+            'path' => 'https://cdn.example.com/selected-shirt.jpg', 'is_active' => true, 'order' => 0,
+        ]);
         $payload = $this->checkoutPayload([[
             'shop_product_variant_id' => $selected->id, 'quantity' => 2,
             'price' => 0.01, 'price_after_discount' => 0.01, 'total' => 0.02,
@@ -187,6 +193,7 @@ class PurchaseVariantValidationTest extends TestCase
         $this->postJson('/api/user/orders', $payload)->assertOk();
         $this->assertDatabaseHas('order_items', [
             'shop_product_variant_id' => $selected->id, 'quantity' => 2, 'unit_price' => 25, 'total' => 50,
+            'product_image' => 'https://cdn.example.com/selected-shirt.jpg',
         ]);
         $this->assertSame(5, $selected->productVariant->fresh()->quantity);
         $this->assertSame(9, $unselected->productVariant->fresh()->quantity);

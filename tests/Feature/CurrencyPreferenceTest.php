@@ -7,6 +7,7 @@ use App\Models\Currency;
 use App\Models\User;
 use App\Services\Admin\CurrencyService;
 use App\Services\Admin\ToggleStatusService;
+use Database\Seeders\CurrencySeeder;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,13 @@ use Tests\TestCase;
 class CurrencyPreferenceTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->createCurrency('USD');
+    }
 
     public function test_guest_currency_list_contains_only_active_rows_and_boolean_defaults(): void
     {
@@ -208,6 +216,20 @@ class CurrencyPreferenceTest extends TestCase
 
         $this->expectException(QueryException::class);
         DB::table('currencies')->where('id', $syp->id)->update(['is_default' => true]);
+    }
+
+    public function test_deployment_seeder_preserves_dashboard_default_rates_and_inactive_status(): void
+    {
+        $syp = $this->createCurrency('SYP');
+        app(CurrencyService::class)->update($syp->id, ['is_default' => true, 'exchange_rate' => 12500]);
+        $eur = $this->createCurrency('EUR', false);
+
+        $this->seed(CurrencySeeder::class);
+
+        $this->assertTrue($syp->fresh()->is_default);
+        $this->assertSame('12500.000000', $syp->fresh()->exchange_rate);
+        $this->assertFalse($eur->fresh()->is_active);
+        $this->assertSame(1, Currency::active()->default()->count());
     }
 
     private function createCurrency(string $code, bool $active = true): Currency

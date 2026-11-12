@@ -153,6 +153,28 @@ class CurrencyConversionTest extends TestCase
         $this->assertSame(152100.0, $prices['price_after_discount_currencies']['SYP']['amount']);
         $this->assertSame('ل.س 152,100', $prices['price_after_discount_currencies']['SYP']['formatted']);
     }
+
+    public function test_currency_maps_read_updated_exchange_rates(): void
+    {
+        $resource = new CurrencyConversionResourceProbe;
+        $this->assertSame(130000.0, $resource->prices(10, 9)['price_currencies']['SYP']['amount']);
+
+        $this->database->getConnection()->table('currencies')->where('code', 'SYP')
+            ->update(['exchange_rate' => 12500]);
+
+        $this->assertSame(125000.0, $resource->prices(10, 9)['price_currencies']['SYP']['amount']);
+    }
+
+    public function test_missing_syp_rate_does_not_relabel_usd_amounts_as_syp(): void
+    {
+        $this->database->getConnection()->table('currencies')->where('code', 'SYP')->delete();
+
+        $prices = (new CurrencyConversionResourceProbe)->prices(10, 9);
+
+        $this->assertSame(10.0, $prices['price_currencies']['USD']['amount']);
+        $this->assertNull($prices['price_currencies']['SYP']['amount']);
+        $this->assertNull($prices['price_currencies']['SYP']['formatted']);
+    }
 }
 
 class CurrencyConversionResourceProbe

@@ -31,17 +31,6 @@ return new class extends Migration
                     'is_active' => true,
                     'is_default' => true,
                 ]);
-            } else {
-                DB::table('currencies')->insert([
-                    'code' => 'USD',
-                    'name' => json_encode(['en' => 'US Dollar', 'ar' => 'دولار أمريكي']),
-                    'symbol' => '$',
-                    'exchange_rate' => 1,
-                    'is_default' => true,
-                    'is_active' => true,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
             }
         });
 

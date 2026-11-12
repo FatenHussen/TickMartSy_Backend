@@ -109,7 +109,7 @@ class UserBasketScheduleService extends BaseService
             }
 
             return $basket;
-        });
+        }, 3);
 
         return new $this->resource($this->decorateBasket($basket->load($this->relations)));
     }
@@ -156,7 +156,7 @@ class UserBasketScheduleService extends BaseService
             }
 
             return $basket;
-        });
+        }, 3);
 
         return new $this->resource($this->decorateBasket($basket->load($this->relations)));
     }

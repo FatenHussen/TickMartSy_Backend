@@ -146,7 +146,7 @@ class CartService
             $item->save();
 
             return new CartItemResource($item->load($this->itemRelations()));
-        });
+        }, 3);
     }
 
     public function update(int $userId, int $itemId, array $data): CartItemResource
@@ -155,7 +155,7 @@ class CartService
             $item = $this->findItem($userId, $itemId);
             $this->purchasableVariants->resolve(
                 $item->shop_product_variant_id,
-                $data['quantity'] ?? $item->quantity,
+                array_key_exists('quantity', $data) ? $data['quantity'] : $item->quantity,
                 lockForUpdate: true,
             );
 
@@ -170,7 +170,7 @@ class CartService
             $item->save();
 
             return new CartItemResource($item->load($this->itemRelations()));
-        });
+        }, 3);
     }
 
     public function remove(int $userId, int $itemId): bool

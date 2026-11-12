@@ -228,7 +228,7 @@ class OrderService extends BaseService
             $this->dispatchOrderCreatedEvent($order);
 
             return new OneResource($order->fresh('items'));
-        });
+        }, 3);
     }
 
     /**
@@ -320,8 +320,15 @@ class OrderService extends BaseService
         $formattedItems = array_map(function ($item) {
             return [
                 "shop_product_variant_id" => $item["shop_product_variant_id"],
+                "product_id" => $item["product_id"] ?? null,
+                "shop_id" => $item["shop_id"] ?? null,
+                "shop_name" => $item["shop_name"] ?? null,
                 "product_name" => $item["product_name"],
                 "product_image" => $item["product_image"] ?? null,
+                "sku" => $item["sku"] ?? null,
+                "model" => $item["model"] ?? null,
+                "available_quantity" => $item["available_quantity"] ?? null,
+                "attributes" => $item["attributes"] ?? [],
                 "quantity" => $item["quantity"],
                 "unit_price" => $this->convertFormattedPrice($item["unit_price"]),
                 "final_price" => $this->convertFormattedPrice($item["final_price"]),
@@ -742,6 +749,9 @@ class OrderService extends BaseService
             $product = $productVariant->product;
             $unitPrice = (float) $productVariant->price;
             $quantity = $item['quantity'];
+            $productImage = $productVariant->media->first(fn ($image) => $image->isUsable())?->url
+                ?? $product->media->first(fn ($image) => $image->isUsable())?->url
+                ?? $product->thumbnail_url;
 
             // حساب سعر الـ extras
             $extrasTotal = 0;
@@ -808,9 +818,19 @@ class OrderService extends BaseService
             if ($order) {
                 $orderItem = $order->items()->create([
                     'shop_product_variant_id' => $shopVariant->id,
+                    'product_id' => $product->id,
                     'product_name' => $product->name,
                     'variant_attributes' => $productVariant->getAttributesValuesAttribute(),
-                    'product_image' => $product->image_url,
+                    'product_image' => $productImage,
+                    // Snapshot: the order is a historical record, so the dashboard
+                    // shows these values rather than re-reading today's catalogue.
+                    'sku' => $productVariant->sku ?? $product->sku,
+                    'model' => $productVariant->model ?? $product->model,
+                    'available_quantity' => $productVariant->quantity === null
+                        ? null
+                        : (int) $productVariant->quantity,
+                    'shop_id' => $shopVariant->shop_id,
+                    'shop_name' => $shopVariant->shop?->name,
                     'note' => $item['note'] ?? null,
                     'quantity' => $quantity,
                     'price' => $unitPrice,
@@ -850,8 +870,15 @@ class OrderService extends BaseService
             $orderItems->push([
                 'shop_product_variant_id' => $shopVariant->id,
                 'shop_id' => $shopVariant->shop_id,
+                'shop_name' => $shopVariant->shop?->name,
                 'product_name' => $product->name,
-                'product_image' => $product->image_url,
+                'product_image' => $productImage,
+                'sku' => $productVariant->sku ?? $product->sku,
+                'model' => $productVariant->model ?? $product->model,
+                'available_quantity' => $productVariant->quantity === null
+                    ? null
+                    : (int) $productVariant->quantity,
+                'attributes' => $productVariant->getAttributesValuesAttribute(),
                 'note' => $item['note'] ?? null,
                 'quantity' => $quantity,
                 'unit_price' => $unitPrice,

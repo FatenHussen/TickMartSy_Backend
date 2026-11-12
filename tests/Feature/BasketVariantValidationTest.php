@@ -238,16 +238,15 @@ class BasketVariantValidationTest extends TestCase
             'schedule_id' => $this->schedule->id,
             'is_draft' => false,
         ]);
-        $basket->setRelation('schedule', $this->schedule);
-        $item = $basket->items()->make([
+        $basket->items()->create([
             'product_id' => $offer->productVariant->product_id,
             'shop_product_variant_id' => $offer->id,
             'quantity' => 1,
         ]);
-        $offer->productVariant->quantity = null;
-        $item->setRelation('variant', $offer);
-        $item->setRelation('product', $offer->productVariant->product);
-        $basket->setRelation('items', $item->newCollection([$item]));
+        $offer->productVariant->update(['quantity' => null]);
+
+        $this->postJson($this->customUrl().'/items', ['shop_product_variant_id' => $offer->id, 'quantity' => 1])
+            ->assertUnprocessable()->assertJsonValidationErrors('quantity');
 
         $summary = app(ScheduledBasketAvailabilityService::class)->evaluateUserSchedule($basket);
 

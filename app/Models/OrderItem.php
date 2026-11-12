@@ -10,9 +10,15 @@ class OrderItem extends Model
     protected $fillable = [
         'order_id',
         'shop_product_variant_id',
+        'product_id',             // snapshot
         'is_external',
         'product_name',           // snapshot
         'product_image',          // snapshot
+        'sku',                    // snapshot
+        'model',                  // snapshot
+        'available_quantity',     // snapshot: stock at the moment of ordering
+        'shop_name',              // snapshot
+        'shop_id',                // snapshot
         'invoice_image',
         'variant_attributes',     // snapshot JSON
         'note',
@@ -61,6 +67,7 @@ class OrderItem extends Model
     protected $casts = [
         'variant_attributes' => 'array',
         'is_external' => 'boolean',
+        'available_quantity' => 'integer',
         'price' => 'float',
         'unit_price' => 'float',
         'final_price' => 'float',

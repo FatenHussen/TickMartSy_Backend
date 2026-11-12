@@ -39,8 +39,7 @@ class Currency extends Model
 
     public function getLocalizedNameAttribute(): string
     {
-        $locale = app()->getLocale();
-        return $this->name[$locale] ?? $this->name['en'] ?? $this->code;
+        return $this->getTranslation('name', app()->getLocale()) ?: $this->code;
     }
 
     // تحويل من الدولار (العملة الأساسية) للعملة الحالية

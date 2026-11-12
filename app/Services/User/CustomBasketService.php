@@ -53,7 +53,7 @@ class CustomBasketService
             }
 
             return $draft;
-        });
+        }, 3);
 
         return new OneResource($this->loadDraft($draft));
     }
@@ -79,7 +79,7 @@ class CustomBasketService
             $item->update($payload);
 
             return $draft;
-        });
+        }, 3);
 
         return new OneResource($this->loadDraft($draft));
     }
@@ -146,7 +146,7 @@ class CustomBasketService
                 'next_run_date' => $confirmed->start_date?->format('Y-m-d'),
                 'basket' => new OneResource($confirmed),
             ];
-        });
+        }, 3);
     }
 
     protected function firstOrCreateDraft(int $scheduleId): UserBasketSchedule
@@ -196,7 +196,6 @@ class CustomBasketService
         $shopVariant = app(PurchasableVariantService::class)->resolve(
             $data['shop_product_variant_id'] ?? null,
             $data['quantity'] ?? null,
-            lockForUpdate: true,
         );
 
         return [

@@ -30,11 +30,7 @@ class PurchasableVariantService
             throw ValidationException::withMessages($errors);
         }
 
-        $query = ShopProductVariant::query()->with(['productVariant.product', 'shop']);
-        if ($lockForUpdate) {
-            $query->lockForUpdate();
-        }
-        $offer = $query->find((int) $id);
+        $offer = ShopProductVariant::query()->with(['productVariant.product', 'shop'])->find((int) $id);
         if (! $offer) {
             throw ValidationException::withMessages([$field => __('validation.exists', ['attribute' => $field])]);
         }
@@ -80,6 +76,13 @@ class PurchasableVariantService
         $offers = [];
         $variantQuantities = [];
         $productQuantities = [];
+        if ($lockForUpdate) {
+            // Lock shared inventory in a fixed order, independent of the customer's item order.
+            $ids = collect($items)->pluck('shop_product_variant_id')
+                ->filter(fn ($id) => is_scalar($id) && filter_var($id, FILTER_VALIDATE_INT) !== false);
+            $variantIds = ShopProductVariant::query()->whereIn('id', $ids)->pluck('product_variant_id');
+            ProductVariant::query()->whereIn('id', $variantIds)->orderBy('id')->lockForUpdate()->get();
+        }
         foreach ($items as $index => $item) {
             $offer = $this->resolve(
                 $item['shop_product_variant_id'] ?? null,

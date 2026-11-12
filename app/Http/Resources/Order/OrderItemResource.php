@@ -19,6 +19,17 @@ class OrderItemResource extends JsonResource
             'is_external' => (bool) $this->is_external,
             'invoice_image' => $this->invoice_image_url,
             'shop_product_variant_id' => $this->shop_product_variant_id,
+            // Snapshots taken when the order was placed. Orders created before
+            // the snapshot columns existed fall back to the live catalogue so
+            // old rows still render something.
+            'product_id' => $this->product_id ?? $this->liveVariant()?->product?->id,
+            'sku' => $this->sku ?? $this->liveVariant()?->sku,
+            'model' => $this->model ?? $this->liveVariant()?->model,
+            'available_quantity' => $this->available_quantity,
+            'shop' => [
+                'id' => $this->shop_id ?? $this->shopProductVariant?->shop_id,
+                'name' => $this->shop_name ?? $this->shopProductVariant?->shop?->name,
+            ],
             'note' => $this->note,
             'quantity' => $this->quantity,
             ...$this->withCurrency($this->unit_price, 'unit_price'),
@@ -28,6 +39,8 @@ class OrderItemResource extends JsonResource
             ...$this->withCurrency($this->total, 'total'),
             'status' => $this->item_status,
             'variant_attributes' => $this->variant_attributes,
+            // Same payload under the name the cart and product page use.
+            'attributes' => $this->variant_attributes ?? [],
             'delivery_time' => $this->getDeliveryTime(),
             'extras' => $this->extras->map(function ($extra) {
                 return [
@@ -40,6 +53,12 @@ class OrderItemResource extends JsonResource
                 ] ?? [];
             }),
         ];
+    }
+
+    /** Live catalogue row, used only as a fallback for pre-snapshot orders. */
+    private function liveVariant()
+    {
+        return $this->shopProductVariant?->productVariant;
     }
 
     private function getDeliveryTime(): ?string

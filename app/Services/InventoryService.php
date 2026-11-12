@@ -42,7 +42,6 @@ class InventoryService
         // withTrashed: الطلبات الجارية يجب أن تُكمل تحديث المخزون حتى لو حُذف المتغير
         $shopVariant = ShopProductVariant::query()
             ->withTrashed()
-            ->lockForUpdate()
             ->findOrFail($shopProductVariantId);
 
         return ProductVariant::query()
