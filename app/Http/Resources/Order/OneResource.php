@@ -49,6 +49,9 @@ class OneResource extends JsonResource
             ...$this->deliverySummary(),
             ...$this->withCurrency($this->delivery_price, 'delivery_price'),
             ...$this->withCurrency($this->subtotal, 'subtotal'),
+            // Money, not a percentage, and already counted inside `total`.
+            ...$this->withCurrency($this->tax ?? 0, 'tax'),
+            'tax_rate' => (float) ($this->tax_rate ?? 0),
             ...$this->withCurrency($this->total, 'total'),
             'total_quantity' => $this->total_quantity,
             ...$this->withCurrency($this->basket_discount, 'basket_discount'),

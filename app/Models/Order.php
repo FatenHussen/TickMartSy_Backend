@@ -36,6 +36,8 @@ class Order extends Model
         'original_delivery_price',
         'total_quantity',
         'total',
+        'tax',                        // snapshot: amount, already inside total
+        'tax_rate',                   // snapshot: percentage applied
         'subtotal',
         'basket_discount',            // خصم السلة
         'coupon_discount',            // خصم الكوبون
@@ -78,6 +80,8 @@ class Order extends Model
         'basket_discount' => 'float',
         'coupon_discount' => 'float',
         'total' => 'float',
+        'tax' => 'float',
+        'tax_rate' => 'float',
         'approximate_total' => 'float',
         'price_variance_value' => 'float',
         'affiliate_rate' => 'decimal:2',

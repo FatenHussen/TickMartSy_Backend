@@ -100,6 +100,15 @@ class SystemSettingSeeder extends Seeder
                 'is_active' => true,
             ],
             [
+                'key' => 'tikmart_tax_rate',
+                'value' => '0',
+                'type' => 'number',
+                'group' => 'orders',
+                'title' => 'Order tax rate (%)',
+                'description' => 'Percentage charged on goods after discounts. 0 hides the tax line.',
+                'is_active' => true,
+            ],
+            [
                 'key' => 'tikmart_min_order_amount',
                 'value' => '0',
                 'type' => 'number',

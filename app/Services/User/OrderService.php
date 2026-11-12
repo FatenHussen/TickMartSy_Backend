@@ -173,11 +173,14 @@ class OrderService extends BaseService
                 $externalDiscount
             );
 
+            $tax = $this->resolveTax($subtotalAfterProductDiscount, $basketDiscount, $externalDiscount);
+
             $finalTotal = $this->calculateFinalTotal(
                 $subtotalAfterProductDiscount,
                 $basketDiscount,
                 $externalDiscount,
-                $deliveryPrice
+                $deliveryPrice,
+                $tax
             );
 
             $affiliateData = $this->resolveAffiliateData(
@@ -197,7 +200,8 @@ class OrderService extends BaseService
                 $originalDeliveryPrice,
                 $finalTotal,
                 $data['promotion_id'] ?? null,
-                $affiliateData
+                $affiliateData,
+                $tax
             );
 
             $automaticPromotionsResult = $promotionService->applyAutomaticOrderPromotions(
@@ -289,11 +293,14 @@ class OrderService extends BaseService
             $externalDiscount
         );
 
+        $tax = $this->resolveTax($subtotalAfterProductDiscount, $basketDiscount, $externalDiscount);
+
         $finalTotal = $this->calculateFinalTotal(
             $subtotalAfterProductDiscount,
             $basketDiscount,
             $externalDiscount,
-            $deliveryPrice
+            $deliveryPrice,
+            $tax
         );
         $availablePromotions = $promotionService
             ->getAvailablePromotions($subtotalBeforeDiscount, collect($orderItems));
@@ -344,6 +351,10 @@ class OrderService extends BaseService
             'subtotal_before_discount' => $this->convertFormattedPrice($subtotalBeforeDiscount),
             'subtotal_after_product_discount' => $this->convertFormattedPrice($subtotalAfterProductDiscount),
             'total_quantity' => $totalQuantity,
+            // Money, not a percentage, and already counted inside `total`.
+            'tax' => $this->convertPrice($tax)['amount'],
+            'tax_formatted' => $this->convertFormattedPrice($tax),
+            'tax_rate' => app(TaxService::class)->rate(),
             'total' => $this->convertFormattedPrice($finalTotal),
             'available_promotions' => $availablePromotions,
             'automatic_promotions' => array_merge($automaticPromotions, [
@@ -586,13 +597,25 @@ class OrderService extends BaseService
         float $subtotal,
         float $basketDiscount,
         float $externalDiscount,
-        float $delivery
+        float $delivery,
+        float $tax = 0.0
     ): float {
 
         return round(
-            $subtotal - $basketDiscount - $externalDiscount + $delivery,
+            $subtotal - $basketDiscount - $externalDiscount + $delivery + $tax,
             2
         );
+    }
+
+    /** Tax on goods after discounts. Delivery is not taxed. */
+    private function resolveTax(
+        float $subtotalAfterProductDiscount,
+        float $basketDiscount,
+        float $externalDiscount
+    ): float {
+        $taxableBase = $subtotalAfterProductDiscount - $basketDiscount - $externalDiscount;
+
+        return app(TaxService::class)->calculate($taxableBase);
     }
 
     private function updateOrderTotals(
@@ -605,11 +628,14 @@ class OrderService extends BaseService
         float $originalDeliveryPrice,
         float $finalTotal,
         ?int $promotionId = null,
-        ?array $affiliateData = null
+        ?array $affiliateData = null,
+        float $tax = 0.0
     ): void {
 
         $order->update([
             'subtotal' => $subtotal,
+            'tax' => round($tax, 2),
+            'tax_rate' => app(TaxService::class)->rate(),
             'basket_discount' => round($basketDiscount, 2),
             'coupon_discount' => round($discounts['coupon_discount'], 2),
             'coupon_discount_from_points' =>

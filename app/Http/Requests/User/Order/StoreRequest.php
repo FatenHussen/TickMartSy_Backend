@@ -4,6 +4,7 @@ namespace App\Http\Requests\User\Order;
 
 use App\Enums\CartType;
 use App\Models\Promotion;
+use App\Models\ShopProductVariant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -153,5 +154,44 @@ class StoreRequest extends FormRequest
                 );
             }
         });
+    }
+
+    /**
+     * Name the product in item errors. "items.0" means nothing to a customer,
+     * so each line is labelled with the product it refers to where we can
+     * resolve it, and with its position otherwise.
+     */
+    public function attributes(): array
+    {
+        $attributes = [];
+
+        foreach ((array) $this->input('items', []) as $index => $item) {
+            $label = $this->resolveItemLabel($item, $index);
+
+            $attributes["items.{$index}.shop_product_variant_id"] = $label;
+            $attributes["items.{$index}.quantity"] = __('custom.orders.quantity_of', ['product' => $label]);
+        }
+
+        return $attributes;
+    }
+
+    private function resolveItemLabel(mixed $item, int|string $index): string
+    {
+        $position = (int) $index + 1;
+        $fallback = __('custom.orders.item_at_position', ['position' => $position]);
+
+        $variantId = is_array($item) ? ($item['shop_product_variant_id'] ?? null) : null;
+        if (! is_scalar($variantId) || filter_var($variantId, FILTER_VALIDATE_INT) === false) {
+            return $fallback;
+        }
+
+        $name = ShopProductVariant::query()
+            ->withTrashed()
+            ->with(['productVariant' => fn ($q) => $q->withTrashed()
+                ->with(['product' => fn ($p) => $p->withTrashed()])])
+            ->find((int) $variantId)
+            ?->productVariant?->product?->name;
+
+        return is_string($name) && $name !== '' ? $name : $fallback;
     }
 }
