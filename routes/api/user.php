@@ -236,9 +236,12 @@ Route::prefix('user')->group(
 
         Route::prefix('cart')->middleware(['auth:user'])->group(function () {
             Route::get('/', [CartController::class, 'index']);
+            Route::post('merge', [CartController::class, 'merge']);
             Route::post('items', [CartController::class, 'addItem']);
             Route::put('items/{item}', [CartController::class, 'updateItem']);
             Route::delete('items/{item}', [CartController::class, 'removeItem']);
+            // Declared after items/{item} so it never shadows that route.
+            Route::delete('/', [CartController::class, 'clear']);
             Route::post('calculate-delivery-price', [CartController::class, 'calculateDeliveryPrice']);
         });
 

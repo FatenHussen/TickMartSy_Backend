@@ -2,6 +2,7 @@
 
 namespace App\Services\User;
 
+use App\Enums\CartType;
 use App\Exceptions\CustomExceptionWithMessage;
 use App\Exceptions\NotFoundException;
 use App\Http\Resources\User\Cart\CartItemResource;
@@ -32,7 +33,109 @@ class CartService
             ->orderByDesc('id')
             ->get();
 
+        $this->reconcileQuantities($items);
+
         return CartItemResource::collection($items);
+    }
+
+    /**
+     * The cart outlives the session, so stock can fall under what was saved.
+     * Clamp the stored quantity down to what is left rather than letting the
+     * user reach checkout and be refused there.
+     */
+    private function reconcileQuantities(Collection $items): void
+    {
+        foreach ($items as $item) {
+            $stock = $item->shopProductVariant?->productVariant?->quantity;
+            if ($stock === null) {
+                continue;
+            }
+
+            $stock = (int) $stock;
+            if ($stock > 0 && (int) $item->quantity > $stock) {
+                $item->quantity = $stock;
+                $item->save();
+            }
+        }
+    }
+
+    /** The cart type and the id it is tied to, taken from the stored rows. */
+    public function cartContext(int $userId): array
+    {
+        $item = CartItem::query()->where('user_id', $userId)->latest('id')->first();
+
+        return [
+            'cart_type' => $item?->cart_type ?? CartType::DEFAULT->value,
+            'recipe_id' => $item?->recipe_id,
+            'admin_basket_id' => $item?->admin_basket_id,
+            'admin_schedule_basket_id' => $item?->admin_schedule_basket_id,
+            'basket_schedule_id' => $item?->basket_schedule_id,
+        ];
+    }
+
+    /**
+     * Guest cart -> signed-in cart, exactly once at the transition.
+     * Quantities take max(existing, incoming) instead of summing, so running
+     * it again cannot inflate the cart (S-04, S-05).
+     */
+    public function merge(int $userId, array $items): AnonymousResourceCollection
+    {
+        DB::transaction(function () use ($userId, $items) {
+            foreach ($items as $payload) {
+                $shopVariant = $this->purchasableVariants->resolve(
+                    $payload['shop_product_variant_id'] ?? null,
+                    $payload['quantity'] ?? null,
+                    lockForUpdate: true,
+                );
+
+                $item = CartItem::query()->firstOrNew([
+                    'user_id' => $userId,
+                    'shop_product_variant_id' => $shopVariant->id,
+                ]);
+
+                $incoming = (int) $payload['quantity'];
+                $nextQty = max($item->exists ? (int) $item->quantity : 0, $incoming);
+                $this->purchasableVariants->assertQuantity($shopVariant, $nextQty);
+
+                $item->quantity = $nextQty;
+                // Keep what the user already typed; only fill a gap.
+                if (array_key_exists('note', $payload) && $payload['note'] !== null
+                    && ($item->note === null || $item->note === '')) {
+                    $item->note = $payload['note'];
+                }
+                if (array_key_exists('extras', $payload) && $payload['extras'] !== null
+                    && empty($item->extras)) {
+                    $item->extras = $payload['extras'];
+                }
+                $this->applyCartContext($item, $payload);
+                $item->save();
+            }
+        }, 3);
+
+        return $this->list($userId);
+    }
+
+    /** Empty the cart on the server so every device sees it emptied (S-10). */
+    public function clear(int $userId): bool
+    {
+        CartItem::query()->where('user_id', $userId)->delete();
+
+        return true;
+    }
+
+    private function applyCartContext(CartItem $item, array $data): void
+    {
+        foreach ([
+            'cart_type',
+            'recipe_id',
+            'admin_basket_id',
+            'admin_schedule_basket_id',
+            'basket_schedule_id',
+        ] as $key) {
+            if (array_key_exists($key, $data) && $data[$key] !== null) {
+                $item->{$key} = $data[$key];
+            }
+        }
     }
 
     public function checkoutSummary(int $userId): array
@@ -136,13 +239,22 @@ class CartService
                 'shop_product_variant_id' => $shopVariant->id,
             ]);
 
-            $nextQty = ($item->exists ? (int) $item->quantity : 0) + $quantity;
+            // "add" (default) keeps the product-page behaviour of summing.
+            // "set" pins the quantity, so syncing a cart up is safe to repeat.
+            $mode = $data['mode'] ?? 'add';
+            $nextQty = $mode === 'set'
+                ? $quantity
+                : ($item->exists ? (int) $item->quantity : 0) + $quantity;
             $this->purchasableVariants->assertQuantity($shopVariant, $nextQty);
 
             $item->quantity = $nextQty;
             if (array_key_exists('note', $data)) {
                 $item->note = $data['note'];
             }
+            if (array_key_exists('extras', $data)) {
+                $item->extras = $data['extras'];
+            }
+            $this->applyCartContext($item, $data);
             $item->save();
 
             return new CartItemResource($item->load($this->itemRelations()));
@@ -165,6 +277,10 @@ class CartService
 
             if (array_key_exists('note', $data)) {
                 $item->note = $data['note'];
+            }
+
+            if (array_key_exists('extras', $data)) {
+                $item->extras = $data['extras'];
             }
 
             $item->save();
@@ -197,7 +313,11 @@ class CartService
     private function itemRelations(): array
     {
         return [
+            // withTrashed on product: a soft-deleted product must still render
+            // its name and image on the row flagged as unavailable.
+            'shopProductVariant.productVariant.product' => fn ($q) => $q->withTrashed(),
             'shopProductVariant.productVariant.product.media',
+            'shopProductVariant.productVariant.media',
             'shopProductVariant.shop',
         ];
     }

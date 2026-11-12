@@ -16,6 +16,9 @@ class UpdateItemRequest extends FormRequest
         return [
             'quantity' => ['required', 'integer', 'min:1'],
             'note' => ['nullable', 'string', 'max:500'],
+            'extras' => ['nullable', 'array'],
+            'extras.*.id' => ['required', 'integer', 'exists:product_extra_details,id'],
+            'extras.*.quantity' => ['required', 'integer', 'min:1'],
         ];
     }
 }

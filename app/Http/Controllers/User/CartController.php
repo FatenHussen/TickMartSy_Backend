@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\Cart\MergeRequest;
 use App\Http\Requests\User\Cart\StoreItemRequest;
 use App\Http\Requests\User\Cart\StoreRequest;
 use App\Http\Requests\User\Cart\UpdateItemRequest;
@@ -22,8 +23,32 @@ class CartController extends Controller
 
         return $this->sendResponse(data: [
             'items' => $this->cartService->list($userId),
+            ...$this->cartService->cartContext($userId),
             'checkout' => $this->cartService->checkoutSummary($userId),
         ]);
+    }
+
+    /**
+     * Guest cart -> signed-in cart. Safe to repeat: quantities take
+     * max(existing, incoming) instead of summing.
+     */
+    public function merge(MergeRequest $request)
+    {
+        $userId = auth('user')->id();
+        $items = $this->cartService->merge($userId, $request->validated()['items']);
+
+        return $this->sendResponse(data: [
+            'items' => $items,
+            ...$this->cartService->cartContext($userId),
+            'checkout' => $this->cartService->checkoutSummary($userId),
+        ], message: __('custom.Updated'));
+    }
+
+    public function clear()
+    {
+        $this->cartService->clear(auth('user')->id());
+
+        return $this->sendResponse(data: [], message: __('custom.Deleted'));
     }
 
     public function addItem(StoreItemRequest $request)
