@@ -38,6 +38,13 @@ class AddressService extends BaseService
         // Attach address to authenticated user
         $data['user_id'] = $user->id;
 
+        // Contact phone is optional: the user already registered with a phone,
+        // so fall back to it instead of making them type it again. It stays
+        // overridable for deliveries to someone else (e.g. gifts).
+        if (blank($data['contact_phone'] ?? null)) {
+            $data['contact_phone'] = $user->phone;
+        }
+
         // If this address is default, unset previous defaults
         if (isset($data['is_default']) && $data['is_default'] === true) {
             $user->addresses()->update(['is_default' => false]);
@@ -54,6 +61,12 @@ class AddressService extends BaseService
         // $user = User::findOrFail(2);
 
         $address = $user->addresses()->findOrFail($id);
+
+        // Editing another field must not blank out a phone already saved here:
+        // only the user clearing it on an address that has none falls back.
+        if (array_key_exists('contact_phone', $data) && blank($data['contact_phone'])) {
+            $data['contact_phone'] = $address->contact_phone ?: $user->phone;
+        }
 
         // If this address is set as default, unset others
         if (isset($data['is_default']) && $data['is_default'] === true) {

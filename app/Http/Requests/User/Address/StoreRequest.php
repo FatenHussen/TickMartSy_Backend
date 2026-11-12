@@ -16,11 +16,11 @@ class StoreRequest extends FormRequest
         return [
             'label' => 'required|string|max:255',
             'area_id' => 'required|exists:areas,id',
-            'street_name' => 'required|string|max:255',
+            'street_name' => 'nullable|string|max:255',
             'nearest_landmark' => 'nullable|string|max:255',
             'building_number' => 'nullable|string|max:50',
             'floor_apartment' => 'nullable|string|max:50',
-            'contact_phone' => 'required|string|max:20',
+            'contact_phone' => 'nullable|string|max:20',
             'lat' => 'nullable|numeric',
             'lng' => 'nullable|numeric',
             'is_default' => 'nullable|boolean',

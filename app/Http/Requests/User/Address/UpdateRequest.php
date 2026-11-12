@@ -20,7 +20,7 @@ class UpdateRequest extends FormRequest
             'nearest_landmark' => 'nullable|string|max:255',
             'building_number' => 'nullable|string|max:50',
             'floor_apartment' => 'nullable|string|max:50',
-            'contact_phone' => 'required|string|max:20',
+            'contact_phone' => 'nullable|string|max:20',
             'lat' => 'nullable|numeric',
             'lng' => 'nullable|numeric',
             'is_default' => 'nullable|boolean',
