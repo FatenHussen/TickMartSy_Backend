@@ -6,7 +6,6 @@ use App\Enums\CartType;
 use App\Models\Basket;
 use App\Models\Coupon;
 use App\Models\Recipe;
-use App\Models\ShopProductVariant;
 use App\Models\User;
 
 class OrderPricingService
@@ -86,9 +85,9 @@ class OrderPricingService
         $quantity = 0;
         $items = collect();
 
-        foreach ($data['items'] as $item) {
-            $variant = ShopProductVariant::with('productVariant.product')
-                ->findOrFail($item['shop_product_variant_id']);
+        $offers = app(PurchasableVariantService::class)->validateItems($data['items'] ?? []);
+        foreach ($data['items'] as $index => $item) {
+            $variant = $offers[$index];
 
             $product = $variant->productVariant->product;
             $price = (float) $variant->productVariant->price;

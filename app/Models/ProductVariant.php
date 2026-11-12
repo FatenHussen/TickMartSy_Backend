@@ -187,7 +187,7 @@ class ProductVariant extends Model
     }
     public function media()
     {
-        return $this->morphMany(\App\Models\ProductMedia::class, 'mediable');
+        return $this->morphMany(\App\Models\ProductMedia::class, 'mediable')->orderBy('order');
     }
 
     public function getImagesAttribute()

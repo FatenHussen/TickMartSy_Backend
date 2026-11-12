@@ -17,6 +17,7 @@ return [
 
     'account_already_exists' => 'الحساب موجود بالفعل.',
     'cart_quantity_unavailable' => 'الكمية المطلوبة غير متوفرة.',
+    'currency_default_required' => 'يرجى اختيار عملة افتراضية نشطة أخرى قبل تغيير هذه العملة أو حذفها.',
     'checkout' => [
         'asap' => 'أقرب وقت ممكن',
         'min_order_remaining' => 'أقل طلب :min. باقي :remaining.',

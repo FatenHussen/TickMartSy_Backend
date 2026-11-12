@@ -7,6 +7,13 @@ use Illuminate\Validation\Rule;
 
 class UpdateRequest extends BaseRequest
 {
+    protected function prepareForValidation(): void
+    {
+        if (is_string($this->input('code'))) {
+            $this->merge(['code' => strtoupper(trim($this->input('code')))]);
+        }
+    }
+
     public function authorize(): bool
     {
         return true;

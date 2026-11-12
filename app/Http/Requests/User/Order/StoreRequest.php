@@ -48,6 +48,7 @@ class StoreRequest extends FormRequest
             'items' => ['required', 'array', 'min:1'],
             'items.*.shop_product_variant_id' => [
                 'required',
+                'integer',
                 'exists:shop_product_variants,id'
             ],
             'items.*.quantity' => ['required', 'integer', 'min:1'],

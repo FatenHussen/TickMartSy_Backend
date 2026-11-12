@@ -12,11 +12,15 @@ use App\Services\ScheduledBasketAlertService;
 use App\Services\ScheduledBasketAvailabilityService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class UserBasketScheduleService extends BaseService
 {
     protected $model = UserBasketSchedule::class;
+
     protected $resource = OneResource::class;
+
     protected $collection = AllResource::class;
 
     protected $relations = [
@@ -31,6 +35,7 @@ class UserBasketScheduleService extends BaseService
     ];
 
     protected $searchableFields = ['id', 'name'];
+
     protected $sortableFields = ['id', 'created_at'];
 
     public function getAll($filters = [], $config = [])
@@ -46,7 +51,7 @@ class UserBasketScheduleService extends BaseService
         $result = $query->paginate($perPage, ['*'], 'page', $page);
 
         $items = collect($result->items())
-            ->map(fn(UserBasketSchedule $basket) => $this->decorateBasket($basket));
+            ->map(fn (UserBasketSchedule $basket) => $this->decorateBasket($basket));
 
         return [
             'items' => AllResource::collection($items),
@@ -76,12 +81,12 @@ class UserBasketScheduleService extends BaseService
             ->where('is_draft', false)
             ->find($id);
 
-        if (!$basket) {
+        if (! $basket) {
             Log::warning('Basket not found', [
                 'id' => $id,
                 'user_id' => auth('user')->id(),
             ]);
-            throw new NotFoundException();
+            throw new NotFoundException;
         }
 
         return new $this->resource($this->decorateBasket($basket));
@@ -96,18 +101,10 @@ class UserBasketScheduleService extends BaseService
         unset($data['items']);
 
         $basket = DB::transaction(function () use ($data, $items) {
+            $items = $this->normalizeItems($items);
             $basket = $this->model::create($data);
 
             foreach ($items as $item) {
-                if (!isset($item['product_id']) && isset($item['shop_product_variant_id'])) {
-                    $shopVariant = \App\Models\ShopProductVariant::with('productVariant.product')
-                        ->find($item['shop_product_variant_id']);
-
-                    if ($shopVariant) {
-                        $item['product_id'] = $shopVariant->productVariant->product_id;
-                    }
-                }
-
                 $basket->items()->create($item);
             }
 
@@ -119,38 +116,47 @@ class UserBasketScheduleService extends BaseService
 
     public function update($id, array $data)
     {
-        $basket = $this->model::where('user_id', auth('user')->id())->where('is_draft', false)->find($id);
+        $basket = DB::transaction(function () use ($id, $data) {
+            $basket = $this->model::where('user_id', auth('user')->id())
+                ->where('is_draft', false)->lockForUpdate()->find($id);
 
-        if (!$basket) {
-            throw new NotFoundException();
-        }
+            if (! $basket) {
+                throw new NotFoundException;
+            }
 
-        $basket->update(collect($data)->except('items')->toArray());
+            $items = array_key_exists('items', $data) ? $this->normalizeItems($data['items'], true) : null;
+            $existingItems = $basket->items()->get()->keyBy('id');
 
-        $items = $data['items'] ?? [];
-        $existingItems = $basket->items()->get()->keyBy('id');
-
-        foreach ($items as $itemData) {
-            if (!isset($itemData['product_id']) && isset($itemData['shop_product_variant_id'])) {
-                $shopVariant = \App\Models\ShopProductVariant::with('productVariant.product')
-                    ->find($itemData['shop_product_variant_id']);
-
-                if ($shopVariant) {
-                    $itemData['product_id'] = $shopVariant->productVariant->product_id;
+            foreach ($items ?? [] as $index => $item) {
+                if (isset($item['id']) && ! $existingItems->has($item['id'])) {
+                    throw ValidationException::withMessages([
+                        "items.$index.id" => ['The selected item does not belong to this basket.'],
+                    ]);
                 }
             }
 
-            if (isset($itemData['id']) && $existingItems->has($itemData['id'])) {
-                $existingItems[$itemData['id']]->update($itemData);
-                $existingItems->forget($itemData['id']);
-            } else {
-                $basket->items()->create($itemData);
-            }
-        }
+            $basket->update(collect($data)->except('items')->toArray());
 
-        foreach ($existingItems as $itemToDelete) {
-            $itemToDelete->delete();
-        }
+            // Metadata-only updates keep the existing lines intact.
+            if ($items === null) {
+                return $basket;
+            }
+
+            foreach ($items as $itemData) {
+                if (isset($itemData['id'])) {
+                    $existingItems[$itemData['id']]->update(collect($itemData)->except('id')->all());
+                    $existingItems->forget($itemData['id']);
+                } else {
+                    $basket->items()->create($itemData);
+                }
+            }
+
+            foreach ($existingItems as $itemToDelete) {
+                $itemToDelete->delete();
+            }
+
+            return $basket;
+        });
 
         return new $this->resource($this->decorateBasket($basket->load($this->relations)));
     }
@@ -159,8 +165,8 @@ class UserBasketScheduleService extends BaseService
     {
         $basket = $this->model::where('user_id', auth('user')->id())->where('is_draft', false)->find($id);
 
-        if (!$basket) {
-            throw new NotFoundException();
+        if (! $basket) {
+            throw new NotFoundException;
         }
 
         $basket->delete();
@@ -172,8 +178,8 @@ class UserBasketScheduleService extends BaseService
     {
         $basket = $this->model::where('user_id', auth('user')->id())->where('is_draft', false)->find($id);
 
-        if (!$basket) {
-            throw new NotFoundException();
+        if (! $basket) {
+            throw new NotFoundException;
         }
 
         $basket->update(['paused_at' => now()]);
@@ -187,8 +193,8 @@ class UserBasketScheduleService extends BaseService
     {
         $basket = $this->model::where('user_id', auth('user')->id())->where('is_draft', false)->find($id);
 
-        if (!$basket) {
-            throw new NotFoundException();
+        if (! $basket) {
+            throw new NotFoundException;
         }
 
         $basket->update(['paused_at' => null]);
@@ -214,5 +220,42 @@ class UserBasketScheduleService extends BaseService
         );
 
         return $basket;
+    }
+
+    private function normalizeItems(mixed $items, bool $allowIds = false): array
+    {
+        Validator::make(['items' => $items], [
+            'items' => ['required', 'array', 'min:1'],
+            'items.*' => ['required', 'array'],
+            'items.*.id' => ['nullable', 'integer', 'distinct'],
+            'items.*.product_id' => ['nullable', 'integer'],
+            'items.*.shop_product_variant_id' => ['required', 'integer', 'distinct'],
+            'items.*.quantity' => ['required', 'integer', 'min:1'],
+        ])->validate();
+
+        $variants = app(PurchasableVariantService::class)->validateItems($items, true);
+
+        return collect($items)->map(function (array $item, $index) use ($variants, $allowIds) {
+            $variant = $variants[$index];
+            $productId = $variant->productVariant->product_id;
+
+            if (isset($item['product_id']) && (int) $item['product_id'] !== (int) $productId) {
+                throw ValidationException::withMessages([
+                    "items.$index.product_id" => ['The product does not match the selected shop variant.'],
+                ]);
+            }
+
+            $payload = [
+                'product_id' => $productId,
+                'shop_product_variant_id' => $variant->id,
+                'quantity' => (int) $item['quantity'],
+            ];
+
+            if ($allowIds && isset($item['id'])) {
+                $payload['id'] = (int) $item['id'];
+            }
+
+            return $payload;
+        })->all();
     }
 }

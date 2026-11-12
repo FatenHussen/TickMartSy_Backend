@@ -32,7 +32,8 @@ class StoreRequest extends FormRequest
             'items' => ['required', 'array', 'min:1'],
 
             'items.*.product_id' => ['nullable', 'exists:products,id'],
-            'items.*.shop_product_variant_id' => ['nullable', 'exists:shop_product_variants,id'],
+            'items.*' => ['required', 'array'],
+            'items.*.shop_product_variant_id' => ['required', 'integer', 'distinct', 'exists:shop_product_variants,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
         ];
     }
@@ -40,7 +41,7 @@ class StoreRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'user_id'   => auth('user')->id(),
+            'user_id' => auth('user')->id(),
             'is_active' => $this->is_active ?? true,
         ]);
     }
@@ -48,18 +49,9 @@ class StoreRequest extends FormRequest
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
-            foreach ($this->input('items', []) as $index => $item) {
-                if (empty($item['product_id']) && empty($item['shop_product_variant_id'])) {
-                    $validator->errors()->add(
-                        "items.$index.shop_product_variant_id",
-                        'معرّف المنتج أو متغيّر المتجر مطلوب',
-                    );
-                }
-            }
-
             $date = $this->input('start_date');
             $time = $this->input('delivery_time');
-            if (!$date || !$time || $validator->errors()->isNotEmpty()) {
+            if (! $date || ! $time || $validator->errors()->isNotEmpty()) {
                 return;
             }
 

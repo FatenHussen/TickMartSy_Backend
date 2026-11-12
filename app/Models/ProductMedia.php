@@ -32,8 +32,27 @@ class ProductMedia extends Model
     /**
      * Full URL
      */
-    public function getUrlAttribute(): string
+    public function getUrlAttribute(): ?string
     {
-        return asset('storage/' . $this->path);
+        $path = trim((string) $this->path);
+
+        if ($path === '') {
+            return null;
+        }
+
+        if (preg_match('~^https?://~i', $path)) {
+            return $path;
+        }
+
+        if (str_starts_with($path, '/storage/')) {
+            return asset(ltrim($path, '/'));
+        }
+
+        return asset('storage/' . ltrim($path, '/'));
+    }
+
+    public function isUsable(): bool
+    {
+        return $this->is_active !== false && $this->url !== null;
     }
 }

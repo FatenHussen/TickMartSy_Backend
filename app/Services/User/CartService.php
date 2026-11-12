@@ -6,18 +6,21 @@ use App\Exceptions\CustomExceptionWithMessage;
 use App\Exceptions\NotFoundException;
 use App\Http\Resources\User\Cart\CartItemResource;
 use App\Models\CartItem;
-use App\Models\ShopProductVariant;
 use App\Models\User;
 use App\Traits\HasCurrencyConversion;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class CartService
 {
     use HasCurrencyConversion;
 
-    public function __construct(private CheckoutPolicyService $checkoutPolicy)
+    public function __construct(
+        private CheckoutPolicyService $checkoutPolicy,
+        private PurchasableVariantService $purchasableVariants,
+    )
     {
     }
 
@@ -120,43 +123,54 @@ class CartService
 
     public function add(int $userId, array $data): CartItemResource
     {
-        $shopVariant = $this->findShopVariant((int) $data['shop_product_variant_id']);
-        $quantity = (int) ($data['quantity'] ?? 1);
+        return DB::transaction(function () use ($userId, $data) {
+            $shopVariant = $this->purchasableVariants->resolve(
+                $data['shop_product_variant_id'] ?? null,
+                $data['quantity'] ?? null,
+                lockForUpdate: true,
+            );
+            $quantity = (int) $data['quantity'];
 
-        $item = CartItem::query()->firstOrNew([
-            'user_id' => $userId,
-            'shop_product_variant_id' => $shopVariant->id,
-        ]);
+            $item = CartItem::query()->firstOrNew([
+                'user_id' => $userId,
+                'shop_product_variant_id' => $shopVariant->id,
+            ]);
 
-        $nextQty = ($item->exists ? (int) $item->quantity : 0) + $quantity;
-        $this->assertQuantity($shopVariant, $nextQty);
+            $nextQty = ($item->exists ? (int) $item->quantity : 0) + $quantity;
+            $this->purchasableVariants->assertQuantity($shopVariant, $nextQty);
 
-        $item->quantity = $nextQty;
-        if (array_key_exists('note', $data)) {
-            $item->note = $data['note'];
-        }
-        $item->save();
+            $item->quantity = $nextQty;
+            if (array_key_exists('note', $data)) {
+                $item->note = $data['note'];
+            }
+            $item->save();
 
-        return new CartItemResource($item->load($this->itemRelations()));
+            return new CartItemResource($item->load($this->itemRelations()));
+        });
     }
 
     public function update(int $userId, int $itemId, array $data): CartItemResource
     {
-        $item = $this->findItem($userId, $itemId);
-        $shopVariant = $this->findShopVariant((int) $item->shop_product_variant_id);
+        return DB::transaction(function () use ($userId, $itemId, $data) {
+            $item = $this->findItem($userId, $itemId);
+            $this->purchasableVariants->resolve(
+                $item->shop_product_variant_id,
+                $data['quantity'] ?? $item->quantity,
+                lockForUpdate: true,
+            );
 
-        if (isset($data['quantity'])) {
-            $this->assertQuantity($shopVariant, (int) $data['quantity']);
-            $item->quantity = (int) $data['quantity'];
-        }
+            if (array_key_exists('quantity', $data)) {
+                $item->quantity = (int) $data['quantity'];
+            }
 
-        if (array_key_exists('note', $data)) {
-            $item->note = $data['note'];
-        }
+            if (array_key_exists('note', $data)) {
+                $item->note = $data['note'];
+            }
 
-        $item->save();
+            $item->save();
 
-        return new CartItemResource($item->load($this->itemRelations()));
+            return new CartItemResource($item->load($this->itemRelations()));
+        });
     }
 
     public function remove(int $userId, int $itemId): bool
@@ -178,33 +192,6 @@ class CartService
         }
 
         return $item;
-    }
-
-    private function findShopVariant(int $id): ShopProductVariant
-    {
-        $shopVariant = ShopProductVariant::query()
-            ->with(['productVariant.product', 'shop'])
-            ->find($id);
-
-        if (!$shopVariant) {
-            throw new NotFoundException();
-        }
-
-        return $shopVariant;
-    }
-
-    private function assertQuantity(ShopProductVariant $shopVariant, int $quantity): void
-    {
-        $stock = (int) ($shopVariant->productVariant?->quantity ?? 0);
-
-        if ($stock < 1 || $quantity > $stock) {
-            throw new CustomExceptionWithMessage('custom.cart_quantity_unavailable');
-        }
-
-        $maxPurchase = $shopVariant->productVariant?->product?->max_purchase_quantity;
-        if ($maxPurchase !== null && $quantity > (int) $maxPurchase) {
-            throw new CustomExceptionWithMessage('custom.cart_quantity_unavailable');
-        }
     }
 
     private function itemRelations(): array

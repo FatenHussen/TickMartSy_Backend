@@ -29,18 +29,20 @@ class UpdateRequest extends FormRequest
 
             'is_active' => ['sometimes', 'boolean'],
 
-            'items' => ['nullable', 'array', 'min:1'],
+            'items' => ['sometimes', 'array', 'min:1'],
 
+            'items.*' => ['required', 'array'],
+            'items.*.id' => ['nullable', 'integer', 'distinct'],
             'items.*.product_id' => ['nullable', 'exists:products,id'],
-            'items.*.shop_product_variant_id' => ['nullable', 'exists:shop_product_variants,id'],
-            'items.*.quantity' => ['nullable', 'integer', 'min:1'],
+            'items.*.shop_product_variant_id' => ['required', 'integer', 'distinct', 'exists:shop_product_variants,id'],
+            'items.*.quantity' => ['required', 'integer', 'min:1'],
         ];
     }
 
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'user_id'   => auth('user')->id(),
+            'user_id' => auth('user')->id(),
             'is_active' => $this->is_active ?? true,
         ]);
     }

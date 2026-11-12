@@ -10,6 +10,7 @@ use App\Models\Color;
 use App\Models\Country;
 use App\Models\Language;
 use App\Models\Product;
+use App\Models\ProductMedia;
 use App\Models\Shop;
 use App\Models\Vendor;
 use App\Services\Admin\ProductService;
@@ -493,6 +494,145 @@ class UserProductShowTest extends TestCase
         $response->assertOk();
         $this->assertSame($shop->id, $response->json('data.shop_variants.0.shop_id'));
         $this->assertSame(25, $response->json('data.shop_variants.0.price'));
+    }
+
+    public function test_variant_media_remains_separate_from_the_product_gallery_and_preserves_absolute_urls(): void
+    {
+        $thumbnail = 'https://cdn.example.com/products/thumbnail.jpg';
+        $galleryUrl = 'https://cdn.example.com/products/front.jpg';
+        $product = $this->createProduct(['thumbnail' => $thumbnail]);
+        $productImage = $product->media()->create([
+            'collection' => ProductMedia::COLLECTION_PRODUCT,
+            'path' => $galleryUrl,
+        ]);
+        $variant = $product->variants()->create([
+            'price' => 25,
+            'quantity' => 3,
+            'is_active' => true,
+            'attributes_values_ids' => [],
+        ]);
+        $laterImage = $variant->media()->create([
+            'collection' => ProductMedia::COLLECTION_VARIANT,
+            'path' => 'product-variant/blue-back.jpg',
+            'order' => 2,
+        ]);
+        $firstImage = $variant->media()->create([
+            'collection' => ProductMedia::COLLECTION_VARIANT,
+            'path' => 'https://cdn.example.com/variants/blue-front.jpg',
+            'order' => 1,
+        ]);
+
+        $this->getJson("/api/user/products/{$product->id}")
+            ->assertOk()
+            ->assertJsonPath('data.thumbnail', $thumbnail)
+            ->assertJsonCount(1, 'data.images')
+            ->assertJsonPath('data.images.0.id', $productImage->id)
+            ->assertJsonPath('data.images.0.path', $galleryUrl)
+            ->assertJsonPath('data.shop_variants.0.has_variant_images', true)
+            ->assertJsonCount(2, 'data.shop_variants.0.images')
+            ->assertJsonPath('data.shop_variants.0.images.0.id', $firstImage->id)
+            ->assertJsonPath('data.shop_variants.0.images.0.path', $firstImage->path)
+            ->assertJsonPath('data.shop_variants.0.images.1.id', $laterImage->id)
+            ->assertJsonPath('data.shop_variants.0.images.1.path', asset('storage/' . $laterImage->path));
+    }
+
+    public function test_unusable_variant_images_fall_back_to_usable_product_media_then_thumbnail(): void
+    {
+        $thumbnail = 'https://cdn.example.com/products/thumbnail.jpg';
+        $product = $this->createProduct(['thumbnail' => $thumbnail]);
+        $product->media()->create([
+            'collection' => ProductMedia::COLLECTION_PRODUCT,
+            'path' => '   ',
+        ]);
+        $productImage = $product->media()->create([
+            'collection' => ProductMedia::COLLECTION_PRODUCT,
+            'path' => '/storage/products/front.jpg',
+            'order' => 1,
+        ]);
+        $variant = $product->variants()->create([
+            'price' => 20,
+            'quantity' => 5,
+            'is_active' => true,
+            'attributes_values_ids' => [],
+        ]);
+        $variant->media()->create([
+            'collection' => ProductMedia::COLLECTION_VARIANT,
+            'path' => '',
+        ]);
+
+        $this->getJson("/api/user/products/{$product->id}")
+            ->assertOk()
+            ->assertJsonCount(1, 'data.images')
+            ->assertJsonPath('data.images.0.path', asset('storage/products/front.jpg'))
+            ->assertJsonPath('data.shop_variants.0.has_variant_images', false)
+            ->assertJsonCount(1, 'data.shop_variants.0.images')
+            ->assertJsonPath('data.shop_variants.0.images.0.id', $productImage->id)
+            ->assertJsonPath('data.shop_variants.0.images.0.path', asset('storage/products/front.jpg'));
+
+        $productImage->delete();
+
+        $this->getJson("/api/user/products/{$product->id}")
+            ->assertOk()
+            ->assertJsonPath('data.images.0.path', $thumbnail)
+            ->assertJsonPath('data.shop_variants.0.has_variant_images', false)
+            ->assertJsonPath('data.shop_variants.0.images.0.path', $thumbnail);
+    }
+
+    public function test_renaming_attribute_labels_preserves_option_and_variant_value_identity(): void
+    {
+        $product = $this->createProduct();
+        $attribute = CategoryAttribute::create([
+            'category_id' => $product->category_id,
+            'name' => ['en' => 'Size', 'ar' => 'المقاس'],
+            'type' => 'square',
+            'is_active' => true,
+        ]);
+        $value = $attribute->values()->create(['name' => ['en' => 'M', 'ar' => 'وسط']]);
+        $product->variants()->create([
+            'price' => 20,
+            'quantity' => 5,
+            'is_active' => true,
+            'attributes_values_ids' => [$value->id],
+        ]);
+
+        $assertIdentity = function () use ($product, $attribute, $value): void {
+            $this->withHeaders(['Accept-Language' => 'en'])
+                ->getJson("/api/user/products/{$product->id}")
+                ->assertOk()
+                ->assertJsonPath('data.attributes_map.0.id', $attribute->id)
+                ->assertJsonPath('data.attributes_map.0.options.0.id', $value->id)
+                ->assertJsonPath('data.shop_variants.0.attributes.0.id', $value->id);
+        };
+
+        $assertIdentity();
+        $attribute->update(['name' => ['en' => 'Fit', 'ar' => 'القياس']]);
+        $value->update(['name' => ['en' => 'Medium', 'ar' => 'متوسط']]);
+        $assertIdentity();
+    }
+
+    public function test_shop_variant_identity_and_stock_are_kept_when_a_linked_variant_is_sold_out(): void
+    {
+        $product = $this->createProduct(['quantity' => 100]);
+        $shop = Shop::create([
+            'name' => ['en' => 'Shop', 'ar' => 'متجر'],
+            'email' => 'sold-out-shop@example.com',
+            'vendor_id' => $product->vendor_id,
+            'is_active' => true,
+        ]);
+        $variant = $product->variants()->create([
+            'price' => 25,
+            'quantity' => 0,
+            'is_active' => true,
+            'attributes_values_ids' => [],
+        ]);
+        $shopVariant = $variant->shopVariants()->create(['shop_id' => $shop->id, 'cost_price' => 10]);
+
+        $this->getJson("/api/user/products/{$product->id}")
+            ->assertOk()
+            ->assertJsonPath('data.shop_variants.0.id', $shopVariant->id)
+            ->assertJsonPath('data.shop_variants.0.variant_id', $variant->id)
+            ->assertJsonPath('data.shop_variants.0.shop_id', $shop->id)
+            ->assertJsonPath('data.shop_variants.0.quantity', 0);
     }
 
     private function createProduct(array $overrides = []): Product

@@ -734,29 +734,10 @@ class OrderService extends BaseService
         $cartType = $data['cart_type'] ?? 'default';
         $hasBasket = $cartType !== CartType::DEFAULT->value;
 
-        foreach ($data['items'] as $item) {
-
-            $shopVariant = ShopProductVariant::with('productVariant.product')
-                ->findOrFail($item['shop_product_variant_id']);
-
+        $offers = app(PurchasableVariantService::class)->validateItems($data['items'] ?? [], ! $isPreview);
+        foreach ($data['items'] as $index => $item) {
+            $shopVariant = $offers[$index];
             $productVariant = $shopVariant->productVariant;
-
-            if (!$isPreview && $productVariant) {
-                $productVariant = ProductVariant::query()
-                    ->with('product')
-                    ->lockForUpdate()
-                    ->findOrFail($productVariant->id);
-            }
-
-            $availableQty = $productVariant?->quantity;
-
-            if (!is_null($availableQty) && $availableQty < $item['quantity']) {
-                throw new CustomExceptionWithMessage(
-                    'custom.orders.insufficient_stock',
-                    400,
-                    ['product' => $productVariant->product->name]
-                );
-            }
 
             $product = $productVariant->product;
             $unitPrice = (float) $productVariant->price;
@@ -1184,91 +1165,39 @@ class OrderService extends BaseService
     {
         $user = auth('user')->user();
 
-        $originalOrder = Order::with(['items', 'paymentMethod'])->findOrFail($orderId);
+        $originalOrder = Order::with(['items.extras', 'paymentMethod'])->findOrFail($orderId);
 
         // Ensure the order belongs to the user
         if ($originalOrder->user_id !== $user->id) {
             throw new CustomExceptionWithMessage('custom.orders.not_found', 404);
         }
 
-        return DB::transaction(function () use ($originalOrder, $user) {
-            // Create new order with same data, but reset some fields
-            $newOrder = Order::create([
-                'user_id' => $user->id,
-                'user_address_id' => $originalOrder->user_address_id,
-                'payment_method_id' => $originalOrder->payment_method_id,
-                'is_paid' => $originalOrder->paymentMethod?->isPaidOnPlacement() ?? false,
-                'basket_id' => $originalOrder->basket_id,
-                'basket_schedule_id' => $originalOrder->basket_schedule_id,
-                'is_instant_delivery' => $originalOrder->is_instant_delivery,
-                'status' => OrderStatus::PENDING->value,
-                'cart_type' => $originalOrder->cart_type,
-                'delivery_price' => $originalOrder->delivery_price,
-                'original_delivery_price' => $originalOrder->original_delivery_price ?? $originalOrder->delivery_price,
-                'total_quantity' => $originalOrder->total_quantity,
-                'total' => $originalOrder->total,
-                'subtotal' => $originalOrder->subtotal,
-                'basket_discount' => $originalOrder->basket_discount,
-                'coupon_discount' => $originalOrder->coupon_discount,
-                'affiliate_id' => $originalOrder->affiliate_id,
-                'affiliate_rate' => $originalOrder->affiliate_rate,
-                'affiliate_source' => $originalOrder->affiliate_source,
-                'affiliate_commission_type' => $originalOrder->affiliate_commission_type,
-                'affiliate_fixed_commission' => $originalOrder->affiliate_fixed_commission,
-                'affiliate_commission_amount' => $originalOrder->affiliate_commission_amount,
-                'coupon_id' => $originalOrder->coupon_id,
-                'used_coupon_exchange_id' => $originalOrder->used_coupon_exchange_id,
-                'used_free_delivery_exchange_id' => $originalOrder->used_free_delivery_exchange_id,
-                'coupon_discount_from_points' => $originalOrder->coupon_discount_from_points,
-                'free_delivery_from_points' => $originalOrder->free_delivery_from_points,
-                'subscription_id' => $originalOrder->subscription_id,
-                'subscription_discount' => $originalOrder->subscription_discount,
-                'subscription_free_delivery' => $originalOrder->subscription_free_delivery,
-                'subscription_points_bonus' => $originalOrder->subscription_points_bonus,
-                // Reset timestamps
-                'pending_at' => now(),
-                'preparing_at' => null,
-                'out_delivery_at' => null,
-                'delivered_at' => null,
-                'driver_id' => null,
-                'assigned_by' => null,
-            ]);
+        $policy = $this->checkoutPolicy->forShops($this->checkoutPolicy->shopsFromVariantIds(
+            $originalOrder->items->pluck('shop_product_variant_id')->all()
+        ));
+        $scheduledAt = $this->checkoutPolicy->earliestAt($policy);
+        if ($originalOrder->scheduled_delivery_at?->gt($scheduledAt)) {
+            $scheduledAt = $originalOrder->scheduled_delivery_at;
+        }
 
-            // Copy order items
-            foreach ($originalOrder->items as $item) {
-                $newOrder->items()->create([
-                    'shop_product_variant_id' => $item->shop_product_variant_id,
-                    'product_name' => $item->product_name,
-                    'variant_attributes' => $item->variant_attributes,
-                    'item_status' => OrderStatus::PENDING->value,
-                    'quantity' => $item->quantity,
-                    'price' => $item->unit_price,
-                    'unit_price' => $item->unit_price,
-                    'final_price' => $item->final_price,
-                    'subtotal' => $item->subtotal,
-                    'extras_total' => $item->extras_total,
-                    'total' => $item->total,
-                    'commission_snapshot_type' => $item->commission_snapshot_type ?? 'percentage',
-                    'commission_snapshot_rate' => (float) ($item->commission_snapshot_rate ?? 0),
-                    'commission_snapshot_fixed' => (float) ($item->commission_snapshot_fixed ?? 0),
-                    'commission_snapshot_amount' => (float) ($item->commission_snapshot_amount ?? 0),
-                    'commission_snapshot_source' => $item->commission_snapshot_source ?? 'vendor',
-                    'commission_snapshot_package_id' => $item->commission_snapshot_package_id,
-                    'commission_snapshot_package_name' => $item->commission_snapshot_package_name,
-                    'pending_at' => now(),
-                    'preparing_at' => null,
-                    'out_delivery_at' => null,
-                    'delivered_at' => null,
-                ]);
-            }
-
-            // Generate order code
-            $newOrder->update(['order_code' => 'ORD-' . $newOrder->id]);
-
-            return new OneResource($newOrder->load('items'));
-        });
+        // Reorders use current ordinary purchase pricing; old basket discounts may have expired.
+        return $this->create([
+            'address_id' => $originalOrder->user_address_id,
+            'payment_method_id' => $originalOrder->payment_method_id,
+            'cart_type' => CartType::DEFAULT->value,
+            'is_instant_delivery' => $originalOrder->is_instant_delivery,
+            'scheduled_delivery_at' => $scheduledAt->format('Y-m-d H:i'),
+            'items' => $originalOrder->items->map(fn ($item) => [
+                'shop_product_variant_id' => $item->shop_product_variant_id,
+                'quantity' => $item->quantity,
+                'note' => $item->note,
+                'extras' => $item->extras->map(fn ($extra) => [
+                    'id' => $extra->product_extra_detail_id,
+                    'quantity' => $extra->quantity,
+                ])->all(),
+            ])->all(),
+        ]);
     }
-
     private function resolveVendorCommissionProfile(int $vendorId): array
     {
         if (!Schema::hasTable('vendor_subscriptions')) {

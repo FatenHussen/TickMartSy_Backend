@@ -8,7 +8,9 @@ use App\Models\Order;
 use App\Models\ShopProductVariant;
 use App\Models\UserBasketSchedule;
 use App\Models\UserBasketScheduleItem;
+use App\Services\User\PurchasableVariantService;
 use Illuminate\Support\Collection;
+use Illuminate\Validation\ValidationException;
 
 class ScheduledBasketAvailabilityService
 {
@@ -16,6 +18,7 @@ class ScheduledBasketAvailabilityService
         'insufficient_quantity',
         'out_of_stock',
         'variant_deleted',
+        'unavailable',
     ];
 
     public function evaluateUserSchedule(UserBasketSchedule $basket): array
@@ -27,7 +30,7 @@ class ScheduledBasketAvailabilityService
         ]);
 
         $items = $basket->items
-            ->map(fn(UserBasketScheduleItem $item) => $this->evaluateUserScheduleItem($item))
+            ->map(fn (UserBasketScheduleItem $item) => $this->evaluateUserScheduleItem($item))
             ->values();
 
         return $this->buildSummary(
@@ -47,7 +50,7 @@ class ScheduledBasketAvailabilityService
         ]);
 
         $items = $basket->items
-            ->map(fn(BasketItem $item) => $this->evaluateAdminScheduleItem($item))
+            ->map(fn (BasketItem $item) => $this->evaluateAdminScheduleItem($item))
             ->values();
 
         return $this->buildSummary(
@@ -70,7 +73,7 @@ class ScheduledBasketAvailabilityService
             'required_quantity' => (int) $item->quantity,
             'available_quantity' => $availableQuantity,
             'status' => $status,
-            'is_available' => !in_array($status, self::ISSUE_STATUSES, true),
+            'is_available' => ! in_array($status, self::ISSUE_STATUSES, true),
             'resolved_shop_product_variant_id' => $variant?->id,
             'resolved_shop_product_variant_price' => $variant?->productVariant?->price,
         ];
@@ -100,6 +103,7 @@ class ScheduledBasketAvailabilityService
         $alternatives = $this->loadAlternativeVariants($item);
         $resolvedAlternative = $alternatives->first(function (ShopProductVariant $variant) use ($requiredQuantity) {
             [$status] = $this->resolveVariantStatus($variant, $requiredQuantity);
+
             return $status === 'available';
         });
 
@@ -118,10 +122,10 @@ class ScheduledBasketAvailabilityService
         }
 
         $availableQuantities = $alternatives
-            ->map(fn(ShopProductVariant $variant) => $variant->productVariant?->quantity)
-            ->filter(fn($quantity) => $quantity !== null)
+            ->map(fn (ShopProductVariant $variant) => $variant->productVariant?->quantity)
+            ->filter(fn ($quantity) => $quantity !== null)
             ->push($primaryAvailableQuantity)
-            ->filter(fn($quantity) => $quantity !== null)
+            ->filter(fn ($quantity) => $quantity !== null)
             ->values();
 
         $fallbackStatus = $primaryStatus;
@@ -165,35 +169,43 @@ class ScheduledBasketAvailabilityService
 
     private function resolveVariantStatus(?ShopProductVariant $variant, int $requiredQuantity): array
     {
-        if (!$variant) {
+        if (! $variant) {
             return ['variant_deleted', null];
         }
 
         $availableQty = $variant->productVariant?->quantity;
 
-        if ($availableQty === null) {
-            return ['available', null];
+        if ($availableQty === null || $availableQty <= 0) {
+            return ['out_of_stock', $availableQty === null ? null : 0];
         }
 
-        if ($availableQty >= $requiredQuantity) {
-            return ['available', (int) $availableQty];
+        try {
+            // The same sellability rules apply to basket status and purchase writes.
+            app(PurchasableVariantService::class)->resolve($variant->id, 1);
+        } catch (ValidationException) {
+            return ['unavailable', (int) $availableQty];
         }
 
-        if ($availableQty > 0) {
+        if ($availableQty < $requiredQuantity) {
             return ['insufficient_quantity', (int) $availableQty];
         }
 
-        return ['out_of_stock', 0];
+        $limit = $variant->productVariant?->product?->max_purchase_quantity;
+        if ($limit !== null && $requiredQuantity > (int) $limit) {
+            return ['unavailable', (int) $availableQty];
+        }
+
+        return ['available', (int) $availableQty];
     }
 
     private function buildSummary(string $basketType, int $basketId, ?string $nextRunDate, Collection $items): array
     {
         $itemsById = $items->keyBy('item_id');
         $issueItems = $items
-            ->filter(fn(array $item) => in_array($item['status'], self::ISSUE_STATUSES, true))
+            ->filter(fn (array $item) => in_array($item['status'], self::ISSUE_STATUSES, true))
             ->values();
         $warningItems = $items
-            ->filter(fn(array $item) => $item['status'] === 'available_with_alternative')
+            ->filter(fn (array $item) => $item['status'] === 'available_with_alternative')
             ->values();
 
         $status = 'available';

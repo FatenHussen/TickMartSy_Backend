@@ -30,11 +30,11 @@ class ShopVariantResource extends JsonResource
             $shopVariant = $this->shopVariants->first();
         }
 
-        $ownImages = $this->media;
-        $hasVariantImages = $ownImages && $ownImages->isNotEmpty();
+        $ownImages = $this->media->filter(fn ($image) => $image->isUsable())->values();
+        $hasVariantImages = $ownImages->isNotEmpty();
         $images = $hasVariantImages
             ? $ownImages
-            : ($this->product?->media ?? collect());
+            : ($this->product?->media ?? collect())->filter(fn ($image) => $image->isUsable())->values();
 
         $imagePayload = ($images && $images->isNotEmpty())
             ? MediaResource::collection($images)

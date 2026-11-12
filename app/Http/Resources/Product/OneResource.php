@@ -133,6 +133,8 @@ class OneResource extends JsonResource
 
     private function imagesPayload($media, ?string $thumbnailUrl = null)
     {
+        $media = collect($media)->filter(fn ($image) => $image->isUsable())->values();
+
         if ($media && $media->isNotEmpty()) {
             return MediaResource::collection($media);
         }

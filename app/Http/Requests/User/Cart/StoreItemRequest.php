@@ -15,7 +15,7 @@ class StoreItemRequest extends FormRequest
     {
         return [
             'shop_product_variant_id' => ['required', 'integer', 'exists:shop_product_variants,id'],
-            'quantity' => ['nullable', 'integer', 'min:1'],
+            'quantity' => ['required', 'integer', 'min:1'],
             'note' => ['nullable', 'string', 'max:500'],
         ];
     }

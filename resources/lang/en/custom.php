@@ -17,6 +17,7 @@ return [
 
     'account_already_exists' => 'Account already exists.',
     'cart_quantity_unavailable' => 'Requested quantity is not available.',
+    'currency_default_required' => 'Choose another active default currency before changing or deleting this currency.',
     'checkout' => [
         'asap' => 'As soon as possible',
         'min_order_remaining' => 'Minimum order is :min. :remaining left.',

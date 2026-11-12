@@ -25,7 +25,9 @@ class CurrencyController extends BaseCRUDController
         $currency = $this->currencyService->getUserCurrency($user);
 
         return $this->sendResponse(
-            new OneResource($currency),
+            (new OneResource($currency))->withPreferenceSource(
+                $this->currencyService->getPreferenceSource($user, $currency)
+            ),
             __('custom.user_currency_retrieved_successfully')
         );
     }
@@ -36,7 +38,7 @@ class CurrencyController extends BaseCRUDController
         $currency = $this->currencyService->updateUserCurrency($user, $request->currency_id);
 
         return $this->sendResponse(
-            new OneResource($currency),
+            (new OneResource($currency))->withPreferenceSource('user'),
             __( 'custom.user_currency_updated_successfully')
         );
     }

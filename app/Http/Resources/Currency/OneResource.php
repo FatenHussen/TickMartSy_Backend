@@ -7,6 +7,15 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class OneResource extends JsonResource
 {
+    protected ?string $preferenceSource = null;
+
+    public function withPreferenceSource(string $source): static
+    {
+        $this->preferenceSource = $source;
+
+        return $this;
+    }
+
     public function toArray(Request $request): array
     {
         return [
@@ -18,6 +27,7 @@ class OneResource extends JsonResource
             'exchange_rate' => $this->exchange_rate,
             'is_default' => $this->is_default,
             'is_active' => $this->is_active,
+            'preference_source' => $this->when($this->preferenceSource !== null, $this->preferenceSource),
         ];
     }
 }
