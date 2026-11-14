@@ -39,6 +39,8 @@ return [
             'https://www.tickmart.com',
             'https://tickmartsy.com',
             'https://www.tickmartsy.com',
+            'https://tickadmin.tickmartsy.com',
+            'https://tickdash.tickmartsy.com',
             // Optional shared-deploy hosts (same codebase)
             'https://admin.deemafashion.com',
             // 'https://deemafashion.com',

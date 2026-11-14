@@ -437,6 +437,8 @@ return [
     'orders' => [
         'title' => 'Orders',
         'singular' => 'Order',
+        'item_at_position' => 'item :position in the cart',
+        'quantity_of' => 'quantity of :product',
         'order_number' => 'Order Number',
         'customer' => 'Customer',
         'customer_name' => 'Customer Name',

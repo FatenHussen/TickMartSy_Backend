@@ -474,6 +474,8 @@ return [
     'orders' => [
         'title' => 'الطلبات',
         'singular' => 'طلب',
+        'item_at_position' => 'المنتج رقم :position في السلة',
+        'quantity_of' => 'كمية :product',
         'order_number' => 'رقم الطلب',
         'customer' => 'العميل',
         'customer_name' => 'اسم العميل',

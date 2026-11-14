@@ -32,6 +32,9 @@ class OrderItemResource extends JsonResource
             ],
             'note' => $this->note,
             'quantity' => $this->quantity,
+            // Unit price, NOT the line total: the client multiplies by quantity.
+            // `subtotal` below is the line total if you need it precomputed.
+            'price' => (float) ($this->unit_price ?? $this->price ?? 0),
             ...$this->withCurrency($this->unit_price, 'unit_price'),
             ...$this->withCurrency($this->final_price, 'final_price'),
             ...$this->withCurrency($this->subtotal, 'subtotal'),
